@@ -1,0 +1,218 @@
+
+public static void main(String[] args){
+    String filename="Results/outcomes.dat";
+	int staK; //Stable K
+	double staE;//Stable Epsilion
+	boolean feedMeTheWorld = false;
+	String feedMeFileName = "";
+	boolean recordMeTheWorld = false;
+	String recordMeFileName = "";
+	boolean doCompare = false;
+	String compareTemplate = "";
+	
+    staK = 3;
+    staE = 0.05;
+    boolean waitST = false;
+    int minNI = 10;
+    if (args.length >0){
+	int index =0;
+	while (index < args.length){
+	    String arg = args[index];
+	    index++;
+	    //System.out.println("read " + arg);
+	    char option = arg.charAt(1);
+	    switch(option){
+	    case 'u': // choice of the update mode
+			String umode = args[index];
+			index++;
+			if (umode.equals("bottomUp")){// Bottom Up learner
+				update_mode = BU; 
+				waitST= true;
+			}
+			if  (umode.equals("concurrent")){// DT are learnt concurrently
+				update_mode = CL;
+			    waitST= false;	
+			}
+			if (umode.equals("stable")){//update the learning mechanism using a stability measure.
+				update_mode = STABLE_U;
+			}
+			break;
+   	   	case 'i': // number of iterations
+			numIterations = Integer.parseInt(args[index]);
+			index++;
+			break;
+	    case 'm': // Minimum number of instances before building a tree
+			minNI = Integer.parseInt(args[index]);
+			index++;
+			break;
+	    case 'o': // output file
+			filename = args[index];
+			index++;
+			break;	    
+		case 's': // plan selection mode
+			String psmode = args[index];
+			index++;
+			if (psmode.equals("probabilistic"))
+				plan_selection = PROBABILISTIC_PS;
+			if (psmode.equals("random"))
+				plan_selection = NO_DT_PS;
+			if (psmode.equals("uniform"))
+				plan_selection = RND_PS;
+			if (psmode.equals("max"))
+				plan_selection = MAX_PS;
+			break;
+		case 'k'://selecting k for stablility
+			staK = Integer.parseInt(args[index]);
+			index++;
+			break;
+		case 'e':
+			staE = Double.parseDouble(args[index]);
+			index++;
+			break;
+		case 'w'://use the world states found in the specified file.
+			feedMeTheWorld = true;
+			feedMeFileName = args[index];
+			index++;
+			break;
+		case 'r'://record the world states used, to a specified file
+			recordMeTheWorld = true;
+			recordMeFileName = args[index];
+			index++;
+			break;
+		case 'c':
+			doCompare = true;
+			compareTemplate = args[index];
+			index++;
+			break;
+			
+	    }
+	}
+	
+	RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
+	if(update_mode==STABLE_U)
+	{
+		agent.setStableUpdates(true);
+		agent.setStableK(staK);
+		agent.setStableE(staE);
+		System.out.println("K: "+staK+", e: "+staE);
+		agent.generateTree();
+	}
+	Environment env = new Environment("Environment",filename);
+	env.worldFed = feedMeTheWorld;
+	env.fedFileName = feedMeFileName;
+	env.recordWorldFeed = recordMeTheWorld;
+	env.recordFeedFileName = recordMeFileName;
+	env.compareToFile = doCompare;
+	env.compareTemplate = compareTemplate;
+	
+	if(feedMeTheWorld)
+	{
+		env.openWorldFedConnection();
+	}
+	
+
+	agent.setEnvironment(env);
+	agent.minNumInstances = minNI;
+	agent.waitForSubTree = waitST;
+	env.filenameOutcome = filename;
+	env.learningAgent = agent;
+	agent.generateTree();
+	System.out.println("Start the simulation with " 
+			   + env.numIterations 
+			   + " iterations \n min num instances to build a tree is set to " 
+			   + agent.minNumInstances);
+	switch(plan_selection){
+		case PROBABILISTIC_PS:
+	    	System.out.println("Probabilistic Plan Selection");
+	    	break;
+		case RND_PS:
+	    	System.out.println("Random Plan Selection (pick an applicable plan at random)");
+	    	break;
+		case MAX_PS:
+	    	System.out.println("Optimistic Plan Selection (pick the plan with the highest frequency of success)");
+	    	break;
+		case NO_DT_PS:
+	    	System.out.println("No decision trees used for plan selection");
+	    	break;
+		}
+	switch(update_mode){
+	case CL:
+	    System.out.println("Concurrent Learning");
+	    break;
+	case BU:
+	    System.out.println("Bottom Up Learning");
+	    break;
+	 case STABLE_U:
+	 	System.out.println("Stability Updated Learning");
+	 	break;
+	}
+	env.runOneIteration();
+    }
+    else
+    {
+    	System.out.println(" Run with no arguments. Please add some");
+    }
+}
+
+	public void writeLog(String msg, String postPend)
+	{
+		try
+		{
+			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".txt", true), true);
+			prnOut.println(msg);
+			prnOut.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error: File could not be created.");
+		}
+	}
+	
+	public void openWorldFedConnection()
+	{
+		try
+		{
+		 	br= new BufferedReader(new FileReader(fedFileName));
+		}
+		catch(Exception e)
+		{
+			System.out.println("br failed");
+			System.exit(0);
+		}
+		
+		
+	}
+	
+	
+	public void openCompareConnection()
+	{
+		try
+		{
+		 	compareReader = new BufferedReader(new FileReader(compareTemplate));
+		 	try
+		 	{
+		 		String thisLine = compareReader.readLine();
+		 		while(thisLine!=null)
+		 		{
+		 			thisLine = thisLine.trim();
+					int planNodeIndex = learningAgent.findPlanNodeByID(thisLine);
+					String msg = learningAgent.planNodes[planNodeIndex].getDT();
+					writeLog("---------:"+thisLine+"\n"+msg+"\n---------\n", filenameOutcome+"-COMPARE");
+					thisLine = compareReader.readLine();
+		 		}
+		 		
+		 	}
+			catch(Exception e)
+			{
+				System.out.println("Compare file Line reading failed. failed");
+				System.exit(0);				
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println("Compare file reading failed. failed");
+			System.exit(0);
+		}
+		
+		
+	}

@@ -1,0 +1,208 @@
+	  
+	switch(ag.env.plan_selection){
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	case 1:	    //case ag.env.RND_PS:
+	    int num=0,numLikely=0;
+	    for (Signature s = pc.applicable.first();
+		 s != null;
+		 s = pc.applicable.next(s)){
+		 	if (s.getInfo() instanceof PlanIdInfo){
+				PlanIdInfo info = (PlanIdInfo) s.getInfo();
+		 		//System.out.println("[" +num+"]: plan " + info.plan_id
+				//		   +" "+ info.pSuccess);
+				if (info.pSuccess>0.5){
+				    numLikely++;
+				}
+		 	}
+		num++;
+	    }
+	    if (numLikely >0){
+		int[] likely = new int[numLikely];
+		int index=0;
+		Signature s = pc.applicable.first();
+		for (int i=0;i<num;i++){
+		    if (s.getInfo() instanceof PlanIdInfo){
+			PlanIdInfo info = (PlanIdInfo) s.getInfo();
+			if (info.pSuccess>0.5){
+			    likely[index]= i;
+			    index++;
+			}
+		    }
+		    s = pc.applicable.next(s);
+		}
+		int choice = ag.generator.nextInt(numLikely);
+		choice = likely[choice];
+		//System.out.println(" - > choice = " + choice);
+		s = pc.applicable.first();
+		for (int i=0;i<choice;i++){
+		    s = pc.applicable.next(s);
+		}
+		pc.chosen =  s;
+	    }
+	    else{
+	    System.out.println("No plan has a frequency of success more than .5!"
+	    	+"\t choose the max");
+	    	// randomize max
+	    int num=0;
+	    for (Signature s = pc.applicable.first();
+		 s != null;
+		 s = pc.applicable.next(s))
+		num++;
+	    if (num >0){
+		double[] prob = new double[num];
+		int[] order = new int[num]; // array of index to randomize the order that will be used to search the max
+		Signature s = pc.applicable.first();
+		for (int i=0;i<num;i++){
+		    if (s.getInfo() instanceof PlanIdInfo){
+			PlanIdInfo info = (PlanIdInfo) s.getInfo();
+			prob[i]= info.pSuccess;
+			order[i]=i;
+			//System.out.println("[" +i+"]: plan " + info.plan_id
+			//		   +" "+ info.pSuccess);
+
+			s = pc.applicable.next(s);
+		    }
+		}
+		int chosen=0;
+		double probMax = 0;
+		int last = num;
+		for (int i=0;i<num;i++){
+		    int index = ag.generator.nextInt(last);
+		    //System.out.print(" next: "+ order[index] +" (p=" + prob[order[index]] + ")");
+		    if ( prob[order[index]] > probMax){
+			probMax = prob[order[index]];
+			chosen= order[index];
+		    }
+		    int temp = order[last-1];
+		    order[last-1]= order[index];
+		    order[index]=temp;
+		    last--;
+		}
+		//System.out.print("\t@@@> chooses index "+ chosen+"\t order:"); 
+		//for (int i=0;i<num;i++)
+		//    System.out.print(order[i]+" ");
+		s = pc.applicable.first();
+		for (int i=0;i<chosen;i++){
+		    s = pc.applicable.next(s);
+		}
+		pc.chosen =  s;
+		}
+	    }
+	    break;
+ 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	case 2:	    //case ag.env.MAX_PS:
+		// randomize max
+	    int num=0;
+	    for (Signature s = pc.applicable.first();
+		 s != null;
+		 s = pc.applicable.next(s))
+		num++;
+	    if (num >0){
+		double[] prob = new double[num];
+		int[] order = new int[num]; // array of index to randomize the order that will be used to search the max
+		Signature s = pc.applicable.first();
+		for (int i=0;i<num;i++){
+		    if (s.getInfo() instanceof PlanIdInfo){
+			PlanIdInfo info = (PlanIdInfo) s.getInfo();
+			prob[i]= info.pSuccess;
+			order[i]=i;
+			//System.out.println("[" +i+"]: plan " + info.plan_id
+			//		   +" "+ info.pSuccess);
+
+			s = pc.applicable.next(s);
+		    }
+		}
+		int chosen=0;
+		double probMax = 0;
+		int last = num;
+		for (int i=0;i<num;i++){
+		    int index = ag.generator.nextInt(last);
+		    //System.out.print(" next: "+ order[index] +" (p=" + prob[order[index]] + ")");
+		    if ( prob[order[index]] > probMax){
+			probMax = prob[order[index]];
+			chosen= order[index];
+		    }
+		    int temp = order[last-1];
+		    order[last-1]= order[index];
+		    order[index]=temp;
+		    last--;
+		}
+		//System.out.print("\t@@@> chooses index "+ chosen+"\t order:"); 
+		//for (int i=0;i<num;i++)
+		//    System.out.print(order[i]+" ");
+		s = pc.applicable.first();
+		for (int i=0;i<chosen;i++){
+		    s = pc.applicable.next(s);
+		}
+		pc.chosen =  s;
+		}
+		break;
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	case 3:     //case ag.env.PROBABILISTIC_PS:
+	    int num=0;
+	    double mass; 
+	    for (Signature s = pc.applicable.first();
+		 s != null;
+		 s = pc.applicable.next(s)){
+		if (s.getInfo() instanceof PlanIdInfo){
+		    PlanIdInfo info = (PlanIdInfo) s.getInfo();
+		    if (info.pSuccess < 0.0001 )
+			mass += 0.0001;
+		    else
+			mass += info.pSuccess;
+		}
+		num++;
+	    }
+	    if (num >0){
+		double[] prob = new double[num];
+		double acc=0;
+		int i;
+		for (Signature s = pc.applicable.first();
+		     s != null;
+		     s = pc.applicable.next(s),i++){
+		    if (s.getInfo() instanceof PlanIdInfo){
+			PlanIdInfo info = (PlanIdInfo) s.getInfo();
+			if (info.pSuccess < 0.0001)
+			    acc += 0.0001/mass;
+			else
+			    acc += (info.pSuccess)/mass;
+			prob[i] = acc;
+		    }
+		    else
+			prob[i] = 1.0/num;
+		}
+		double rnd = ag.generator.nextDouble();
+		int choice =0;
+		while (prob[choice]<rnd){
+		    choice++;
+		}
+		Signature s = pc.applicable.first();
+		for (i=0;i<choice;i++){
+		    s = pc.applicable.next(s);
+		}
+		pc.chosen =  s;
+	    }
+	    break;
+	    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	case 4:	    //case ag.env.NO_DT_PS:
+	    int num=0;
+	    for (Signature s = pc.applicable.first();
+		 s != null;
+		 s = pc.applicable.next(s)){
+		num++;
+	    }
+	    if (num >0){
+		int choice = ag.generator.nextInt(num);
+		Signature s = pc.applicable.first();
+		for (int i=0;i<choice;i++){
+		    s = pc.applicable.next(s);
+		}
+		pc.chosen =  s;
+	    }
+	    break;
+	
+   
+    	
+    	
+	}
+

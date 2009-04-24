@@ -1,0 +1,44 @@
+BDI-Learning Toolkit Readme
+-----------------------------
+
+1. ABOUT
+This package contains the source files for the BDI-Learning work being undertaken within the Intelligent Systems Group at RMIT University.
+For more information on this package contact Dhirendra Singh (dhirendra.singh@rmit.edu.au).
+
+2. INSTALLATION
+
+2.1 LATEST SOURCES
+Download the latest sources from the svn repository:
+> svn co svn+ssh://USERNAME@goanna.cs.rmit.edu.au/research/ai/linpa/RepositoryRoots/Software/BDILEARNING/SVNROOT
+
+2.2 DEPENDENCIES
+Apart from the sources included in this package you require the following tools:
+
+2.2.1 Java SE Development Kit (JDK 6 or later). http://java.sun.com/javase/downloads/index.jsp.
+You probably have a recent version of the JDK already installed. If not download the JDK for your platform and follow the installation instructions. Make sure that the installation is in your PATH. Verify by typing:
+>java -version
+>javac -version
+
+2.2.2 Ant Java-based Build Tool Verion 1.7.0 or later. http://ant.apache.org/.
+Download ANT and follow the package installation instructions. Make sure that the installation is in your PATH. Verify by typing
+>ant -version
+
+2.2.3 Jack Autonomous Software Version 5.3 or later. http://www.agent-software.com.au.
+Once you have acquired the JACK software, copy the jack.jar file into the ./lib directory of this package.
+
+2.2.4 Weka Data Mining Software Version 3.6.0 or later. http://www.cs.waikato.ac.nz/ml/weka.
+Download the latest stable version of WEKA for generic platforms. Unzip the zip file, extract the weka.jar archive, and copy it into the ./lib directory of this package.
+
+3. BUILD
+Compiling the code is straighforward. From the top level directory (one that contains build.xml) do the following:
+>ant
+This will run the default target in build.xml that in turn build everything. All outputs go to th ./build directory.
+
+4 RUNNING TESTS
+To run all tests, do the following:
+>ant run
+All run outputs go to the ./results directory.
+
+That's it!
+
+

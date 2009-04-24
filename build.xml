@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="BDILearn" basedir="." default="all">
+
+<property name="lib.dir" value="./lib"/>
+<path id="classpath">
+	<fileset dir="${lib.dir}" includes="**/*.jar"/>
+</path>
+
+<property name="results.dir" value="./results"/>
+<property name="build.dir" value="./build"/>
+<property name="build.classes.dir" value="${build.dir}/classes"/>
+<property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
+<property name="build.classes.events.dir" value="${build.classes.dir}/events"/>
+<property name="build.classes.agents.dir" value="${build.classes.dir}/agents"/>
+<property name="build.sources.dir" value="${build.dir}/classes"/>
+<property name="build.sources.plans.dir" value="${build.sources.dir}/plans"/>
+<property name="build.sources.events.dir" value="${build.sources.dir}/events"/>
+<property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
+<property name="build.jar.dir" value="${build.dir}/jar"/>
+
+<property name="src.dir" value="./src"/>
+<property name="src.trees.dir" value="${src.dir}/trees"/>
+<property name="src.treeGenerator.dir" value="${src.dir}/treeGenerator"/>
+<property name="src.expGenerator.dir" value="${src.dir}/expGenerator"/>
+<property name="src.agents.dir" value="${src.dir}/agents"/>
+<property name="src.specs.dir" value="${src.dir}/specs"/>
+
+
+<property name="jack.dep" value="${lib.dir}/jack.jar"/>
+<property name="weka.dep" value="${lib.dir}/weka.jar"/>
+
+<target name="dependencies" description="Check for external dependencies">
+	<available file="${jack.dep}" property="jack.available"/>
+	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
+	<available file="${weka.dep}" property="weka.available"/>
+	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
+</target>
+
+<target name="config" description="Initial setup">
+	<mkdir dir="${build.classes.plans.dir}"/>
+	<mkdir dir="${build.classes.events.dir}"/>
+	<mkdir dir="${build.classes.agents.dir}"/>
+	<mkdir dir="${build.sources.plans.dir}"/>
+	<mkdir dir="${build.sources.events.dir}"/>
+	<mkdir dir="${build.sources.agents.dir}"/>
+</target>
+
+<target name="trees" description="Build trees package">
+	<javac srcdir="${src.trees.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+</target>
+<target name="treeGenerator" description="Build treeGenerator package">
+	<javac srcdir="${src.treeGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+</target>
+<target name="agents" description="Build agents package">
+	<javac srcdir="${src.agents.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+</target>
+<target name="expGenerator" description="Build expGenerator package">
+	<javac srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+</target>
+
+<target name="buildECAI" description="Generate ECAI experiment files">
+	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
+	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
+	<java classname="expGenerator.ExpGenerator" classpathref="classpath" failonerror="true">
+		<arg line="-i ${src.specs.dir}/ecai.txt  -o ${build.sources.dir}"/>
+		<classpath>
+			<pathelement location="${build.classes.dir}"/>
+		</classpath>
+	</java>
+	<delete file="${basedir}/metaPlanBody.txt" />
+	<delete file="${basedir}/mainBody.txt" />
+</target>
+
+<target name="buildJACK" description="Build JACK source files">
+	<java classname="aos.main.JackBuild" classpathref="classpath" failonerror="true">
+		<arg line="-cp ${jack.dep}:${weka.dep}:${build.classes.dir} -wd ${build.sources.dir} -r"/>
+		<classpath>
+			<pathelement location="${build.classes.dir}"/>
+		</classpath>
+	</java>
+	<delete>
+		<fileset dir="${build.sources.dir}" includes="**/*.java"/>
+		<fileset dir="${build.sources.dir}" includes="**/*.agent"/>
+		<fileset dir="${build.sources.dir}" includes="**/*.event"/>
+		<fileset dir="${build.sources.dir}" includes="**/*.plan"/>
+	</delete>
+</target>
+
+<target name="clean" description="Delete all generated files">
+	<delete dir="${build.dir}"/>
+	<delete file="${basedir}/metaPlanBody.txt" />
+	<delete file="${basedir}/mainBody.txt" />
+</target>
+
+<target name="clean-all" description="Delete all generated files including results" depends="clean">
+	<delete dir="${results.dir}"/>
+	<delete file="${basedir}/metaPlanBody.txt" />
+	<delete file="${basedir}/mainBody.txt" />
+</target>
+
+<target name="runRandom" description="Run random tree test">
+	<mkdir dir="${results.dir}/runRandom"/>
+	<java classname="agents.Environment" classpathref="classpath" failonerror="true">
+		<arg line="-u concurrent -s random -d ${results.dir}/runRandom -o small-test-r1.csv -m 1 -i 20000"/>
+		<classpath>
+			<pathelement location="${build.classes.dir}"/>
+		</classpath>
+	</java>
+</target>
+
+<target name="all" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildECAI,buildJACK"/>
+<target name="run" description="Run all tests" depends="runRandom"/>
+
+</project>
