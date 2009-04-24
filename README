@@ -9,7 +9,7 @@ For more information on this package contact Dhirendra Singh (dhirendra.singh@rm
 
 2.1 LATEST SOURCES
 Download the latest sources from the svn repository:
-> svn co svn+ssh://USERNAME@goanna.cs.rmit.edu.au/research/ai/linpa/RepositoryRoots/Software/BDILEARNING/SVNROOT
+> svn co svn+ssh://USERNAME@goanna.cs.rmit.edu.au/research/ai/linpa/RepositoryRoots/Software/BDILEARNING/SVNROOT bdilearning
 
 2.2 DEPENDENCIES
 Apart from the sources included in this package you require the following tools:
