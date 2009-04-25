@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="BDILearn" basedir="." default="all">
+<project name="BDILearn" basedir="." default="dist">
+
+<property name="package.jar" value="./blak.jar"/>
 
 <property name="lib.dir" value="./lib"/>
 <path id="classpath">
@@ -79,12 +81,6 @@
 			<pathelement location="${build.classes.dir}"/>
 		</classpath>
 	</java>
-	<delete>
-		<fileset dir="${build.sources.dir}" includes="**/*.java"/>
-		<fileset dir="${build.sources.dir}" includes="**/*.agent"/>
-		<fileset dir="${build.sources.dir}" includes="**/*.event"/>
-		<fileset dir="${build.sources.dir}" includes="**/*.plan"/>
-	</delete>
 </target>
 
 <target name="clean" description="Delete all generated files">
@@ -95,8 +91,7 @@
 
 <target name="clean-all" description="Delete all generated files including results" depends="clean">
 	<delete dir="${results.dir}"/>
-	<delete file="${basedir}/metaPlanBody.txt" />
-	<delete file="${basedir}/mainBody.txt" />
+	<delete file="${package.jar}"/>
 </target>
 
 <target name="runRandom" description="Run random tree test">
@@ -109,7 +104,15 @@
 	</java>
 </target>
 
-<target name="all" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildECAI,buildJACK"/>
+<target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildECAI,buildJACK">
+	<jar destfile="${package.jar}">
+		<fileset dir="${build.classes.dir}" excludes="**/*.java"/>
+		<fileset dir="${build.classes.dir}" excludes="**/*.agent"/>
+		<fileset dir="${build.classes.dir}" excludes="**/*.event"/>
+		<fileset dir="${build.classes.dir}" excludes="**/*.plan"/>
+	</jar>
+</target>
+
 <target name="run" description="Run all tests" depends="runRandom"/>
 
 </project>

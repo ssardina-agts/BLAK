@@ -1,5 +1,5 @@
-BDI-Learning Toolkit Readme
------------------------------
+RMIT BDI-Learning Agent Kit (BLAK)
+----------------------------------
 
 1. ABOUT
 This package contains the source files for the BDI-Learning work being undertaken within the Intelligent Systems Group at RMIT University.
@@ -31,13 +31,16 @@ Download the latest stable version of WEKA for generic platforms. Unzip the zip 
 
 3. BUILD
 Compiling the code is straighforward. From the top level directory (one that contains build.xml) do the following:
->ant
-This will run the default target in build.xml that in turn build everything. All outputs go to th ./build directory.
+>ant dist
+This will run the default target in build.xml that in turn builds everything into the jar file ./blak.jar
 
 4 RUNNING TESTS
 To run all tests, do the following:
 >ant run
 All run outputs go to the ./results directory.
+
+To run individual tests manually you could from the root directoty do something like:
+>java -cp ./blak.jar:./lib/weka.jar:./lib/jack.jar agents.Environment -u concurrent -s random -o small-test-r1.csv -m 1 -i 20000
 
 That's it!
 
