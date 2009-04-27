@@ -22,22 +22,25 @@ You probably have a recent version of the JDK already installed. If not download
 2.2.2 Ant Java-based Build Tool Verion 1.7.0 or later. http://ant.apache.org/.
 Download ANT and follow the package installation instructions. Make sure that the installation is in your PATH. Verify by typing
 >ant -version
+Then set the ant startup options to increase the JAVA heap size to 1GB. Do something like:
+>setenv ANT_OPTS '-Xms1g -Xmx1g'
+It may make sense to add this to your .cshrc or similar login script.
 
 2.2.3 Jack Autonomous Software Version 5.3 or later. http://www.agent-software.com.au.
-Once you have acquired the JACK software, copy the jack.jar file into the ./lib directory of this package.
+Once you have acquired the JACK software, copy the jack.jar file to location ./lib/jack.jar in this package.
 
 2.2.4 Weka Data Mining Software Version 3.6.0 or later. http://www.cs.waikato.ac.nz/ml/weka.
-Download the latest stable version of WEKA for generic platforms. Unzip the zip file, extract the weka.jar archive, and copy it into the ./lib directory of this package.
+Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
 
 3. BUILD
 Compiling the code is straighforward. From the top level directory (one that contains build.xml) do the following:
 >ant dist
-This will run the default target in build.xml that in turn builds everything into the jar file ./blak.jar
+This will run the target in build.xml that builds everything into the jar file ./blak.jar
 
 4 RUNNING TESTS
 To run all tests, do the following:
 >ant run
-All run outputs go to the ./results directory.
+All run output files go to the ./results directory.
 
 To run individual tests manually you could from the root directoty do something like:
 >java -cp ./blak.jar:./lib/weka.jar:./lib/jack.jar agents.Environment -u concurrent -s random -o small-test-r1.csv -m 1 -i 20000

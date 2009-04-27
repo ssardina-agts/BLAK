@@ -1,0 +1,818 @@
+@attribute a observable boolean
+@topgoal TopGoal
+
+@goal G1_1
+@goal G1_2
+@goal G1_1_1_1
+@goal G1_1_1_2
+@goal G1_2_1_1
+@goal G1_2_1_2
+@goal G2_1
+@goal G2_2
+@goal G2_1_1_1
+@goal G2_1_1_2
+@goal G2_2_1_1
+@goal G2_2_1_2
+@goal G3_1
+@goal G3_2
+@goal G3_1_1_1
+@goal G3_1_1_2
+@goal G3_2_1_1
+@goal G3_2_1_2
+@goal G4_1
+@goal G4_2
+@goal G4_1_1_1
+@goal G4_1_1_2
+@goal G4_2_1_1
+@goal G4_2_1_2
+@goal G5_1
+@goal G5_2
+@goal G5_1_1_1
+@goal G5_1_1_2
+@goal G5_2_1_1
+@goal G5_2_1_2
+@action a1
+	@pre  (a || !a)
+	@post 
+@action a2
+	@pre  (a && !a)
+	@post 
+@plan P1
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body G1_1 G1_2
+@plan P1_1_1
+    @handles G1_1
+    @initPre true;
+	@pre true;
+    @body G1_1_1_1 G1_1_1_2
+@plan P1_1_2
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_3
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_4
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_5
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_1
+    @handles G1_2
+    @initPre true;
+	@pre true;
+    @body G1_2_1_1 G1_2_1_2
+@plan P1_2_2
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_3
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_4
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_5
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_1_1_1
+    @handles G1_1_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P1_1_1_1_2
+    @handles G1_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_1_3
+    @handles G1_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_1_4
+    @handles G1_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_1_5
+    @handles G1_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_1_2_1
+    @handles G1_1_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P1_1_1_2_2
+    @handles G1_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_2_3
+    @handles G1_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_2_4
+    @handles G1_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1_2_5
+    @handles G1_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_1_1_1
+    @handles G1_2_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P1_2_1_1_2
+    @handles G1_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_1_3
+    @handles G1_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_1_4
+    @handles G1_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_1_5
+    @handles G1_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_1_2_1
+    @handles G1_2_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P1_2_1_2_2
+    @handles G1_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_2_3
+    @handles G1_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_2_4
+    @handles G1_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_1_2_5
+    @handles G1_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body G2_1 G2_2
+@plan P2_1_1
+    @handles G2_1
+    @initPre true;
+	@pre true;
+    @body G2_1_1_1 G2_1_1_2
+@plan P2_1_2
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_3
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_4
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_5
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_1
+    @handles G2_2
+    @initPre true;
+	@pre true;
+    @body G2_2_1_1 G2_2_1_2
+@plan P2_2_2
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_3
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_4
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_5
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_1_1_1
+    @handles G2_1_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P2_1_1_1_2
+    @handles G2_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_1_3
+    @handles G2_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_1_4
+    @handles G2_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_1_5
+    @handles G2_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_1_2_1
+    @handles G2_1_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P2_1_1_2_2
+    @handles G2_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_2_3
+    @handles G2_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_2_4
+    @handles G2_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_1_2_5
+    @handles G2_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_1_1_1
+    @handles G2_2_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P2_2_1_1_2
+    @handles G2_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_1_3
+    @handles G2_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_1_4
+    @handles G2_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_1_5
+    @handles G2_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_1_2_1
+    @handles G2_2_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P2_2_1_2_2
+    @handles G2_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_2_3
+    @handles G2_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_2_4
+    @handles G2_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_1_2_5
+    @handles G2_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+
+@plan P3
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body G3_1 G3_2
+@plan P3_1_1
+    @handles G3_1
+    @initPre true;
+	@pre true;
+    @body G3_1_1_1 G3_1_1_2
+@plan P3_1_2
+    @handles G3_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_3
+    @handles G3_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_4
+    @handles G3_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_5
+    @handles G3_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P3_2_1
+    @handles G3_2
+    @initPre true;
+	@pre true;
+    @body G3_2_1_1 G3_2_1_2
+@plan P3_2_2
+    @handles G3_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_3
+    @handles G3_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_4
+    @handles G3_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_5
+    @handles G3_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P3_1_1_1_1
+    @handles G3_1_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P3_1_1_1_2
+    @handles G3_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_1_3
+    @handles G3_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_1_4
+    @handles G3_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_1_5
+    @handles G3_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P3_1_1_2_1
+    @handles G3_1_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P3_1_1_2_2
+    @handles G3_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_2_3
+    @handles G3_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_2_4
+    @handles G3_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_1_1_2_5
+    @handles G3_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P3_2_1_1_1
+    @handles G3_2_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P3_2_1_1_2
+    @handles G3_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_1_3
+    @handles G3_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_1_4
+    @handles G3_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_1_5
+    @handles G3_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P3_2_1_2_1
+    @handles G3_2_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P3_2_1_2_2
+    @handles G3_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_2_3
+    @handles G3_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_2_4
+    @handles G3_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P3_2_1_2_5
+    @handles G3_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+
+@plan P4
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body G4_1 G4_2
+@plan P4_1_1
+    @handles G4_1
+    @initPre true;
+	@pre true;
+    @body G4_1_1_1 G4_1_1_2
+@plan P4_1_2
+    @handles G4_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_3
+    @handles G4_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_4
+    @handles G4_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_5
+    @handles G4_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P4_2_1
+    @handles G4_2
+    @initPre true;
+	@pre true;
+    @body G4_2_1_1 G4_2_1_2
+@plan P4_2_2
+    @handles G4_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_3
+    @handles G4_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_4
+    @handles G4_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_5
+    @handles G4_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P4_1_1_1_1
+    @handles G4_1_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P4_1_1_1_2
+    @handles G4_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_1_3
+    @handles G4_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_1_4
+    @handles G4_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_1_5
+    @handles G4_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P4_1_1_2_1
+    @handles G4_1_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P4_1_1_2_2
+    @handles G4_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_2_3
+    @handles G4_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_2_4
+    @handles G4_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_1_1_2_5
+    @handles G4_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P4_2_1_1_1
+    @handles G4_2_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P4_2_1_1_2
+    @handles G4_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_1_3
+    @handles G4_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_1_4
+    @handles G4_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_1_5
+    @handles G4_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P4_2_1_2_1
+    @handles G4_2_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P4_2_1_2_2
+    @handles G4_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_2_3
+    @handles G4_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_2_4
+    @handles G4_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P4_2_1_2_5
+    @handles G4_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+
+@plan P5
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body G5_1 G5_2
+@plan P5_1_1
+    @handles G5_1
+    @initPre true;
+	@pre true;
+    @body G5_1_1_1 G5_1_1_2
+@plan P5_1_2
+    @handles G5_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_3
+    @handles G5_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_4
+    @handles G5_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_5
+    @handles G5_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P5_2_1
+    @handles G5_2
+    @initPre true;
+	@pre true;
+    @body G5_2_1_1 G5_2_1_2
+@plan P5_2_2
+    @handles G5_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_3
+    @handles G5_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_4
+    @handles G5_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_5
+    @handles G5_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P5_1_1_1_1
+    @handles G5_1_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P5_1_1_1_2
+    @handles G5_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_1_3
+    @handles G5_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_1_4
+    @handles G5_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_1_5
+    @handles G5_1_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P5_1_1_2_1
+    @handles G5_1_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P5_1_1_2_2
+    @handles G5_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_2_3
+    @handles G5_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_2_4
+    @handles G5_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_1_1_2_5
+    @handles G5_1_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P5_2_1_1_1
+    @handles G5_2_1_1
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P5_2_1_1_2
+    @handles G5_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_1_3
+    @handles G5_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_1_4
+    @handles G5_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_1_5
+    @handles G5_2_1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P5_2_1_2_1
+    @handles G5_2_1_2
+    @initPre true;
+	@pre true;
+    @body a1
+@plan P5_2_1_2_2
+    @handles G5_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_2_3
+    @handles G5_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_2_4
+    @handles G5_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5_2_1_2_5
+    @handles G5_2_1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+

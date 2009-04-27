@@ -2,7 +2,7 @@
 
 <project name="BDILearn" basedir="." default="dist">
 
-<property name="package.jar" value="./blak.jar"/>
+<property name="package.name" value="blak"/>
 
 <property name="lib.dir" value="./lib"/>
 <path id="classpath">
@@ -10,6 +10,7 @@
 </path>
 
 <property name="results.dir" value="./results"/>
+<property name="dist.dir" value="./dist"/>
 <property name="build.dir" value="./build"/>
 <property name="build.classes.dir" value="${build.dir}/classes"/>
 <property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
@@ -40,6 +41,7 @@
 </target>
 
 <target name="config" description="Initial setup">
+	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${build.classes.plans.dir}"/>
 	<mkdir dir="${build.classes.events.dir}"/>
 	<mkdir dir="${build.classes.agents.dir}"/>
@@ -61,11 +63,11 @@
 	<javac srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 
-<target name="buildECAI" description="Generate ECAI experiment files">
+<target name="buildCCFail01" description="Generate ECAI experiment files">
 	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
 	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
 	<java classname="expGenerator.ExpGenerator" classpathref="classpath" failonerror="true">
-		<arg line="-i ${src.specs.dir}/ecai.txt  -o ${build.sources.dir}"/>
+		<arg line="-i ${src.specs.dir}/concurrentFail.txt  -o ${build.sources.dir}"/>
 		<classpath>
 			<pathelement location="${build.classes.dir}"/>
 		</classpath>
@@ -85,34 +87,44 @@
 
 <target name="clean" description="Delete all generated files">
 	<delete dir="${build.dir}"/>
-	<delete file="${basedir}/metaPlanBody.txt" />
-	<delete file="${basedir}/mainBody.txt" />
 </target>
 
 <target name="clean-all" description="Delete all generated files including results" depends="clean">
+	<delete dir="${dist.dir}"/>
 	<delete dir="${results.dir}"/>
-	<delete file="${package.jar}"/>
 </target>
 
-<target name="runRandom" description="Run random tree test">
-	<mkdir dir="${results.dir}/runRandom"/>
-	<java classname="agents.Environment" classpathref="classpath" failonerror="true">
-		<arg line="-u concurrent -s random -d ${results.dir}/runRandom -o small-test-r1.csv -m 1 -i 20000"/>
+<target name="distCCFail01" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildCCFail01,buildJACK">
+	<jar destfile="${dist.dir}/${package.name}CCFail01.jar" basedir="${build.classes.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
+</target>
+
+<target name="dist" description="Default build" depends="distCCFail01"/>
+
+
+
+<target name="runFail01" description="Run Fail01 test">
+	<property name="runFail01.dir" value="${results.dir}/fail01"/>
+	<delete dir="${runFail01.dir}"/>
+	<mkdir dir="${runFail01.dir}"/>
+	<java classname="agents.Environment" failonerror="true">
+		<arg line="-o ${runFail01.dir}/stable-s-4-1.csv -i 40000 -u stable -s probabilistic -m 1 -e 0.3"/>
 		<classpath>
-			<pathelement location="${build.classes.dir}"/>
+			<pathelement location="${dist.dir}/${package.name}CCFail01.jar"/>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
 		</classpath>
 	</java>
+	<move todir="${runFail01.dir}">
+		<filelist dir=".">
+			<file name="planBottom.txt"/>
+			<file name="NodeUpdates.txt"/>
+			<file name="Stability-Updates.txt"/>
+		</filelist>
+	</move>
 </target>
 
-<target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildECAI,buildJACK">
-	<jar destfile="${package.jar}">
-		<fileset dir="${build.classes.dir}" excludes="**/*.java"/>
-		<fileset dir="${build.classes.dir}" excludes="**/*.agent"/>
-		<fileset dir="${build.classes.dir}" excludes="**/*.event"/>
-		<fileset dir="${build.classes.dir}" excludes="**/*.plan"/>
-	</jar>
-</target>
 
-<target name="run" description="Run all tests" depends="runRandom"/>
+
+<target name="run" description="Run all tests" depends="runFail01"/>
 
 </project>
