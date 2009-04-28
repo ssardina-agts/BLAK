@@ -34,7 +34,8 @@ public class PlanNode extends Node{
     int startToUseDT;
     int minNumInstances=100;
     Hashtable probabilityMemory;
-    
+    public String targetDir;
+	
     private int stableK;
     private double stableEpsilon;
     
@@ -164,7 +165,7 @@ public class PlanNode extends Node{
     public PlanNode(int id, String pname, FastVector attributes,
     		FastVector classValue, FastVector booleanValue, 
     		boolean waitST, int minNumInst, boolean doStablePlanning,
-    		double epsilion, int kStable){
+    		double epsilion, int kStable, String outputDir){
 	super(pname);
 	
 
@@ -184,6 +185,7 @@ public class PlanNode extends Node{
 	stableK = kStable;
     stableEpsilon = epsilion;
     successfulChildren = 0;
+	targetDir = outputDir;
     
 	
 	data = new Instances(name, atts, 0);
@@ -413,7 +415,7 @@ public class PlanNode extends Node{
 		}
 		else
 		{
-			StableMemory thisMemory = new StableMemory();
+			StableMemory thisMemory = new StableMemory(targetDir);
 			if(res)
 			{
 				writeLog("-----------------------------------\nSuccessful.Incrementing Suc, Att", "NodeUpdates");
@@ -831,7 +833,7 @@ public int getStableK() {
 	{
 		try
 		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".txt", true), true);
+			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
 			prnOut.println(msg);
 			prnOut.close();
 		}

@@ -12,13 +12,13 @@ public class StableMemory
 	private double deltaProbability;
 	private int numberOfSuccesses;
 	private int numberOfAttempts;
+	public String targetDir;
 	
 	
-	
-	public StableMemory()
+	public StableMemory(String outputDir)
 	{
 		//setState(null);
-		
+		targetDir = outputDir;
 		previousProbability = 0.0;
 		deltaProbability = 0.0;//Double.MAX_VALUE;
 		numberOfSuccesses = 0;
@@ -160,7 +160,7 @@ public class StableMemory
 	
 	public Object clone()
 	{
-		StableMemory myClone  = new StableMemory();
+		StableMemory myClone  = new StableMemory(this.targetDir);
 		myClone.setDeltaProbability(this.getDeltaProbability());
 		myClone.setPreviousProbability(this.getPreviousProbability());
 		myClone.setNumberOfSuccesses(this.getNumberOfSuccesses());
@@ -173,7 +173,7 @@ public class StableMemory
 	{
 		try
 		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".txt", true), true);
+			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
 			prnOut.println(msg);
 			prnOut.close();
 		}

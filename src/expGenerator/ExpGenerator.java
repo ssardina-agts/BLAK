@@ -950,15 +950,16 @@ public class ExpGenerator {
 		+"#handles event ReadyForNextIteration;\n"
 		+"#uses plan StartNewIteration;\n\n";
 		//constructor    
-		code+="public Environment(String name,String filename){\n"
+		code+="public Environment(String name,String outputDir, String filename){\n"
 		+"\tsuper(name);\n"
+		+"\ttargetDir = outputDir;\n"
 		+"\tgenerator = new Random();\n"
 		+"\tworldFed = false;\n"
 		+"\tfedFileName = \"\";\n"
 		+"\tit =0;\n"
 		+"\tSystem.out.println(\"The environment has started\");\n"
 		+"\ttry{\n"
-		+"\t\twriterOutcome = new PrintWriter(filename);\n"
+		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename);\n"
 		+"\t}catch(IOException e){\n"
 		+"\t\tSystem.err.println(\"error opening the file for writing the outcome \\n\"+e);\n"
 		+"\t\tSystem.exit(9);\n"
@@ -990,6 +991,7 @@ public class ExpGenerator {
 		+ "public BufferedReader br;\n"
 		+ "public BufferedReader compareReader; \n"
 		+ "public RefinerAgent learningAgent;\n"
+		+ "public String targetDir;\n"		
 		+"// attributes describing the world\n";
 		for (int i=0;i< atts.size(); i++){
 			code += "public " + attsType.get(i) + " " 
@@ -1327,11 +1329,12 @@ public class ExpGenerator {
 			code += "\t#uses plan "+p.getId()+";\n";
 		code+="\t#uses plan MetaPlan;\n";
 		//Constructor
-		code +="\n\npublic RefinerAgent(String name){\n"
+		code +="\n\npublic RefinerAgent(String name, String outputDir){\n"
 		+"\tsuper(name);\n"
 		+"\tstableUpdates = false;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
+		+"\ttargetDir = outputDir;\n"
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
 		int index=0; 
 		
@@ -1395,6 +1398,7 @@ public class ExpGenerator {
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
+		+"\tpublic String targetDir;\n" 
 		
 		+"\tpublic boolean isStableUpdates()\n"
 		+"\t{\n"
@@ -1454,7 +1458,7 @@ public class ExpGenerator {
 		+"\t{\n"
 		+"\t\ttry\n"
 		+"\t\t{\n"
-		+"\t\t\tPrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+\".txt\", true), true);\n"
+		+"\t\t\tPrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + \"/\" + postPend + \".txt\", true), true);\n"
 		+"\t\t\tprnOut.println(msg);\n"
 		+"\t\t\tprnOut.close();\n"
 		+"\t\t}\n"
@@ -1480,13 +1484,13 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, stableUpdates, stableE, stableK);\n";
+			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, stableUpdates, stableE, stableK, targetDir);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
 		index = 0;
 		for (Goal g: goals){
-			code+="\tgoalNodes["+index+"] = new GoalNode("+ index+ ",\""+ g.getId() +"\");\n";
+			code+="\tgoalNodes["+index+"] = new GoalNode("+ index+ ",\""+ g.getId() +"\", targetDir);\n";
 			if (g.equals(topGoal))
 				code+="\tgpTree = new Tree(goalNodes["+index+"]);\n";
 			index++;

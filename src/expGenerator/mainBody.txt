@@ -1,14 +1,15 @@
 
 public static void main(String[] args){
-    String filename="Results/outcomes.dat";
-	int staK; //Stable K
-	double staE;//Stable Epsilion
-	boolean feedMeTheWorld = false;
-	String feedMeFileName = "";
-	boolean recordMeTheWorld = false;
-	String recordMeFileName = "";
-	boolean doCompare = false;
-	String compareTemplate = "";
+    String filename="outcomes.dat";
+    String targetDir = ".";
+    int staK; //Stable K	
+    double staE;//Stable Epsilion
+    boolean feedMeTheWorld = false;
+    String feedMeFileName = "";
+    boolean recordMeTheWorld = false;
+    String recordMeFileName = "";
+    boolean doCompare = false;
+    String compareTemplate = "";
 	
     staK = 3;
     staE = 0.05;
@@ -23,28 +24,32 @@ public static void main(String[] args){
 	    char option = arg.charAt(1);
 	    switch(option){
 	    case 'u': // choice of the update mode
-			String umode = args[index];
-			index++;
-			if (umode.equals("bottomUp")){// Bottom Up learner
-				update_mode = BU; 
-				waitST= true;
-			}
-			if  (umode.equals("concurrent")){// DT are learnt concurrently
-				update_mode = CL;
-			    waitST= false;	
-			}
-			if (umode.equals("stable")){//update the learning mechanism using a stability measure.
-				update_mode = STABLE_U;
-			}
-			break;
-   	   	case 'i': // number of iterations
-			numIterations = Integer.parseInt(args[index]);
-			index++;
-			break;
+		String umode = args[index];
+		index++;
+		if (umode.equals("bottomUp")){// Bottom Up learner
+		    update_mode = BU; 
+		    waitST= true;
+		}
+		if  (umode.equals("concurrent")){// DT are learnt concurrently
+		    update_mode = CL;
+		    waitST= false;	
+		}
+		if (umode.equals("stable")){//update the learning mechanism using a stability measure.
+		    update_mode = STABLE_U;
+		}
+		break;
+  	    case 'i': // number of iterations
+		numIterations = Integer.parseInt(args[index]);
+		index++;
+		break;
 	    case 'm': // Minimum number of instances before building a tree
 			minNI = Integer.parseInt(args[index]);
 			index++;
 			break;
+	    case 'd': // output directory
+			targetDir = args[index];
+			index++;
+			break;	    
 	    case 'o': // output file
 			filename = args[index];
 			index++;
@@ -88,7 +93,7 @@ public static void main(String[] args){
 	    }
 	}
 	
-	RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
+	RefinerAgent agent = new RefinerAgent("BDI-Learning Agent", targetDir);
 	if(update_mode==STABLE_U)
 	{
 		agent.setStableUpdates(true);
@@ -97,7 +102,7 @@ public static void main(String[] args){
 		System.out.println("K: "+staK+", e: "+staE);
 		agent.generateTree();
 	}
-	Environment env = new Environment("Environment",filename);
+	Environment env = new Environment("Environment",targetDir, filename);
 	env.worldFed = feedMeTheWorld;
 	env.fedFileName = feedMeFileName;
 	env.recordWorldFeed = recordMeTheWorld;
@@ -158,7 +163,7 @@ public static void main(String[] args){
 	{
 		try
 		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".txt", true), true);
+			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
 			prnOut.println(msg);
 			prnOut.close();
 		}

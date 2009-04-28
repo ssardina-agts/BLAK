@@ -50,20 +50,20 @@
 	<mkdir dir="${build.sources.agents.dir}"/>
 </target>
 
-<target name="trees" description="Build trees package">
+<target name="trees" description="Build trees package" depends="config">
 	<javac srcdir="${src.trees.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
-<target name="treeGenerator" description="Build treeGenerator package">
+<target name="treeGenerator" description="Build treeGenerator package" depends="config">
 	<javac srcdir="${src.treeGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
-<target name="agents" description="Build agents package">
+<target name="agents" description="Build agents package" depends="trees">
 	<javac srcdir="${src.agents.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
-<target name="expGenerator" description="Build expGenerator package">
+<target name="expGenerator" description="Build expGenerator package" depends="trees,agents,treeGenerator">
 	<javac srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 
-<target name="buildCCFail01" description="Generate ECAI experiment files">
+<target name="buildCCFail01" description="Generate ECAI experiment files" depends="expGenerator">
 	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
 	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
 	<java classname="expGenerator.ExpGenerator" classpathref="classpath" failonerror="true">
@@ -89,8 +89,11 @@
 	<delete dir="${build.dir}"/>
 </target>
 
-<target name="clean-all" description="Delete all generated files including results" depends="clean">
+<target name="clean-dist" description="Delete all distribution files including build" depends="clean">
 	<delete dir="${dist.dir}"/>
+</target>
+
+<target name="clean-all" description="Delete all generated files including results" depends="clean-dist">
 	<delete dir="${results.dir}"/>
 </target>
 
@@ -107,20 +110,13 @@
 	<delete dir="${runFail01.dir}"/>
 	<mkdir dir="${runFail01.dir}"/>
 	<java classname="agents.Environment" failonerror="true">
-		<arg line="-o ${runFail01.dir}/stable-s-4-1.csv -i 40000 -u stable -s probabilistic -m 1 -e 0.3"/>
+		<arg line="-d ${runFail01.dir} -o stable-s-4-1.csv -i 40000 -u stable -s probabilistic -m 1 -e 0.3"/>
 		<classpath>
 			<pathelement location="${dist.dir}/${package.name}CCFail01.jar"/>
 			<pathelement location="${jack.dep}"/>
 			<pathelement location="${weka.dep}"/>
 		</classpath>
 	</java>
-	<move todir="${runFail01.dir}">
-		<filelist dir=".">
-			<file name="planBottom.txt"/>
-			<file name="NodeUpdates.txt"/>
-			<file name="Stability-Updates.txt"/>
-		</filelist>
-	</move>
 </target>
 
 
