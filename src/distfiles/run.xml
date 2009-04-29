@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="BLAK" basedir="." default="run">
+
+<property name="root.dir" value="."/>
+
+<property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
+<property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
+<property name="blak.dep" value="${root.dir}/lib/blak.jar"/>
+
+
+<property name="results.dir" value="${root.dir}/results"/>
+
+<property name="build.dir" value="./build"/>
+<property name="build.classes.dir" value="${build.dir}/classes"/>
+<property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
+<property name="build.classes.events.dir" value="${build.classes.dir}/events"/>
+<property name="build.classes.agents.dir" value="${build.classes.dir}/agents"/>
+<property name="build.sources.dir" value="${build.dir}/classes"/>
+<property name="build.sources.plans.dir" value="${build.sources.dir}/plans"/>
+<property name="build.sources.events.dir" value="${build.sources.dir}/events"/>
+<property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
+<property name="build.jar.dir" value="${build.dir}/jar"/>
+
+<target name="dependencies" description="Check for external dependencies">
+	<available file="${jack.dep}" property="jack.available"/>
+	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
+	<available file="${weka.dep}" property="weka.available"/>
+	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
+</target>
+
+
+<target name="buildCCFail01" description="Generate ECAI experiment files" depends="expGenerator">
+	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
+	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
+	<java classname="expGenerator.ExpGenerator" failonerror="true">
+		<arg line="-cp ${package.dist}:${jack.dep}:${weka.dep} -i ${src.specs.dir}/concurrentFail.txt  -o ${build.sources.dir}"/>
+	</java>
+	<delete file="${basedir}/metaPlanBody.txt" />
+	<delete file="${basedir}/mainBody.txt" />
+</target>
+
+<target name="buildJACK" description="Build JACK source files">
+	<java classname="aos.main.JackBuild" classpathref="classpath" failonerror="true">
+		<arg line="-cp ${jack.dep}:${weka.dep}:${build.classes.dir} -wd ${build.sources.dir} -r"/>
+		<classpath>
+			<pathelement location="${build.classes.dir}"/>
+		</classpath>
+	</java>
+</target>
+
+
+
+<target name="run" description="Run all tests" depends="runFail01"/>
