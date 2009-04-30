@@ -2,7 +2,9 @@
 
 <project name="BDILearn" basedir="." default="dist">
 
-<property name="package.name" value="blak"/>
+<property name="dist.dir" value="./dist"/>
+<property name="dist.specs.dir" value="${dist.dir}/specs"/>
+<property name="package.dist" value="blak.jar"/>
 
 <property name="lib.dir" value="./lib"/>
 <path id="classpath">
@@ -10,7 +12,6 @@
 </path>
 
 <property name="results.dir" value="./results"/>
-<property name="dist.dir" value="./dist"/>
 <property name="build.dir" value="./build"/>
 <property name="build.classes.dir" value="${build.dir}/classes"/>
 <property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
@@ -27,7 +28,8 @@
 <property name="src.treeGenerator.dir" value="${src.dir}/treeGenerator"/>
 <property name="src.expGenerator.dir" value="${src.dir}/expGenerator"/>
 <property name="src.agents.dir" value="${src.dir}/agents"/>
-<property name="src.specs.dir" value="${src.dir}/specs"/>
+<property name="src.dist.dir" value="${src.dir}/distfiles"/>
+<property name="src.specs.dir" value="${src.dist.dir}/specs"/>
 
 
 <property name="jack.dep" value="${lib.dir}/jack.jar"/>
@@ -41,7 +43,6 @@
 </target>
 
 <target name="config" description="Initial setup">
-	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${build.classes.plans.dir}"/>
 	<mkdir dir="${build.classes.events.dir}"/>
 	<mkdir dir="${build.classes.agents.dir}"/>
@@ -63,28 +64,6 @@
 	<javac srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 
-<target name="buildCCFail01" description="Generate ECAI experiment files" depends="expGenerator">
-	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
-	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
-	<java classname="expGenerator.ExpGenerator" classpathref="classpath" failonerror="true">
-		<arg line="-i ${src.specs.dir}/concurrentFail.txt  -o ${build.sources.dir}"/>
-		<classpath>
-			<pathelement location="${build.classes.dir}"/>
-		</classpath>
-	</java>
-	<delete file="${basedir}/metaPlanBody.txt" />
-	<delete file="${basedir}/mainBody.txt" />
-</target>
-
-<target name="buildJACK" description="Build JACK source files">
-	<java classname="aos.main.JackBuild" classpathref="classpath" failonerror="true">
-		<arg line="-cp ${jack.dep}:${weka.dep}:${build.classes.dir} -wd ${build.sources.dir} -r"/>
-		<classpath>
-			<pathelement location="${build.classes.dir}"/>
-		</classpath>
-	</java>
-</target>
-
 <target name="clean" description="Delete all generated files">
 	<delete dir="${build.dir}"/>
 </target>
@@ -97,11 +76,16 @@
 	<delete dir="${results.dir}"/>
 </target>
 
-<target name="distCCFail01" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator,buildCCFail01,buildJACK">
-	<jar destfile="${dist.dir}/${package.name}CCFail01.jar" basedir="${build.classes.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
+<target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator">
+	<mkdir dir="${dist.dir}"/>
+	<mkdir dir="${dist.dir}/lib"/>
+	<mkdir dir="${dist.dir}/specs"/>
+	<jar destfile="${dist.dir}/lib/${package.dist}" basedir="${build.classes.dir}"/>
+	<copy todir="${dist.dir}/specs">
+		<fileset dir="${src.specs.dir}/"/>
+	</copy>
+	<copy file="${src.dist.dir}/run.xml" tofile="${dist.dir}/run.xml"/>
 </target>
-
-<target name="dist" description="Default build" depends="distCCFail01"/>
 
 
 
@@ -120,7 +104,5 @@
 </target>
 
 
-
-<target name="run" description="Run all tests" depends="runFail01"/>
 
 </project>
