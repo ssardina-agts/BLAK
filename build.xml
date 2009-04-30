@@ -31,12 +31,9 @@
 <property name="src.specs.dir" value="${src.dist.dir}/specs"/>
 
 
-<property name="jack.dep" value="${lib.dir}/jack.jar"/>
 <property name="weka.dep" value="${lib.dir}/weka.jar"/>
 
 <target name="dependencies" description="Check for external dependencies">
-	<available file="${jack.dep}" property="jack.available"/>
-	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
 	<available file="${weka.dep}" property="weka.available"/>
 	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
 </target>
