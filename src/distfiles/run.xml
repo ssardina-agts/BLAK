@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="BLAK" basedir="." default="run">
+<!-- BLAK: BDI Learning Agent Kit -->
+<project name="BLAK" basedir="." default="all">
 
+<!-- Root directory that contains the BLAK distribution -->
 <property name="root.dir" value="."/>
-
-<property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
-<property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
 <property name="blak.dep" value="${root.dir}/lib/blak.jar"/>
-
-
+<property name="specs.dir" value="${root.dir}/specs"/>
 <property name="results.dir" value="${root.dir}/results"/>
 
-<property name="build.dir" value="./build"/>
-<property name="build.classes.dir" value="${build.dir}/classes"/>
-<property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
-<property name="build.classes.events.dir" value="${build.classes.dir}/events"/>
-<property name="build.classes.agents.dir" value="${build.classes.dir}/agents"/>
-<property name="build.sources.dir" value="${build.dir}/classes"/>
-<property name="build.sources.plans.dir" value="${build.sources.dir}/plans"/>
-<property name="build.sources.events.dir" value="${build.sources.dir}/events"/>
-<property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
-<property name="build.jar.dir" value="${build.dir}/jar"/>
+<!-- External dependencies. See README for installation instructions for JACK and WEKA -->
+<property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
+<property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
 
+<!-- Check for external dependencies -->
 <target name="dependencies" description="Check for external dependencies">
 	<available file="${jack.dep}" property="jack.available"/>
 	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
@@ -29,26 +21,115 @@
 	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
 </target>
 
+<!-- Standard sub-tree structure for indvidual tests -->
+<property name="build.dir" value="build"/>
+<property name="build.classes.dir" value="${build.dir}"/>
+<property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
+<property name="build.classes.events.dir" value="${build.classes.dir}/events"/>
+<property name="build.classes.agents.dir" value="${build.classes.dir}/agents"/>
+<property name="build.sources.dir" value="${build.dir}"/>
+<property name="build.sources.plans.dir" value="${build.sources.dir}/plans"/>
+<property name="build.sources.events.dir" value="${build.sources.dir}/events"/>
+<property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
-<target name="buildCCFail01" description="Generate ECAI experiment files" depends="expGenerator">
-	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${basedir}/metaPlanBody.txt" />
-	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${basedir}/mainBody.txt" />
-	<java classname="expGenerator.ExpGenerator" failonerror="true">
-		<arg line="-cp ${package.dist}:${jack.dep}:${weka.dep} -i ${src.specs.dir}/concurrentFail.txt  -o ${build.sources.dir}"/>
-	</java>
-	<delete file="${basedir}/metaPlanBody.txt" />
-	<delete file="${basedir}/mainBody.txt" />
+<!-- Generic target to build a test sub-tree structure -->
+<target name="makeTestTree" description="Generate build tree structure">
+	<mkdir dir="${make.dir}/${build.classes.agents.dir}"/>
+	<mkdir dir="${make.dir}/${build.classes.events.dir}"/>
+	<mkdir dir="${make.dir}/${build.classes.plans.dir}"/>
+	<mkdir dir="${make.dir}/${build.sources.agents.dir}"/>
+	<mkdir dir="${make.dir}/${build.sources.events.dir}"/>
+	<mkdir dir="${make.dir}/${build.sources.plans.dir}"/>
 </target>
 
-<target name="buildJACK" description="Build JACK source files">
-	<java classname="aos.main.JackBuild" classpathref="classpath" failonerror="true">
-		<arg line="-cp ${jack.dep}:${weka.dep}:${build.classes.dir} -wd ${build.sources.dir} -r"/>
+<!-- Generic target to generate JACK sources -->
+<target name="generateJACK" description="Generate JACK sources">
+	<java classname="expGenerator.ExpGenerator" failonerror="true">
 		<classpath>
-			<pathelement location="${build.classes.dir}"/>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+		</classpath>
+		<arg line="-i ${specs.file}  -o ${make.dir}/${build.sources.dir}"/>
+	</java>
+</target>
+
+<!-- Generic target to compile JACK sources -->
+<target name="compileJACK" description="Compile JACK sources">
+	<java classname="aos.main.JackBuild" failonerror="true">
+		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd ${make.dir}/${build.sources.dir} -r"/>
+		<classpath>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+		</classpath>
+	</java>
+</target>
+
+<!-- Generic target to build test JAR -->
+<target name="makeJAR" description="Build JAR archive fo rthe experiment">
+	<jar destfile="${make.dir}/test01.jar" basedir="${make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
+</target>
+
+<!-- Generic target to build the entire test -->
+<target name="buildTest" description="Build all test files">
+	<!-- Build the sub-tree hierarchy -->	
+	<antcall target="makeTestTree">
+		<param name="make.dir" value="${results.dir}/${test.name}"/>
+	</antcall>
+	<!-- Generate the JACK source files for the experiment -->	
+	<antcall target="generateJACK">
+		<param name="make.dir" value="${results.dir}/${test.name}"/>
+		<param name="specs.file" value="${specs.file}"/>
+	</antcall>
+	<!-- Compile the JACK source files -->	
+	<antcall target="compileJACK">
+		<param name="make.dir" value="${results.dir}/${test.name}"/>
+	</antcall>
+	<!-- Build the test JAR -->
+	<antcall target="makeJAR">
+		<param name="make.dir" value="${results.dir}/${test.name}"/>
+	</antcall>
+</target>
+
+<!-- Clean all -->
+<target name="clean" description="Delete all generated files">
+	<delete dir="${results.dir}"/>
+</target>
+
+<!-- Default targets -->
+<target name="all" description="Build all tests" depends="dependencies,buildTest01,runTest01"/>
+<target name="runAll" description="Run all tests" depends="runTest01"/>
+
+
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- BEGIN TESTS (Add new tests targets here) ~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+
+<!-- TEST 01 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTest01" description="Build Test 01">
+	<antcall target="buildTest">
+		<param name="test.name" value="test01"/>
+		<param name="specs.file" value="${specs.dir}/concurrentFail.txt"/>
+	</antcall>
+</target>
+<target name="runTest01" description="Run Test 01">
+	<java classname="agents.Environment" failonerror="true">
+		<arg line="-d ${results.dir}/test01 -o test01-stable-s-4-1.csv -i 40000 -u stable -s probabilistic -m 1 -e 0.3"/>
+		<classpath>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${results.dir}/test01/test01.jar"/>
 		</classpath>
 	</java>
 </target>
 
 
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- END TESTS TARGETS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<target name="run" description="Run all tests" depends="runFail01"/>
+</project>

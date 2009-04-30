@@ -11,7 +11,6 @@
 	<fileset dir="${lib.dir}" includes="**/*.jar"/>
 </path>
 
-<property name="results.dir" value="./results"/>
 <property name="build.dir" value="./build"/>
 <property name="build.classes.dir" value="${build.dir}/classes"/>
 <property name="build.classes.plans.dir" value="${build.classes.dir}/plans"/>
@@ -68,41 +67,22 @@
 	<delete dir="${build.dir}"/>
 </target>
 
-<target name="clean-dist" description="Delete all distribution files including build" depends="clean">
+<target name="clean-all" description="Delete all build files including dist" depends="clean">
 	<delete dir="${dist.dir}"/>
-</target>
-
-<target name="clean-all" description="Delete all generated files including results" depends="clean-dist">
-	<delete dir="${results.dir}"/>
 </target>
 
 <target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator">
 	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${dist.dir}/lib"/>
 	<mkdir dir="${dist.dir}/specs"/>
+	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${build.classes.dir}/expGenerator/metaPlanBody.txt" />
+	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${build.classes.dir}/expGenerator/mainBody.txt" />
 	<jar destfile="${dist.dir}/lib/${package.dist}" basedir="${build.classes.dir}"/>
 	<copy todir="${dist.dir}/specs">
 		<fileset dir="${src.specs.dir}/"/>
 	</copy>
+	<copy file="${src.dist.dir}/README" tofile="${dist.dir}/README"/>
 	<copy file="${src.dist.dir}/run.xml" tofile="${dist.dir}/run.xml"/>
 </target>
-
-
-
-<target name="runFail01" description="Run Fail01 test">
-	<property name="runFail01.dir" value="${results.dir}/fail01"/>
-	<delete dir="${runFail01.dir}"/>
-	<mkdir dir="${runFail01.dir}"/>
-	<java classname="agents.Environment" failonerror="true">
-		<arg line="-d ${runFail01.dir} -o stable-s-4-1.csv -i 40000 -u stable -s probabilistic -m 1 -e 0.3"/>
-		<classpath>
-			<pathelement location="${dist.dir}/${package.name}CCFail01.jar"/>
-			<pathelement location="${jack.dep}"/>
-			<pathelement location="${weka.dep}"/>
-		</classpath>
-	</java>
-</target>
-
-
 
 </project>

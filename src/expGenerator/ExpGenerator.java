@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.IOException;
-
+import java.io.InputStreamReader;
 import agents.StableMemory;
 import trees.Node;
 import weka.core.Attribute;
@@ -96,7 +96,8 @@ public class ExpGenerator {
 		}
 		System.out.println("Generate a simulator in the directory " +output
 						   +" from the goal-plan tree in file "+input);
-		new ExpGenerator(input, output, learningOn);
+		ExpGenerator exp = new ExpGenerator(input, output, learningOn);
+		//Scanner reader = new Scanner(new InputStreamReader(getClass().getResourceAsStream("mainBody.txt")));
 	}
 	
 	/**
@@ -901,7 +902,7 @@ public class ExpGenerator {
 		code+= "\t#reasoning method\n"
 		+"\tbody(){\n";
 		try{
-			Scanner reader = new Scanner(new File(metaPlanFileName));
+			Scanner reader = new Scanner(new InputStreamReader(getClass().getResourceAsStream(metaPlanFileName)));			
 			while (reader.hasNextLine()){
 				code += "\t"+reader.nextLine()+"\n";
 			}
@@ -1259,16 +1260,10 @@ public class ExpGenerator {
 		+"}\n\n";	
 		
 		//code for the main method
-		try{
-			Scanner reader = new Scanner(new File(mainFileName));
-			while (reader.hasNextLine())
-				code += reader.nextLine()+"\n";
-			reader.close();
-		}
-		catch(IOException e){
-			System.err.println("Error reading the main file\n"+e);
-			System.exit(9);
-		}
+		Scanner reader = new Scanner(new InputStreamReader(getClass().getResourceAsStream(mainFileName)));			
+		while (reader.hasNextLine())
+			code += reader.nextLine()+"\n";
+		reader.close();
 		code+="}";
 		try{
 			PrintWriter writer = new PrintWriter(targetDir+"/agents/Environment.agent");
