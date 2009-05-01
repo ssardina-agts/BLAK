@@ -968,7 +968,7 @@ public class ExpGenerator {
 		+"}\n\n";
 		//class attributes
 		code+= "public static int numIterations = 1000;\n"
-		+ "public int it,ticks=1,num_successes=0,num_failures=0;\n"
+		+ "public int it,ticks=20,num_successes=0,num_failures=0;\n"
 		+ 	"Random generator;\n"
 		+ "public PrintWriter writerOutcome;\n"
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
