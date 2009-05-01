@@ -2,6 +2,10 @@
 
 <project name="BDILearn" basedir="." default="dist">
 
+<property name="debug" value="on"/>
+
+<property name="release.archive" value="${basedir}/blak.zip"/>
+
 <property name="dist.dir" value="./dist"/>
 <property name="dist.specs.dir" value="${dist.dir}/specs"/>
 <property name="package.dist" value="blak.jar"/>
@@ -48,24 +52,25 @@
 </target>
 
 <target name="trees" description="Build trees package" depends="config">
-	<javac srcdir="${src.trees.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+	<javac debug="${debug}" srcdir="${src.trees.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 <target name="treeGenerator" description="Build treeGenerator package" depends="config">
-	<javac srcdir="${src.treeGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+	<javac debug="${debug}" srcdir="${src.treeGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 <target name="agents" description="Build agents package" depends="trees">
-	<javac srcdir="${src.agents.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+	<javac debug="${debug}" srcdir="${src.agents.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 <target name="expGenerator" description="Build expGenerator package" depends="trees,agents,treeGenerator">
-	<javac srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
+	<javac debug="${debug}" srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 
 <target name="clean" description="Delete all generated files">
 	<delete dir="${build.dir}"/>
 </target>
 
-<target name="clean-all" description="Delete all build files including dist" depends="clean">
+<target name="cleanAll" description="Delete all build files including dist" depends="clean">
 	<delete dir="${dist.dir}"/>
+	<delete file="${release.archive}"/>
 </target>
 
 <target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator">
@@ -80,6 +85,12 @@
 	</copy>
 	<copy file="${src.dist.dir}/README" tofile="${dist.dir}/README"/>
 	<copy file="${src.dist.dir}/run.xml" tofile="${dist.dir}/run.xml"/>
+</target>
+
+<target name="release" description="Build a release package" depends="dist">
+	<zip destfile="${release.archive}">
+		<zipfileset dir="${dist.dir}" prefix="blak"/>
+	</zip>
 </target>
 
 </project>

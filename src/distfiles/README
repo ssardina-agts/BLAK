@@ -1,0 +1,90 @@
+==================================
+RMIT BDI-Learning Agent Kit (BLAK)
+==================================
+
+
+==================================
+1. ABOUT
+
+This package contains the compiled package for the BDI-Learning work being undertaken within the Intelligent Systems Group at RMIT University.
+For more information on this package contact Dhirendra Singh (dhirendra.singh@rmit.edu.au).
+
+The package provides the following files:
+./README          : This file
+./run.xml         : Ant build file used to build and run all experiments
+./lib/blak.jar    : Package of BLAK Java classes
+./specs/*.txt     : Text input files used to generate the BDI goal/plan hierarchies
+
+
+==================================
+2. INSTALLATION 
+
+2.1 DEPENDENCIES
+
+Apart from the sources included in this package you require the following tools:
+
+2.1.1 Java SE Development Kit (JDK 6 or later).
+http://java.sun.com/javase/downloads/index.jsp.
+You probably have a recent version of the JDK already installed. If not download the JDK for your platform and follow the installation instructions. Make sure that the installation is in your PATH. Verify by typing:
+>java -version
+>javac -version
+
+2.1.2 Ant Java-based Build Tool Verion 1.7.0 or later. 
+http://ant.apache.org/.
+Download ANT and follow the package installation instructions. Make sure that the installation is in your PATH. Verify by typing
+>ant -version
+
+2.1.3 Jack Autonomous Software Version 5.3 or later. 
+http://www.agent-software.com.au.
+Once you have acquired the JACK software, copy the jack.jar file to location ./lib/jack.jar in this package.
+
+2.1.4 Weka Data Mining Software Version 3.6.0 or later. 
+http://www.cs.waikato.ac.nz/ml/weka.
+Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
+
+
+==================================
+3. BUILDING
+
+3.1 All Tests
+!!Note that building the entire test suite can take a long time (upto an hour depending on your machine).
+From the top level directory (one that contains run.xml) do the following:
+>ant -f run.xml buildAll
+This will run the target in run.xml that builds all the tests into:
+./results/<testName>/build/*
+
+3.2 Individual Tests
+For a list of all available targets do:
+>ant -f run.xml -projecthelp
+From the top level directory (one that contains run.xml) do:
+>ant -f run.xml buildTestNN
+where NN is the test you want to build.
+For instance, to build Test01 do:
+>ant -f run.xml buildTest01
+
+
+==================================
+4. RUNNING
+
+4.1 All Tests
+!!Note that running the entire test suite *TAKES A VERY LONG TIME* (several hours).
+To run all tests do:
+>ant -f run.xml runAll
+This will run each experiment in sequence and generate all results into:
+./results/<testName>/* 
+
+4.2 Individual Tests
+
+For a list of all available targets do:
+>ant -f run.xml -projecthelp
+From the top level directory (one that contains run.xml) do:
+>ant -f run.xml runTestNN
+where NN is the test you want to run.
+For instance, to run Test01 do:
+>ant -f run.xml runTest01
+
+
+==================================
+
+
+

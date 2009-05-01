@@ -1,50 +1,56 @@
+==================================
 RMIT BDI-Learning Agent Kit (BLAK)
-----------------------------------
+==================================
 
+
+==================================
 1. ABOUT
+
 This package contains the source files for the BDI-Learning work being undertaken within the Intelligent Systems Group at RMIT University.
 For more information on this package contact Dhirendra Singh (dhirendra.singh@rmit.edu.au).
+This file is for the internal use of the BLAK developers.
 
-2. INSTALLATION
+
+==================================
+2. BUILD 
 
 2.1 LATEST SOURCES
+
 Download the latest sources from the svn repository:
 > svn co svn+ssh://USERNAME@goanna.cs.rmit.edu.au/research/ai/linpa/RepositoryRoots/Software/BDILEARNING/SVNROOT bdilearning
 
 2.2 DEPENDENCIES
+
 Apart from the sources included in this package you require the following tools:
 
-2.2.1 Java SE Development Kit (JDK 6 or later). http://java.sun.com/javase/downloads/index.jsp.
+2.2.1 Java SE Development Kit (JDK 6 or later) 
+http://java.sun.com/javase/downloads/index.jsp.
 You probably have a recent version of the JDK already installed. If not download the JDK for your platform and follow the installation instructions. Make sure that the installation is in your PATH. Verify by typing:
 >java -version
 >javac -version
 
-2.2.2 Ant Java-based Build Tool Verion 1.7.0 or later. http://ant.apache.org/.
+2.2.2 Ant Java-based Build Tool Verion 1.7.0 or later. 
+http://ant.apache.org/.
 Download ANT and follow the package installation instructions. Make sure that the installation is in your PATH. Verify by typing
 >ant -version
-Then set the ant startup options to increase the JAVA heap size to 1GB. Do something like:
->setenv ANT_OPTS '-Xms1g -Xmx1g'
-It may make sense to add this to your .cshrc or similar login script.
 
-2.2.3 Jack Autonomous Software Version 5.3 or later. http://www.agent-software.com.au.
-Once you have acquired the JACK software, copy the jack.jar file to location ./lib/jack.jar in this package.
-
-2.2.4 Weka Data Mining Software Version 3.6.0 or later. http://www.cs.waikato.ac.nz/ml/weka.
+2.2.3 Weka Data Mining Software Version 3.6.0 or later. 
+http://www.cs.waikato.ac.nz/ml/weka.
 Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
 
-3. BUILD
+
+==================================
+3. COMPILING
+
 Compiling the code is straighforward. From the top level directory (one that contains build.xml) do the following:
->ant dist
-This will run the target in build.xml that builds everything into the jar file ./blak.jar
-
-4 RUNNING TESTS
-To run all tests, do the following:
->ant run
-All run output files go to the ./results directory.
-
-To run individual tests manually you could from the root directoty do something like:
->java -cp ./blak.jar:./lib/weka.jar:./lib/jack.jar agents.Environment -u concurrent -s random -o small-test-r1.csv -m 1 -i 20000
-
-That's it!
+>ant release
+This will run the target in build.xml that builds everything into a release archive called ./blak.zip
 
 
+==================================
+4. RUNNING TESTS
+
+Instructions for running the tests are located in the README file that comes with the release package ./blak.zip. TO get started, copy the archive into a fresh directory and unzip the contents. This creates a top level directory called ./blak. Locate ./blak/README and follow the instructions provided.
+
+
+==================================
