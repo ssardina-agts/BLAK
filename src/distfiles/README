@@ -83,6 +83,11 @@ where NN is the test you want to run.
 For instance, to run Test01 do:
 >ant -f run.xml runTest01
 
+4.3 Running as a background task
+
+On Unix based systems appending the '&' to the command launches it as a background task. However, you cannot run an Ant task in the background like this unless you redirect the I/O first. As a minimum you need to do something like this:
+>ant < /dev/null -f run.xml runAll &
+
 
 ==================================
 
