@@ -3,11 +3,18 @@
 <!-- BLAK: BDI Learning Agent Kit -->
 <project name="BLAK" basedir="." default="buildAll">
 
+<!-- USER CONFIG -->
+<!-- Single option to control the iterations parameter for all tests -->
+<property name="config.iterations" value="15000"/>
+<!-- END USER CONFIG -->
+
+
 <!-- Root directory that contains the BLAK distribution -->
 <property name="root.dir" value="."/>
 <property name="blak.dep" value="${root.dir}/lib/blak.jar"/>
 <property name="specs.dir" value="${root.dir}/specs"/>
 <property name="results.dir" value="${root.dir}/results"/>
+<property name="results.all.dir" value="${results.dir}/all"/>
 
 <!-- External dependencies. See README for installation instructions for JACK and WEKA -->
 <property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
@@ -68,7 +75,7 @@
 
 <!-- Generic target to build test JAR -->
 <target name="makeJAR" description="Generic target: build a JAR archive for the experiment">
-	<jar destfile="${make.dir}/${build.dir}/test01.jar" basedir="${make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
+	<jar destfile="${make.dir}/${build.dir}/${test.name}.jar" basedir="${make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
 </target>
 
 <!-- Generic target to build the entire test -->
@@ -88,17 +95,18 @@
 	</antcall>
 	<!-- Build the test JAR -->
 	<antcall target="makeJAR">
+		<param name="test.name" value="${test.name}"/>
 		<param name="make.dir" value="${results.dir}/${test.name}"/>
 	</antcall>
 </target>
 
 <!-- Generic target to run a test within an experiment -->
 <target name="runTest" description="Generic target: run an individual test within an experiment">
-	<mkdir dir="${results.dir}/${test.name}/${subtest.name}"/>
+	<mkdir dir="${results.dir}/${test.name}/${run.type}${run.id}"/>
 	<tstamp prefix="start"/>
-	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started ${test.name}/${subtest.name}"/>
-	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/${test.name}/${subtest.name}/stdout.log">
-		<arg line="-d ${results.dir}/${test.name}/${subtest.name} ${run.params}"/>
+	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started ${test.name}/${run.type}${run.id}"/>
+	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/${test.name}/${run.type}${run.id}/stdout.log">
+		<arg line="-d ${results.dir}/${test.name}/${run.type}${run.id} -o ${test.name}-${run.type}-${run.id}.csv -u ${run.type} ${run.params}"/>
 		<classpath>
 			<pathelement location="${jack.dep}"/>
 			<pathelement location="${weka.dep}"/>
@@ -106,6 +114,46 @@
 			<pathelement location="${results.dir}/${test.name}/${build.dir}/${test.name}.jar"/>
 		</classpath>
 	</java>
+	<copy file="${results.dir}/${test.name}/${run.type}${run.id}/${test.name}-${run.type}-${run.id}.csv" todir="${results.all.dir}" flatten="true"/>
+</target>
+
+<!-- Generic target to run a test within an experiment -->
+<target name="runTestRepeats" description="Generic target: repeat an individual test (N times) within an experiment">
+	<antcall target="runTest">
+		<param name="test.name"		value="${test.name}"/>
+		<param name="run.type"		value="${run.type}"/>
+		<param name="run.id"		value="1"/>
+		<param name="run.params"	value="${run.params}"/>
+	</antcall>
+	<antcall target="runTest">
+		<param name="test.name"		value="${test.name}"/>
+		<param name="run.type"		value="${run.type}"/>
+		<param name="run.id"		value="2"/>
+		<param name="run.params"	value="${run.params}"/>
+	</antcall>
+	<antcall target="runTest">
+		<param name="test.name"		value="${test.name}"/>
+		<param name="run.type"		value="${run.type}"/>
+		<param name="run.id"		value="3"/>
+		<param name="run.params"	value="${run.params}"/>
+	</antcall>
+	<antcall target="runTest">
+		<param name="test.name"		value="${test.name}"/>
+		<param name="run.type"		value="${run.type}"/>
+		<param name="run.id"		value="4"/>
+		<param name="run.params"	value="${run.params}"/>
+	</antcall>
+	<antcall target="runTest">
+		<param name="test.name"		value="${test.name}"/>
+		<param name="run.type"		value="${run.type}"/>
+		<param name="run.id"		value="5"/>
+		<param name="run.params"	value="${run.params}"/>
+	</antcall>
+</target>
+
+<!-- Run config -->
+<target name="configRun" description="Configure run directories">
+	<mkdir dir="${results.all.dir}"/>
 </target>
 
 <!-- Clean test -->
@@ -126,8 +174,8 @@
 </target>
 
 <!-- Default targets -->
-<target name="buildAll" description="Build all tests" depends="dependencies,buildTest01"/>
-<target name="runAll" description="Run all tests" depends="runTest01"/>
+<target name="buildAll" description="Build all tests" depends="dependencies,buildTest01,buildTest02,buildTest03,buildTest04,buildTest05"/>
+<target name="runAll" description="Run all tests" depends="configRun,runTest01,runTest02,runTest03,runTest04,runTest05"/>
 
 
 
@@ -136,7 +184,9 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 01 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildTest01" description="Build Test 01">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test01"/>
@@ -147,58 +197,117 @@
 	</antcall>
 </target>
 <target name="runTest01" description="Run Test 01">
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="01"/>
-		<param name="run.params" value="-o stable-s-4-1.csv -i 4000 -u stable -s probabilistic -m 1 -e 0.3"/>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test01"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
 	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="02"/>
-		<param name="run.params" value="-o stable-s-4-2.csv -i 4000 -u stable -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="03"/>
-		<param name="run.params" value="-o stable-s-4-3.csv -i 4000 -u stable -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="04"/>
-		<param name="run.params" value="-o stable-s-4-4.csv -i 4000 -u stable -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="05"/>
-		<param name="run.params" value="-o stable-s-4-5.csv -i 4000 -u stable -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="06"/>
-		<param name="run.params" value="-o concurrent-cc-4-1.csv -i 4000 -u concurrent -s probabilistic -m 1"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="07"/>
-		<param name="run.params" value="-o concurrent-cc-4-2.csv -i 4000 -u concurrent -s probabilistic -m 1"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="08"/>
-		<param name="run.params" value="-o concurrent-cc-4-3.csv -i 4000 -u concurrent -s probabilistic -m 1"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="09"/>
-		<param name="run.params" value="-o concurrent-cc-4-4.csv -i 4000 -u concurrent -s probabilistic -m 1"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name" value="test01"/>
-		<param name="subtest.name" value="10"/>
-		<param name="run.params" value="-o concurrent-cc-4-5.csv -i 4000 -u concurrent -s probabilistic -m 1"/>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test01"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
 
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 02 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTest02" description="Build Test 02">
+	<antcall target="cleanTest">
+		<param name="test.name" value="test02"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="test02"/>
+		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier.txt"/>
+	</antcall>
+</target>
+<target name="runTest02" description="Run Test 02">
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test02"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	</antcall>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test02"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 03 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTest03" description="Build Test 03">
+	<antcall target="cleanTest">
+		<param name="test.name" value="test03"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="test03"/>
+		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced17.txt"/>
+	</antcall>
+</target>
+<target name="runTest03" description="Run Test 03">
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test03"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	</antcall>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test03"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 04 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTest04" description="Build Test 04">
+	<antcall target="cleanTest">
+		<param name="test.name" value="test04"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="test04"/>
+		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced20.txt"/>
+	</antcall>
+</target>
+<target name="runTest04" description="Run Test 04">
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test04"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	</antcall>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test04"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 05 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTest05" description="Build Test 05">
+	<antcall target="cleanTest">
+		<param name="test.name" value="test05"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="test05"/>
+		<param name="specs.file" value="${specs.dir}/concurrentFailDepth4-t15.txt"/>
+	</antcall>
+</target>
+<target name="runTest05" description="Run Test 05">
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test05"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	</antcall>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="test05"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+</target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- END TESTS TARGETS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

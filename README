@@ -44,13 +44,16 @@ Download the latest stable version of WEKA for generic platforms. Unzip the zip 
 
 Compiling the code is straighforward. From the top level directory (one that contains build.xml) do the following:
 >ant release
-This will run the target in build.xml that builds everything into a release archive called ./blak.zip
+This will run the target in build.xml that builds everything as follows:
+./build/classes/* : Contains all the generated JACK files and all built class files.
+./build/dist/*    : Contains the distribution tree 
+./build/blak.zip  : Archive of the above distribution tree for release to end users.
 
 
 ==================================
 4. RUNNING TESTS
 
-Instructions for running the tests are located in the README file that comes with the release package ./blak.zip. TO get started, copy the archive into a fresh directory and unzip the contents. This creates a top level directory called ./blak. Locate ./blak/README and follow the instructions provided.
+Instructions for running the tests are located in the README file that comes with the release package blak.zip. TO get started, copy the archive into a fresh directory and unzip the contents. This creates a top level directory called ./blak. Locate ./blak/README and follow the instructions provided.
 
 
 ==================================
