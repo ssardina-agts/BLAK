@@ -259,6 +259,10 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+	<antcall target="plotResult">
+		<param name="test.name"		value="test02"/>
+		<param name="range"			value="[:8000]"/>
+	</antcall>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -283,6 +287,10 @@
 		<param name="test.name"		value="test03"/>
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+	<antcall target="plotResult">
+		<param name="test.name"		value="test03"/>
+		<param name="range"			value="[]"/>
 	</antcall>
 </target>
 
@@ -309,6 +317,10 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+	<antcall target="plotResult">
+		<param name="test.name"		value="test04"/>
+		<param name="range"			value="[]"/>
+	</antcall>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -333,6 +345,10 @@
 		<param name="test.name"		value="test05"/>
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+	<antcall target="plotResult">
+		<param name="test.name"		value="test05"/>
+		<param name="range"			value="[]"/>
 	</antcall>
 </target>
 
