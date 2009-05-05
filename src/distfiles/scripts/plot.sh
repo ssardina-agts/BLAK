@@ -18,12 +18,13 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: Stable data,  $3: Concurrent data  $4 plotrange
+# $1: outputfile,  $2: Stable data,  $3: Concurrent data,  $4: plotrange,  $5: label
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
 set terminal postscript landscape color rounded 
 #set output "$1.tex"
 set output "$1"
+set title "$5"
 set xlabel "Iteration"
 #set xtics 0, 250
 set ylabel "Success"
@@ -44,10 +45,13 @@ Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange
        -t testname   Test name (must match srcdir/**/testname*stable*.csv and srcdir/**/testname*concurrent*.csv)
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
+       -l label      String to use as plot title
        -r plotrange  X-data range in gnuplot format to plot (optional - default is "[]")
 '
 range="[]"
-args=`getopt t:d:o:r:g: $*`
+label=""
+
+args=`getopt t:d:o:r:g:l: $*`
 set -- $args
 for i
 do
@@ -67,6 +71,9 @@ do
 		-g)
 			gnuplot="$2"; shift;
 			shift;;
+		-l)
+			label="$2"; shift;
+			shift;;
 		--)
 			shift; break;;
 	esac
@@ -85,6 +92,8 @@ fi
 #echo srcdir=$srcdir
 #echo testname=$testname
 #echo range=$range
+#echo gnuplot=$gnuplot
+#echo label=$label
 }
 
 
@@ -106,7 +115,7 @@ avg $set1 > $tmpdir/.stable.data
 avg $set2 > $tmpdir/.concurrent.data
 
 #--- Generate the gnupot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.data $range > $tmpdir/.gnuplot.commands
+makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.data $range > $tmpdir/.gnuplot.commands $label
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands

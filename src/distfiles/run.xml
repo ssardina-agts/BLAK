@@ -170,6 +170,8 @@
 		<arg value="${gnuplot.dep}"/>
 		<arg value="-r"/>
 		<arg value="${range}"/>
+		<arg value="-l"/>
+		<arg value="${label}"/>
 	</exec>
 </target>
 
@@ -234,7 +236,8 @@
 <target name="plotTest01" description="Plot Test 01">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test01"/>
-		<param name="range"		value="[:2000]"/>
+		<param name="range"			value="[:2000]"/>
+		<param name="label"			value="Tree:concurrentFail.txt"/>
 	</antcall>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -264,7 +267,8 @@
 <target name="plotTest02" description="Plot Test 02">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test02"/>
-		<param name="range"		value="[:8000]"/>
+		<param name="range"			value="[:8000]"/>
+		<param name="label"			value="Tree:concurrentFailDepth3Easier.txt"/>
 	</antcall>
 </target>
 
@@ -295,7 +299,8 @@
 <target name="plotTest03" description="Plot Test 03">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test03"/>
-		<param name="range"		value="[:5000]"/>
+		<param name="range"			value="[:5000]"/>
+		<param name="label"			value="Tree:concurrentFailDepth3Easier-balanced17.txt"/>
 	</antcall>
 </target>
 
@@ -326,7 +331,8 @@
 <target name="plotTest04" description="Plot Test 04">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test04"/>
-		<param name="range"		value="[:5000]"/>
+		<param name="range"			value="[:5000]"/>
+		<param name="label"			value="Tree:concurrentFailDepth3Easier-balanced20.txt"/>
 	</antcall>
 </target>
 
@@ -357,7 +363,8 @@
 <target name="plotTest05" description="Plot Test 05">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test05"/>
-		<param name="range"		value="[:10000]"/>
+		<param name="range"			value="[:10000]"/>
+		<param name="label"			value="Tree:concurrentFailDepth4-t15.txt"/>
 	</antcall>
 </target>
 
