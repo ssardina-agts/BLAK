@@ -28,6 +28,7 @@
 <property name="src.agents.dir" value="${src.dir}/agents"/>
 <property name="src.dist.dir" value="${src.dir}/distfiles"/>
 <property name="src.specs.dir" value="${src.dist.dir}/specs"/>
+<property name="src.scripts.dir" value="${src.dist.dir}/scripts"/>
 
 <property name="lib.dir" value="${basedir}/lib"/>
 <path id="classpath">
@@ -71,6 +72,9 @@
 	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${dist.dir}/lib"/>
 	<mkdir dir="${dist.dir}/specs"/>
+	<mkdir dir="${dist.dir}/scripts"/>
+	<copy file="${src.scripts.dir}/plot.sh" tofile="${dist.dir}/scripts/plot.sh" />
+	<chmod file="${dist.dir}/scripts/plot.sh" perm="755"/>
 	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${build.classes.dir}/expGenerator/metaPlanBody.txt" />
 	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${build.classes.dir}/expGenerator/mainBody.txt" />
 	<jar destfile="${dist.dir}/lib/${package.dist}" basedir="${build.classes.dir}"/>

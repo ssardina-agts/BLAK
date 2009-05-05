@@ -6,11 +6,15 @@
 <!-- USER CONFIG -->
 <!-- Single option to control the iterations parameter for all tests -->
 <property name="config.iterations" value="15000"/>
+<property name="gnuplot.dep" value="${basedir}/scripts/gnuplot"/>
 <!-- END USER CONFIG -->
 
 
 <!-- Root directory that contains the BLAK distribution -->
-<property name="root.dir" value="."/>
+<property name="root.dir" value="${basedir}"/>
+<property name="scripts.dir" value="${root.dir}/scripts"/>
+<property name="plot.sh" value="${scripts.dir}/plot.sh"/>
+
 <property name="blak.dep" value="${root.dir}/lib/blak.jar"/>
 <property name="specs.dir" value="${root.dir}/specs"/>
 <property name="results.dir" value="${root.dir}/results"/>
@@ -26,6 +30,8 @@
 	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
 	<available file="${weka.dep}" property="weka.available"/>
 	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
+	<available file="${gnuplot.dep}" property="gnuplot.available"/>
+	<fail message="Gnuplot binary not found at ${gnuplot.dep}. See README for installation instructions." unless="gnuplot.available"/>
 </target>
 
 <!-- Standard sub-tree structure for indvidual tests -->
@@ -151,6 +157,23 @@
 	</antcall>
 </target>
 
+<!-- Generic target to plot results of an experiment -->
+<target name="plotResult" description="Generic target: plot experiment results">
+	<exec executable="${plot.sh}">
+		<arg value="-t"/>
+		<arg value="${test.name}"/>
+		<arg value="-d"/>
+		<arg value="${results.all.dir}"/>
+		<arg value="-o"/>
+		<arg value="${results.all.dir}/${test.name}.pdf"/>
+		<arg value="-g"/>
+		<arg value="${gnuplot.dep}"/>
+		<arg value="-r"/>
+		<arg value="$range"/>
+	</exec>
+</target>
+
+
 <!-- Run config -->
 <target name="configRun" description="Configure run directories">
 	<mkdir dir="${results.all.dir}"/>
@@ -206,6 +229,10 @@
 		<param name="test.name"		value="test01"/>
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+	<antcall target="plotResult">
+		<param name="test.name"		value="test01"/>
+		<param name="range"			value="[:2000]"/>
 	</antcall>
 </target>
 

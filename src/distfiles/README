@@ -13,6 +13,7 @@ The package provides the following files:
 ./README          : This file
 ./run.xml         : Ant build file used to build and run all experiments
 ./lib/blak.jar    : Package of BLAK Java classes
+./scripts/*       : Utility scripts used by the build
 ./specs/*.txt     : Text input files used to generate the BDI goal/plan hierarchies
 
 
@@ -42,6 +43,10 @@ Once you have acquired the JACK software, copy the jack.jar file to location ./l
 http://www.cs.waikato.ac.nz/ml/weka.
 Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
 
+2.1.5 Gnuplot Version 4.2 or later.
+http://www.gnuplot.info/
+Once Gnuplot is installed create a link to it as ./scripts/gnuplot.
+>ln -s /absolute/path/to/gnuplot gnuplot
 
 ==================================
 3. BUILDING
