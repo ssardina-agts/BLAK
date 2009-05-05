@@ -39,7 +39,7 @@ EOF
 parseargs()
 {
 HELP='
-Usage: `basename $0` -d srcdir -t testname -o outfile -g gnuplot [-r plotrange]
+Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange]
        -d srcdir     Top-level directory containing test result files
        -t testname   Test name (must match srcdir/**/testname*stable*.csv and srcdir/**/testname*concurrent*.csv)
        -o outfile    File to store the plot results to (PDF format)

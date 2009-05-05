@@ -169,7 +169,7 @@
 		<arg value="-g"/>
 		<arg value="${gnuplot.dep}"/>
 		<arg value="-r"/>
-		<arg value="$range"/>
+		<arg value="${range}"/>
 	</exec>
 </target>
 
@@ -230,12 +230,13 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+</target>
+<target name="plotTest01" description="Plot Test 01">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test01"/>
-		<param name="range"			value="[:2000]"/>
+		<param name="range"		value="[:2000]"/>
 	</antcall>
 </target>
-
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 02 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -259,9 +260,11 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+</target>
+<target name="plotTest02" description="Plot Test 02">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test02"/>
-		<param name="range"			value="[:8000]"/>
+		<param name="range"		value="[:8000]"/>
 	</antcall>
 </target>
 
@@ -288,9 +291,11 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+</target>
+<target name="plotTest03" description="Plot Test 03">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test03"/>
-		<param name="range"			value="[]"/>
+		<param name="range"		value="[:5000]"/>
 	</antcall>
 </target>
 
@@ -317,9 +322,11 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+</target>
+<target name="plotTest04" description="Plot Test 04">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test04"/>
-		<param name="range"			value="[]"/>
+		<param name="range"		value="[:5000]"/>
 	</antcall>
 </target>
 
@@ -346,9 +353,11 @@
 		<param name="run.type"		value="concurrent"/>
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
+</target>
+<target name="plotTest05" description="Plot Test 05">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test05"/>
-		<param name="range"			value="[]"/>
+		<param name="range"		value="[:10000]"/>
 	</antcall>
 </target>
 
