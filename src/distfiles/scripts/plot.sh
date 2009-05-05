@@ -21,7 +21,7 @@ function makePlotCommands() {
 # $1: outputfile,  $2: Stable data,  $3: Concurrent data  $4 plotrange
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
-set terminal postscript color rounded eps
+set terminal postscript landscape color rounded 
 #set output "$1.tex"
 set output "$1"
 set xlabel "Iteration"
@@ -60,6 +60,9 @@ do
 			shift;;
 		-o)
 			outfile="$2"; shift;
+			shift;;
+		-r)
+			range="$2"; shift;
 			shift;;
 		-g)
 			gnuplot="$2"; shift;
@@ -107,7 +110,7 @@ makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.d
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands
-epstopdf --outfile=$outfile $tmpdir/.gnuplot.eps
+ps2pdf -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 
 #--- Cleanup
 rm -rf $tmpdir
