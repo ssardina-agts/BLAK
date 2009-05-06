@@ -30,8 +30,6 @@
 	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
 	<available file="${weka.dep}" property="weka.available"/>
 	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
-	<available file="${gnuplot.dep}" property="gnuplot.available"/>
-	<fail message="Gnuplot binary not found at ${gnuplot.dep}. See README for installation instructions." unless="gnuplot.available"/>
 </target>
 
 <!-- Standard sub-tree structure for indvidual tests -->
@@ -177,8 +175,14 @@
 
 
 <!-- Run config -->
-<target name="configRun" description="Configure run directories">
+<target name="configRun" description="Configure run directories" depends="runDependencies">
 	<mkdir dir="${results.all.dir}"/>
+</target>
+
+<!-- Run dependencies -->
+<target name="runDependencies" description="Check for external dependencies">
+	<available file="${gnuplot.dep}" property="gnuplot.available"/>
+	<fail message="Gnuplot binary not found at ${gnuplot.dep}. Results plotting will not be attempted." unless="gnuplot.available"/>
 </target>
 
 <!-- Clean test -->
@@ -233,7 +237,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest01" description="Plot Test 01">
+<target name="plotTest01" description="Plot Test 01" if="gnuplot.available">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test01"/>
 		<param name="range"			value="[:2000]"/>
@@ -264,7 +268,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest02" description="Plot Test 02">
+<target name="plotTest02" description="Plot Test 02" if="gnuplot.available">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test02"/>
 		<param name="range"			value="[:8000]"/>
@@ -296,7 +300,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest03" description="Plot Test 03">
+<target name="plotTest03" description="Plot Test 03" if="gnuplot.available">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test03"/>
 		<param name="range"			value="[:5000]"/>
@@ -328,7 +332,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest04" description="Plot Test 04">
+<target name="plotTest04" description="Plot Test 04" if="gnuplot.available">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test04"/>
 		<param name="range"			value="[:5000]"/>
@@ -360,7 +364,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest05" description="Plot Test 05">
+<target name="plotTest05" description="Plot Test 05" if="gnuplot.available">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test05"/>
 		<param name="range"			value="[:10000]"/>
