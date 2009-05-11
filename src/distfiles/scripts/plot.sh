@@ -29,7 +29,10 @@ set xlabel "Iteration"
 #set xtics 0, 250
 set ylabel "Success"
 set yrange [0:1]
-#set ytic 0, 0.2
+set ytic 0, 0.2
+set mytics 2
+set grid noxtics ytics mytics
+show grid
 set key center right
 set key spacing 1.3
 plot $4 "$2" title "Stable" lt 2 lw 2 with lines, "$3" title "Concurrent" lt 1 lw 2 with lines
@@ -119,7 +122,7 @@ makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.d
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands
-ps2pdf -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
+ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 
 #--- Cleanup
 rm -rf $tmpdir

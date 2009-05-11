@@ -1,0 +1,130 @@
+@attribute a observable boolean
+@attribute b observable boolean
+@attribute c observable boolean
+@attribute d observable boolean
+@attribute e observable boolean
+@attribute f observable boolean
+@topgoal TopGoal
+@goal G11
+@goal G12
+@goal G13
+@goal G21
+@goal G22
+@goal G23
+@goal G31
+@action a111
+	@pre  (a && b && c)
+	@post c= true;
+@action a112
+	@pre (a && b && !c)
+	@post 
+@action a121
+	@pre (c && d && f)
+	@post e=true;
+@action a122
+	@pre (c && d && !f)
+	@post 
+@action a131 
+	@pre (e || f)
+	@post 
+@action a132
+	@pre (!e && !f )
+	@post 
+@action a211
+	@pre  (!a && !d && (b || c))
+	@post 
+@action a212
+	@pre (!a && !d && (!b || !c))
+	@post 
+@action a221
+	@pre e 
+	@post 
+@action a222
+	@pre !e
+	@post 
+@action a231
+	@pre (!a && !d && ( b && f ))
+	@post 
+@action a232
+	@pre (!a && !d && ( !b || !f ))
+	@post
+@action a311
+	@pre  ((!b || (b && !a) || (b && !d) ) && (c && e && f))
+	@post 
+@action a312
+	@pre ((!b || (b && !a) || (b && !d) ) && !c)
+	@post 
+@plan P1
+    @handles TopGoal
+    @pre true
+    @initPre true;
+    @body G11 G12 G13
+@plan P2
+    @handles TopGoal
+    @pre true
+    @initPre true;
+    @body G21 G22 G23
+@plan P3
+    @handles TopGoal
+    @initPre true;
+    @body G31 
+@plan P111
+    @handles G11
+    @initPre true;
+    @body a111
+@plan P112
+    @handles G11
+    @initPre true;
+    @body a112
+@plan P121
+    @handles G12
+    @pre true
+    @initPre true;
+    @body a121
+@plan P122
+    @handles G12
+    @initPre true;
+    @body a122
+@plan P131
+    @handles G13
+    @initPre true;
+    @body a131
+@plan P132
+    @handles G13
+    @initPre true;
+    @body a132
+@plan P211
+    @handles G21
+    @initPre true;
+    @body a211
+@plan P212
+    @handles G21
+    @initPre true;
+    @body a212
+@plan P221
+    @handles G22
+    @pre true
+    @initPre true;
+    @body a221
+@plan P222
+    @handles G22
+    @initPre true;
+    @body a222
+@plan P231
+    @handles G23
+    @initPre true;
+    @body a231
+@plan P232
+    @handles G23
+    @initPre true;
+    @body a232
+@plan P311
+    @handles G31
+    @initPre true;
+    @body a311
+@plan P312
+    @handles G31
+    @initPre true;
+    @body a312
+
+

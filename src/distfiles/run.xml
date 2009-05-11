@@ -5,7 +5,7 @@
 
 <!-- USER CONFIG -->
 <!-- Single option to control the iterations parameter for all tests -->
-<property name="config.iterations" value="15000"/>
+<property name="config.iterations" value="2000"/>
 <property name="gnuplot.dep" value="${basedir}/scripts/gnuplot"/>
 <!-- END USER CONFIG -->
 
@@ -175,14 +175,14 @@
 
 
 <!-- Run config -->
-<target name="configRun" description="Configure run directories" depends="runDependencies">
+<target name="configRun" description="Configure run directories">
 	<mkdir dir="${results.all.dir}"/>
 </target>
 
 <!-- Run dependencies -->
-<target name="runDependencies" description="Check for external dependencies">
+<target name="plotDependencies" description="Check for external dependencies">
 	<available file="${gnuplot.dep}" property="gnuplot.available"/>
-	<fail message="Gnuplot binary not found at ${gnuplot.dep}. Results plotting will not be attempted." unless="gnuplot.available"/>
+	<fail message="Gnuplot binary not found at ${gnuplot.dep}. Exiting." unless="gnuplot.available"/>
 </target>
 
 <!-- Clean test -->
@@ -237,11 +237,11 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest01" description="Plot Test 01" if="gnuplot.available">
+<target name="plotTest01" description="Plot Test 01" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test01"/>
 		<param name="range"			value="[:2000]"/>
-		<param name="label"			value="Tree:concurrentFail.txt"/>
+		<param name="label"			value="Test01:concurrentFail.txt"/>
 	</antcall>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -268,11 +268,11 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest02" description="Plot Test 02" if="gnuplot.available">
+<target name="plotTest02" description="Plot Test 02" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test02"/>
 		<param name="range"			value="[:8000]"/>
-		<param name="label"			value="Tree:concurrentFailDepth3Easier.txt"/>
+		<param name="label"			value="Test02:concurrentFailDepth3Easier.txt"/>
 	</antcall>
 </target>
 
@@ -300,11 +300,11 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest03" description="Plot Test 03" if="gnuplot.available">
+<target name="plotTest03" description="Plot Test 03" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test03"/>
-		<param name="range"			value="[:5000]"/>
-		<param name="label"			value="Tree:concurrentFailDepth3Easier-balanced17.txt"/>
+		<param name="range"			value="[:2500]"/>
+		<param name="label"			value="Test03:concurrentFailDepth3Easier-balanced17.txt"/>
 	</antcall>
 </target>
 
@@ -332,11 +332,11 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest04" description="Plot Test 04" if="gnuplot.available">
+<target name="plotTest04" description="Plot Test 04" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test04"/>
-		<param name="range"			value="[:5000]"/>
-		<param name="label"			value="Tree:concurrentFailDepth3Easier-balanced20.txt"/>
+		<param name="range"			value="[:2500]"/>
+		<param name="label"			value="Test04:concurrentFailDepth3Easier-balanced20.txt"/>
 	</antcall>
 </target>
 
@@ -364,11 +364,43 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest05" description="Plot Test 05" if="gnuplot.available">
+<target name="plotTest05" description="Plot Test 05" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test05"/>
 		<param name="range"			value="[:10000]"/>
-		<param name="label"			value="Tree:concurrentFailDepth4-t15.txt"/>
+		<param name="label"			value="Test05:concurrentFailDepth4-t15.txt"/>
+	</antcall>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST ecai ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildTestEcai" description="Build Test Ecai">
+	<antcall target="cleanTest">
+		<param name="test.name" value="testEcai"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="testEcai"/>
+		<param name="specs.file" value="${specs.dir}/ecai.txt"/>
+	</antcall>
+</target>
+<target name="runTestEcai" description="Run Test Ecai">
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="testEcai"/>
+		<param name="run.type"		value="stable"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	</antcall>
+	<antcall target="runTestRepeats">
+		<param name="test.name"		value="testEcai"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
+	</antcall>
+</target>
+<target name="plotTestEcai" description="Plot Test Ecai" depends="plotDependencies">
+	<antcall target="plotResult">
+		<param name="test.name"		value="testEcai"/>
+		<param name="range"			value="[:2500]"/>
+		<param name="label"			value="TestEcai:ecai.txt"/>
 	</antcall>
 </target>
 
