@@ -68,7 +68,7 @@
 	<delete dir="${build.dir}"/>
 </target>
 
-<target name="dist" description="Build all" depends="clean,dependencies,config,trees,treeGenerator,agents,expGenerator">
+<target name="dist" description="Build all" depends="dependencies,config,trees,treeGenerator,agents,expGenerator">
 	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${dist.dir}/lib"/>
 	<mkdir dir="${dist.dir}/specs"/>

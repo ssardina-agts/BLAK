@@ -847,7 +847,7 @@ public int getStableK() {
 	{
 		try
 		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".csv", true), true);
+			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".csv", true), true);
 			prnOut.println(msg);
 			prnOut.close();
 		}
