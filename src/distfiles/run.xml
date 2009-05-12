@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!-- BLAK: BDI Learning Agent Kit -->
-<project name="BLAK" basedir="." default="buildAll">
+<project name="BLAK" basedir="." default="buildall">
 
 <!-- USER CONFIG -->
 <!-- Single option to control the iterations parameter for all tests -->
@@ -25,7 +25,7 @@
 <property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
 
 <!-- Check for external dependencies -->
-<target name="dependencies" description="Check for external dependencies">
+<target name="dependencies">
 	<available file="${jack.dep}" property="jack.available"/>
 	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
 	<available file="${weka.dep}" property="weka.available"/>
@@ -44,7 +44,7 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Generic target to build a test sub-tree structure -->
-<target name="makeTestTree" description="Generic target: generate build sub-tree structure for a specified experiment">
+<target name="makeTestTree">
 	<mkdir dir="${make.dir}/${build.classes.agents.dir}"/>
 	<mkdir dir="${make.dir}/${build.classes.events.dir}"/>
 	<mkdir dir="${make.dir}/${build.classes.plans.dir}"/>
@@ -54,7 +54,7 @@
 </target>
 
 <!-- Generic target to generate JACK sources -->
-<target name="generateJACK" description="Generic target: generate JACK sources for a specified experiment">
+<target name="generateJACK">
 	<java fork="yes" classname="expGenerator.ExpGenerator" failonerror="true">
 		<classpath>
 			<pathelement location="${blak.dep}"/>
@@ -66,7 +66,7 @@
 </target>
 
 <!-- Generic target to compile JACK sources -->
-<target name="compileJACK" description="Generic target: compile JACK sources for a specified experiment">
+<target name="compileJACK">
 	<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
 		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd ${make.dir}/${build.sources.dir} -r"/>
 		<classpath>
@@ -78,12 +78,12 @@
 </target>
 
 <!-- Generic target to build test JAR -->
-<target name="makeJAR" description="Generic target: build a JAR archive for the experiment">
+<target name="makeJAR">
 	<jar destfile="${make.dir}/${build.dir}/${test.name}.jar" basedir="${make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
 </target>
 
 <!-- Generic target to build the entire test -->
-<target name="buildTest" description="Generic target: build a specified experiment">
+<target name="buildTest">
 	<!-- Build the sub-tree hierarchy -->	
 	<antcall target="makeTestTree">
 		<param name="make.dir" value="${results.dir}/${test.name}"/>
@@ -105,7 +105,7 @@
 </target>
 
 <!-- Generic target to run a test within an experiment -->
-<target name="runTest" description="Generic target: run an individual test within an experiment">
+<target name="runTest">
 	<mkdir dir="${results.dir}/${test.name}/${run.type}${run.id}"/>
 	<tstamp prefix="start"/>
 	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started ${test.name}/${run.type}${run.id}"/>
@@ -121,8 +121,14 @@
 	<copy file="${results.dir}/${test.name}/${run.type}${run.id}/${test.name}-${run.type}-${run.id}.csv" todir="${results.all.dir}" flatten="true"/>
 </target>
 
+<!-- Generic target to check if a test build exists -->
+<target name="buildExists">
+	<available file="${results.dir}/${test.name}/${build.dir}/${test.name}.jar" property="build.${test.name}.available"/>
+	<fail message="Test build not found at [${results.dir}/${test.name}/${build.dir}/${test.name}.jar]. Do 'build${test.name}' or 'buildall' first. Exiting." unless="build.${test.name}.available"/>
+</target>
+
 <!-- Generic target to run a test within an experiment -->
-<target name="runTestRepeats" description="Generic target: repeat an individual test (N times) within an experiment">
+<target name="runTestRepeats" depends="buildExists">
 	<antcall target="runTest">
 		<param name="test.name"		value="${test.name}"/>
 		<param name="run.type"		value="${run.type}"/>
@@ -155,8 +161,18 @@
 	</antcall>
 </target>
 
+<!-- Generic target to check if test results exist -->
+<target name="resultsExist">
+	<condition property="results.${test.name}.available">
+		<resourcecount when="greater" count="0">
+			<fileset dir="${results.all.dir}" includes="${test.name}**.csv"/>
+		</resourcecount>
+	</condition>
+	<fail message="Test results not found at [${results.all.dir}/${test.name}**.csv]. Do 'run${test.name}' or 'runall' first. Exiting." unless="results.${test.name}.available"/>
+</target>
+
 <!-- Generic target to plot results of an experiment -->
-<target name="plotResult" description="Generic target: plot experiment results">
+<target name="plotResult" depends="resultsExist">
 	<exec executable="${plot.sh}">
 		<arg value="-t"/>
 		<arg value="${test.name}"/>
@@ -175,18 +191,18 @@
 
 
 <!-- Run config -->
-<target name="configRun" description="Configure run directories">
+<target name="configRun">
 	<mkdir dir="${results.all.dir}"/>
 </target>
 
 <!-- Run dependencies -->
-<target name="plotDependencies" description="Check for external dependencies">
+<target name="plotDependencies">
 	<available file="${gnuplot.dep}" property="gnuplot.available"/>
 	<fail message="Gnuplot binary not found at ${gnuplot.dep}. Exiting." unless="gnuplot.available"/>
 </target>
 
-<!-- Clean test -->
-<target name="cleanTest" description="Delete all build files for a specified experiment">
+<!-- Generic target: Delete all build files for a specified experiment -->
+<target name="cleanTest">
 	<delete dir="${results.dir}/${test.name}/${build.dir}"/>
 </target>
 
@@ -198,13 +214,14 @@
 </target>
 
 <!-- Clean -->
-<target name="cleanAll" description="Delete all generated files including results">
+<target name="cleanall" description="Delete all build and results files">
 	<delete dir="${results.dir}"/>
 </target>
 
 <!-- Default targets -->
-<target name="buildAll" description="Build all tests" depends="dependencies,buildTest01,buildTest02,buildTest03,buildTest04,buildTest05"/>
-<target name="runAll" description="Run all tests" depends="configRun,runTest01,runTest02,runTest03,runTest04,runTest05"/>
+<target name="buildall" description="Build all tests" depends="dependencies,buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
+<target name="runall" description="Run all tests (must do buildAll first)" depends="configRun,runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
+<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
 
 
 
@@ -216,7 +233,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 01 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTest01" description="Build Test 01">
+<target name="buildtest01" description="Build Test 01">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test01"/>
 	</antcall>
@@ -225,7 +242,7 @@
 		<param name="specs.file" value="${specs.dir}/concurrentFail.txt"/>
 	</antcall>
 </target>
-<target name="runTest01" description="Run Test 01">
+<target name="runtest01" description="Run Test 01">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="test01"/>
 		<param name="run.type"		value="stable"/>
@@ -237,7 +254,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest01" description="Plot Test 01" depends="plotDependencies">
+<target name="plottest01" description="Plot Test 01" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test01"/>
 		<param name="range"			value="[:2000]"/>
@@ -247,7 +264,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 02 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTest02" description="Build Test 02">
+<target name="buildtest02" description="Build Test 02">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test02"/>
 	</antcall>
@@ -256,7 +273,7 @@
 		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier.txt"/>
 	</antcall>
 </target>
-<target name="runTest02" description="Run Test 02">
+<target name="runtest02" description="Run Test 02">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="test02"/>
 		<param name="run.type"		value="stable"/>
@@ -268,7 +285,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest02" description="Plot Test 02" depends="plotDependencies">
+<target name="plottest02" description="Plot Test 02" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test02"/>
 		<param name="range"			value="[:8000]"/>
@@ -279,7 +296,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 03 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTest03" description="Build Test 03">
+<target name="buildtest03" description="Build Test 03">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test03"/>
 	</antcall>
@@ -288,7 +305,7 @@
 		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced17.txt"/>
 	</antcall>
 </target>
-<target name="runTest03" description="Run Test 03">
+<target name="runtest03" description="Run Test 03">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="test03"/>
 		<param name="run.type"		value="stable"/>
@@ -300,7 +317,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest03" description="Plot Test 03" depends="plotDependencies">
+<target name="plottest03" description="Plot Test 03" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test03"/>
 		<param name="range"			value="[:2500]"/>
@@ -311,7 +328,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 04 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTest04" description="Build Test 04">
+<target name="buildtest04" description="Build Test 04">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test04"/>
 	</antcall>
@@ -320,7 +337,7 @@
 		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced20.txt"/>
 	</antcall>
 </target>
-<target name="runTest04" description="Run Test 04">
+<target name="runtest04" description="Run Test 04">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="test04"/>
 		<param name="run.type"		value="stable"/>
@@ -332,7 +349,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest04" description="Plot Test 04" depends="plotDependencies">
+<target name="plottest04" description="Plot Test 04" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test04"/>
 		<param name="range"			value="[:2500]"/>
@@ -343,7 +360,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 05 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTest05" description="Build Test 05">
+<target name="buildtest05" description="Build Test 05">
 	<antcall target="cleanTest">
 		<param name="test.name" value="test05"/>
 	</antcall>
@@ -352,7 +369,7 @@
 		<param name="specs.file" value="${specs.dir}/concurrentFailDepth4-t15.txt"/>
 	</antcall>
 </target>
-<target name="runTest05" description="Run Test 05">
+<target name="runtest05" description="Run Test 05">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="test05"/>
 		<param name="run.type"		value="stable"/>
@@ -364,7 +381,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTest05" description="Plot Test 05" depends="plotDependencies">
+<target name="plottest05" description="Plot Test 05" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="test05"/>
 		<param name="range"			value="[:10000]"/>
@@ -375,7 +392,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST ecai ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildTestEcai" description="Build Test Ecai">
+<target name="buildtestEcai" description="Build Test Ecai">
 	<antcall target="cleanTest">
 		<param name="test.name" value="testEcai"/>
 	</antcall>
@@ -384,7 +401,7 @@
 		<param name="specs.file" value="${specs.dir}/ecai.txt"/>
 	</antcall>
 </target>
-<target name="runTestEcai" description="Run Test Ecai">
+<target name="runtestEcai" description="Run Test Ecai">
 	<antcall target="runTestRepeats">
 		<param name="test.name"		value="testEcai"/>
 		<param name="run.type"		value="stable"/>
@@ -396,7 +413,7 @@
 		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
 	</antcall>
 </target>
-<target name="plotTestEcai" description="Plot Test Ecai" depends="plotDependencies">
+<target name="plottestEcai" description="Plot Test Ecai" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="testEcai"/>
 		<param name="range"			value="[:2500]"/>
