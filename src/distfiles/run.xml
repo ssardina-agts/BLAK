@@ -68,7 +68,7 @@
 <!-- Generic target to compile JACK sources -->
 <target name="compileJACK">
 	<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
-		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd ${make.dir}/${build.sources.dir} -r"/>
+		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd ${make.dir}/${build.sources.dir} -r -DJAVACARGS=-g"/>
 		<classpath>
 			<pathelement location="${blak.dep}"/>
 			<pathelement location="${jack.dep}"/>
