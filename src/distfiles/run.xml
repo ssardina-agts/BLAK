@@ -7,6 +7,8 @@
 <!-- Single option to control the iterations parameter for all tests -->
 <property name="config.iterations" value="15000"/>
 <property name="gnuplot.dep" value="${basedir}/scripts/gnuplot"/>
+<property name="every" value="1"/>
+<property name="range" value="[:]"/>
 <!-- END USER CONFIG -->
 
 
@@ -184,6 +186,8 @@
 		<arg value="${gnuplot.dep}"/>
 		<arg value="-r"/>
 		<arg value="${range}"/>
+		<arg value="-e"/>
+		<arg value="${every}"/>
 		<arg value="-l"/>
 		<arg value="${label}"/>
 	</exec>
@@ -416,8 +420,36 @@
 <target name="plottestEcai" description="Plot Test Ecai" depends="plotDependencies">
 	<antcall target="plotResult">
 		<param name="test.name"		value="testEcai"/>
-		<param name="range"			value="[:2500]"/>
+		<param name="range"			value="[:5000]"/>
 		<param name="label"			value="TestEcai:ecai.txt"/>
+	</antcall>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST ecaiLong ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtestEcaiLong" description="Build Test EcaiLong">
+	<antcall target="cleanTest">
+		<param name="test.name" value="testEcaiLong"/>
+	</antcall>
+	<antcall target="buildTest">
+		<param name="test.name" value="testEcaiLong"/>
+		<param name="specs.file" value="${specs.dir}/ecai.txt"/>
+	</antcall>
+</target>
+<target name="runtestEcaiLong" description="Run Test EcaiLong">
+	<antcall target="runTest">
+		<param name="test.name"		value="testEcaiLong"/>
+		<param name="run.type"		value="concurrent"/>
+		<param name="run.id"		value="1"/>
+		<param name="run.params"	value="-i 1000000 -s probabilistic -m 1"/>
+	</antcall>
+</target>
+<target name="plottestEcaiLong" description="Plot Test EcaiLong" depends="plotDependencies">
+	<antcall target="plotResult">
+		<param name="test.name"		value="testEcaiLong"/>
+		<param name="every"			value="100"/>
+		<param name="label"			value="TestEcaiLong:ecai.txt"/>
 	</antcall>
 </target>
 

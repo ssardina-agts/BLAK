@@ -18,7 +18,7 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: Stable data,  $3: Concurrent data,  $4: plotrange,  $5: label
+# $1: outputfile,  $2: Stable data,  $3: Concurrent data,  $4: plotrange,  $5: label,  $6: every
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
 set terminal postscript landscape color rounded 
@@ -35,7 +35,7 @@ set grid noxtics ytics mytics
 show grid
 set key center right
 set key spacing 1.3
-plot $4 "$2" title "Stable" lt 2 lw 2 with lines, "$3" title "Concurrent" lt 1 lw 2 with lines
+plot $4 "$2" every $6 title "Stable" lt 2 lw 2 with lines, "$3" every $6 title "Concurrent" lt 1 lw 2 with lines
 reset
 EOF
 }
@@ -43,18 +43,20 @@ EOF
 parseargs()
 {
 HELP='
-Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange]
+Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
        -t testname   Test name (must match srcdir/**/testname*stable*.csv and srcdir/**/testname*concurrent*.csv)
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
        -l label      String to use as plot title
        -r plotrange  X-data range in gnuplot format to plot (optional - default is "[]")
+       -e N          Plot every N point (optional - default is 1)
 '
 range="[]"
 label=""
+every=1
 
-args=`getopt t:d:o:r:g:l: $*`
+args=`getopt t:d:o:r:e:g:l: $*`
 set -- $args
 for i
 do
@@ -70,6 +72,9 @@ do
 			shift;;
 		-r)
 			range="$2"; shift;
+			shift;;
+		-e)
+			every=$2; shift;
 			shift;;
 		-g)
 			gnuplot="$2"; shift;
@@ -95,6 +100,7 @@ fi
 #echo srcdir=$srcdir
 #echo testname=$testname
 #echo range=$range
+#echo every=$every
 #echo gnuplot=$gnuplot
 #echo label=$label
 }
@@ -118,7 +124,7 @@ avg $set1 > $tmpdir/.stable.data
 avg $set2 > $tmpdir/.concurrent.data
 
 #--- Generate the gnupot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.data $range > $tmpdir/.gnuplot.commands $label
+makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.data $range > $tmpdir/.gnuplot.commands $label $every
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands
