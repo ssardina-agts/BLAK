@@ -60,7 +60,7 @@
 <target name="agents" description="Build agents package" depends="trees">
 	<javac debug="${debug}" srcdir="${src.agents.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
-<target name="expGenerator" description="Build expGenerator package" depends="trees,agents,treeGenerator">
+<target name="expGenerator" description="Build expGenerator package" depends="trees,agents">
 	<javac debug="${debug}" srcdir="${src.expGenerator.dir}" destdir="${build.classes.dir}" classpathref="classpath"/>
 </target>
 
