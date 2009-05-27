@@ -55,6 +55,7 @@ Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange
 range="[]"
 label=""
 every=1
+gnuplot=gnuplot
 
 args=`getopt t:d:o:r:e:g:l: $*`
 set -- $args

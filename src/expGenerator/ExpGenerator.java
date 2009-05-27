@@ -56,6 +56,8 @@ public class ExpGenerator {
 	public boolean LEARNING_ON;
 	/** name of the target directory */
 	public String targetDir;
+	/** name of the input tree file */
+	public String inputTreeFile;
 	
 	
 	/**
@@ -118,11 +120,13 @@ public class ExpGenerator {
 						boolean withLearning){
 		LEARNING_ON = withLearning;
 		targetDir = outputDir;
+        inputTreeFile = inputFileName;
 		readInputFile(inputFileName);
 		generatePlans();
 		generateGoals();
 		generateEnvironment();
 		generateRefinerAgent();
+        generateGoalPlanVisualisation();
 	}
 	
 	/**
@@ -1787,5 +1791,78 @@ public class ExpGenerator {
 		}	
 */
 	}
+    public void generateGoalPlanVisualisation() {
+        int index = 0;
+        String str = "";
+
+        str += "// Auto-generated Graphviz Goal/Plan Visualisation\n";
+        str += "// Input file:"+inputTreeFile+"\n\n";
+        str += "digraph goalplan {\n\n";
+        str += "\t// Graph attributes\n";
+        str += "\torientation = landscape\n";
+        str += "\tsize=\"8.5,11\"\n";
+        str += "\tcenter = \"true\"\n";
+        
+        // Generate all plan nodes
+        str += "\n\t// Plan nodes\n";
+		for (Plan p : plans) {
+            str += "\t" + p.getId() + " [label=\"" + p.getId() + "\",shape=box]\n";
+        }
+        // Generate all goal nodes
+        str += "\n\t// Goal nodes\n";
+        for (Goal g: goals) {
+            str += "\t" + g.getId() + " [label=\"" + g.getId() + "\",shape=ellipse]\n";
+        }
+        // Generate all action nodes
+        str += "\n\t// Action nodes\n";
+        index = 0;
+		for (Plan p: plans){
+			for (GoalPlan g : p.body) {
+				if (g instanceof Action) {
+                    str += "\ta" + index + " [label=\"" + g.getId() + "\",style=\"rounded\",shape=box]\n";
+                    index++;
+                }
+            }
+		}
+        // Create all the links
+        str += "\n\t// Goal -> Plan edges\n";
+		for (Goal g: goals){
+			for (Plan p : g.handlers) {
+                str += "\t" + g.getId() + " -> " + p.getId() + "\n";
+            }
+		}
+        str += "\n\t// Plan -> Goal edges\n";
+		for (Plan p: plans){
+			for (GoalPlan g : p.body) {
+				if (g instanceof Goal) {
+					str += "\t" + p.getId() + " -> " + g.getId() + "\n";
+                }
+            }
+		}
+        str += "\n\t// Plan -> Action edges\n";
+        index = 0;
+		for (Plan p: plans){
+			for (GoalPlan g : p.body) {
+				if (g instanceof Action) {
+					str += "\t" + p.getId() + " -> a" + index + "\n";
+                    index++;
+                }
+            }
+		}
+        str += "\n}\n";
+        
+        File outFileName = new File(targetDir+"/graphviz/gptree.dot");
+		try{
+            (new File(outFileName.getParent())).mkdirs();
+			PrintWriter writer = new PrintWriter(outFileName.toString());
+			writer.println(str);
+			writer.close();
+		}
+		catch(IOException e){
+			System.err.println("Error writing file: " + outFileName.toString());
+			System.exit(9);
+		}	
+        
+    }
 	
 } 

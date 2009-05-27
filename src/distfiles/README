@@ -43,7 +43,7 @@ Once you have acquired the JACK software, copy the jack.jar file to location ./l
 http://www.cs.waikato.ac.nz/ml/weka.
 Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
 
-2.1.5 Gnuplot Version 4.2 or later.
+2.1.5 Gnuplot Version 4.2 or later (OPTIONAL).
 http://www.gnuplot.info/
 Once Gnuplot is installed create a link to it as ./scripts/gnuplot.
 >ln -s /absolute/path/to/gnuplot gnuplot

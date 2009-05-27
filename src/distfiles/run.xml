@@ -6,7 +6,9 @@
 <!-- USER CONFIG -->
 <!-- Single option to control the iterations parameter for all tests -->
 <property name="config.iterations" value="15000"/>
-<property name="gnuplot.dep" value="${basedir}/scripts/gnuplot"/>
+<property name="gnuplot.dep" value="gnuplot"/>
+<property name="dot.dep" value="dot"/>
+<property name="ps2pdf.dep" value="ps2pdf"/>
 <property name="every" value="1"/>
 <property name="range" value="[:]"/>
 <!-- END USER CONFIG -->
@@ -26,14 +28,6 @@
 <property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
 <property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
 
-<!-- Check for external dependencies -->
-<target name="dependencies">
-	<available file="${jack.dep}" property="jack.available"/>
-	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
-	<available file="${weka.dep}" property="weka.available"/>
-	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
-</target>
-
 <!-- Standard sub-tree structure for indvidual tests -->
 <property name="build.dir" value="build"/>
 <property name="build.classes.dir" value="${build.dir}"/>
@@ -45,170 +39,11 @@
 <property name="build.sources.events.dir" value="${build.sources.dir}/events"/>
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
-<!-- Generic target to build a test sub-tree structure -->
-<target name="makeTestTree">
-	<mkdir dir="${make.dir}/${build.classes.agents.dir}"/>
-	<mkdir dir="${make.dir}/${build.classes.events.dir}"/>
-	<mkdir dir="${make.dir}/${build.classes.plans.dir}"/>
-	<mkdir dir="${make.dir}/${build.sources.agents.dir}"/>
-	<mkdir dir="${make.dir}/${build.sources.events.dir}"/>
-	<mkdir dir="${make.dir}/${build.sources.plans.dir}"/>
-</target>
-
-<!-- Generic target to generate JACK sources -->
-<target name="generateJACK">
-	<java fork="yes" classname="expGenerator.ExpGenerator" failonerror="true">
-		<classpath>
-			<pathelement location="${blak.dep}"/>
-			<pathelement location="${jack.dep}"/>
-			<pathelement location="${weka.dep}"/>
-		</classpath>
-		<arg line="-i ${specs.file}  -o ${make.dir}/${build.sources.dir}"/>
-	</java>
-</target>
-
-<!-- Generic target to compile JACK sources -->
-<target name="compileJACK">
-	<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
-		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd ${make.dir}/${build.sources.dir} -r -DJAVACARGS=-g"/>
-		<classpath>
-			<pathelement location="${blak.dep}"/>
-			<pathelement location="${jack.dep}"/>
-			<pathelement location="${weka.dep}"/>
-		</classpath>
-	</java>
-</target>
-
-<!-- Generic target to build test JAR -->
-<target name="makeJAR">
-	<jar destfile="${make.dir}/${build.dir}/${test.name}.jar" basedir="${make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
-</target>
-
-<!-- Generic target to build the entire test -->
-<target name="buildTest">
-	<!-- Build the sub-tree hierarchy -->	
-	<antcall target="makeTestTree">
-		<param name="make.dir" value="${results.dir}/${test.name}"/>
-	</antcall>
-	<!-- Generate the JACK source files for the experiment -->	
-	<antcall target="generateJACK">
-		<param name="make.dir" value="${results.dir}/${test.name}"/>
-		<param name="specs.file" value="${specs.file}"/>
-	</antcall>
-	<!-- Compile the JACK source files -->	
-	<antcall target="compileJACK">
-		<param name="make.dir" value="${results.dir}/${test.name}"/>
-	</antcall>
-	<!-- Build the test JAR -->
-	<antcall target="makeJAR">
-		<param name="test.name" value="${test.name}"/>
-		<param name="make.dir" value="${results.dir}/${test.name}"/>
-	</antcall>
-</target>
-
-<!-- Generic target to run a test within an experiment -->
-<target name="runTest">
-	<mkdir dir="${results.dir}/${test.name}/${run.type}${run.id}"/>
-	<tstamp prefix="start"/>
-	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started ${test.name}/${run.type}${run.id}"/>
-	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/${test.name}/${run.type}${run.id}/stdout.log">
-		<arg line="-d ${results.dir}/${test.name}/${run.type}${run.id} -o ${test.name}-${run.type}-${run.id}.csv -u ${run.type} ${run.params}"/>
-		<classpath>
-			<pathelement location="${jack.dep}"/>
-			<pathelement location="${weka.dep}"/>
-			<pathelement location="${blak.dep}"/>
-			<pathelement location="${results.dir}/${test.name}/${build.dir}/${test.name}.jar"/>
-		</classpath>
-	</java>
-	<copy file="${results.dir}/${test.name}/${run.type}${run.id}/${test.name}-${run.type}-${run.id}.csv" todir="${results.all.dir}" flatten="true"/>
-</target>
-
-<!-- Generic target to check if a test build exists -->
-<target name="buildExists">
-	<available file="${results.dir}/${test.name}/${build.dir}/${test.name}.jar" property="build.${test.name}.available"/>
-	<fail message="Test build not found at [${results.dir}/${test.name}/${build.dir}/${test.name}.jar]. Do 'build${test.name}' or 'buildall' first. Exiting." unless="build.${test.name}.available"/>
-</target>
-
-<!-- Generic target to run a test within an experiment -->
-<target name="runTestRepeats" depends="buildExists">
-	<antcall target="runTest">
-		<param name="test.name"		value="${test.name}"/>
-		<param name="run.type"		value="${run.type}"/>
-		<param name="run.id"		value="1"/>
-		<param name="run.params"	value="${run.params}"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name"		value="${test.name}"/>
-		<param name="run.type"		value="${run.type}"/>
-		<param name="run.id"		value="2"/>
-		<param name="run.params"	value="${run.params}"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name"		value="${test.name}"/>
-		<param name="run.type"		value="${run.type}"/>
-		<param name="run.id"		value="3"/>
-		<param name="run.params"	value="${run.params}"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name"		value="${test.name}"/>
-		<param name="run.type"		value="${run.type}"/>
-		<param name="run.id"		value="4"/>
-		<param name="run.params"	value="${run.params}"/>
-	</antcall>
-	<antcall target="runTest">
-		<param name="test.name"		value="${test.name}"/>
-		<param name="run.type"		value="${run.type}"/>
-		<param name="run.id"		value="5"/>
-		<param name="run.params"	value="${run.params}"/>
-	</antcall>
-</target>
-
-<!-- Generic target to check if test results exist -->
-<target name="resultsExist">
-	<condition property="results.${test.name}.available">
-		<resourcecount when="greater" count="0">
-			<fileset dir="${results.all.dir}" includes="${test.name}**.csv"/>
-		</resourcecount>
-	</condition>
-	<fail message="Test results not found at [${results.all.dir}/${test.name}**.csv]. Do 'run${test.name}' or 'runall' first. Exiting." unless="results.${test.name}.available"/>
-</target>
-
-<!-- Generic target to plot results of an experiment -->
-<target name="plotResult" depends="resultsExist">
-	<exec executable="${plot.sh}">
-		<arg value="-t"/>
-		<arg value="${test.name}"/>
-		<arg value="-d"/>
-		<arg value="${results.all.dir}"/>
-		<arg value="-o"/>
-		<arg value="${results.all.dir}/${test.name}.pdf"/>
-		<arg value="-g"/>
-		<arg value="${gnuplot.dep}"/>
-		<arg value="-r"/>
-		<arg value="${range}"/>
-		<arg value="-e"/>
-		<arg value="${every}"/>
-		<arg value="-l"/>
-		<arg value="${label}"/>
-	</exec>
-</target>
-
-
-<!-- Run config -->
-<target name="configRun">
-	<mkdir dir="${results.all.dir}"/>
-</target>
-
-<!-- Run dependencies -->
-<target name="plotDependencies">
-	<available file="${gnuplot.dep}" property="gnuplot.available"/>
-	<fail message="Gnuplot binary not found at ${gnuplot.dep}. Exiting." unless="gnuplot.available"/>
-</target>
-
-<!-- Generic target: Delete all build files for a specified experiment -->
-<target name="cleanTest">
-	<delete dir="${results.dir}/${test.name}/${build.dir}"/>
-</target>
+<!-- Default targets -->
+<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
+<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai"/>
+<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
+<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -222,11 +57,229 @@
 	<delete dir="${results.dir}"/>
 </target>
 
-<!-- Default targets -->
-<target name="buildall" description="Build all tests" depends="dependencies,buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
-<target name="runall" description="Run all tests (must do buildAll first)" depends="configRun,runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
-<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
+<!-- Check for build dependencies -->
+<target name="buildDependencies" unless="checked.buildDependencies">
+	<available file="${jack.dep}" property="jack.available"/>
+	<fail message="JACK installation not found at ${jack.dep}. See README for installation instructions." unless="jack.available"/>
+	<available file="${weka.dep}" property="weka.available"/>
+	<fail message="WEKA installation not found at ${weka.dep}. See README for installation instructions." unless="weka.available"/>
+	<condition property="available.buildDependencies">
+		<and>
+			<isset property="jack.available"/>
+			<isset property="weka.available"/>
+		</and>
+	</condition>
+	<property name="checked.buildDependencies" value="true"/>
+</target>
 
+<!-- Check for GNUPlot -->
+<target name="plotDependencies" unless="checked.plotDependencies">
+	<exec executable="${gnuplot.dep}" searchpath="true" failifexecutionfails="false" resultproperty="available.plotDependencies">
+		<arg value="-V"/>
+	</exec>
+	<property name="checked.plotDependencies" value="true"/>
+</target>
+
+<!-- Check for Graphviz -->
+<target name="graphDependencies" unless="checked.graphDependencies">
+	<exec executable="${dot.dep}" searchpath="true" failifexecutionfails="false" resultproperty="available.dot">
+		<arg value="-V"/>
+	</exec>
+	<exec executable="${ps2pdf.dep}" searchpath="true" failifexecutionfails="false" resultproperty="available.ps2pdf"/>
+	<condition property="available.graphDependencies">
+		<and>
+			<isset property="available.dot"/>
+			<isset property="available.ps2pdf"/>
+		</and>
+	</condition>
+	<property name="checked.graphDependencies" value="true"/>
+</target>
+
+<!-- Macro to fail if a test build is not found -->
+<macrodef name="failIfBuildNotFound">
+  <attribute name="test.name"/>
+  <sequential>
+    <fail message="Build not found: ${results.dir}/@{test.name}/${build.dir}/@{test.name}.jar">
+	  <condition>
+	    <not>
+		  <available file="${results.dir}/@{test.name}/${build.dir}/@{test.name}.jar"/>
+		</not>
+	  </condition>
+	</fail>
+  </sequential>
+</macrodef>
+
+<!-- Macro to fail if test results not found -->
+<macrodef name="failIfResultsNotFound">
+  <attribute name="test.name"/>
+  <sequential>
+    <fail message="Results not found: ${results.all.dir}/@{test.name}**.csv">
+	  <condition>
+		<resourcecount when="less" count="1">
+		  <fileset dir="${results.all.dir}" includes="@{test.name}**.csv"/>
+		</resourcecount>
+	  </condition>
+	</fail>
+  </sequential>
+</macrodef>
+
+<!-- Macro to build a test sub-tree structure -->
+<macrodef name="makeTestTree">
+  <attribute name="make.dir"/>
+  <sequential>
+	<mkdir dir="@{make.dir}/${build.classes.agents.dir}"/>
+	<mkdir dir="@{make.dir}/${build.classes.events.dir}"/>
+	<mkdir dir="@{make.dir}/${build.classes.plans.dir}"/>
+	<mkdir dir="@{make.dir}/${build.sources.agents.dir}"/>
+	<mkdir dir="@{make.dir}/${build.sources.events.dir}"/>
+	<mkdir dir="@{make.dir}/${build.sources.plans.dir}"/>
+  </sequential>
+</macrodef>
+
+<!-- Macro to generate JACK sources -->
+<macrodef name="generateJACK">
+  <attribute name="make.dir"/>
+  <attribute name="specs.file"/>
+  <sequential>
+	<java fork="yes" classname="expGenerator.ExpGenerator" failonerror="true">
+		<arg line="-i @{specs.file}  -o @{make.dir}/${build.sources.dir}"/>
+		<classpath>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+		</classpath>
+	</java>
+  </sequential>
+</macrodef>
+
+<!-- Marco to compile JACK sources -->
+<macrodef name="compileJACK">
+  <attribute name="make.dir"/>
+  <sequential>
+	<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
+		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd @{make.dir}/${build.sources.dir} -r -DJAVACARGS=-g"/>
+		<classpath>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+		</classpath>
+	</java>
+  </sequential>
+</macrodef>
+
+<!-- Macro to build test JAR -->
+<macrodef name="makeJAR">
+  <attribute name="test.name"/>
+  <attribute name="make.dir"/>
+  <sequential>
+	<jar destfile="@{make.dir}/${build.dir}/@{test.name}.jar" basedir="@{make.dir}/${build.dir}" includes="agents/*.class trees/*.class events/*.class plans/*.class"/>
+  </sequential>
+</macrodef>
+
+<!-- Macro to build the specified test -->
+<macrodef name="buildTest">
+  <attribute name="test.name"/>
+  <attribute name="specs.file"/>
+  <sequential>
+	<makeTestTree make.dir="${results.dir}/@{test.name}"/>
+	<generateJACK make.dir="${results.dir}/@{test.name}" specs.file="@{specs.file}"/>
+	<compileJACK make.dir="${results.dir}/@{test.name}"/>
+	<makeJAR test.name="@{test.name}" make.dir="${results.dir}/@{test.name}"/>
+  </sequential>
+</macrodef>
+
+<!-- Macro to delete all build files for a specified test -->
+<macrodef name="cleanTest">
+  <attribute name="test.name"/>
+  <sequential>
+	<delete dir="${results.dir}/@{test.name}/${build.dir}"/>
+  </sequential>
+</macrodef>
+
+<!-- Macro to draw the input tree -->
+<macrodef name="graphInput">
+  <attribute name="test.name"/>
+  <sequential>
+	<exec executable="dot" failonerror="true">
+		<arg value="-Tps"/>
+		<arg value="-o"/>
+		<arg value="${results.dir}/@{test.name}/${build.dir}/graphviz/@{test.name}.gptree.ps"/>
+		<arg value="${results.dir}/@{test.name}/${build.dir}/graphviz/gptree.dot"/>
+	</exec>
+	<exec executable="ps2pdf" failonerror="true">
+		<arg value="-sPAPERSIZE=a4"/>
+		<arg value="-dPDFSETTINGS=/printer"/>
+		<arg value="-dCompatibilityLevel=1.4"/>
+		<arg value="-dMaxSubsetPct=0"/>
+		<arg value="-dSubsetFonts=false"/>
+		<arg value="-dEmbedAllFonts=true"/>
+		<arg value="${results.dir}/@{test.name}/${build.dir}/graphviz/@{test.name}.gptree.ps"/>
+		<arg value="${results.dir}/@{test.name}/${build.dir}/graphviz/@{test.name}.gptree.pdf"/>
+	</exec>
+  </sequential>
+</macrodef>
+
+<!-- Macro to run a test -->
+<macrodef name="runTest">
+  <attribute name="test.name"/>
+  <attribute name="run.type"/>
+  <attribute name="run.id"/>
+  <attribute name="run.params"/>
+  <sequential>
+	<mkdir dir="${results.dir}/@{test.name}/@{run.type}@{run.id}"/>
+	<tstamp prefix="start"/>
+	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started @{test.name}/@{run.type}@{run.id}"/>
+	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/@{test.name}/@{run.type}@{run.id}/stdout.log">
+		<arg line="-d ${results.dir}/@{test.name}/@{run.type}@{run.id} -o @{test.name}-@{run.type}-@{run.id}.csv -u @{run.type} @{run.params}"/>
+		<classpath>
+			<pathelement location="${jack.dep}"/>
+			<pathelement location="${weka.dep}"/>
+			<pathelement location="${blak.dep}"/>
+			<pathelement location="${results.dir}/@{test.name}/${build.dir}/@{test.name}.jar"/>
+		</classpath>
+	</java>
+	<mkdir dir="${results.all.dir}"/>
+	<copy file="${results.dir}/@{test.name}/@{run.type}@{run.id}/@{test.name}-@{run.type}-@{run.id}.csv" todir="${results.all.dir}" flatten="true"/>
+  </sequential>
+</macrodef>
+
+<!-- Macro to run a test N times -->
+<macrodef name="runTestRepeats">
+  <attribute name="test.name"/>
+  <attribute name="run.type"/>
+  <attribute name="run.params"/>
+  <sequential>
+	<runTest test.name="@{test.name}" run.type="@{run.type}" run.id="1" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.type="@{run.type}" run.id="2" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.type="@{run.type}" run.id="3" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.type="@{run.type}" run.id="4" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.type="@{run.type}" run.id="5" run.params="@{run.params}"/>
+  </sequential>
+</macrodef>
+
+<!-- Generic target to plot results of an experiment -->
+<macrodef name="plotResult">
+  <attribute name="test.name"/>
+  <attribute name="range" default="[:]"/>
+  <attribute name="every" default="1"/>
+  <attribute name="label" default="@{test.name}"/>
+  <sequential>
+	<exec executable="${plot.sh}">
+		<arg value="-t"/>
+		<arg value="@{test.name}"/>
+		<arg value="-d"/>
+		<arg value="${results.all.dir}"/>
+		<arg value="-o"/>
+		<arg value="${results.all.dir}/@{test.name}.pdf"/>
+		<arg value="-r"/>
+		<arg value="@{range}"/>
+		<arg value="-e"/>
+		<arg value="@{every}"/>
+		<arg value="-l"/>
+		<arg value="@{label}"/>
+	</exec>
+  </sequential>
+</macrodef>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -237,220 +290,146 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 01 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest01" description="Build Test 01">
-	<antcall target="cleanTest">
-		<param name="test.name" value="test01"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="test01"/>
-		<param name="specs.file" value="${specs.dir}/concurrentFail.txt"/>
-	</antcall>
+<target name="buildtest01" description="Build test01" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test01"/>
+	<buildTest test.name="test01" specs.file="${specs.dir}/concurrentFail.txt"/>
 </target>
-<target name="runtest01" description="Run Test 01">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test01"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test01"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtest01" description="Graph test01" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test01"/>
 </target>
-<target name="plottest01" description="Plot Test 01" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="test01"/>
-		<param name="range"			value="[:2000]"/>
-		<param name="label"			value="Test01:concurrentFail.txt"/>
-	</antcall>
+<target name="runtest01" description="Run test01">
+    <failIfBuildNotFound test.name="test01"/>
+	<runTestRepeats test.name="test01" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test01" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottest01" description="Plot test01" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test01"/>
+	<plotResult test.name="test01" range="[:2000]" label="test01:concurrentFail.txt"/>
+</target>
+
+
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 02 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest02" description="Build Test 02">
-	<antcall target="cleanTest">
-		<param name="test.name" value="test02"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="test02"/>
-		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier.txt"/>
-	</antcall>
+<target name="buildtest02" description="Build test02" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test02"/>
+	<buildTest test.name="test02" specs.file="${specs.dir}/concurrentFailDepth3Easier.txt"/>
 </target>
-<target name="runtest02" description="Run Test 02">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test02"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test02"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtest02" description="Graph test02" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test02"/>
 </target>
-<target name="plottest02" description="Plot Test 02" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="test02"/>
-		<param name="range"			value="[:8000]"/>
-		<param name="label"			value="Test02:concurrentFailDepth3Easier.txt"/>
-	</antcall>
+<target name="runtest02" description="Run test02">
+    <failIfBuildNotFound test.name="test02"/>
+	<runTestRepeats test.name="test02" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test02" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottest02" description="Plot test02" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test02"/>
+	<plotResult test.name="test02" range="[:8000]" label="test02:concurrentFailDepth3Easier.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 03 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest03" description="Build Test 03">
-	<antcall target="cleanTest">
-		<param name="test.name" value="test03"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="test03"/>
-		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced17.txt"/>
-	</antcall>
+<target name="buildtest03" description="Build test03" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test03"/>
+	<buildTest test.name="test03" specs.file="${specs.dir}/concurrentFailDepth3Easier-balanced17.txt"/>
 </target>
-<target name="runtest03" description="Run Test 03">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test03"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test03"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtest03" description="Graph test03" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test03"/>
 </target>
-<target name="plottest03" description="Plot Test 03" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="test03"/>
-		<param name="range"			value="[:2500]"/>
-		<param name="label"			value="Test03:concurrentFailDepth3Easier-balanced17.txt"/>
-	</antcall>
+<target name="runtest03" description="Run test03">
+    <failIfBuildNotFound test.name="test03"/>
+	<runTestRepeats test.name="test03" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test03" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottest03" description="Plot test03" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test03"/>
+	<plotResult test.name="test03" range="[:2500]" label="test03:concurrentFailDepth3Easier-balanced17.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 04 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest04" description="Build Test 04">
-	<antcall target="cleanTest">
-		<param name="test.name" value="test04"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="test04"/>
-		<param name="specs.file" value="${specs.dir}/concurrentFailDepth3Easier-balanced20.txt"/>
-	</antcall>
+<target name="buildtest04" description="Build test04" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test04"/>
+	<buildTest test.name="test04" specs.file="${specs.dir}/concurrentFailDepth3Easier-balanced20.txt"/>
 </target>
-<target name="runtest04" description="Run Test 04">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test04"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test04"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtest04" description="Graph test04" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test04"/>
 </target>
-<target name="plottest04" description="Plot Test 04" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="test04"/>
-		<param name="range"			value="[:2500]"/>
-		<param name="label"			value="Test04:concurrentFailDepth3Easier-balanced20.txt"/>
-	</antcall>
+<target name="runtest04" description="Run test04">
+    <failIfBuildNotFound test.name="test04"/>
+	<runTestRepeats test.name="test04" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test04" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottest04" description="Plot test04" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test04"/>
+	<plotResult test.name="test04" range="[:2500]" label="test04:concurrentFailDepth3Easier-balanced20.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 05 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest05" description="Build Test 05">
-	<antcall target="cleanTest">
-		<param name="test.name" value="test05"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="test05"/>
-		<param name="specs.file" value="${specs.dir}/concurrentFailDepth4-t15.txt"/>
-	</antcall>
+<target name="buildtest05" description="Build test05" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test05"/>
+	<buildTest test.name="test05" specs.file="${specs.dir}/concurrentFailDepth4-t15.txt"/>
 </target>
-<target name="runtest05" description="Run Test 05">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test05"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="test05"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtest05" description="Graph test05" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test05"/>
 </target>
-<target name="plottest05" description="Plot Test 05" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="test05"/>
-		<param name="range"			value="[:10000]"/>
-		<param name="label"			value="Test05:concurrentFailDepth4-t15.txt"/>
-	</antcall>
+<target name="runtest05" description="Run test05">
+    <failIfBuildNotFound test.name="test05"/>
+	<runTestRepeats test.name="test05" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test05" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottest05" description="Plot test05" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test05"/>
+	<plotResult test.name="test05" range="[:10000]" label="test05:concurrentFailDepth4-t15.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST ecai ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestEcai" description="Build Test Ecai">
-	<antcall target="cleanTest">
-		<param name="test.name" value="testEcai"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="testEcai"/>
-		<param name="specs.file" value="${specs.dir}/ecai.txt"/>
-	</antcall>
+<target name="buildtestEcai" description="Build testEcai" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testEcai"/>
+	<buildTest test.name="testEcai" specs.file="${specs.dir}/ecai.txt"/>
 </target>
-<target name="runtestEcai" description="Run Test Ecai">
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="testEcai"/>
-		<param name="run.type"		value="stable"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	</antcall>
-	<antcall target="runTestRepeats">
-		<param name="test.name"		value="testEcai"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.params"	value="-i ${config.iterations} -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtestEcai" description="Graph testEcai" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testEcai"/>
 </target>
-<target name="plottestEcai" description="Plot Test Ecai" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="testEcai"/>
-		<param name="range"			value="[:5000]"/>
-		<param name="label"			value="TestEcai:ecai.txt"/>
-	</antcall>
+<target name="runtestEcai" description="Run testEcai">
+    <failIfBuildNotFound test.name="testEcai"/>
+	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
 </target>
+<target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testEcai"/>
+	<plotResult test.name="testEcai" range="[:5000]" label="testEcai:ecai.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST ecaiLong ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestEcaiLong" description="Build Test EcaiLong">
-	<antcall target="cleanTest">
-		<param name="test.name" value="testEcaiLong"/>
-	</antcall>
-	<antcall target="buildTest">
-		<param name="test.name" value="testEcaiLong"/>
-		<param name="specs.file" value="${specs.dir}/ecai.txt"/>
-	</antcall>
+<target name="buildtestEcaiLong" description="Build testEcaiLong" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testEcaiLong"/>
+	<buildTest test.name="testEcaiLong" specs.file="${specs.dir}/ecai.txt"/>
 </target>
-<target name="runtestEcaiLong" description="Run Test EcaiLong">
-	<antcall target="runTest">
-		<param name="test.name"		value="testEcaiLong"/>
-		<param name="run.type"		value="concurrent"/>
-		<param name="run.id"		value="1"/>
-		<param name="run.params"	value="-i 1000000 -s probabilistic -m 1"/>
-	</antcall>
+<target name="graphtestEcaiLong" description="Graph testEcaiLong" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testEcaiLong"/>
 </target>
-<target name="plottestEcaiLong" description="Plot Test EcaiLong" depends="plotDependencies">
-	<antcall target="plotResult">
-		<param name="test.name"		value="testEcaiLong"/>
-		<param name="every"			value="100"/>
-		<param name="label"			value="TestEcaiLong:ecai.txt"/>
-	</antcall>
+<target name="runtestEcaiLong" description="Run testEcaiLong">
+    <failIfBuildNotFound test.name="testEcaiLong"/>
+	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-i 1000000 -s probabilistic -m 1"/>
+</target>
+<target name="plottestEcaiLong" description="Plot testEcaiLong" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testEcaiLong"/>
+	<plotResult test.name="testEcaiLong" every="100000" label="testEcaiLong:ecai.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
