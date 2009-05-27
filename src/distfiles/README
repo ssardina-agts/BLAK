@@ -14,7 +14,7 @@ The package provides the following files:
 ./run.xml         : Ant build file used to build and run all experiments
 ./lib/blak.jar    : Package of BLAK Java classes
 ./scripts/*       : Utility scripts used by the build
-./specs/*.txt     : Text input files used to generate the BDI goal/plan hierarchies
+./specs/*.txt     : Text files used to generate test Goal-Plan hierarchies
 
 
 ==================================
@@ -45,54 +45,64 @@ Download the latest stable version of WEKA for generic platforms. Unzip the zip 
 
 2.1.5 Gnuplot Version 4.2 or later (OPTIONAL).
 http://www.gnuplot.info/
-Once Gnuplot is installed create a link to it as ./scripts/gnuplot.
->ln -s /absolute/path/to/gnuplot gnuplot
+Once Gnuplot is installed ensure that the 'gnuplot' executable is included in the system path.
 
+2.1.6 Graphviz Version 2.22.2 or later (OPTIONAL).
+http://www.graphviz.org/
+Once Graphviz is installed make sure that the 'dot' executable is on the system path.
+ 
 ==================================
 3. BUILDING
 
-3.1 All Tests
+3.1 All tests
 !!Note that building the entire test suite can take a long time (upto an hour depending on your machine).
 From the top level directory (one that contains run.xml) do the following:
->ant -f run.xml buildAll
+>ant -f run.xml buildall
 This will run the target in run.xml that builds all the tests into:
 ./results/<testName>/build/*
 
-3.2 Individual Tests
+3.2 Individual tests
 For a list of all available targets do:
 >ant -f run.xml -projecthelp
-From the top level directory (one that contains run.xml) do:
->ant -f run.xml buildTestNN
-where NN is the test you want to build.
-For instance, to build Test01 do:
->ant -f run.xml buildTest01
+From the top level directory (one that contains run.xml) call the test.
+For instance, to build test01 do:
+>ant -f run.xml buildtest01
+
+3.3 Generate Goal-Plan tree graphs
+If Graphviz is available, then you can generate a Goal-Plan graph of the input tree for a test for visualisation as a PDF file. 
+For instance, to see the Goal-Plan tree used for test01 do:
+>ant -f run.xml graphtest01
+To generate graphs for all tests do:
+>ant -f run.xml graphall
+The generated graphs can be found in:
+./results/<testName>/build/graphviz/*.pdf
 
 
 ==================================
 4. RUNNING
 
-4.1 All Tests
-!!Note that running the entire test suite *TAKES A VERY LONG TIME* (several hours).
-To run all tests do:
+4.1 All tests
+!!Note that running the entire test suite *TAKES A VERY LONG TIME* (several hours). To run all tests do:
 >ant -f run.xml runAll
 This will run each experiment in sequence and generate all results into:
 ./results/<testName>/* 
 
-4.2 Individual Tests
-
+4.2 Individual tests
 For a list of all available targets do:
 >ant -f run.xml -projecthelp
-From the top level directory (one that contains run.xml) do:
->ant -f run.xml runTestNN
-where NN is the test you want to run.
-For instance, to run Test01 do:
->ant -f run.xml runTest01
+From the top level directory (one that contains run.xml) call the test.
+For instance, to run test01 do:
+>ant -f run.xml runtest01
 
 4.3 Running as a background task
-
 On Unix based systems appending the '&' to the command launches it as a background task. However, you cannot run an Ant task in the background like this unless you redirect the I/O first. As a minimum you need to do something like this:
 >ant < /dev/null -f run.xml runAll &
 
+4.4 Plotting the results
+If Gnuplot is avilable, then you can plot the results as follows:
+>ant -f run.xml plottest01
+To plot all results do:
+>ant -f run.xml plotall
 
 ==================================
 
