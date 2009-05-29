@@ -1329,6 +1329,10 @@ public class GoalPlanBuilder
 					this.goalCollection.add(thisGoal);
 				}
 			}
+            if(!this.planCollection.contains(topPlan))
+			{
+				this.planCollection.add(topPlan);
+			}            
 		}
 	}
 	
@@ -3714,8 +3718,10 @@ public class GoalPlanBuilder
 						if(startState.get(j)!=goalState.get(j))
 						{
 							//we are going to change this variable...
-							int actionNumber = -1;
-							this.generateAction((BitSet)startState.clone(), j);//make it
+							int actionNumber = findAction((BitSet)startState.clone(), j);
+                            if (actionNumber==-1) {
+                                this.generateAction((BitSet)startState.clone(), j);//make it
+                            }
 							actionNumber = findAction((BitSet)startState.clone(), j);//find it...
 							
 							if(actionNumber>-1)
@@ -4104,16 +4110,22 @@ public class GoalPlanBuilder
 	 */
 	public void generateAction(BitSet modifyMe, int changeBit)
 	{
+        int numberOfAttributes = this.getNumberOfAttributes();
+        int numberOfPreconditions = this.getNumberOfPreconditions();
+        if (numberOfPreconditions > numberOfAttributes) {
+            System.out.println("Found number of preconditions ["+numberOfPreconditions+"] > number of attributes ["+numberOfAttributes+"]. Restricting to ["+numberOfAttributes+"].");
+            numberOfPreconditions = numberOfAttributes;
+        }
 		System.out.println("Making action for "+this.stringBitSet(modifyMe)+" to change bit :"+changeBit);
-		String[] actionProfile = new String[this.getNumberOfAttributes()];
-		for(int i = 0; this.getNumberOfAttributes()>i;i++)
+		String[] actionProfile = new String[numberOfAttributes];
+		for(int i = 0; numberOfAttributes>i;i++)
 		{
 			actionProfile[i] = "x";
 		}	
 		actionProfile[changeBit] = "c";
 		
 		
-		Action newb = new Action(""+(this.getNewActionNumber()), this.getNumberOfAttributes());
+		Action newb = new Action(""+(this.getNewActionNumber()), numberOfAttributes);
 		
 		if(modifyMe.get(changeBit)==true)
 		{
@@ -4125,7 +4137,7 @@ public class GoalPlanBuilder
 		}
 		boolean postState = modifyMe.get(changeBit);
 		newb.setPostStatement(alphabet[changeBit]+"="+!postState);
-		int [] preConds = new int[this.getNumberOfPreconditions()];
+		int [] preConds = new int[numberOfPreconditions];
 		for(int i = 0; preConds.length >i;i++)
 		{
 			preConds[i] = -1;
@@ -4133,9 +4145,9 @@ public class GoalPlanBuilder
 		
 		//System.out.println("We generate: "+this.getNumberOfPreconditions()+" preconditions");
 		//generate random preconditions...
-		for(int i = 0; this.getNumberOfPreconditions()>i;i++)
+		for(int i = 0; numberOfPreconditions>i;i++)
 		{
-			int randInt = randGen.nextInt(this.getNumberOfAttributes());
+			int randInt = randGen.nextInt(numberOfAttributes);
 			boolean alreadySelected = false;
 			for(int j = 0; i>j;j++)
 			{
@@ -4145,11 +4157,19 @@ public class GoalPlanBuilder
 					break;
 				}
 			}
+            
+            /* dsingh: Allow changing the attribute that is in the 
+             * precondition. Fixes the problem of infinite looping when
+             * this.getNumberOfAttributes() == this.getNumberOfPreconditions()
+             */
+            /*
 			if(randInt==changeBit)
-			{
-				i--;
+			{            
+				i--; 
 			}
-			else if(alreadySelected)
+			else
+             */
+            if(alreadySelected)
 			{
 				i--;
 			}
@@ -4166,6 +4186,9 @@ public class GoalPlanBuilder
 				preConds[i] = randInt;
 			}
 		}
+        // dsingh: reset the action profile of the changebit
+        actionProfile[changeBit] = "c";
+
 		//build pre statement
 		String preStatement = "";
 		for(int i = 0; preConds.length >i; i++)
