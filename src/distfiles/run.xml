@@ -429,7 +429,7 @@
 </target>
 <target name="plottestEcaiLong" description="Plot testEcaiLong" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcaiLong"/>
-	<plotResult test.name="testEcaiLong" every="100000" label="testEcaiLong:ecai.txt"/>
+	<plotResult test.name="testEcaiLong" every="100" label="testEcaiLong:ecai.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
