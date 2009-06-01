@@ -40,10 +40,10 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
-<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai"/>
-<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
-<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
+<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai,buildtestEcaiLong"/>
+<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai,graphtestEcaiLong"/>
+<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai,runtestEcaiLong"/>
+<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai,plottestEcaiLong"/>
 <target name="test06" description="Build, run and plot tests 6*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
 
 <!-- Clean -->
@@ -405,8 +405,8 @@
 </target>
 <target name="runtest06a" description="Run test06a">
     <failIfBuildNotFound test.name="test06a"/>
-	<runTestRepeats test.name="test06a" run.type="stable"      run.params="-i 1000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test06a" run.type="concurrent"  run.params="-i 1000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test06a" run.type="stable"      run.params="-i 5000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test06a" run.type="concurrent"  run.params="-i 5000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06a" description="Plot test06a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06a"/>
@@ -424,8 +424,8 @@
 </target>
 <target name="runtest06b" description="Run test06b">
     <failIfBuildNotFound test.name="test06b"/>
-	<runTestRepeats test.name="test06b" run.type="stable"      run.params="-i 1000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test06b" run.type="concurrent"  run.params="-i 1000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test06b" run.type="stable"      run.params="-i 5000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test06b" run.type="concurrent"  run.params="-i 5000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06b" description="Plot test06b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06b"/>
@@ -465,7 +465,7 @@
 </target>
 <target name="runtestEcaiLong" description="Run testEcaiLong">
     <failIfBuildNotFound test.name="testEcaiLong"/>
-	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-i 100000 -s probabilistic -m 1"/>
+	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-i 50000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcaiLong" description="Plot testEcaiLong" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcaiLong"/>
