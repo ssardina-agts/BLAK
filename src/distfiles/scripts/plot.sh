@@ -5,6 +5,7 @@
 #---------------------------
 
 function avg() {
+rm -f $tmpdir/.paste
 touch $tmpdir/.paste
 for file in $@
 do
@@ -164,4 +165,4 @@ $gnuplot $tmpdir/.gnuplot.commands
 ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 
 #--- Cleanup
-rm -rf $tmpdir
+#rm -rf $tmpdir

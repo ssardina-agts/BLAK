@@ -45,6 +45,7 @@
 <target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
 <target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
 <target name="test06" description="Build, run and plot tests 6*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
+<target name="test07" description="Build, run and plot tests 7*" depends="buildtest07b,graphtest07b,runtest07b,plottest07b,buildtest07a,graphtest07a,runtest07a,plottest07a"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -430,6 +431,45 @@
 <target name="plottest06b" description="Plot test06b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06b"/>
 	<plotResult test.name="test06b" label="test06b:noiseless:pass-atdepth3-withseq3-inworlds1of2-withp0001.txt"/>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 07a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest07a" description="Build test07a" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test07a"/>
+	<buildTest test.name="test07a" specs.file="${specs.dir}/concurrent-pass-atdepth3-withseq1-inworlds1of1-withp001.txt"/>
+</target>
+<target name="graphtest07a" description="Graph test07a" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test07a"/>
+</target>
+<target name="runtest07a" description="Run test07a">
+    <failIfBuildNotFound test.name="test07a"/>
+	<runTest test.name="test07a" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTest test.name="test07a" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest07a" description="Plot test07a" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test07a"/>
+	<plotResult test.name="test07a" label="test07a:noiseless:concurrent-pass-atdepth3-withseq1-inworlds1of1-withp001.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST 07b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest07b" description="Build test07b" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test07b"/>
+	<buildTest test.name="test07b" specs.file="${specs.dir}/concurrent-pass-atdepth3-withseq1-inworlds1of20-withp001.txt"/>
+</target>
+<target name="graphtest07b" description="Graph test07b" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test07b"/>
+</target>
+<target name="runtest07b" description="Run test07b">
+    <failIfBuildNotFound test.name="test07b"/>
+	<runTest test.name="test07b" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTest test.name="test07b" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest07b" description="Plot test07b" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test07b"/>
+	<plotResult test.name="test07b" label="test07b:noiseless:concurrent-pass-atdepth3-withseq1-inworlds1of20-withp001.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
