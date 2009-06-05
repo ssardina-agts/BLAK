@@ -405,31 +405,31 @@
 </target>
 <target name="runtest06a" description="Run test06a">
     <failIfBuildNotFound test.name="test06a"/>
-	<runTestRepeats test.name="test06a" run.type="stable"      run.params="-i 5000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test06a" run.type="concurrent"  run.params="-i 5000 -s probabilistic -m 1"/>
+	<runTest test.name="test06a" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTest test.name="test06a" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06a" description="Plot test06a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06a"/>
-	<plotResult test.name="test06a" label="test06a:tree-pass0001-pre0.txt"/>
+	<plotResult test.name="test06a" label="test06a:noiseless:pass-atdepth3-withseq3-inworlds2of2-withp0001.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- TEST 06b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest06b" description="Build test06b" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test06b"/>
-	<buildTest test.name="test06b" specs.file="${specs.dir}/tree-pass0001-pre1-post0.txt"/>
+	<buildTest test.name="test06b" specs.file="${specs.dir}/pass-atdepth3-withseq3-inworlds1of2-withp0001.txt"/>
 </target>
 <target name="graphtest06b" description="Graph test06b" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test06b"/>
 </target>
 <target name="runtest06b" description="Run test06b">
     <failIfBuildNotFound test.name="test06b"/>
-	<runTestRepeats test.name="test06b" run.type="stable"      run.params="-i 5000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test06b" run.type="concurrent"  run.params="-i 5000 -s probabilistic -m 1"/>
+	<runTest test.name="test06b" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTest test.name="test06b" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06b" description="Plot test06b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06b"/>
-	<plotResult test.name="test06b" label="test06b:tree-pass0001-pre1.txt"/>
+	<plotResult test.name="test06b" label="test06b:noiseless:pass-atdepth3-withseq3-inworlds1of2-withp0001.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -465,11 +465,11 @@
 </target>
 <target name="runtestEcaiLong" description="Run testEcaiLong">
     <failIfBuildNotFound test.name="testEcaiLong"/>
-	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-i 50000 -s probabilistic -m 1"/>
+	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-n 0.0 -i 25000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcaiLong" description="Plot testEcaiLong" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcaiLong"/>
-	<plotResult test.name="testEcaiLong" label="testEcaiLong:ecai.txt"/>
+	<plotResult test.name="testEcaiLong" label="testEcaiLong:noiseless:ecai.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

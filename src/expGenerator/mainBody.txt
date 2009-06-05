@@ -10,7 +10,9 @@ public static void main(String[] args){
     String recordMeFileName = "";
     boolean doCompare = false;
     String compareTemplate = "";
+    double noise;
 	
+    noise = 0.1;
     staK = 3;
     staE = 0.05;
     boolean waitST = false;
@@ -24,24 +26,24 @@ public static void main(String[] args){
 	    char option = arg.charAt(1);
 	    switch(option){
 	    case 'u': // choice of the update mode
-		String umode = args[index];
-		index++;
-		if (umode.equals("bottomUp")){// Bottom Up learner
-		    update_mode = BU; 
-		    waitST= true;
-		}
-		if  (umode.equals("concurrent")){// DT are learnt concurrently
-		    update_mode = CL;
-		    waitST= false;	
-		}
-		if (umode.equals("stable")){//update the learning mechanism using a stability measure.
-		    update_mode = STABLE_U;
-		}
-		break;
+            String umode = args[index];
+            index++;
+            if (umode.equals("bottomUp")){// Bottom Up learner
+                update_mode = BU; 
+                waitST= true;
+            }
+            if  (umode.equals("concurrent")){// DT are learnt concurrently
+                update_mode = CL;
+                waitST= false;	
+            }
+            if (umode.equals("stable")){//update the learning mechanism using a stability measure.
+                update_mode = STABLE_U;
+            }
+            break;
   	    case 'i': // number of iterations
-		numIterations = Integer.parseInt(args[index]);
-		index++;
-		break;
+            numIterations = Integer.parseInt(args[index]);
+            index++;
+            break;
 	    case 'm': // Minimum number of instances before building a tree
 			minNI = Integer.parseInt(args[index]);
 			index++;
@@ -52,6 +54,10 @@ public static void main(String[] args){
 			break;	    
 	    case 'o': // output file
 			filename = args[index];
+			index++;
+			break;	    
+	    case 'n': // noise level
+			noise = Double.parseDouble(args[index]);
 			index++;
 			break;	    
 		case 's': // plan selection mode
@@ -109,6 +115,7 @@ public static void main(String[] args){
 	env.recordFeedFileName = recordMeFileName;
 	env.compareToFile = doCompare;
 	env.compareTemplate = compareTemplate;
+    env.noise = noise;
 	
 	if(feedMeTheWorld)
 	{

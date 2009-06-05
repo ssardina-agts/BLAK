@@ -1,0 +1,214 @@
+@attribute a observable boolean
+@topgoal TopGoal
+@goal G1_1
+@goal G1_2
+@goal G1_3
+@action a11
+	@pre  (a)
+	@post 
+@action a12
+	@pre  (!a)
+	@post 
+@action a2
+	@pre  (a && !a)
+	@post 
+@plan P1
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body G1_1 G1_2 G1_3
+@plan P2
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body a2
+@plan P3
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body a2
+@plan P4
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P5
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body a2
+@plan P6
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P7
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P8
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P9
+    @handles TopGoal
+    @initPre true;
+	@pre true;
+    @body a2
+@plan P10
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_1
+    @handles G1_1
+    @initPre true;
+	@pre true;
+    @body a11
+@plan P1_1_2
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_3
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_4
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_1_5
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_6
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_7
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_8
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_9
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_1_10
+    @handles G1_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_1
+    @handles G1_2
+    @initPre true;
+	@pre true;
+    @body a11
+@plan P1_2_2
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_3
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_4
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_2_5
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_6
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_7
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_8
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_9
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_2_10
+    @handles G1_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_1
+    @handles G1_3
+    @initPre true;
+	@pre true;
+    @body a11
+@plan P1_3_2
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_3_3
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_3_4
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P1_3_5
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_6
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_7
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_8
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_9
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P1_3_10
+    @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
