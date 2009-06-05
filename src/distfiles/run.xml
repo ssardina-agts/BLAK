@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!-- BLAK: BDI Learning Agent Kit -->
-<project name="BLAK" basedir="." default="buildall">
+<project name="BLAK" basedir="." default="all">
 
 <!-- USER CONFIG -->
 <!-- Single option to control the iterations parameter for all tests -->
@@ -40,12 +40,17 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
-<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai"/>
-<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
-<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
-<target name="test06" description="Build, run and plot tests 6*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
-<target name="test07" description="Build, run and plot tests 7*" depends="buildtest07b,graphtest07b,runtest07b,plottest07b,buildtest07a,graphtest07a,runtest07a,plottest07a"/>
+<target name="all" description="Build, run and plot all tests" depends="test01,test02,test03,test04,test05,testEcai"/>
+
+<target name="test01" description="Build, run and plot tests 01" depends="buildtest01,graphtest01,runtest01,plottest01"/>
+<target name="test02" description="Build, run and plot tests 02" depends="buildtest02,graphtest02,runtest02,plottest02"/>
+<target name="test03" description="Build, run and plot tests 03" depends="buildtest03,graphtest03,runtest03,plottest03"/>
+<target name="test04" description="Build, run and plot tests 04" depends="buildtest04,graphtest04,runtest04,plottest04"/>
+<target name="test05" description="Build, run and plot tests 05" depends="buildtest05,graphtest05,runtest05,plottest05"/>
+<target name="testEcai" description="Build, run and plot tests Ecai" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
+
+<target name="test06" description="Build, run and plot tests 06*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
+<target name="test07" description="Build, run and plot tests 07*" depends="buildtest07b,graphtest07b,runtest07b,plottest07b,buildtest07a,graphtest07a,runtest07a,plottest07a"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -229,8 +234,8 @@
   <attribute name="run.params"/>
   <sequential>
 	<mkdir dir="${results.dir}/@{test.name}/@{run.type}@{run.id}"/>
-	<tstamp prefix="start"/>
-	<echo level="info" message="${start.DSTAMP}.${start.TSTAMP}: Started @{test.name}/@{run.type}@{run.id}"/>
+	<tstamp prefix="start.@{test.name}-@{run.type}-@{run.id}"/>
+	<echo level="info" message="${start.@{test.name}-@{run.type}-@{run.id}.DSTAMP}.${start.@{test.name}-@{run.type}-@{run.id}.TSTAMP}: Started @{test.name}/@{run.type}@{run.id}"/>
 	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/@{test.name}/@{run.type}@{run.id}/stdout.log">
 		<arg line="-d ${results.dir}/@{test.name}/@{run.type}@{run.id} -o @{test.name}-@{run.type}-@{run.id}.csv -u @{run.type} @{run.params}"/>
 		<classpath>
