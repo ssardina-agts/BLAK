@@ -40,10 +40,10 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai,buildtestEcaiLong"/>
-<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai,graphtestEcaiLong"/>
-<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai,runtestEcaiLong"/>
-<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai,plottestEcaiLong"/>
+<target name="buildall" description="Build all tests" depends="buildtest01,buildtest02,buildtest03,buildtest04,buildtest05,buildtestEcai"/>
+<target name="graphall" description="Graph all test trees" depends="graphtest01,graphtest02,graphtest03,graphtest04,graphtest05,graphtestEcai"/>
+<target name="runall" description="Run all tests (must do buildAll first)" depends="runtest01,runtest02,runtest03,runtest04,runtest05,runtestEcai"/>
+<target name="plotall" description="Plot all test results (must do runAll first)" depends="plottest01,plottest02,plottest03,plottest04,plottest05,plottestEcai"/>
 <target name="test06" description="Build, run and plot tests 6*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
 
 <!-- Clean -->
@@ -444,33 +444,14 @@
 </target>
 <target name="runtestEcai" description="Run testEcai">
     <failIfBuildNotFound test.name="testEcai"/>
-	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTest test.name="testEcai" run.type="stable"     run.id="1" run.params="-n 0.0 -i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
+	<runTest test.name="testEcai" run.type="concurrent" run.id="1" run.params="-n 0.0 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcai"/>
-	<plotResult test.name="testEcai" range="[:5000]" label="testEcai:ecai.txt"/>
+	<plotResult test.name="testEcai" label="testEcai:noiseless:ecai.txt"/>
 </target>
 
-
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST ecaiLong ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestEcaiLong" description="Build testEcaiLong" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testEcaiLong"/>
-	<buildTest test.name="testEcaiLong" specs.file="${specs.dir}/ecai.txt"/>
-</target>
-<target name="graphtestEcaiLong" description="Graph testEcaiLong" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testEcaiLong"/>
-</target>
-<target name="runtestEcaiLong" description="Run testEcaiLong">
-    <failIfBuildNotFound test.name="testEcaiLong"/>
-	<runTest test.name="testEcaiLong" run.type="concurrent" run.id="1" run.params="-n 0.0 -i 25000 -s probabilistic -m 1"/>
-</target>
-<target name="plottestEcaiLong" description="Plot testEcaiLong" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testEcaiLong"/>
-	<plotResult test.name="testEcaiLong" label="testEcaiLong:noiseless:ecai.txt"/>
-</target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- END TESTS TARGETS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

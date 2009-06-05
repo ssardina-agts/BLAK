@@ -19,6 +19,16 @@ done
 
 function makePlotCommands() {
 # $1: outputfile,  $2: Stable data,  $3: Concurrent data,  $4: plotrange,  $5: label,  $6: every
+plotcmd="plot $4 \"$2\" every $6 title \"Stable\" lt 2 lw 2 with lines, \"$3\" every $6 title \"Concurrent\" lt 1 lw 2 with lines"
+
+if [ "$2" == "nil" ]
+then
+plotcmd="plot $4 \"$3\" every $6 title \"Concurrent\" lt 1 lw 2 with lines"
+elif [ "$3" == "nil" ]
+then 
+plotcmd="plot $4 \"$2\" every $6 title \"Stable\" lt 2 lw 2 with lines"
+fi
+
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
 set terminal postscript landscape color rounded 
@@ -35,7 +45,7 @@ set grid noxtics ytics mytics
 show grid
 set key center right
 set key spacing 1.3
-plot $4 "$2" every $6 title "Stable" lt 2 lw 2 with lines, "$3" every $6 title "Concurrent" lt 1 lw 2 with lines
+$plotcmd
 reset
 EOF
 }
@@ -119,13 +129,35 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Generate the averaged data to plot
-set1=`find $srcdir -name "$testname*stable*.csv" -print`
-set2=`find $srcdir -name "$testname*concurrent*.csv" -print`
-avg $set1 > $tmpdir/.stable.data
-avg $set2 > $tmpdir/.concurrent.data
+set1=`find $srcdir -name "$testname-stable*.csv" -print`
+set2=`find $srcdir -name "$testname-concurrent*.csv" -print`
 
-#--- Generate the gnupot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $tmpdir/.stable.data $tmpdir/.concurrent.data $range > $tmpdir/.gnuplot.commands $label $every
+stableDataFile=$tmpdir/.stable.data
+concurrentDataFile=$tmpdir/.concurrent.data
+
+if [ "$set1" == "" ]
+then
+stableDataFile=nil
+else
+avg $set1 > $stableDataFile
+fi
+
+if [ "$set2" == "" ]
+then
+concurrentDataFile=nil
+else
+avg $set2 > $concurrentDataFile
+fi
+
+if [ "$stableDataFile" == "nil" ] && [ "$concurrentDataFile" == "nil" ]
+then
+ echo "No data found for test $testname"
+ exit 0
+fi
+
+
+#--- Generate the gnuplot commands script
+makePlotCommands $tmpdir/.gnuplot.eps $stableDataFile $concurrentDataFile $range > $tmpdir/.gnuplot.commands $label $every
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands
