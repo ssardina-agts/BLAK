@@ -14,10 +14,10 @@
 @goal G31
 @action a111
 	@pre  (a && b && c)
-	@post c= true;
+	@post 
 @action a112
 	@pre (a && b && !c)
-	@post 
+	@post c= true;
 @action a121
 	@pre (c && d && f)
 	@post e=true;
@@ -49,7 +49,7 @@
 	@pre (!a && !d && ( !b || !f ))
 	@post
 @action a311
-	@pre  ((!b || (b && !a) || (b && !d) ) && (c && e && f))
+	@pre  ((!b || (b && !a) || (b && !d) ) && (c || e || f))
 	@post 
 @action a312
 	@pre ((!b || (b && !a) || (b && !d) ) && !c)
