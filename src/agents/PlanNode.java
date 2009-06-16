@@ -881,8 +881,16 @@ public class PlanNode extends Node{
     
     public void classifyAllWorlds(Vector bitSetCollection)
     {
-        //writeCsv("Plan: "+this.getItem(), "planClass/"+this.getItem());
-        for(int j = 0; bitSetCollection.size()>j;j++)
+        int maxWorlds = bitSetCollection.size();
+        String str;
+        if (maxWorlds > 1024) {
+            maxWorlds = 1024;
+            str = "#Number of worlds: " + bitSetCollection.size() + "\n";
+            str += "#Generation of classifications for all worlds will take too long.\n";
+            str += "#Showing only the first " + maxWorlds + " classifications below.\n";
+            writeCsv(str, "dt."+this.getItem());
+        }
+        for(int j = 0; maxWorlds>j;j++)
         {
             BitSet tempBitSet = (BitSet)bitSetCollection.elementAt(j);
             double[] val = null;
@@ -921,11 +929,19 @@ public class PlanNode extends Node{
     
     public void referenceAllWorlds(Vector bitSetCollection)
     {
-        writeLog("Plan: "+this.getItem(), "dt.key."+this.getItem());
-        for(int j = 0; bitSetCollection.size()>j;j++)
+        int maxWorlds = bitSetCollection.size();
+        String str;
+        if (maxWorlds > 1024) {
+            maxWorlds = 1024;
+            str = "#Number of worlds: " + bitSetCollection.size() + "\n";
+            str += "#Generation of all worlds will take too long.\n";
+            str += "#Showing only the first " + maxWorlds + " worlds below.\n";
+            writeLog(str, "worlds-key");
+        }
+        for(int j = 0; maxWorlds>j;j++)
         {
             BitSet tempBitSet = (BitSet)bitSetCollection.elementAt(j);
-            writeLog(j+"="+stringBitSet(tempBitSet), "dt.key."+this.getItem());
+            writeLog(j+"="+stringBitSet(tempBitSet), "worlds-key");
         }
     }
 }
