@@ -1,8 +1,11 @@
 #!/bin/bash
 
+mov_avg="$(cd "${0%/*}" 2>/dev/null; echo "$PWD")"/movingAvg.pl
+
 #---------------------------
 #---- Helper Functions -----
 #---------------------------
+
 
 function avg() {
 rm -f $tmpdir/.paste
@@ -15,7 +18,7 @@ do
 done
 /usr/bin/awk '{avg=0; for(i=1; i<=NF; i++){avg+=$i}; avg/=NF; print avg}' $tmpdir/.paste > $tmpdir/.avg
 /usr/bin/cut -f1 -d' ' $1 > $tmpdir/.cut
-/usr/bin/paste $tmpdir/.cut $tmpdir/.avg
+/usr/bin/paste -d' ' $tmpdir/.cut $tmpdir/.avg
 }
 
 function makePlotCommands() {
@@ -53,6 +56,13 @@ EOF
 
 parseargs()
 {
+
+range="[]"
+label=""
+every=1
+window=1
+gnuplot=gnuplot
+
 HELP='
 Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
@@ -60,15 +70,12 @@ Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
        -l label      String to use as plot title
-       -r plotrange  X-data range in gnuplot format to plot (optional - default is "[]")
-       -e N          Plot every N point (optional - default is 1)
+       -r plotrange  X-data range in gnuplot format to plot (optional - default is "'$range'")
+       -e N          Plot every N point (optional - default is '$every')
+       -w N          Use moving average window of size N (optional - default is '$window')
 '
-range="[]"
-label=""
-every=1
-gnuplot=gnuplot
 
-args=`getopt t:d:o:r:e:g:l: $*`
+args=`getopt t:d:o:r:e:w:g:l: $*`
 set -- $args
 for i
 do
@@ -87,6 +94,9 @@ do
 			shift;;
 		-e)
 			every=$2; shift;
+			shift;;
+		-w)
+			window=$2; shift;
 			shift;;
 		-g)
 			gnuplot="$2"; shift;
@@ -113,6 +123,7 @@ fi
 #echo testname=$testname
 #echo range=$range
 #echo every=$every
+#echo window=$window
 #echo gnuplot=$gnuplot
 #echo label=$label
 }
@@ -125,37 +136,35 @@ fi
 #--- Parse the arguments
 parseargs $@
 
-#--- Temp directory
+#--- Create temp directory
 tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
-#--- Generate the averaged data to plot
+#--- Collect the result files
 set1=`find $srcdir -name "$testname-stable*.csv" -print`
 set2=`find $srcdir -name "$testname-concurrent*.csv" -print`
-
-stableDataFile=$tmpdir/.stable.data
-concurrentDataFile=$tmpdir/.concurrent.data
-
-if [ "$set1" == "" ]
-then
-stableDataFile=nil
-else
-avg $set1 > $stableDataFile
-fi
-
-if [ "$set2" == "" ]
-then
-concurrentDataFile=nil
-else
-avg $set2 > $concurrentDataFile
-fi
-
-if [ "$stableDataFile" == "nil" ] && [ "$concurrentDataFile" == "nil" ]
-then
+if [ "$set1" == "" ] && [ "$set2" == "nil" ]; then
  echo "No data found for test $testname"
  exit 0
 fi
 
+#--- Generate the averaged results
+if [ "$set1" == "" ]; then 
+stableDataFile=nil 
+else 
+stableDataFile=$tmpdir/.stable.data
+avg $set1 > $stableDataFile
+`$mov_avg -i $stableDataFile -o $stableDataFile.mavg -w $window`
+/bin/mv $stableDataFile.mavg $stableDataFile
+fi
+if [ "$set2" == "" ]; then 
+concurrentDataFile=nil
+else 
+concurrentDataFile=$tmpdir/.concurrent.data
+avg $set2 > $concurrentDataFile
+`$mov_avg -i $concurrentDataFile -o $concurrentDataFile.mavg -w $window`
+/bin/mv $concurrentDataFile.mavg $concurrentDataFile
+fi
 
 #--- Generate the gnuplot commands script
 makePlotCommands $tmpdir/.gnuplot.eps $stableDataFile $concurrentDataFile $range > $tmpdir/.gnuplot.commands $label $every
@@ -165,4 +174,4 @@ $gnuplot $tmpdir/.gnuplot.commands
 ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 
 #--- Cleanup
-#rm -rf $tmpdir
+rm -rf $tmpdir

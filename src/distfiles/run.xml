@@ -269,6 +269,7 @@
   <attribute name="test.name"/>
   <attribute name="range" default="[:]"/>
   <attribute name="every" default="1"/>
+  <attribute name="window" default="100"/>
   <attribute name="label" default="@{test.name}"/>
   <sequential>
 	<exec executable="${plot.sh}">
@@ -282,6 +283,8 @@
 		<arg value="@{range}"/>
 		<arg value="-e"/>
 		<arg value="@{every}"/>
+		<arg value="-w"/>
+		<arg value="@{window}"/>
 		<arg value="-l"/>
 		<arg value="@{label}"/>
 	</exec>
@@ -489,8 +492,8 @@
 </target>
 <target name="runtestEcai" description="Run testEcai">
     <failIfBuildNotFound test.name="testEcai"/>
-	<runTest test.name="testEcai" run.type="stable"     run.id="1" run.params="-n 0.0 -i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="testEcai" run.type="concurrent" run.id="1" run.params="-n 0.0 -i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-n 0.0 -i 1000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-n 0.0 -i 1000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcai"/>
