@@ -407,15 +407,15 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest06a" description="Build test06a" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test06a"/>
-	<buildTest test.name="test06a" specs.file="${specs.dir}/tree-pass0001-pre0-post0.txt"/>
+	<buildTest test.name="test06a" specs.file="${specs.dir}/pass-atdepth3-withseq3-inworlds2of2-withp0001.txt"/>
 </target>
 <target name="graphtest06a" description="Graph test06a" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test06a"/>
 </target>
 <target name="runtest06a" description="Run test06a">
     <failIfBuildNotFound test.name="test06a"/>
-	<runTest test.name="test06a" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="test06a" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test06a" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test06a" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06a" description="Plot test06a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06a"/>
@@ -433,8 +433,8 @@
 </target>
 <target name="runtest06b" description="Run test06b">
     <failIfBuildNotFound test.name="test06b"/>
-	<runTest test.name="test06b" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="test06b" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test06b" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test06b" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest06b" description="Plot test06b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test06b"/>
@@ -453,8 +453,8 @@
 </target>
 <target name="runtest07a" description="Run test07a">
     <failIfBuildNotFound test.name="test07a"/>
-	<runTest test.name="test07a" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="test07a" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test07a" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test07a" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest07a" description="Plot test07a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test07a"/>
@@ -472,8 +472,8 @@
 </target>
 <target name="runtest07b" description="Run test07b">
     <failIfBuildNotFound test.name="test07b"/>
-	<runTest test.name="test07b" run.type="stable"      run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="test07b" run.type="concurrent"  run.id="1" run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test07b" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="test07b" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottest07b" description="Plot test07b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test07b"/>

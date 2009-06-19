@@ -42,7 +42,7 @@ set title "$5"
 set xlabel "Iteration"
 #set xtics 0, 250
 set ylabel "Success"
-set yrange [0:1]
+set yrange [0:1.1]
 set ytic 0, 0.2
 set mytics 2
 set grid noxtics ytics mytics

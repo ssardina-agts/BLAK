@@ -3,6 +3,9 @@
 @goal G1_1
 @goal G1_2
 @goal G1_3
+@goal G2_1
+@goal G2_2
+@goal G2_3
 @action a11
 	@pre  (a)
 	@post 
@@ -21,7 +24,7 @@
     @handles TopGoal
     @initPre true;
 	@pre true;
-    @body a2
+    @body G2_1 G2_2 G2_3
 @plan P3
     @handles TopGoal
     @initPre true;
@@ -209,6 +212,156 @@
     @body a2   
 @plan P1_3_10
     @handles G1_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_1
+    @handles G2_1
+    @initPre true;
+	@pre true;
+    @body a12
+@plan P2_1_2
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_3
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_4
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_1_5
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_6
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_7
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_8
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_9
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_1_10
+    @handles G2_1
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_1
+    @handles G2_2
+    @initPre true;
+	@pre true;
+    @body a12
+@plan P2_2_2
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_3
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_4
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_2_5
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_6
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_7
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_8
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_9
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_2_10
+    @handles G2_2
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_1
+    @handles G2_3
+    @initPre true;
+	@pre true;
+    @body a12
+@plan P2_3_2
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_3_3
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_3_4
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2
+@plan P2_3_5
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_6
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_7
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_8
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_9
+    @handles G2_3
+    @initPre true;
+ 	@pre true;
+    @body a2   
+@plan P2_3_10
+    @handles G2_3
     @initPre true;
  	@pre true;
     @body a2   
