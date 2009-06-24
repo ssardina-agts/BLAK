@@ -47,10 +47,10 @@
 <target name="test03" description="Build, run and plot tests 03" depends="buildtest03,graphtest03,runtest03,plottest03"/>
 <target name="test04" description="Build, run and plot tests 04" depends="buildtest04,graphtest04,runtest04,plottest04"/>
 <target name="test05" description="Build, run and plot tests 05" depends="buildtest05,graphtest05,runtest05,plottest05"/>
-<target name="testEcai" description="Build, run and plot tests Ecai" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
+<target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
 
 <target name="test06" description="Build, run and plot tests 06*" depends="buildtest06b,graphtest06b,runtest06b,plottest06b,buildtest06a,graphtest06a,runtest06a,plottest06a"/>
-<target name="test07" description="Build, run and plot tests 07*" depends="buildtest07b,graphtest07b,runtest07b,plottest07b,buildtest07a,graphtest07a,runtest07a,plottest07a"/>
+<target name="testDummyvars" description="Build, run and plot testDummyvars (Tests impact of dummy variables)" depends="buildtestDummyvars2,graphtestDummyvars2,runtestDummyvars2,plottestDummyvars2,buildtestDummyvars1,graphtestDummyvars1,runtestDummyvars1,plottestDummyvars1"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -442,42 +442,42 @@
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 07a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testDummyvars1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest07a" description="Build test07a" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test07a"/>
-	<buildTest test.name="test07a" specs.file="${specs.dir}/concurrent-pass-atdepth3-withseq1-inworlds1of1-withp001.txt"/>
+<target name="buildtestDummyvars1" description="Build testDummyvars1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testDummyvars1"/>
+	<buildTest test.name="testDummyvars1" specs.file="${specs.dir}/dummyvars/pass-atdepth3-withseq1-invars01of01-withp001.txt"/>
 </target>
-<target name="graphtest07a" description="Graph test07a" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test07a"/>
+<target name="graphtestDummyvars1" description="Graph testDummyvars1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testDummyvars1"/>
 </target>
-<target name="runtest07a" description="Run test07a">
-    <failIfBuildNotFound test.name="test07a"/>
-	<runTestRepeats test.name="test07a" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test07a" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+<target name="runtestDummyvars1" description="Run testDummyvars1">
+    <failIfBuildNotFound test.name="testDummyvars1"/>
+	<runTestRepeats test.name="testDummyvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testDummyvars1" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest07a" description="Plot test07a" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test07a"/>
-	<plotResult test.name="test07a" label="test07a:noiseless:concurrent-pass-atdepth3-withseq1-inworlds1of1-withp001.txt"/>
+<target name="plottestDummyvars1" description="Plot testDummyvars1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testDummyvars1"/>
+	<plotResult test.name="testDummyvars1" label="testDummyvars1:noiseless:pass-atdepth3-withseq1-invars01of01-withp001.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 07b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testDummyvars2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest07b" description="Build test07b" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test07b"/>
-	<buildTest test.name="test07b" specs.file="${specs.dir}/concurrent-pass-atdepth3-withseq1-inworlds1of20-withp001.txt"/>
+<target name="buildtestDummyvars2" description="Build testDummyvars2" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testDummyvars2"/>
+	<buildTest test.name="testDummyvars2" specs.file="${specs.dir}/dummyvars/pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
 </target>
-<target name="graphtest07b" description="Graph test07b" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test07b"/>
+<target name="graphtestDummyvars2" description="Graph testDummyvars2" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testDummyvars2"/>
 </target>
-<target name="runtest07b" description="Run test07b">
-    <failIfBuildNotFound test.name="test07b"/>
-	<runTestRepeats test.name="test07b" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test07b" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+<target name="runtestDummyvars2" description="Run testDummyvars2">
+    <failIfBuildNotFound test.name="testDummyvars2"/>
+	<runTestRepeats test.name="testDummyvars2" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testDummyvars2" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest07b" description="Plot test07b" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test07b"/>
-	<plotResult test.name="test07b" label="test07b:noiseless:concurrent-pass-atdepth3-withseq1-inworlds1of20-withp001.txt"/>
+<target name="plottestDummyvars2" description="Plot testDummyvars2" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testDummyvars2"/>
+	<plotResult test.name="testDummyvars2" label="testDummyvars2:noiseless:pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -485,15 +485,15 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestEcai" description="Build testEcai" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testEcai"/>
-	<buildTest test.name="testEcai" specs.file="${specs.dir}/ecai.txt"/>
+	<buildTest test.name="testEcai" specs.file="${specs.dir}/ecai/ecai.txt"/>
 </target>
 <target name="graphtestEcai" description="Graph testEcai" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="testEcai"/>
 </target>
 <target name="runtestEcai" description="Run testEcai">
     <failIfBuildNotFound test.name="testEcai"/>
-	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-n 0.0 -i 20000 -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-n 0.0 -i 20000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-n 0.0 -i 5000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-n 0.0 -i 5000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcai"/>
