@@ -475,8 +475,8 @@
 </target>
 <target name="runtestImpactvars1" description="Run testImpactvars1">
     <failIfBuildNotFound test.name="testImpactvars1"/>
-	<runTest test.name="testImpactvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
-	<runTest test.name="testImpactvars1" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="testImpactvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testImpactvars1" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestImpactvars1" description="Plot testImpactvars1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars1"/>
