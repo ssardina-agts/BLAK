@@ -1,0 +1,49 @@
+\begin{tikzpicture}
+[
+level distance=27mm, 
+level 1/.style={sibling distance=20mm}, 
+level 2/.style={sibling distance=12mm}, 
+level 3/.style={sibling distance=12mm},
+goal/.style={ellipse, very thin, draw=red!20, top color=white, bottom color=red!20, inner ysep=2mm, text width=15mm, text centered, font=\itshape},
+plan/.style={rectangle, very thin, draw= black!20, top color=white, bottom color=black!20, inner ysep=3mm, text width=19mm, text centered}
+] 
+\node[goal] at (0,0) {TopGoal} [grow=right]
+	child {node[plan] {Charge From Home Driveway}}
+	child {node[plan] {Charge From Home Solar}}
+	child {node[plan] {Supply Power To Home}} 
+	child {node[plan] {Charge From Shops Grid}}
+	child {node[plan] {Supply Power To Shops}}
+	child {node[plan] {Charge From Office Grid}}
+	child {node[plan] {Charge From Office Wind Power}}
+	child {node[plan] {Supply Power To Office}
+}; 
+\node[goal]  at (5.5,5.5) {Connect} [grow=right]
+	child {node[plan] {Connect To Driveway}}
+	child {node[plan] {Connect To Home Solar}}
+	child {node[plan] {Connect To Shops Grid}}
+	child {node[plan] {Connect To Office Wind Power}}
+	child {node[plan] {Connect To Office Grid}
+};
+
+\node[goal]  at (11,4.5) {Charge} [grow=right]
+	child {node[plan] {Charge To Level 025}}
+	child {node[plan] {Charge To Level 050}}
+	child {node[plan] {Charge To Level 075}}
+	child {node[plan] {Charge To Level 100}
+};
+
+\node[goal]  at (11,-4.5) {Discharge} [grow=right]
+	child {node[plan] {Discharge To Level 000}}
+	child {node[plan] {Discharge To Level 025}}
+	child {node[plan] {Discharge To Level 050}}
+	child {node[plan] {Discharge To Level 075}
+};
+
+\node[goal]  at (5.5,-5.5) {Disconnect} [grow=right]
+	child {node[plan] {Disconnect From Driveway}}
+	child {node[plan] {Disconnect From Home Solar}}
+	child {node[plan] {Disconnect From Shops Grid}}
+	child {node[plan] {Disconnect From Office Wind Power}}
+	child {node[plan] {Disconnect From Office Grid}
+};
+\end{tikzpicture}

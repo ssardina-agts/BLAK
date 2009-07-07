@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+[
+level distance=27mm, 
+level 1/.style={sibling distance=20mm}, 
+level 2/.style={sibling distance=20mm}, 
+level 3/.style={sibling distance=20mm},
+goal/.style={ellipse, very thin, draw=red!20, top color=white, bottom color=red!20, inner ysep=2mm, text width=15mm, text centered, font=\itshape},
+plan/.style={rectangle, very thin, draw= black!20, top color=white, bottom color=black!20, inner ysep=3mm, text width=19mm, text centered}
+] 
+\node[goal] at (0,0) {TopGoal} [grow=right]
+	child {node[plan] {Supply Power To Office}
+		child {node[goal] {Disconnect}
+			child {node[plan] {Disconnect From Office Grid}}
+		}
+		child {node[goal] {Discharge}
+			child {node[plan] {Discharge To Level 075}}
+		}
+		child {node[goal] {Connect}
+			child {node[plan] {Connect To Office Grid}}
+		}
+}; 
+\end{tikzpicture}
