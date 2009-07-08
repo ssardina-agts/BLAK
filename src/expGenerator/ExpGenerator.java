@@ -497,7 +497,7 @@ public class ExpGenerator {
 		+"\t}\n"
 		+"\telse{\n" 
 		+"\t\t//System.out.println(\"plan \"+name+\"\t DT not use, return 1\");\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 1);\n\t}\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5);\n\t}\n"
 		+"}\n\n";
 	}
 	

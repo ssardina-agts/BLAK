@@ -40,17 +40,16 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="all" description="Build, run and plot all tests" depends="test01,test02,test03,test04,test05,testEcai,testDummyvars"/>
+<target name="all" description="Build, run and plot all tests" depends="testEcai,testImpactvars,testDummyvars,test01,test02,test03,test04,test05"/>
 
+<target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
+<target name="testImpactvars" description="Build, run and plot testImpactvars (Tests impact of relevant variables)" depends="buildtestImpactvars1,graphtestImpactvars1,runtestImpactvars1,plottestImpactvars1"/>
+<target name="testDummyvars" description="Build, run and plot testDummyvars (Tests impact of dummy variables)" depends="buildtestDummyvars2,graphtestDummyvars2,runtestDummyvars2,plottestDummyvars2,buildtestDummyvars1,graphtestDummyvars1,runtestDummyvars1,plottestDummyvars1"/>
 <target name="test01" description="Build, run and plot tests 01" depends="buildtest01,graphtest01,runtest01,plottest01"/>
 <target name="test02" description="Build, run and plot tests 02" depends="buildtest02,graphtest02,runtest02,plottest02"/>
 <target name="test03" description="Build, run and plot tests 03" depends="buildtest03,graphtest03,runtest03,plottest03"/>
 <target name="test04" description="Build, run and plot tests 04" depends="buildtest04,graphtest04,runtest04,plottest04"/>
 <target name="test05" description="Build, run and plot tests 05" depends="buildtest05,graphtest05,runtest05,plottest05"/>
-<target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
-
-<target name="testImpactvars" description="Build, run and plot testImpactvars (Tests impact of relevant variables)" depends="buildtestImpactvars1,graphtestImpactvars1,runtestImpactvars1,plottestImpactvars1"/>
-<target name="testDummyvars" description="Build, run and plot testDummyvars (Tests impact of dummy variables)" depends="buildtestDummyvars2,graphtestDummyvars2,runtestDummyvars2,plottestDummyvars2,buildtestDummyvars1,graphtestDummyvars1,runtestDummyvars1,plottestDummyvars1"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -309,12 +308,12 @@
 </target>
 <target name="runtest01" description="Run test01">
     <failIfBuildNotFound test.name="test01"/>
-	<runTestRepeats test.name="test01" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test01" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test01" run.type="stable"     run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1 -k 1 -e 0.3"/>
+	<runTestRepeats test.name="test01" run.type="concurrent" run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottest01" description="Plot test01" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01"/>
-	<plotResult test.name="test01" range="[:2000]" label="test01:concurrentFail.txt"/>
+	<plotResult test.name="test01" range="[:2000]" label="test01:n=0.1,m=1,k=1,e=0.3:concurrentFail.txt"/>
 </target>
 
 
@@ -330,12 +329,12 @@
 </target>
 <target name="runtest02" description="Run test02">
     <failIfBuildNotFound test.name="test02"/>
-	<runTestRepeats test.name="test02" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test02" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test02" run.type="stable"     run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1 -k 1 -e 0.3"/>
+	<runTestRepeats test.name="test02" run.type="concurrent" run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottest02" description="Plot test02" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test02"/>
-	<plotResult test.name="test02" range="[:8000]" label="test02:concurrentFailDepth3Easier.txt"/>
+	<plotResult test.name="test02" range="[:8000]" label="test02:n=0.1,m=1,k=1,e=0.3:concurrentFailDepth3Easier.txt"/>
 </target>
 
 
@@ -351,12 +350,12 @@
 </target>
 <target name="runtest03" description="Run test03">
     <failIfBuildNotFound test.name="test03"/>
-	<runTestRepeats test.name="test03" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test03" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test03" run.type="stable"     run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1 -k 1 -e 0.3"/>
+	<runTestRepeats test.name="test03" run.type="concurrent" run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottest03" description="Plot test03" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03"/>
-	<plotResult test.name="test03" range="[:2500]" label="test03:concurrentFailDepth3Easier-balanced17.txt"/>
+	<plotResult test.name="test03" range="[:2500]" label="test03:n=0.1,m=1,k=1,e=0.3:concurrentFailDepth3Easier-balanced17.txt"/>
 </target>
 
 
@@ -372,12 +371,12 @@
 </target>
 <target name="runtest04" description="Run test04">
     <failIfBuildNotFound test.name="test04"/>
-	<runTestRepeats test.name="test04" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test04" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test04" run.type="stable"     run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1 -k 1 -e 0.3"/>
+	<runTestRepeats test.name="test04" run.type="concurrent" run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottest04" description="Plot test04" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test04"/>
-	<plotResult test.name="test04" range="[:2500]" label="test04:concurrentFailDepth3Easier-balanced20.txt"/>
+	<plotResult test.name="test04" range="[:2500]" label="test04:n=0.1,m=1,k=1,e=0.3:concurrentFailDepth3Easier-balanced20.txt"/>
 </target>
 
 
@@ -393,12 +392,12 @@
 </target>
 <target name="runtest05" description="Run test05">
     <failIfBuildNotFound test.name="test05"/>
-	<runTestRepeats test.name="test05" run.type="stable"     run.params="-i ${config.iterations} -s probabilistic -m 1 -e 0.3"/>
-	<runTestRepeats test.name="test05" run.type="concurrent" run.params="-i ${config.iterations} -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test05" run.type="stable"     run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1 -k 1 -e 0.3"/>
+	<runTestRepeats test.name="test05" run.type="concurrent" run.params="-n 0.1 -i ${config.iterations} -s probabilistic -m 1"/>
 </target>
 <target name="plottest05" description="Plot test05" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05"/>
-	<plotResult test.name="test05" range="[:10000]" label="test05:concurrentFailDepth4-t15.txt"/>
+	<plotResult test.name="test05" range="[:10000]" label="test05:n=0.1,m=1,k=1,e=0.3:concurrentFailDepth4-t15.txt"/>
 </target>
 
 
@@ -414,12 +413,12 @@
 </target>
 <target name="runtestEcai" description="Run testEcai">
     <failIfBuildNotFound test.name="testEcai"/>
-	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-n 0.0 -i 5000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testEcai" run.type="stable"     run.params="-n 0.0 -i 5000 -s probabilistic -m 1 -k 1 -e 0.3"/>
 	<runTestRepeats test.name="testEcai" run.type="concurrent" run.params="-n 0.0 -i 5000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcai"/>
-	<plotResult test.name="testEcai" label="testEcai:noiseless:ecai.txt"/>
+	<plotResult test.name="testEcai" label="testEcai:n=0.0,m=1,k=1,e=0.3:ecai.txt"/>
 </target>
 
 
@@ -435,12 +434,12 @@
 </target>
 <target name="runtestDummyvars1" description="Run testDummyvars1">
     <failIfBuildNotFound test.name="testDummyvars1"/>
-	<runTestRepeats test.name="testDummyvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testDummyvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -k 1 -e 0.3"/>
 	<runTestRepeats test.name="testDummyvars1" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestDummyvars1" description="Plot testDummyvars1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testDummyvars1"/>
-	<plotResult test.name="testDummyvars1" label="testDummyvars1:noiseless:pass-atdepth3-withseq1-invars01of01-withp001.txt"/>
+	<plotResult test.name="testDummyvars1" label="testDummyvars1:n=0.0,m=1,k=1,e=0.3:pass-atdepth3-withseq1-invars01of01-withp001.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- testDummyvars2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -454,12 +453,12 @@
 </target>
 <target name="runtestDummyvars2" description="Run testDummyvars2">
     <failIfBuildNotFound test.name="testDummyvars2"/>
-	<runTestRepeats test.name="testDummyvars2" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testDummyvars2" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -k 1 -e 0.3"/>
 	<runTestRepeats test.name="testDummyvars2" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestDummyvars2" description="Plot testDummyvars2" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testDummyvars2"/>
-	<plotResult test.name="testDummyvars2" label="testDummyvars2:noiseless:pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
+	<plotResult test.name="testDummyvars2" label="testDummyvars2:n=0.0,m=1,k=1,e=0.3:pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
 </target>
 
 
@@ -475,12 +474,12 @@
 </target>
 <target name="runtestImpactvars1" description="Run testImpactvars1">
     <failIfBuildNotFound test.name="testImpactvars1"/>
-	<runTestRepeats test.name="testImpactvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -e 0.3"/>
+	<runTestRepeats test.name="testImpactvars1" run.type="stable"      run.params="-n 0.0 -i 8000 -s probabilistic -m 1 -k 1 -e 0.3"/>
 	<runTestRepeats test.name="testImpactvars1" run.type="concurrent"  run.params="-n 0.0 -i 8000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestImpactvars1" description="Plot testImpactvars1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars1"/>
-	<plotResult test.name="testImpactvars1" label="testImpactvars1:noiseless:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<plotResult test.name="testImpactvars1" label="testImpactvars1:n=0.0,m=1,k=1,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
 </target>
 
 

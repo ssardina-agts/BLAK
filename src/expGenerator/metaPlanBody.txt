@@ -157,25 +157,40 @@
 		double[] prob = new double[num];
 		double acc=0;
 		int i;
+		String str="";
 		for (Signature s = pc.applicable.first();
 		     s != null;
 		     s = pc.applicable.next(s),i++){
+		    str="MetaPlan: At iteration "+ag.env.it+", the probability for plan at index "+i+" ";
 		    if (s.getInfo() instanceof PlanIdInfo){
 			PlanIdInfo info = (PlanIdInfo) s.getInfo();
-			if (info.pSuccess < 0.0001)
+			str +="("+ag.planNodes[info.plan_id].getItem()+") for state "+ag.planNodes[info.plan_id].stringOfLastState()+" is ";
+			if (info.pSuccess < 0.0001) {
+			    str += "0.0001/"+mass;
 			    acc += 0.0001/mass;
-			else
+			} else {
+			    str += info.pSuccess+"/"+mass;
 			    acc += (info.pSuccess)/mass;
+			}
 			prob[i] = acc;
-		    }
-		    else
+
+		    } else {
+			str +="(unknown) is 1.0/"+num;
 			prob[i] = 1.0/num;
+		    }
+		    ag.writeLog(str,"Stability-Updates");
 		}
 		double rnd = ag.generator.nextDouble();
-		int choice =0;
+		int choice = 0;
 		while (prob[choice]<rnd){
 		    choice++;
 		}
+		str="[";
+		for (i=0;i<num;i++) {
+		    str+= " "+ ((double)((int)(prob[i]*10000)))/10000;
+		}
+		str += " ]";
+		ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities "+str+". Chosen plan index "+choice,"Stability-Updates");
 		Signature s = pc.applicable.first();
 		for (i=0;i<choice;i++){
 		    s = pc.applicable.next(s);

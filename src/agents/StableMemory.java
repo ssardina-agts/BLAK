@@ -123,23 +123,23 @@ public class StableMemory
 	
 	public String toString()
 	{
-		String returnString = "Previous Prob: "+previousProbability+", delta Prob: "+deltaProbability
-		+", no. success: "+numberOfSuccesses+", total attempts: "+numberOfAttempts;
+		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts;
 		
 		return returnString;
 	}
 	
 	public String toString(int k, double e)
 	{
-		String returnString = "Previous Prob: "+previousProbability+", delta Prob: "+deltaProbability
-		+", no. success: "+numberOfSuccesses+", total attempts: "+numberOfAttempts;
+		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts;
 		if(this.isStateStable(k, e))
 		{
-			returnString = returnString + " Stable.";
+			returnString = returnString + ", stable: yes";
 		}
 		else
 		{
-			returnString = returnString + " Unstable.";
+			returnString = returnString + ", stable: no";
 		}
 		
 		return returnString;

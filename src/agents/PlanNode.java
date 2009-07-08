@@ -233,19 +233,19 @@ public class PlanNode extends Node{
      */
     public void record(boolean res)
     {
-        writeLog("Record Method for PlanNode: "+this.getItem()+". Last state was: "+this.stringOfLastState(), "Stability-Updates");
+        writeLog("Recording result for node "+this.getItem()+" for state "+this.stringOfLastState(), "Stability-Updates");
         if(!res && this.doStable)
         {
             //we failed...
             if(this.childrenStable())
             {
                 //children are stable so we should update..
-                writeLog("PlanNode: "+this.getItem()+" has stable children. Children size: "+this.children.size()+". State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("Node "+this.getItem()+" has "+this.children.size()+" stable children for state "+this.stringOfLastState(), "Stability-Updates");
             }
             else
             {
                 //children are unstable and we have failed. do not update. This pulls us out of the recording process.
-                writeLog("PlanNode: "+this.getItem()+" is not updating as we are handling a failure, and it's children are unstable. State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("Node "+this.getItem()+" will not update on this failure since some of its "+this.children.size()+" children are unstable in state "+this.stringOfLastState(), "Stability-Updates");
                 return;
             }
         }
@@ -302,13 +302,13 @@ public class PlanNode extends Node{
             if (res)
             {
                 record += "+";
-                writeLog("PlanNode Stable Updates, Positive Result : "+this.getItem()+" is updating as  it was successful! State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is updating (+) result for state "+this.stringOfLastState()+" as it was successful", "Stability-Updates");
             }
             else
             {
                 //should not reach this point, but it is left in case
                 record += "-";
-                writeLog("PlanNode Stable Updates, Negative Results, should not reach: "+this.getItem()+" is updating even though it failed. It must have stable (or zero!) children. State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("ERROR: PlanNode Stable Updates, Negative Results, Should not reach here: "+this.getItem()+" is updating even though it failed. It must have stable (or zero!) children. State was: "+this.stringOfLastState(), "Stability-Updates");
             }
             Integer num = (Integer)memory.remove(record);
             if (num !=null)
@@ -347,12 +347,12 @@ public class PlanNode extends Node{
             if (res)
             {
                 record += "+";
-                writeLog("PlanNode Stable Updates, Children Stable, Positive result: "+this.getItem()+" is updating as  it was successful! State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is updating (+) result for state "+this.stringOfLastState()+" since all of its "+children.size()+" children are stable", "Stability-Updates");
             }
             else
             {
                 record += "-";
-                writeLog("PlanNode Stable Updates, Children Stable Negative Result: "+this.getItem()+" is updating even though it failed. It must have stable (or zero!) children. State was: "+this.stringOfLastState(), "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is updating (-) result for state "+this.stringOfLastState()+" since all of its "+children.size()+" children are stable", "Stability-Updates");
             }
             Integer num = (Integer)memory.remove(record);
             if (num !=null)
@@ -399,7 +399,7 @@ public class PlanNode extends Node{
                 }
                 writeLog("Updating numbers, Att", "NodeUpdates");
                 thisMemory.updateProbability();
-                writeLog("PlanNode: "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key: "+memoryKey+". We had already seen this state.", "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD already seen this state.", "Stability-Updates");
                 this.probabilityMemory.put(memoryKey, thisMemory);
             }
             else
@@ -418,7 +418,7 @@ public class PlanNode extends Node{
                 }
                 writeLog("Updating numbers, Att", "NodeUpdates");
                 thisMemory.updateProbability();
-                writeLog("PlanNode: "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key: "+memoryKey+". We had NOT seen this state before.", "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD NOT seen this state before.", "Stability-Updates");
                 this.probabilityMemory.put(memoryKey, thisMemory);
             }
         }
@@ -504,6 +504,8 @@ public class PlanNode extends Node{
             }
             try{
                 val = decisionTree.distributionForInstance(instance);
+                writeLog("Node "+this.getItem()+" is using DT with "+data.numInstances()+" instances. Evaluated probability of success in state "+this.stringOfLastState()+" is "+((double)((int)(val[0]*10000)))/10000, "Stability-Updates");
+
             }
             catch(Exception e){
                 System.err.println("something went wrong when the instance was classified \n" +e);
@@ -564,13 +566,10 @@ public class PlanNode extends Node{
         if (waitForSubTree)
             subtreeOK = subTreeOK();
         
-        if (subtreeOK && data.numInstances() >= minNumInstances){
+        if (subtreeOK && data.numInstances() >= minNumInstances && (this.doStable?probabilityMemory.containsKey(this.stringOfLastState()):true)){
             if (startToUseDT ==0){
                 startToUseDT = it;
-                System.out.println("--> Start to use the DT for plan " + name 
-                                   + " at iteration " + startToUseDT + " after having seen "
-                                   +data.numInstances() + " instances");
-                writeLog("--> Start to use the DT for plan " + name+ " at iteration " + startToUseDT + " after having seen "+data.numInstances() + " instances", "Stability-Updates");
+                writeLog("Node "+this.getItem()+" is OK to use DT with "+data.numInstances()+" instances, having seen state state "+this.stringOfLastState()+" before", "Stability-Updates");
             }
             try{
                 //System.out.println("print data " + data);
@@ -591,7 +590,7 @@ public class PlanNode extends Node{
     public String stringOfLastState()
     {
         String returnMe = "";
-        for(int i = 0; lastState.length>i;i++)
+        for(int i = 0; lastState!=null && lastState.length>i;i++)
         {
             if(lastState[i]==null)
             {
@@ -643,7 +642,7 @@ public class PlanNode extends Node{
         boolean stable = true;
         
         String lastStateReference = this.stringOfState(state);
-        String stableMessage = "PlanNode: "+this.getItem()+" is checking stability for state: "+lastStateReference;
+        String stableMessage = "Node "+this.getItem()+" is checking stability for state "+lastStateReference;
         writeLog(stableMessage,"Stability-Updates");
         
         if(lastStateReference!=null)
@@ -655,24 +654,29 @@ public class PlanNode extends Node{
                 if(this.getStableK()>thisRecord.getNumberOfAttempts())
                 {
                     //We haven't yet tried enough attempts to be considered stable.
-                    //System.out.println("Node: "+this.goal_id+" has not reached the minimmum number of attempts. K"+this.getStableK()+"> att: "+thisRecord.getNumberOfAttempts());
+                    stableMessage = "Node "+this.getItem()+" does not satisfy minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.getStableK()+")";
+                    writeLog(stableMessage,"Stability-Updates");
                     return false;
                 }
                 if(thisRecord.getDeltaProbability()>this.getStableEpsilon())
                 {
                     //Our rate of change is to high to be considered stable
-                    //System.out.println("Node: "+this.goal_id+" has not reached the minimmum change in probability, "+thisRecord.getDeltaProbability()+">"+this.getStableEpsilon());
+                    stableMessage = "Node "+this.getItem()+" does not satisfy change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.getStableEpsilon()+")";
+                    writeLog(stableMessage,"Stability-Updates");
                     return false;
                 }
-                else
-                {
-                    //System.out.println(this.getStableEpsilon()+">"+thisRecord.getDeltaProbability());
-                }
+                stableMessage = "Node "+this.getItem()+
+                " satisfies minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.getStableK()+")"+
+                " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.getStableEpsilon()+")"+
+                " for state "+lastStateReference;
+                writeLog(stableMessage,"Stability-Updates");
             }
             else
             {
-                return false;
                 //We've not seen this record before...
+                stableMessage = "Node "+this.getItem()+" has never seen state "+lastStateReference+" before";
+                writeLog(stableMessage,"Stability-Updates");
+                return false;
             }
         }
         else
@@ -698,12 +702,7 @@ public class PlanNode extends Node{
             for(int j = 0; this.children.size()>j;j++)
             {
                 Node thisNode = (Node)this.children.elementAt(j);
-                writeLog("Node: "+this.getItem()+", will check node "+thisNode.getItem()+" for stability","Stability-Updates");
-            }
-            
-            for(int j = 0; this.children.size()>j;j++)
-            {
-                Node thisNode = (Node)this.children.elementAt(j);
+                writeLog("Node "+this.getItem()+" is checking child node "+thisNode.getItem()+" for stability for state "+this.stringOfState(lastState),"Stability-Updates");
                 if(!thisNode.isStable(lastState))
                 {
                     return false;
