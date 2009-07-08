@@ -1,0 +1,13 @@
+\begin{tikzpicture}
+    \path[coordinate] (0,0)  coordinate(A)
+                ++( 60:8cm) coordinate(B)
+                ++(-60:8cm) coordinate(C);
+    \draw[fill=red!20] (A) -- (B) -- (C) -- cycle;
+    \foreach \x in {1,...,15}{%
+        \path[coordinate] coordinate(X) at (A){};
+        \path[coordinate] (A) -- (B) coordinate[pos=.15](A)
+                            -- (C) coordinate[pos=.15](B)
+                            -- (X) coordinate[pos=.15](C);
+        \draw[fill=red!20] (A)--(B)--(C)--cycle;
+    }
+\end{tikzpicture}

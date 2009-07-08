@@ -22,6 +22,7 @@
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist 
 
+
 %% Set fbox defaults
 \setlength\fboxsep{5pt}
   
@@ -55,20 +56,20 @@ BDI is suited to our scenario for several reasons. Firstly, it allows our agents
 
 \section{Motivating Scenario}
 
-In this application we will evaluate a BDI-based approach to mobile storage (battery) management (MSA) for a PHEV. 
+In this application we will evaluate a BDI-based approach to mobile storage (battery) management for a PHEV. 
 
 
-\begin{figure}[htbp]
-%\begin{changemargin}{-1.7in}{-1.7in}
-\begin{center}
-\fbox{
-\input{./scenario.tikz}
-}
-\end{center}
-\caption{PHEV Battery Charge Management Scenario}
-\label{fig:scenario}
-%\end{changemargin}
-\end{figure}
+%\begin{figure}[htbp]
+%%\begin{changemargin}{-1.7in}{-1.7in}
+%\begin{center}
+%\fbox{
+%\input{./scenario.tikz}
+%}
+%\end{center}
+%\caption{PHEV Battery Charge Management Scenario}
+%\label{fig:scenario}
+%%\end{changemargin}
+%\end{figure}
 
 \begin{itemize}
 
@@ -92,7 +93,7 @@ In this application we will evaluate a BDI-based approach to mobile storage (bat
 
 \end{itemize}
 
-The goals of the MSA are to \footnote{There is no requirement to address peak network load for the initial system. This may be introduced later to experiment with multiple MSAs.}
+The goals of the Mobile Storage Agent (MSA) are to \footnote{There is no requirement to address peak network load for the initial system. This may be introduced later to experiment with multiple MSAs.}
 :
 \begin{enumerate}
 \item[$G1$] Ensure that the PHEV has sufficient charge for all planned trips and any unplanned trips (limit N kms daily) by managing the battery charge and discharge cycles.
