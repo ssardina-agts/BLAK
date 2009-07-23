@@ -23,6 +23,7 @@
 \newcommand{\tiv}{\emph{testImpactvars}\xspace}
 \newcommand{\dt}{{decision tree}\xspace}
 \newcommand{\DT}{{Decision Tree}\xspace}
+\newcommand{\stephane}{{St\'ephane}\xspace}
 
 % Begin
 \title{BDI-Learning Discussion Paper:\\ Towards Improving \st Performance}
@@ -38,7 +39,10 @@ dhirendra.singh@rmit.edu.au\\
 
 \maketitle
 
-% section
+\setcounter{tocdepth}{2} 
+\tableofcontents 
+
+%% Section
 \section{Motivating example}
 
 \subsection{The scenario}
@@ -91,12 +95,17 @@ On conducting the experiment again with these lenient parameters the result is u
 
 This result suggests that other factors are at play here than those determined above. Debugging the implementation at length shows that some core decisions in the system introduce subtleties that eventually lead to performance degradation.
 
+
+%% Section
+\section{Understanding the Problem}
+\label{sec:understanding}
+
 \subsection{When is it ok to start using a \dt?}
 \label{subsec:useDT}
 
 The absolute minimum number of instances required to build a \dt is $1$. Currently this is the number we use to decide when to build and start using a tree, as determined by the  runtime parameter $m=1$. This decision causes several problems. 
 
-At it's core, the problem is that we are constructing a decision tree with a single sample of \emph{one} world and then using this tree to determine the probabilities for \emph{all} worlds. This is not reasonable. 
+At it's core, the problem is that we are constructing a \dt with a single sample of \emph{one} world and then using this tree to determine the probabilities for \emph{all} worlds. This is not reasonable. 
 
 This problem manifests itself in various symptoms, some of which are listed here.
 \begin{itemize}
@@ -109,14 +118,15 @@ This problem manifests itself in various symptoms, some of which are listed here
 
 That's the power of interpolation! The result is that the selection probabilities are now equal and back to the original value of $\frac{1}{3}$ each (but with each absolute probability $\approx 0$ instead of $1$ as at the start). The impact is that hereon the probability of selection of $P_j$ will not improve doesn't matter how many times $P_i$ and $P_k$ may fail in between. 
 
-The problem worsens as the branching factor increases. Consider a set of $20$ plans, only one of which is setup to succeed. If it's probability incorrectly reduces to $\approx 0$ thanks to a misinformed \dt, then it's chances of selection will never improve beyond $\frac{1}{20}$ \emph{even though every other siblings may have been tried and failed numerous times}. For correct operation, the probability of this plan should gradually increase $\to1$ as other siblings are tried and fail.
+The problem worsens as the branching factor increases. Consider a set of $20$ plans, only one of which is setup to succeed. If it's probability incorrectly reduces to $\approx 0$ thanks to a misinformed \dt, then it's chances of selection will never improve beyond $\frac{1}{20}$ \emph{even though every other siblings may have been tried and failed numerous times}. For correct operation, the probability of this plan should gradually increase $\to1$ as other siblings are tried and fail. Note that here the environment is not stochastic so if a plan fails then it is a true failure and there is no chance of it passing in that given world in the future; furthermore the single plan wired for success will succeed in \textit{all} worlds not just a small portion of the worlds space. Even in this lenient case the problem is significant.
+
+However, while the problem worsens as the branching factor increases, the probability of the problem state occurring in the first place decreases. In fact for M applicable plans, the probability of recovering from the problem is 1/M and the probability of witnessing the problem state is also 1/M.
 
 \item A similar symptom is where the initial probabilities for $W1$ are all $[\frac{1}{3},\frac{1}{3},\frac{1}{3}]$, but change to say $[\frac{1}{2},\approx0,\frac{1}{2}]$ because a \dt was constructed for $P_j$ in some other world that is returning a misguided probability for $W1$. This even before $W1$ was ever encountered.
 
-\item The reverse case is also a problem, where an ill-informed \dt may give an incorrect probability of $1$ for a world $W1$ it has never seen before. In this case, there is really no hope of improving in $W1$ because all siblings will be demoted to $\approx 0$ and the false-positive incorrect choice will be made $\frac{999}{1000}$ times. The situation will improve only as the  ill-informed \dt gathers more instances in other worlds and in effect remedies the problem for $W1$. However, this may not happen at all if wrong choices are always being made in a sort of \emph{deadlock}.
 \end{itemize}
 
-As a result the exploration of \st is unfairly biased leading to a slower convergence than expected in some cases, and a sub optimal (deadlocked) convergence in others. This latter case is what I think we are seeing in \tiv. Note that this problem is evident in experiments with multiple worlds, hence why we haven't come across it earlier.
+As a result the exploration of \st is unfairly biased leading to a slower convergence than expected. This is what I think we are seeing in \tiv. Note that this problem is evident in experiments with multiple worlds, hence why we haven't come across it earlier.
 
 \subsection{When no \dt exists, what should the default $p$ be?}
 \label{subsec:defaultP}
@@ -129,7 +139,7 @@ probability = useDT(planID) ? probabilityDT(planID) : 1
 
 The decision is to use a probability of success of $1$ for any given world when the \dt for the plan is not ready for use (note that $useDT$ returns $false$ when we haven't encountered the minimum number of instance i.e. $m=1$), otherwise use the probability as determined by the \dt. We have already seen in Section \ref{subsec:useDT} what happens when the \dt being used is ill-informed and returns misleading probabilities for the world in question. But what about the other part of the equation? Does it matter what we use as the default probability when we have no \dt available? Turns out it does.
 
-\begin{table}[htbp]
+\begin{table}[htb]
   \begin{tabular}{ l l l p{0.45\textwidth}}
     \hline
     useDT & $p$ Used & Outcome & Comment\\ \hline
@@ -158,14 +168,16 @@ Table \ref{tab:p1Bad} shows the impact of the default probability $p$ on plan se
 \end{itemize}
 
 
-\subsection{Recommended Changes}
+%% Section
+\section{Improving \textit{Stable} Performance I}
 
-\subsubsection{When to use a \dt?}
+\subsection{When to use a \dt?}
+\label{sec:deciding-when-to-use}
 
-Section \ref{subsec:useDT} shows how the choice $m=1$ leads to ill-informed decision trees that distort plan selection probabilities. An obvious remedy is to increase $m$ to a suitable number that guarantees prediction within tolerance from the newly formed 
+Section \ref{subsec:useDT} shows how the choice $m=1$ leads to ill-informed {\dt}s that distort plan selection probabilities. An obvious remedy is to increase $m$ to a suitable number that guarantees prediction within tolerance from the newly formed 
 \dt. However, one cannot determine this optimal number since instances are generated randomly and include duplicates. Furthermore, the higher the number the longer we have to wait to use the power of {\dt}s, which is also not ideal.
 
-I function $useDT$ currently determines when we are ready to start using a \dt as follows:
+The function $useDT$ currently determines when we are ready to start using a \dt as follows:
 \begin{verbatim}
 if(sub-treeOK && instances>=m){
 \end{verbatim}
@@ -184,7 +196,8 @@ if(...?(haveSeen(W) || instances>=newM ):..){
 This would allow us to start using the tree even when we have not seem $W$ but have seen enough instances to be confident that the \dt prediction will be meaningful. While $m$ is a static requirement, $newM$ could be calculated dynamically based on a number of factors one of which would be the total number of worlds. For instance we could say that we are confident in a \dt \emph{if we have seen the world $W$ before OR we have seen at least half (or any other fraction) of all possible worlds}. This decision is open for discussion, but for now I recommend only introducing the $haveSeen$ check.
 
 
-\subsubsection{When no \dt exists, default $p$ should be $0.5$}
+\subsection{When no \dt exists, default $p$ should be $0.5$}
+\label{subsec:use-p-05}
 
 Section \ref{subsec:defaultP} explains how the default values of $p=1$ or $p=0$ (for when no \dt exists for a given plan) can distort plan selection probabilities. I recommend we change the default probability to $p=0.5$ for the following reasons:
 \begin{itemize}
@@ -193,7 +206,7 @@ Section \ref{subsec:defaultP} explains how the default values of $p=1$ or $p=0$ 
 \end{itemize}
 
 \subsubsection{Test Results}
-The test results from applying the recommended changes are included in the appendix.
+The test results from applying the recommended changes are included in the Appendix \ref{sec:results1}.
 \begin{itemize}
 \item Page "Prior to applying suggested changes (Repository Revision 49)" shows the benchmark results before any changes were applied. Notice the problematic \tiv result on that page. These tests all used $k=3$.
 \item Page "After applying suggested changes using k=3 (Repository Revision 49+)" shows the results after applying the changes. The change does not break any previous tests but shows a slight improvement in \tiv  convergence from $\approx0.25$ to $\approx0.4$. These tests all used $k=3$.
@@ -202,15 +215,74 @@ The test results from applying the recommended changes are included in the appen
 \end{itemize}
 
 
+%% Section
+\section{Improving \textit{Stable} Performance II}
 
-\section{A Systematic Analysis of \st}
+\subsection{When to use a \dt: The \textit{confidence} measure}
+The core issue discussed in Section \ref{sec:understanding} is that of mis-classification by {\dt}s due to incorrect generalisation, that in turn results from the paucity of samples during the early stages of online learning. Our discussions highlight the necessity to consider two key elements in the use of {\dt}s in this case:
 
+\begin{enumerate}
+\item The current \textit{probability} of success in a given world as predicted by the \dt; and
+\item Our \textit{confidence} in the current prediction.
+\end{enumerate}
+
+For measuring confidence we presently use a crude criterion, \textit{that the change in probabilities be small between successive queries}. Section \ref{sec:understanding} shows that this criterion is insufficient when dealing with multiple worlds as it does not consider the specific world in question. An improvement using a $haveSeen$ check suggested in Section \ref{sec:deciding-when-to-use} is also not appropriate since it forces the strict constraint that the world be witnessed before the \dt may be used to classify it, thereby defeating the purpose (i.e. interpolation) of using a \dt in the first place. 
+
+In defining the characteristics of a \textit{confidence} measure we identify the following properties:
+\begin{itemize}
+\item It must consider the world $W$ being witnessed. Since we have not seen $W$ before, then this becomes a function of how times have we seen \textit{similar} worlds before. For a \dt, we might frame this as - given a \dt leaf node $L$ that will classify $W$, how many instances of other worlds $W' \neq W$ are being classified by the same node $L$.
+\item Over time, the measure must monotonically tend from $0 \to 1$.
+\end{itemize}
+
+For instance, consider the issue described in Section \ref{subsec:useDT} where we have $20$ applicable plans such that $19$ bad plans report a correct $p=0$ while the single good plan reports an incorrect $p=0$ (generalisation error). Here $\frac{19}{20}$ times a bad plan will be executed but the choice will be \textit{wasted} because the result it will not change the relative probabilities (they are already all at zero). Ideally, one would expect that as the $19$ other plans are getting selected and failing, that the relative probability of selection of the good plan (not selected yet) should keep improving as a consequence. And when the good plan is finally selected and succeeds, it's relative probability should increase further $\to 1$. Currently, the former does not happen - we gain no information from the failure of the other $19$ plans when we should.
+
+A well formed confidence measure would resolve this issue. In this case as each bad plan is selected and fails, this information is recorded in the confidence measure that consequently tends $\to 1$, even though the probability of success (already at zero) does not change with each failure.
+
+Given this confidence measure, we can then use a threshold value to determine when it makes sense to use the probability given by the \dt. For situations where the confidence measure is lower than the threshold, the default probability to use is $0.5$ as described in Section \ref{subsec:use-p-05}.
+
+The formulation of the confidence measure is yet to be completed and is open for discussion.
+
+
+\subsection{Guided exploration based on confidence}
+
+Currently, the probabilistic plan selection mechanism only considers the probabilities of success of the applicable plans and biases selection towards those that are relatively higher. Again, the earlier discussion in Section \ref{sec:understanding} shows that this criterion alone is not sufficient when the relative probabilities are the same.
+
+The plan selection mechanism must therefore be extended to also include our confidence in the given probabilities of success. An informed exploration strategy might bias selection in order to maximise the \textit{information gain} from the choice. \stephane has proposed the following preliminary ideas for this extension:
+
+\begin{itemize}
+\item Given information about the number of instances $n$ classified by leaf node $L$ (where $L$ is the node that also classifies $W$), a first simple idea would be to select the plan with the lowest $n$. Equally we could select a plan with a probability inversely proportional to $n$.
+\item One possible refinement to this would be to take into account the size of the input space represented by the leaf node. For example, if the leaf nodes for two plans correspond to worlds $[a]$ and $[a \cdot \bar{b} \cdot c]$ respectively and each contains the same number of instances, then the selection could favour the plan that expresses the larger portion of the worlds space, in this case $[a]$.
+\item Another refinement is to use \textit{entropy}. This would take into account the number of failures/successes instead of a simple count of the instances contained in the node of the \dt. We can compute the change in entropy if the plan succeeds and if the plan fails, and maybe go with the plan with the biggest entropy drop. (\stephane says: I would need more time to check whether that makes sense, if observing say a failure is more promising than observing a success in terms of information gain for one DT/plan, and the opposite for another DT/plan, the decision is not that simple).
+\item Another option is to \textit{simulate} the possible updates of the decision tree for each plan and base the decision on the outcome. For instance, it is possible that for the \dt of a plan $P1$ that regardless of whether $P1$ succeeds of fails, the \dt structure will not change (the probability in the corresponding leaf node of the \dt only will change). For another plan $P2$ however, the new instance may trigger a change in the \dt structure. In this case, we would favor $P2$ over $P1$.
+\end{itemize}
+
+
+
+
+%% Section 
+\section{Acknowledgements}
+
+Revisions of this document are a result of an ongoing discussion and contributions from \stephane Airiau of the University of Amsterdam, and Sebastian Sardina and Professor Lin Padgham of RMIT University.
+
+%% Appendix
+\appendix
+\section{Appendix}
+
+%% Appendix Section
+\subsection{Results for \textit{Stable} Performance I}
+\label{sec:results1}
+\includepdf[pages={1-6,9-},nup=2x4]{blak49.pdf}
+\includepdf[pages={1-6,9-},nup=2x4]{blak49+k3.pdf}
+\includepdf[pages={1-6,9-},nup=2x4]{blak49+k1.pdf}
+
+
+%% Appendix Section
 \subsection{Test coverage}
-Sebastian and I briefly discussed the \tiv result last week and agreed that it exposes some grey area about our understanding of \cc and \st. Moreover, from our current tests it is difficult to understand the conditions under which one approach performs better than the other. 
+Sebastian and I briefly discussed the \tiv result and agreed that it exposes some grey area about our understanding of \cc and \st. Moreover, from our current tests it is difficult to understand the conditions under which one approach performs better than the other. 
 
 In considering how we can improve context learning, we need a better understanding of how the two current approaches perform in a combination of factors as listed in Table \ref{tab:perofrmanceFactors}. So far we have experimented with some of these factors but not enough to get a good understanding of how they influence our approaches.
 
-\begin{table}[htbp]
+\begin{table}[!htb]
   \begin{tabular}{ p{0.7\textwidth} l }
     \hline
     Factor & Tested\\ \hline
@@ -230,7 +302,7 @@ In considering how we can improve context learning, we need a better understandi
 
 Our testing strategy is open for discussion. Should we conduct systematic testing to understand the influences of the various factors on the two approaches? If so, what is the best strategy here since the number of combinations is too high.
 
-\subsection{Current insights into the workings of \cc and \st}
+\subsection{Insights into the workings of \cc and \st}
 
 Finally, here I have collected some insights into the workings of our two approaches in a generalised manner.
 
@@ -253,13 +325,8 @@ In this case, \st will realise first that the shallower sub-tree does not hold t
 
 In this case, \cc performs the same as before. \st however takes a long time to be confident that the failing deep sub-trees are in fact fruitless so it does not change their probabilities for a long time. When a solution is finally found, \cc favours that sub-tree whereas \st still devotes exploration to the fruitless sub-trees until it is confident that no solution exists there.
 
-\item At the leaf nodes, the differences between \cc and \st are minimal, but \st takes longer to be confident that an observation of failure is in fact a true failure (and not due to a stochastic environment).
+\item At the leaf nodes, the differences between \cc and \st are minimal, but \st takes longer to be confident that an observation of failure is in fact a true failure and not due to a stochastic environment.
 
 \end{itemize}
-
-\appendix
-\includepdf[pages={1-6,9-},nup=2x4]{blak49.pdf}
-\includepdf[pages={1-6,9-},nup=2x4]{blak49+k3.pdf}
-\includepdf[pages={1-6,9-},nup=2x4]{blak49+k1.pdf}
 
 \end{document}
