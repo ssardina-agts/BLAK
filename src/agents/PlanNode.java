@@ -566,7 +566,7 @@ public class PlanNode extends Node{
         if (waitForSubTree)
             subtreeOK = subTreeOK();
         
-        if (subtreeOK && data.numInstances() >= minNumInstances && (this.doStable?probabilityMemory.containsKey(this.stringOfLastState()):true)){
+        if (subtreeOK && data.numInstances() >= minNumInstances){
             if (startToUseDT ==0){
                 startToUseDT = it;
                 writeLog("Node "+this.getItem()+" is OK to use DT with "+data.numInstances()+" instances, having seen state state "+this.stringOfLastState()+" before", "Stability-Updates");
