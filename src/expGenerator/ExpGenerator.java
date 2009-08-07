@@ -889,6 +889,7 @@ public class ExpGenerator {
 	 */
 	public void generateMetaPlan(){
 		String code = "package plans;\n"
+		+ "import java.lang.Math;\n"
 		+ "import agents.RefinerAgent;\n";
 		for (Goal g: goals)
 			code +="import events."+g.getId()+";\n";

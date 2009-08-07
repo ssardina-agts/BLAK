@@ -56,6 +56,11 @@ public class Node{
     	return false;
     }
     
+    public boolean isSuccessful(String[] state)
+    {
+    	return false;
+    }
+    
     public boolean isLeaf()
     {
     	return children.isEmpty();

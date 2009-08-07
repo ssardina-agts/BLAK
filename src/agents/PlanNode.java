@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import weka.core.Instances;
 import java.util.*;
+import weka.classifiers.meta.Bagging;
+import java.lang.Math;
 
 /**
  * Handy piece of info. Item is used to hold an object which is usually the name of the node.
@@ -21,7 +23,7 @@ public class PlanNode extends Node{
     public int goal_id;
     public String name;
     Hashtable memory;
-    public J48 decisionTree;
+    public Object decisionTree;
     String[] options;
     String[] lastState;
     boolean doStable;
@@ -183,11 +185,26 @@ public class PlanNode extends Node{
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
-            decisionTree = new J48();
-            options = new String[1];
-            options[0] = "-U";            // unpruned tree
-            decisionTree = new J48();
-            decisionTree.setOptions(options);     // set the options
+            if (this.doStable) {
+                decisionTree = new Bagging();
+                options = new String[9];
+                int i = 0;
+                options[i++] = "-P";
+                options[i++] = "100";
+                options[i++] = "-O";
+                options[i++] = "-S";
+                options[i++] = "1";
+                options[i++] = "-W";
+                options[i++] = "weka.classifiers.trees.J48";
+                options[i++] = "--";
+                options[i++] = "-U";
+                ((Bagging)decisionTree).setOptions(options);
+            } else {
+                decisionTree = new J48();
+                options = new String[1];
+                options[0] = "-U";            // unpruned tree
+                ((J48)decisionTree).setOptions(options);     // set the options
+            }
         }
         catch(Exception e){
             System.err.println("error with weka when creating the decision tree \n" + e);
@@ -457,7 +474,7 @@ public class PlanNode extends Node{
         }
         double val = 0;
         try{
-            val = decisionTree.classifyInstance(instance);
+            val = this.doStable?((Bagging)decisionTree).classifyInstance(instance):((J48)decisionTree).classifyInstance(instance);
         }
         catch(Exception e){
             System.err.println("something went wrong when the instance was classified \n" +e);
@@ -491,6 +508,77 @@ public class PlanNode extends Node{
          }*/
         
         double[] val = null;
+        if (this.doStable) {
+            double success;
+            boolean useDTnow = true;
+            String thisState = this.stringOfState(lastState);
+            if (data.numInstances() > 0) {
+                /* Now build a bag of trees and test if the performance is within tolerance */
+                double tolerance = 0.5; /* TODO: Add this as an input parameter or use epsilon */
+                double ooberror = 1.0;
+                if (this.probabilityMemory.size() >= minNumInstances) {
+                    try{
+                        ((Bagging)decisionTree).buildClassifier(data);
+                    }
+                    catch(Exception e){
+                        System.err.println("Something went wrong during the construction of the decision tree\n" + e);
+                        System.exit(9);
+                    }
+                    ooberror = ((Bagging)decisionTree).measureOutOfBagError();
+                }
+                if (ooberror >= tolerance) {
+                    writeLog("Node "+this.getItem()+" is NOT USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+", since out-of-bag error "+ooberror+">="+tolerance, "Stability-Updates");
+                    if (this.probabilityMemory.size() > 0) {
+                        String closestState = "";
+                        double hMax = lastState.length;
+                        double hdist = hMax+1;
+                        
+                        /* Find the previous state that has the minimum 
+                         * hamming distance to the current state
+                         * (could be the same as the current state).
+                         */
+                        Enumeration e = this.probabilityMemory.keys();
+                        while(e.hasMoreElements()) {
+                            String prevState = (String)e.nextElement();
+                            int dist = hamming(thisState, prevState);
+                            if ( dist < hdist) {
+                                hdist = dist;
+                                closestState = prevState;
+                            }
+                        }
+                        /* Now calculate a probability biased by the hamming distance.
+                         * p(s') = p(s) + [[h(s',s)/hMax] * [0.5-p(s)] ]
+                         * where,
+                         * s' is the current state,
+                         * s is some previous state,
+                         * p(s') is the probability of success in state s',
+                         * p(s) is the probability of success in state s,
+                         * h(s',s) is the hamming distance between states s' and s,
+                         * hMax is the mximum hamming distance possible between states,
+                         *
+                         */
+                        StableMemory m = (StableMemory)this.probabilityMemory.get(closestState);
+                        double ps = (double)(m.getNumberOfSuccesses())/(double)(m.getNumberOfAttempts());
+                        success = ps + ((hdist/hMax) * (0.5-ps));
+                        writeLog("Node "+this.getItem()+" using hamming distance between state "+thisState+" and closest previous state "+closestState+" to bias probability, so will use success p="+success, "Stability-Updates");
+                    } else {
+                        success = 0.5;
+                        writeLog("Node "+this.getItem()+" has never seen state "+thisState+" before (no previous state), so will use success p="+success, "Stability-Updates");
+                    }
+                    double[] parr = {success, 1-success};
+                    return parr;
+                } else {
+                    /* DT prediction is within tolerance so use it */
+                    writeLog("Node "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+", since out-of-bag error "+ooberror+"<"+tolerance, "Stability-Updates");
+                }
+            } else {
+                /* No previous instances so use 0.5 */
+                success = 0.5;
+                writeLog("Node "+this.getItem()+" has never seen state "+thisState+" before (no previous data), so will use success p="+success, "Stability-Updates");
+                double[] parr = {success, 1-success};
+                return parr;
+            }
+        }
         if (useDT(goal_id)){
             Instance instance = new Instance(numAttributes);
             instance.setDataset(data);
@@ -503,8 +591,8 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
             try{
-                val = decisionTree.distributionForInstance(instance);
-                writeLog("Node "+this.getItem()+" is using DT with "+data.numInstances()+" instances. Evaluated probability of success in state "+this.stringOfLastState()+" is "+((double)((int)(val[0]*10000)))/10000, "Stability-Updates");
+                val = this.doStable?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
+                writeLog("Node "+this.getItem()+" is using DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+". Probability of success p="+((double)((int)(val[0]*10000)))/10000, "Stability-Updates");
 
             }
             catch(Exception e){
@@ -540,7 +628,7 @@ public class PlanNode extends Node{
      */
     public void printDT(){
         System.out.println("************> Outcomes for plan "+  name 
-                           + "built at iteration "+ startToUseDT);
+                           + " built at iteration "+ startToUseDT);
         System.out.println("number of instances : " + data.numInstances());
         System.out.println(decisionTree);
         
@@ -548,7 +636,7 @@ public class PlanNode extends Node{
     
     public String getDT()
     {
-        String returnString = "************> Outcomes for plan "+  name+ "built at iteration "+ startToUseDT+"\n";
+        String returnString = "************> Outcomes for plan "+  name+ " built at iteration "+ startToUseDT+"\n";
         returnString +="number of instances : " + data.numInstances()+"\n";
         returnString +=decisionTree;
         return returnString;
@@ -562,6 +650,10 @@ public class PlanNode extends Node{
      */
     public boolean useDT(int it){
         
+        if (doStable && it>-1) {
+            return true;
+        }
+        
         boolean subtreeOK = true;
         if (waitForSubTree)
             subtreeOK = subTreeOK();
@@ -574,7 +666,7 @@ public class PlanNode extends Node{
             try{
                 //System.out.println("print data " + data);
                 //this.writeLog("This Node: "+this.getItem()+" is refreshing its D-Tree", "Stability-Tree");
-                decisionTree.buildClassifier(data);
+                ((J48)decisionTree).buildClassifier(data);
             }
             catch(Exception e){
                 System.err.println("Something went wrong during the construction of the decision tree\n" + e);
@@ -645,6 +737,12 @@ public class PlanNode extends Node{
         String stableMessage = "Node "+this.getItem()+" is checking stability for state "+lastStateReference;
         writeLog(stableMessage,"Stability-Updates");
         
+        if (this.isSuccessful(state)) {
+            //We have succeeded in this state before so consider this stable
+            stableMessage = "Node "+this.getItem()+" has succeeded in state "+lastStateReference+" before, so will consider it stable";
+            writeLog(stableMessage,"Stability-Updates");
+            return true;
+        }
         if(lastStateReference!=null)
         {   
             if(probabilityMemory.containsKey(lastStateReference))
@@ -695,6 +793,25 @@ public class PlanNode extends Node{
         return stable;
     }
     
+    public boolean isSuccessful(String[] state)
+    {
+        String lastStateReference = this.stringOfState(state);
+
+        if(lastStateReference!=null)
+        {   
+            if(probabilityMemory.containsKey(lastStateReference))
+            {
+                //We have a record of this state being used before
+                StableMemory thisRecord  = (StableMemory)probabilityMemory.get(lastStateReference);
+                if (thisRecord.getNumberOfSuccesses() > 0) {
+                    //We have succeeded in this state before
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public boolean childrenStable()
     {
         if(this.children.size()>0)
@@ -706,6 +823,17 @@ public class PlanNode extends Node{
                 if(!thisNode.isStable(lastState))
                 {
                     return false;
+                } else if (!thisNode.isSuccessful(lastState)) {
+                    /* Fine, so this child goal node is stable, but if this child
+                     * always fails then there is no point continuing because 
+                     * the next child (also a goal) would've never been tried 
+                     * (since we would've stopped at the failure of this goal node)
+                     * and therefore will always fail the stability test.
+                     * The reality is that this plan is in fact stable, because
+                     * there is nothing else to try in this state.
+                     */
+    				writeLog("Node "+thisNode.getItem()+" has previously succeeded in state "+this.stringOfState(lastState)+" so forego remaining children and consider us ("+this.getItem()+") stable", targetDir + "/" + "Stability-Updates");
+                    return true;
                 }
             }
             return true;
@@ -910,13 +1038,12 @@ public class PlanNode extends Node{
                 }
                 try
                 {
-                    val = decisionTree.distributionForInstance(instance);
+                    val = this.doStable?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
                     writeCsv(j+","+val[0]+","+val[1], "dt."+this.getItem());
                 }
                 catch(Exception e)
                 {
-                    System.err.println("something went wrong when the instance was classified \n" +e);
-                    System.exit(9);
+                    System.err.println("something went wrong when the instance was classified \n" +e); // TODO: Fix for Stable
                 }
             }
             else
@@ -942,5 +1069,17 @@ public class PlanNode extends Node{
             BitSet tempBitSet = (BitSet)bitSetCollection.elementAt(j);
             writeLog(j+"="+stringBitSet(tempBitSet), "worlds-key");
         }
+    }
+
+    int hamming (String str1, String str2) {
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int m = (s1.length == s2.length) ? s1.length : Math.min(s1.length,s2.length);
+        int c = 0;
+        for (int i = 0; i < m; i++)
+            if(s1[i] != s2[i]) {
+                c++;
+            }
+        return c;
     }
 }
