@@ -143,7 +143,7 @@
         int numSuccess = 0;
         double mass;
         double max = 0;
-        int POWER = 1;
+        int POWER = 3;
         if (ag.env.update_mode==ag.env.STABLE_U) {
             for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)){
                 if (s.getInfo() instanceof PlanIdInfo){

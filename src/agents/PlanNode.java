@@ -832,10 +832,10 @@ public class PlanNode extends Node{
                      * The reality is that this plan is in fact stable, because
                      * there is nothing else to try in this state.
                      */
-    				writeLog("Node "+thisNode.getItem()+" has previously succeeded in state "+this.stringOfState(lastState)+" so forego remaining children and consider us ("+this.getItem()+") stable", targetDir + "/" + "Stability-Updates");
+    				writeLog("Node "+thisNode.getItem()+" has previously failed in state "+this.stringOfState(lastState)+" so forego remaining children and consider us ("+this.getItem()+") stable", targetDir + "/" + "Stability-Updates");
                     return true;
                 }
-            }
+            }   
             return true;
         }
         else

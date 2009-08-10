@@ -103,6 +103,8 @@ public class GoalNode extends Node{
     		
     	}
     }
+    
+    /* A goal is successful whenever ANY child plan is successful */
 	public boolean isSuccessful(String[] state)
 	{
 		if(this.children.size()>0)
@@ -110,13 +112,13 @@ public class GoalNode extends Node{
 			for(int i =0; this.children.size()>i;i++)
 			{
 				PlanNode thisNode = (PlanNode)this.children.elementAt(i);
-				if(!thisNode.isSuccessful(state))
+				if(thisNode.isSuccessful(state))
 				{
-					return false;
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
     
