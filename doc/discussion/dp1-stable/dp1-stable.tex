@@ -11,6 +11,9 @@
 \usepackage{pdfpages}
 \usepackage{float}
 \usepackage{xspace}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{amsmath}
 
 % Allow page margins to be changed for specified block
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
@@ -195,6 +198,7 @@ if(...?(haveSeen(W) || instances>=newM ):..){
 \end{verbatim}
 This would allow us to start using the tree even when we have not seem $W$ but have seen enough instances to be confident that the \dt prediction will be meaningful. While $m$ is a static requirement, $newM$ could be calculated dynamically based on a number of factors one of which would be the total number of worlds. For instance we could say that we are confident in a \dt \emph{if we have seen the world $W$ before OR we have seen at least half (or any other fraction) of all possible worlds}. This decision is open for discussion, but for now I recommend only introducing the $haveSeen$ check.
 
+\textit{Comment: This recommendation is declined as the $haveSeen$ check is too restrictive and defeats the purpose of using the \dt (for generalisation) in the first place.}
 
 \subsection{When no \dt exists, default $p$ should be $0.5$}
 \label{subsec:use-p-05}
@@ -205,20 +209,20 @@ Section \ref{subsec:defaultP} explains how the default values of $p=1$ or $p=0$ 
 \item When no other information is considered, and we have to \emph{estimate} (i.e. by setting a default) at design time what the chances of success of a plan are, then the logical choice is $50/50$, so a $p=0.5$ makes rational sense.
 \end{itemize}
 
-\subsubsection{Test Results}
+\subsection{Test Results}
 The test results from applying the recommended changes are included in the Appendix \ref{sec:results1}.
 \begin{itemize}
-\item Page "Prior to applying suggested changes (Repository Revision 49)" shows the benchmark results before any changes were applied. Notice the problematic \tiv result on that page. These tests all used $k=3$.
-\item Page "After applying suggested changes using k=3 (Repository Revision 49+)" shows the results after applying the changes. The change does not break any previous tests but shows a slight improvement in \tiv  convergence from $\approx0.25$ to $\approx0.4$. These tests all used $k=3$.
-\item Page "After applying suggested changes using k=1 (Repository Revision 49+)" shows the results after applying the changes but using $k=1$. What's the point? Well we want to verify that our chances make a difference to \tiv. This time, we get the result we expected in Section \ref{subsec:stablePoor}.
-
+\item "Repository Revision 49" shows the baseline results before any changes were applied. Notice the problematic \tiv result here.
+\item "Repository Revision 61" shows the results after applying the changes from Section \ref{subsec:use-p-05}. The change does not break any previous tests but also does not show any significant improvement in any results. Nonetheless, the change is appropriate and has been committed.
 \end{itemize}
 
 
 %% Section
 \section{Improving \textit{Stable} Performance II}
+\label{sec:stable2}
 
 \subsection{When to use a \dt: The \textit{confidence} measure}
+\label{subsec:confidence}
 The core issue discussed in Section \ref{sec:understanding} is that of mis-classification by {\dt}s due to incorrect generalisation, that in turn results from the paucity of samples during the early stages of online learning. Our discussions highlight the necessity to consider two key elements in the use of {\dt}s in this case:
 
 \begin{enumerate}
@@ -240,14 +244,39 @@ A well formed confidence measure would resolve this issue. In this case as each 
 
 Given this confidence measure, we can then use a threshold value to determine when it makes sense to use the probability given by the \dt. For situations where the confidence measure is lower than the threshold, the default probability to use is $0.5$ as described in Section \ref{subsec:use-p-05}.
 
-The formulation of the confidence measure is yet to be completed and is open for discussion.
 
+\subsubsection{A first-pass confidence measure}
+\label{subsubsec:confidence-measure}
 
-\subsection{Guided exploration based on confidence}
+We use a first-pass confidence measure based on the \textit{out-of-bag} error from a bootstrap aggregating (bagging) approach \cite{breiman1996baggi}. 
 
-Currently, the probabilistic plan selection mechanism only considers the probabilities of success of the applicable plans and biases selection towards those that are relatively higher. Again, the earlier discussion in Section \ref{sec:understanding} shows that this criterion alone is not sufficient when the relative probabilities are the same.
+Given a standard training set $D$ of size $n$, bagging generates $p$ new training sets $D_i$ of size $n' \le n$, by sampling examples from $D$ uniformly and with replacement. By sampling with replacement it is likely that some examples will be repeated in each $D_i$. If $n'=n$, then for large $n$ the set $D_i$ is expected to have 63.2\% of the unique examples of $D$, the rest being duplicates. This kind of sample is known as a bootstrap sample. The $p$ models are fitted using the above $p$ bootstrap samples and combined for classification through a voting mechanism. The out-of-bag error here is the classification error on the remaining 36.8\% of the samples.
 
-The plan selection mechanism must therefore be extended to also include our confidence in the given probabilities of success. An informed exploration strategy might bias selection in order to maximise the \textit{information gain} from the choice. \stephane has proposed the following preliminary ideas for this extension:
+First, we change the semantics of the original $m$ parameter (that defines the number of instances required before a \dt may be used) slightly so that $m$ now determines \textit{the number of unique instances} required before a \dt may be utilised. This provides a more information rich sample set than originally. For a world consisting of $f$ binary \textit{features} (or variables), $m$ selects a subset $S' \subset S$ where $|S| = 2^f$. This way $m$ selects a subset (of all possible worlds) large enough to provide suitable performance. 
+
+Second, we calculate the out-of-bag error for the training set $S'$. The choice of whether to use the \dt is determined by the out-of-bag error in relation to a pre-determined threshold value. For our implementation we use a threshold value of $0.5$. Put simply, this means that we will choose to utilise the \dt only when it's classification of the validation set is better than \textit{random}.
+
+Note here that the choice of $m$ for a given experiment is not obvious. As a first-pass, we use the function $m=f$ for this value where $f$ is the number of features in the world. Our experiments show that this rather simple function gives us a sufficiently rich base training set to work from. 
+
+%% Section
+\subsection{Exploring when not using {\dt}s}
+
+Introducing a measure of confidence for the {\dt}s (Section \ref{subsec:confidence}) implies that for each node in the goal/plan hierarchy several samples may pass before we begin to rely on the respective \dt. For the duration that the \dt is not ready, we currently use a random exploration strategy based on the default probability of success. This strategy to explore randomly when not using a \dt is far from ideal. A better strategy would be to utilise the information being recorded at each episode in order to make informed choices in these early stages. 
+
+The inefficiency in using random exploration is apparent as we move further up the goal/plan tree. Firstly, since the stability idea effectively regulates the flow of (failure) information up the goal/plan hierarchy, then the amount of samples available at any one level is inherently less than the level below. This means that decisions have to be made using fewer samples at each higher level. Secondly, choices at higher levels have more weighing towards success. An incorrect choice at a higher level may ruin all chances of success in a given episode regardless of any bottom level decisions. Finally, it is not uncommon in our experiments for top level nodes to not become stable until late in the experiment and therefore to make decisions without help from suitably mature {\dt}s. This fact further motivates the requirement for a informed strategy in the absence of {\dt}s.
+
+In repository revision 63, we have implemented an exploration strategy that is based on probabilities biased by the \textit{hamming distance} to a previously seen world, when the decision tree is not ready. The heuristic first finds the previously witnessed world $W'$ with the minimum hamming distance $h_{W'}$ to the current world $W$, and then biases the probability of success $p_W$ in $W$ with the witnessed result in $W'$, as show in Equation \ref{eqn:hdist}. A maximum bias is applied when $h_{W'}=0$, while no bias is applied for  $h_{W'}=h_{max}$.
+
+\begin{equation}
+\label{eqn:hdist}   
+p_W= 0.5 + \left[ \left( \frac{{success_{W'}}}{attemepts_{W'}} - 0.5 \right) *  \left( 1 - \frac{h_{W'}}{H} \right)  \right]
+\end{equation}
+
+\textit{Comment: Biasing exploration based on feature similarity between worlds (as used in the hamming distance) is not a satisfactory solution because we cannot make a general claim that such a bias even makes sense. An exploration strategy based on information gain is preferred.}
+
+\subsubsection{Ideas for information-based plan choice}
+
+An informed exploration strategy might bias selection in order to maximise the \textit{information gain} from the choice. \stephane has proposed the following preliminary ideas for this extension:
 
 \begin{itemize}
 \item Given information about the number of instances $n$ classified by leaf node $L$ (where $L$ is the node that also classifies $W$), a first simple idea would be to select the plan with the lowest $n$. Equally we could select a plan with a probability inversely proportional to $n$.
@@ -258,22 +287,76 @@ The plan selection mechanism must therefore be extended to also include our conf
 
 
 
+%% Section
+\subsection{Consequences of using a default $p=0.5$}
+\label{subsec:consequence-p}
+
+The decision to use a default $p=0.5$ (refer Section \ref{subsec:use-p-05}) introduces a further subtlety in the meta level probabilistic plan selection (PS) mechanism. Consider the case where we have two applicable plans $P_1$ and $P_2$ whose individual probabilities of success in world $w$ are given by the set $[0.5 , 1.0]$. This represents the situation where $P_1$ is using a default $p=0.5$ and $P_2$ is using a true $p=1.0$. In this case, one would expect $P_2$ to be selected more often than not because we are confident in it's success in world $W$. However, the PS mechanism will use the relative probabilities $[\frac{0.5}{1.5} , \frac{1.0}{1.5}]$ which means that $P_2$ has a selection probability of only $0.67$. Now, say $P_1$ was a deep subtree that does not hold a solution. Then we would be spending a third of our resources in exploring $P_1$ when we already have a suitable solution in $P_2$. The problem becomes more pronounced as the number of applicable plans grows. Consider the case of $20$ applicable plans, $19$ of which are bad but use a default $p=0.5$, and only one is good (has the solution) and is using the true $p=1.0$. In this case, the relative probability of selection of the good plan is only $\frac{1.0}{1.0 + 19*0.5} \approx 9.5\%$.
+
+One way to improve the weighing of the higher probabilities during plan selection is to use a power function $p^a$ for the individual probabilities, however it is not clear how the value $a$ should be selected. A predefined $a$ is not suitable as the set of applicable plans may vary significantly. Using $a=f(n)$ where $n$ is the number of applicable plans is an option but our empirical testing shows that the plan selection (and the subsequent experiment outcome) is quite sensitive to the choice of $a$ and the several tried options for $f(n)$ did not produce a robust enough result across all experiments.
+
+\begin{algorithm}[htb]
+\caption{$pSelect(P)$}
+\label{alg:pselect}
+\begin{algorithmic}[1]
+\STATE $p_m \leftarrow max(P)$
+\STATE $P' \leftarrow (P/p_m)^a$
+\STATE $P'' \leftarrow [P' \cdot (P' \neq 1)] + [P' \cdot (P' = 1) \cdot |P|]$
+\STATE return $P''$
+\end{algorithmic}
+\end{algorithm}
+
+Algorithm \ref{alg:pselect} shows the final heuristic we use to calculate the relative probabilities of selection. Here $P$ is the set of probabilities of the individual plans such that $p_m$ is the maximum probability in the set $P$ (Line 1). We obtain a new set $P'$ with the original probabilities scaled to $1.0$ and using a power factor $a=3$ (Line 2), and further boost the probabilities of the best candidate plans thus obtained (i.e those that have  $p=1.0$ in the set P') by the size of the set $|P|$ (Line 3). This ensures that the relative probability of the best plans is greater than the remainder by a factor of \textit{at least} $|P|$. The final set $P''$ is then used to make the probabilistic selection. Our experiments show that this heuristic provides a good balance between the size $|P|$ of the set, and the maximum probability $p_m$ in the set.
+
+Since the choice of the probabilistic selection mechanism has a significant impact on the results, a better approach would be to formally validate this function so as to guarantee a probability profile. Algorithm \ref{alg:pselect} has only been verified empirically.
+
+\subsection{Changes to stability checking for child nodes}
+
+When doing stability checks for children of a node, a termination check was added to ensure the following:
+
+\begin{itemize}
+\item For a \textit{Goal} node $N$, when checking the stability of the children plans set $C$ in world $W$, the stability checking should stop and the node $N$ be marked stable when a child $C_i$ is found to be \textit{successful} in world $W$. This is because if $C_i \in C$ is successful in $W$, then it will almost always be selected and the other plans $C_j \neq C_i$ would almost never become stable.
+\item For a \textit{Plan} node $N$, when checking the stability of the children goals set $C$ in world $W$, the stability checking should stop and the node $N$ be marked stable when a child $C_i$ is found to be \textit{unsuccessful} in world $W$. This is because if $C_i \in C$ is unsuccessful in $W$, then the other subgoals $C_j \neq C_i$ would never be tried and would therefore never become stable.
+
+\end{itemize}
+
+This fixes an existing issue with the stability checking algorithm.
+
+\subsection{Test Results}
+The test results from applying the changes are included in the Appendix \ref{sec:results1}.
+\begin{itemize}
+\item "Repository Revision 61" is the baseline results before any changes were applied. Notice the problematic \tiv result.
+\item "Repository Revision 63" shows the results after applying the changes from Section \ref{sec:stable2}. Noticeably, \tiv performance is now fixed. Interestingly, the change also resolves the dummy variables issue of test \textit{testDummyvars} (using m=20, where \st performs poorly when forced to consider features of the world that have no final bearing on the results (her $19/20$ features have no impact on results). The \textit{testDummyvars} result was produced using $m=20$ as described in Section \ref{subsubsec:confidence-measure}
+\end{itemize}
+
+\textit{Comment: Repository revision 63 fixes all our existing tests! However we have not approved these changes because (1) the hamming distance based exploration does not make good sense; (2) the modification to the probabilistc plan selection in Section \ref{subsec:consequence-p} is the result of an arbitrary formulation that works for our purpose but has not been evaluated for the general case; and (3) the confidence measure based on a modified $m$ semantic and a out-of-bag error is not robust enough. }
+
+
+%% Section
+%\section{Improving \textit{Stable} Performance III}
+%\subsection{Improved book keeping}
 
 %% Section 
 \section{Acknowledgements}
 
 Revisions of this document are a result of an ongoing discussion and contributions from \stephane Airiau of the University of Amsterdam, and Sebastian Sardina and Professor Lin Padgham of RMIT University.
 
+%% Bibliography
+\bibliographystyle{plain}
+\bibliography{biblio} 
+
+
 %% Appendix
 \appendix
 \section{Appendix}
 
+
 %% Appendix Section
-\subsection{Results for \textit{Stable} Performance I}
+\subsection{Results}
 \label{sec:results1}
-\includepdf[pages={1-6,9-},nup=2x4]{blak49.pdf}
-\includepdf[pages={1-6,9-},nup=2x4]{blak49+k3.pdf}
-\includepdf[pages={1-6,9-},nup=2x4]{blak49+k1.pdf}
+\includepdf[pages={1-},nup=2x3]{blak49.pdf}
+\includepdf[pages={1-},nup=2x3]{blak61.pdf}
+\includepdf[pages={1-},nup=2x3]{blak63.pdf}
 
 
 %% Appendix Section
