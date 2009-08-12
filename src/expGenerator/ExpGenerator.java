@@ -936,6 +936,7 @@ public class ExpGenerator {
 		+"import plans.StartNewIteration;\n"
 		//+"import events.Update_Event;\n"
 		+"import events."+topGoal.getId()+";\n"
+		+"import trees.Logger;\n"
 		+"import java.io.File;\n"
 		+"import java.io.IOException;\n"
 		+"import java.io.PrintWriter;\n"
@@ -950,7 +951,7 @@ public class ExpGenerator {
 		+"The environment is considered as an agent. The environment will post events and changes the value of variables\n"
 		+"*/ \n";
 		// code for the class
-		code+="public agent Environment extends Agent {\n"
+		code+="public agent Environment extends Agent implements Logger {\n"
 		//+"#sends event Update_Event updateEvent;\n"
 		+"#sends event "+ topGoal.getId() + " topGoal;\n"
 		+"#handles event ReadyForNextIteration;\n"
@@ -966,6 +967,7 @@ public class ExpGenerator {
 		+"\tSystem.out.println(\"The environment has started\");\n"
 		+"\ttry{\n"
 		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename);\n"
+		+"\t\tlog = new PrintWriter(targetDir + \"/run.log\");\n"
 		+"\t}catch(IOException e){\n"
 		+"\t\tSystem.err.println(\"error opening the file for writing the outcome \\n\"+e);\n"
 		+"\t\tSystem.exit(9);\n"
@@ -976,6 +978,7 @@ public class ExpGenerator {
 		+ "public int it,ticks=1,num_successes=0,num_failures=0;\n"
 		+ 	"Random generator;\n"
 		+ "public PrintWriter writerOutcome;\n"
+		+ "public PrintWriter log;\n"
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
 		+ "public double noise = 0.1;\n"
 		+ "public static final int CL = 1;\n"
@@ -1146,6 +1149,7 @@ public class ExpGenerator {
 		+"\t}\n"
 		+"\telse{\n"
 		+"\t\twriterOutcome.close();\n"
+		+"\t\tlog.close();\n"
 		+"\t\t//this.finish();\n"
 		+"\t\tlearningAgent.printDT();\n"
 		+"\t\tint count=0;\n"
@@ -1332,12 +1336,11 @@ public class ExpGenerator {
 			code += "\t#uses plan "+p.getId()+";\n";
 		code+="\t#uses plan MetaPlan;\n";
 		//Constructor
-		code +="\n\npublic RefinerAgent(String name, String outputDir){\n"
+		code +="\n\npublic RefinerAgent(String name){\n"
 		+"\tsuper(name);\n"
 		+"\tstableUpdates = false;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
-		+"\ttargetDir = outputDir;\n"
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
 		int index=0; 
 		
@@ -1401,7 +1404,6 @@ public class ExpGenerator {
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
-		+"\tpublic String targetDir;\n" 
 		
 		+"\tpublic boolean isStableUpdates()\n"
 		+"\t{\n"
@@ -1455,22 +1457,12 @@ public class ExpGenerator {
 		+"\t\t{\n"
 		+"\t\t\tplanNodes[i].resetLastState();\n"
 		+"\t\t}\n"
-		+"\t}\n\n"
+		+"\t}\n\n";
 		
-		+"\n\n\n\tpublic void writeLog(String msg, String postPend)\n"
+		code += "\n\n\n\tpublic void writeLog(String msg, String postpend)\n"
 		+"\t{\n"
-		+"\t\ttry\n"
-		+"\t\t{\n"
-		+"\t\t\tPrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + \"/\" + postPend + \".txt\", true), true);\n"
-		+"\t\t\tprnOut.println(msg);\n"
-		+"\t\t\tprnOut.close();\n"
-		+"\t\t}\n"
-		+"\t\tcatch(Exception e)\n"
-		+"\t\t{\n"
-		+"\t\t\tSystem.out.println(\"Error: File could not be created.\");\n" 
-		+"\t\t}\n"
+		+"\t\tenv.writeLog(msg,0);\n"
 		+"\t}\n";
-		
 		
 		// set Environment
 		code +="\npublic void setEnvironment(Environment e){env = e;}\n\n";
@@ -1487,13 +1479,13 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, stableUpdates, stableE, stableK, targetDir);\n";
+			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, stableUpdates, stableE, stableK, (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
 		index = 0;
 		for (Goal g: goals){
-			code+="\tgoalNodes["+index+"] = new GoalNode("+ index+ ",\""+ g.getId() +"\", targetDir);\n";
+			code+="\tgoalNodes["+index+"] = new GoalNode("+ index+ ",\""+ g.getId() +"\", (trees.Logger)env);\n";
 			if (g.equals(topGoal))
 				code+="\tgpTree = new Tree(goalNodes["+index+"]);\n";
 			index++;
@@ -1511,6 +1503,8 @@ public class ExpGenerator {
 					code += "\tplanNodes["+p.index+"].addChild(goalNodes["+g.index+"]);\n";
 			
 		}
+		code+="\n}\n\n";
+        /*
 		code+="\n\nprintPlanNodes();\n}\n\n";
 		
 		code +="\t\n\npublic void printPlanNodes()\n"
@@ -1526,7 +1520,8 @@ public class ExpGenerator {
 		+"\t\t\twriteLog(\"This tree has the following bottom level plans: \"+bottomPlans, \"planBottom\");\n"
 		+"\t\t}\n" 
 		+"\t}\n\n\n";
-		
+		*/
+        
 		code +="\tpublic void generateAllWorldStates()\n"
 		+"\t{\n"
 		+"\t\tVector bitSetCollection  = new Vector();\n"
@@ -1635,14 +1630,14 @@ public class ExpGenerator {
 		+"\t\tnewMess = new String(\"Refiner Agent  monkey is Recording result for iteration \"+env.it+\" on plan \"+planNodes[plan_id].getItem());\n"
 		+"\t\tnewMess = newMess+\". It was successful.\";\n"
 		+"\t\tnewMess = newMess+\" The state was: \"+planNodes[plan_id].stringOfLastState();\n"
-		+"\t\twriteLog(newMess, \"Stability-Updates\");\n"
+		+"\t\tenv.writeLog(newMess, \"Stability-Updates\");\n"
 		+"\t}\n"
 		+"\n\telse if(!res && stableUpdates)\n"
 		+"\t{\n"
 		+"\t\tnewMess = new String(\"Refiner Agent is Recording result for iteration \"+env.it+\" on plan \"+planNodes[plan_id].getItem());\n"
 		+"\t\tnewMess = newMess+\". It was NOT successful.\";\n"
 		+"\t\tnewMess = newMess+\" The state was: \"+planNodes[plan_id].stringOfLastState();\n"
-		+"\t\twriteLog(newMess, \"Stability-Updates\");\n"
+		+"\t\tenv.writeLog(newMess, \"Stability-Updates\");\n"
 		+"\t}\n"
 		
 		
@@ -1665,12 +1660,12 @@ public class ExpGenerator {
 		+"\t\t\tthisNode.determineSuccessful();\n"
 		+"\t\t\tif(thisNode.isSuccessful())\n"
 		+"\t\t\t{\n"
-		+"\t\t\t\twriteLog(\"Node: \"+thisNode.getItem()+\" is all successful and ready to propagate up the tree\",\"Stability-Updates\");\n"
+		+"\t\t\t\tenv.writeLog(\"Node: \"+thisNode.getItem()+\" is all successful and ready to propagate up the tree\",\"Stability-Updates\");\n"
 		+"\t\t\t}\n"
 		+"\t\t\telse\n"
 		+"\t\t\t{\n"
-		+"\t\t\t\twriteLog(\"Node: \"+thisNode.getItem()+\" is NOT all successful and NOT ready to propagate up the tree\",\"Stability-Updates\");\n"
-		+"\t\t\t\twriteLog(\"Assuming no further nodes are ready to update....\", \"Stability-Updates\");\n"
+		+"\t\t\t\tenv. writeLog(\"Node: \"+thisNode.getItem()+\" is NOT all successful and NOT ready to propagate up the tree\",\"Stability-Updates\");\n"
+		+"\t\t\t\tenv. writeLog(\"Assuming no further nodes are ready to update....\", \"Stability-Updates\");\n"
 		+"\t\t\t\tbreak;\n"
 		+"\t\t\t}\n"
 		+"\t\t}\n"

@@ -15,8 +15,8 @@ public class Tree{
 	root = node;
     }
 
-    public void setRoot(Object item){
-	root = new Node(item);
+    public void setRoot(Object item, Logger logger){
+	root = new Node(item, logger);
     }
 
     public Node getRoot(){return root;}

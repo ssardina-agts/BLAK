@@ -1,5 +1,6 @@
 package agents;
 
+import trees.*;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
@@ -13,12 +14,13 @@ public class StableMemory
 	private int numberOfSuccesses;
 	private int numberOfAttempts;
 	public String targetDir;
+    private Logger logger;
 	
 	
-	public StableMemory(String outputDir)
+	public StableMemory(Logger logger)
 	{
 		//setState(null);
-		targetDir = outputDir;
+		this.logger = logger;
 		previousProbability = 0.0;
 		deltaProbability = 0.0;//Double.MAX_VALUE;
 		numberOfSuccesses = 0;
@@ -160,7 +162,7 @@ public class StableMemory
 	
 	public Object clone()
 	{
-		StableMemory myClone  = new StableMemory(this.targetDir);
+		StableMemory myClone  = new StableMemory(this.logger);
 		myClone.setDeltaProbability(this.getDeltaProbability());
 		myClone.setPreviousProbability(this.getPreviousProbability());
 		myClone.setNumberOfSuccesses(this.getNumberOfSuccesses());
@@ -171,15 +173,6 @@ public class StableMemory
 	
 	public void writeLog(String msg, String postPend)
 	{
-		try
-		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
-			prnOut.println(msg);
-			prnOut.close();
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error: File could not be created.");
-		}
+        logger.writeLog(msg,0);
 	}
 }

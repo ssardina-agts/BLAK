@@ -8,13 +8,14 @@ public class GoalNode extends Node{
     public String name;
     public int successfulChildren;
 	public String targetDir;
+    private Logger logger;
     
-    public GoalNode(int id, String gname, String outputDir){
-		super(gname);
+    public GoalNode(int id, String gname, Logger logger){
+		super(gname, logger);
 		name = gname;
 		goal_id = id;
 		successfulChildren = 0;
-		targetDir = outputDir;
+		targetDir = "";
     }
 	
     public boolean isStable(String[] state)
@@ -137,7 +138,7 @@ public class GoalNode extends Node{
 	
 	public Object clone()
 	{
-		GoalNode myClone  = new GoalNode(this.goal_id, this.name, this.targetDir);
+		GoalNode myClone  = new GoalNode(this.goal_id, this.name, this.logger);
 		return myClone;
 	}
 	

@@ -43,7 +43,6 @@ public class PlanNode extends Node{
     
     Instances data;
     
-    
     public boolean isDoStable() {
         return doStable;
     }
@@ -164,8 +163,8 @@ public class PlanNode extends Node{
     public PlanNode(int id, String pname, FastVector attributes,
                     FastVector classValue, FastVector booleanValue, 
                     boolean waitST, int minNumInst, boolean doStablePlanning,
-                    double epsilion, int kStable, String outputDir){
-        super(pname);
+                    double epsilion, int kStable, Logger logger){
+        super(pname, logger);
         name = pname;
         goal_id = id;
         atts = attributes;
@@ -181,7 +180,7 @@ public class PlanNode extends Node{
         stableK = kStable;
         stableEpsilon = epsilion;
         successfulChildren = 0;
-        targetDir = outputDir;
+        targetDir = "";
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
@@ -421,7 +420,7 @@ public class PlanNode extends Node{
             }
             else
             {
-                StableMemory thisMemory = new StableMemory(targetDir);
+                StableMemory thisMemory = new StableMemory(logger);
                 if(res)
                 {
                     writeLog("-----------------------------------\nSuccessful.Incrementing Suc, Att", "NodeUpdates");
@@ -940,20 +939,6 @@ public class PlanNode extends Node{
             }
         }
         return false;
-    }
-    
-    public void writeLog(String msg, String postPend)
-    {
-        try
-        {
-            PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
-            prnOut.println(msg);
-            prnOut.close();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error: File could not be created.");
-        }
     }
     
     public void writeCsv(String msg, String postPend)

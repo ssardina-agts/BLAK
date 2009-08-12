@@ -99,7 +99,7 @@ public static void main(String[] args){
 	    }
 	}
 	
-	RefinerAgent agent = new RefinerAgent("BDI-Learning Agent", targetDir);
+	RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
 	if(update_mode==STABLE_U)
 	{
 		agent.setStableUpdates(true);
@@ -166,13 +166,16 @@ public static void main(String[] args){
     }
 }
 
-	public void writeLog(String msg, String postPend)
+	public void writeLog(String msg, String postpend)
+	{
+		this.writeLog(msg,0);
+	}
+
+	public void writeLog(String msg, int indent)
 	{
 		try
 		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(targetDir + "/" + postPend + ".txt", true), true);
-			prnOut.println(msg);
-			prnOut.close();
+			log.println(msg);
 		}
 		catch(Exception e)
 		{

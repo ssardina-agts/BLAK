@@ -1,6 +1,4 @@
 package trees;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.*;
 
 
@@ -11,13 +9,15 @@ public class Node{
     private String name;
     public Vector children;
     public boolean successful;
+    public Logger logger;
     
     
-    public Node(Object val)
+    public Node(Object val, Logger logger)
     {
     	item = val;
     	children = new Vector();
     	successful = true;
+        this.logger = logger;
     }
 
     public boolean isSuccessful()
@@ -233,20 +233,6 @@ public class Node{
     	return null;
     }
 	
-    public void writeLog(String msg, String postPend)
-	{
-		try
-		{
-			PrintWriter prnOut = new PrintWriter(new FileOutputStream(postPend+".txt", true), true);
-			prnOut.println(msg);
-			prnOut.close();
-		}
-		catch(Exception e)
-		{
-			System.out.println("Error: File could not be created.");
-		}
-	}
-    
     public String stringOfState(String[] state)
     {
     	String returnMe = "";
@@ -267,6 +253,11 @@ public class Node{
     		}
     	}
     	return returnMe;	
+    }
+    
+    public void writeLog(String msg, String postPend)
+    {
+        logger.writeLog(msg,0);
     }
     
 }
