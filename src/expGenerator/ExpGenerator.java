@@ -979,6 +979,7 @@ public class ExpGenerator {
 		+ 	"Random generator;\n"
 		+ "public PrintWriter writerOutcome;\n"
 		+ "public PrintWriter log;\n"
+		+ "private String logindent = \"\";\n"		
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
 		+ "public double noise = 0.1;\n"
 		+ "public static final int CL = 1;\n"
@@ -1065,7 +1066,7 @@ public class ExpGenerator {
 		//+"\t\tlearningAgent.clearAllLastStates();\n"
 		+"\t}\n"
 		
-		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\", \"Stability-Updates\");\n"
+		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\");\n"
 		+"\tif (it < numIterations)\n\t{\n"
 		+"\t\tit++;\n"
 		+"\t\tif(!worldFed)\n\t\t{\n"
@@ -1109,7 +1110,7 @@ public class ExpGenerator {
 			}
 			
 		}
-		code +="\n\t\t\t\twriteLog(msgWorldState, recordFeedFileName);\n";
+		code +="\n\t\t\t\t//writeLog(msgWorldState, recordFeedFileName);\n";
 		code +="\t\t\t}\n";
 		
 		
@@ -1141,7 +1142,7 @@ public class ExpGenerator {
 			}
 			
 		}
-		code +="\n\t\t\t\twriteLog(msgWorldState, recordFeedFileName);\n";
+		code +="\n\t\t\t\t//writeLog(msgWorldState, recordFeedFileName);\n";
 		code +="\t\t\t}\n";
 		code+="\t\t}\n";
 		code+="\t\t\tMessageEvent mess = topGoal.start();\n"
@@ -1375,7 +1376,7 @@ public class ExpGenerator {
 		+"\t}\n"
 		+"\tgenerator = new Random();\n"
 		+"\tplanNodes = new PlanNode[numPlans];\n"
-		+"\tgenerateTree();\n";
+		+"\t//generateTree();\n";
 		
 		code+="}\n\n";
 		//class attributes
@@ -1458,11 +1459,6 @@ public class ExpGenerator {
 		+"\t\t\tplanNodes[i].resetLastState();\n"
 		+"\t\t}\n"
 		+"\t}\n\n";
-		
-		code += "\n\n\n\tpublic void writeLog(String msg, String postpend)\n"
-		+"\t{\n"
-		+"\t\tenv.writeLog(msg,0);\n"
-		+"\t}\n";
 		
 		// set Environment
 		code +="\npublic void setEnvironment(Environment e){env = e;}\n\n";
@@ -1622,34 +1618,15 @@ public class ExpGenerator {
 		
 		code+="public void record(int plan_id, boolean res)\n"
 		+"{\n"
-		//+"System.out.println(\"Record Method\");\n"
-		+"\tString newMess=\"\";\n"
-		+"\tString[] tempLastState = new String["+atts.size()+"];"
-		+"\n\tif(res && stableUpdates)\n"
-		+"\t{\n"
-		+"\t\tnewMess = new String(\"Refiner Agent  monkey is Recording result for iteration \"+env.it+\" on plan \"+planNodes[plan_id].getItem());\n"
-		+"\t\tnewMess = newMess+\". It was successful.\";\n"
-		+"\t\tnewMess = newMess+\" The state was: \"+planNodes[plan_id].stringOfLastState();\n"
-		+"\t\tenv.writeLog(newMess, \"Stability-Updates\");\n"
-		+"\t}\n"
-		+"\n\telse if(!res && stableUpdates)\n"
-		+"\t{\n"
-		+"\t\tnewMess = new String(\"Refiner Agent is Recording result for iteration \"+env.it+\" on plan \"+planNodes[plan_id].getItem());\n"
-		+"\t\tnewMess = newMess+\". It was NOT successful.\";\n"
-		+"\t\tnewMess = newMess+\" The state was: \"+planNodes[plan_id].stringOfLastState();\n"
-		+"\t\tenv.writeLog(newMess, \"Stability-Updates\");\n"
-		+"\t}\n"
-		
+		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
+		+"\t\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
 		
 		+"\tif(res && stableUpdates)\n"
 		+"\t{\n"
 		+"\t\tplanNodes[plan_id].setSuccessful(true);\n"
-		
+        +"\t\tenv.indentRight();\n"
 		+"\t\tplanNodes[plan_id].record(res);\n"
-		
-		
-		//+"\t\tSystem.out.println(\"Stable with positive result\");\n"
-		//+"\t\tSystem.exit(0);\n" 
+        +"\t\tenv.indentLeft();\n"
 		+"\t\tGoalNode theRoot = (GoalNode)gpTree.getRoot();\n"
 		+"\t\tVector pathToNode = gpTree.getRoot().getPathTo(planNodes[plan_id]);\n"
 		+"\t\tString path=\"\";\n"
@@ -1660,19 +1637,21 @@ public class ExpGenerator {
 		+"\t\t\tthisNode.determineSuccessful();\n"
 		+"\t\t\tif(thisNode.isSuccessful())\n"
 		+"\t\t\t{\n"
-		+"\t\t\t\tenv.writeLog(\"Node: \"+thisNode.getItem()+\" is all successful and ready to propagate up the tree\",\"Stability-Updates\");\n"
+		+"\t\t\t\tenv.writeLog(\"Node \"+thisNode.getItem()+\" is all successful and ready to propagate up the tree\");\n"
 		+"\t\t\t}\n"
 		+"\t\t\telse\n"
 		+"\t\t\t{\n"
-		+"\t\t\t\tenv. writeLog(\"Node: \"+thisNode.getItem()+\" is NOT all successful and NOT ready to propagate up the tree\",\"Stability-Updates\");\n"
-		+"\t\t\t\tenv. writeLog(\"Assuming no further nodes are ready to update....\", \"Stability-Updates\");\n"
+		+"\t\t\t\tenv. writeLog(\"Node \"+thisNode.getItem()+\" is NOT all successful and NOT ready to propagate up the tree\");\n"
+		+"\t\t\t\tenv. writeLog(\"Assuming no further nodes are ready to update....\");\n"
 		+"\t\t\t\tbreak;\n"
 		+"\t\t\t}\n"
 		+"\t\t}\n"
 		+"\t}\n"
 		+"\telse\n"
 		+"\t{\n"
+        +"\t\tenv.indentRight();\n"
 		+"\t\tplanNodes[plan_id].record(res);\n"
+        +"\t\tenv.indentLeft();\n"
 		+"\t}\n"
 		+"}\n";
 		

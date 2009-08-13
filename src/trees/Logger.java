@@ -4,5 +4,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public interface Logger{
-    public void writeLog(String msg, int indent);
+	public void indentLeft();
+	public void indentRight();
+    public void writeLog(String msg);
 }

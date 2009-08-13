@@ -105,19 +105,13 @@ public class StableMemory
 		
 		Double noAtt = new Double(this.numberOfAttempts);
 		double temp = noSuc.doubleValue()/noAtt.doubleValue();
-		writeLog("No Suc: "+noSuc.doubleValue()+", no att: "+noAtt.doubleValue()+", result: "+temp, "NodeUpdates");
-		//System.out.println("Nosuc: Prob: "+temp);
 		return temp;
 	}
 	
 	public void updateProbability()
 	{
-		writeLog("----------------------\nUpdating Prob", "NodeUpdates");
 		double newProb = this.calculateCurrentProbability();
-		writeLog("DeltaProb: "+this.deltaProbability, "NodeUpdates");
-		
 		double newDelta = Math.abs(this.previousProbability - newProb);
-		writeLog("New DeltaProb: "+newDelta, "NodeUpdates");
 		this.setPreviousProbability(newProb);
 		this.setDeltaProbability(newDelta);
 		
@@ -169,10 +163,5 @@ public class StableMemory
 		myClone.setNumberOfAttempts(this.getNumberOfAttempts());
 		
 		return myClone;
-	}
-	
-	public void writeLog(String msg, String postPend)
-	{
-        logger.writeLog(msg,0);
 	}
 }

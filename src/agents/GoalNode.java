@@ -7,43 +7,43 @@ public class GoalNode extends Node{
     public int goal_id;
     public String name;
     public int successfulChildren;
-	public String targetDir;
-    private Logger logger;
     
     public GoalNode(int id, String gname, Logger logger){
 		super(gname, logger);
 		name = gname;
 		goal_id = id;
 		successfulChildren = 0;
-		targetDir = "";
     }
 	
     public boolean isStable(String[] state)
     {
-    	this.writeLog("Goal Node "+name+" is determining which state to check stability for, starting with state "+this.stringOfState(state), targetDir + "/" + "Stability-Updates");
+    	logger.writeLog("Goal "+name+" is determining which state to check stability for, starting with state "+this.stringOfState(state));
     	if(this.children.size()>0)
     	{
     		String[] checkState = null;
     		//find the children which has a non null last state..
+            logger.indentRight();
     		for(int j =0; this.children.size()>j;j++)
     		{
     			PlanNode thisNode = (PlanNode)this.children.elementAt(j);
     			if(thisNode.lastState!=null)
     			{
-    				this.writeLog("-Child plan "+thisNode.getItem()+" has last state "+thisNode.stringOfLastState(), targetDir + "/" + "Stability-Updates");
+    				logger.writeLog("Child plan "+thisNode.getItem()+" has last state "+thisNode.stringOfLastState());
     				if(checkState==null)
     				{
     					checkState = thisNode.lastState;
-    					this.writeLog("-Goal Node "+name+" should therefore check stability for state "+this.stringOfState(checkState), targetDir + "/" + "Stability-Updates");
+    					logger.writeLog("Goal "+name+" should therefore check stability for state "+this.stringOfState(checkState));
     					
     				}
     			}
     			else
     			{
-    				this.writeLog("-Child plan "+thisNode.getItem()+" has NULL last state", targetDir + "/" + "Stability-Updates");
+    				logger.writeLog("Child plan "+thisNode.getItem()+" has NULL last state");
     			}
     			
     		}
+            logger.indentLeft();
+            
     		if(checkState==null)
     		{
     			//System.out.println("Goal Node: Could not find check state");
@@ -53,13 +53,13 @@ public class GoalNode extends Node{
     			//return true;
                 
                 /* We have never been used in this state so can't say we are stable */
-    			this.writeLog("-Goal Node "+name+" found ALL last states to be NULL, so assume not stable"/*+" HACK STABLE"*/, targetDir + "/" + "Stability-Updates");
+    			logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume not stable");
                 return false;
     			
     		}
     			
     		//check their stability
-    		this.writeLog("-Goal Node "+name+" is now checking stability for determined state "+this.stringOfState(checkState), targetDir + "/" + "Stability-Updates");
+    		logger.writeLog("Goal "+name+" is now checking stability for state "+this.stringOfState(checkState));
             
             /* If we have succeeded in this state before then stability checking 
              * doesn't make sense (we may never experience other options
@@ -67,16 +67,17 @@ public class GoalNode extends Node{
              * assume we are stable.
              */
             if (this.isSuccessful(checkState)) {
-                this.writeLog("-Goal Node "+name+" is stable for state "+this.stringOfState(checkState)+" since it has succeeded in this state before", targetDir + "/" + "Stability-Updates");
+                logger.writeLog("Goal "+name+" is stable for state "+this.stringOfState(checkState)+" since it has succeeded in this state before");
                 return true;
             }
             
+            logger.indentRight();
     		for(int i = 0; this.children.size()>i;i++)
     		{
     			PlanNode thisNode = (PlanNode)this.children.elementAt(i);
     			if(!thisNode.isStable(checkState))
     			{
-    				this.writeLog("--Child plan "+thisNode.getItem()+" is unstable for state "+this.stringOfState(checkState), targetDir + "/" + "Stability-Updates");
+    				logger.writeLog("Child plan "+thisNode.getItem()+" is unstable for state "+this.stringOfState(checkState));
     				return false;
     			} else if (thisNode.isSuccessful(checkState)) {
                     /* Fine, so this child plan node is stable, but if this child
@@ -88,10 +89,11 @@ public class GoalNode extends Node{
                      * The reality is that this goal is in fact stable, because
                      * there is nothing else to try in this state.
                      */
-    				this.writeLog("--Child plan "+thisNode.getItem()+" has previously succeeded in state "+this.stringOfState(checkState)+" so forego remaining children and consider us ("+name+") stable", targetDir + "/" + "Stability-Updates");
+    				logger.writeLog("Child plan "+thisNode.getItem()+" has previously succeeded in state "+this.stringOfState(checkState)+" so forego remaining children and consider us ("+name+") stable");
                     return true;
                 }
     		}	
+            logger.indentLeft();
     		//Made it all the way through the children and they are all stable,
     		//Therefore we are considered stable :D 
     		return true;

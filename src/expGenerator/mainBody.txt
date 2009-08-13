@@ -106,7 +106,7 @@ public static void main(String[] args){
 		agent.setStableK(staK);
 		agent.setStableE(staE);
 		System.out.println("K: "+staK+", e: "+staE);
-		agent.generateTree();
+		//agent.generateTree();
 	}
 	Environment env = new Environment("Environment",targetDir, filename);
 	env.worldFed = feedMeTheWorld;
@@ -115,7 +115,7 @@ public static void main(String[] args){
 	env.recordFeedFileName = recordMeFileName;
 	env.compareToFile = doCompare;
 	env.compareTemplate = compareTemplate;
-    env.noise = noise;
+	env.noise = noise;
 	
 	if(feedMeTheWorld)
 	{
@@ -128,7 +128,6 @@ public static void main(String[] args){
 	agent.waitForSubTree = waitST;
 	env.filenameOutcome = filename;
 	env.learningAgent = agent;
-	agent.generateTree();
 	System.out.println("Start the simulation with " 
 			   + env.numIterations 
 			   + " iterations \n min num instances to build a tree is set to " 
@@ -158,6 +157,8 @@ public static void main(String[] args){
 	 	System.out.println("Stability Updated Learning");
 	 	break;
 	}
+
+	agent.generateTree();
 	env.runOneIteration();
     }
     else
@@ -166,22 +167,34 @@ public static void main(String[] args){
     }
 }
 
-	public void writeLog(String msg, String postpend)
+	/* Logger Interface ********/
+	public void indentRight()
 	{
-		this.writeLog(msg,0);
+		logindent += " ";
 	}
-
-	public void writeLog(String msg, int indent)
+	public void indentLeft()
+	{
+		int len = logindent.length();
+		if (len >= 2) {
+			logindent = logindent.substring(0, len-2);
+		} else {
+			logindent = "";
+		}
+	}
+	public void writeLog(String msg)
 	{
 		try
 		{
-			log.println(msg);
+			log.println(logindent+msg);
+			log.flush();
 		}
 		catch(Exception e)
 		{
 			System.out.println("Error: File could not be created.");
 		}
 	}
+	/*************************/
+
 	
 	public void openWorldFedConnection()
 	{
@@ -212,7 +225,7 @@ public static void main(String[] args){
 		 			thisLine = thisLine.trim();
 					int planNodeIndex = learningAgent.findPlanNodeByID(thisLine);
 					String msg = learningAgent.planNodes[planNodeIndex].getDT();
-					writeLog("---------:"+thisLine+"\n"+msg+"\n---------\n", filenameOutcome+"-COMPARE");
+					//writeLog("---------:"+thisLine+"\n"+msg+"\n---------\n", filenameOutcome+"-COMPARE");
 					thisLine = compareReader.readLine();
 		 		}
 		 		

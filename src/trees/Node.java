@@ -254,10 +254,4 @@ public class Node{
     	}
     	return returnMe;	
     }
-    
-    public void writeLog(String msg, String postPend)
-    {
-        logger.writeLog(msg,0);
-    }
-    
 }
