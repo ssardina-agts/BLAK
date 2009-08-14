@@ -6,18 +6,18 @@ import java.io.PrintWriter;
 
 import weka.core.*;
 
-public class StableMemory 
+public class Experience 
 {
 	//private Instance state;
 	private double previousProbability;
 	private double deltaProbability;
 	private int numberOfSuccesses;
 	private int numberOfAttempts;
-	public String targetDir;
+    private double coverage;
     private Logger logger;
 	
 	
-	public StableMemory(Logger logger)
+	public Experience(Logger logger)
 	{
 		//setState(null);
 		this.logger = logger;
@@ -30,16 +30,14 @@ public class StableMemory
 
 	
 
-	/*public void setState(Instance state) 
+	public void setCoverage(double coverage) 
 	{
-		this.state = state;
+		this.coverage = coverage;
 	}
-
-
-	public Instance getState() 
+	public double coverage() 
 	{
-		return state;
-	}*/
+		return coverage;
+	}
 
 
 	public void setPreviousProbability(double previousProbability) 
@@ -156,7 +154,7 @@ public class StableMemory
 	
 	public Object clone()
 	{
-		StableMemory myClone  = new StableMemory(this.logger);
+		Experience myClone  = new Experience(this.logger);
 		myClone.setDeltaProbability(this.getDeltaProbability());
 		myClone.setPreviousProbability(this.getPreviousProbability());
 		myClone.setNumberOfSuccesses(this.getNumberOfSuccesses());

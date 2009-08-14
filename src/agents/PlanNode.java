@@ -20,13 +20,17 @@ import java.lang.Math;
 
 public class PlanNode extends Node{
     
+    private static final int CONCURRENT = 1;
+    private static final int STABLE = 2;
+    private static final int COVERAGE = 3;
+
     public int goal_id;
     public String name;
     Hashtable memory;
     public Object decisionTree;
     String[] options;
     String[] lastState;
-    boolean doStable;
+    int update_mode;
     public int successfulChildren;
     private FastVector atts;
     private FastVector classVal;
@@ -35,21 +39,21 @@ public class PlanNode extends Node{
     private boolean waitForSubTree = true;
     int startToUseDT;
     int minNumInstances=100;
-    Hashtable probabilityMemory;
+    Hashtable experiences;
     
     private int stableK;
     private double stableEpsilon;
     
     Instances data;
     
+    /*
     public boolean isDoStable() {
         return doStable;
     }
-    
     public void setDoStable(boolean doStable) {
         this.doStable = doStable;
     }
-    
+    */
     public String[] getLastState() {
         return lastState;
     }
@@ -161,7 +165,7 @@ public class PlanNode extends Node{
      */
     public PlanNode(int id, String pname, FastVector attributes,
                     FastVector classValue, FastVector booleanValue, 
-                    boolean waitST, int minNumInst, boolean doStablePlanning,
+                    boolean waitST, int minNumInst, int update_mode,
                     double epsilion, int kStable, Logger logger){
         super(pname, logger);
         name = pname;
@@ -174,15 +178,15 @@ public class PlanNode extends Node{
         minNumInstances = minNumInst;
         lastState = new String[numAttributes];
         memory = new Hashtable();
-        probabilityMemory = new Hashtable();
-        this.doStable = doStablePlanning;
+        experiences = new Hashtable();
+        this.update_mode = update_mode;
         stableK = kStable;
         stableEpsilon = epsilion;
         successfulChildren = 0;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
-            if (this.doStable) {
+            if (update_mode == STABLE) {
                 decisionTree = new Bagging();
                 options = new String[9];
                 int i = 0;
@@ -248,7 +252,7 @@ public class PlanNode extends Node{
     public void record(boolean res)
     {
         logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
-        if(!res && this.doStable)
+        if(!res && (update_mode == STABLE))
         {
             //we failed...
             if(this.childrenStable())
@@ -264,7 +268,7 @@ public class PlanNode extends Node{
             }
         }
         
-        if(!this.doStable)
+        if(!(update_mode == STABLE))
         {
             //Stephane's code to record the instance for use with a  Decision Tree.
             //we aren't doing stable selection so record.....
@@ -305,7 +309,7 @@ public class PlanNode extends Node{
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
             data.add(instance);
         }
-        else if(this.doStable && res)
+        else if((update_mode == STABLE) && res)
         {
             //Stephane's code to record the instance for use with a  Decision Tree.     
             //We are doing stable selection, and had a success, so record
@@ -349,7 +353,7 @@ public class PlanNode extends Node{
             
             
         }
-        else if(this.doStable && this.childrenStable())
+        else if((update_mode == STABLE) && this.childrenStable())
         {
             //Stephane's code to record the instance for use with a  Decision Tree.     
             //We are doing stable and our children are stable. So record.....
@@ -392,13 +396,13 @@ public class PlanNode extends Node{
             data.add(instance);
         }
         
-        //update the stable Probability selection.
-        if(this.doStable)
+        /* Now record the experience */
+        if((update_mode == STABLE) || (update_mode == COVERAGE))
         {
             String memoryKey = this.stringOfState(lastState);
-            if(this.probabilityMemory.containsKey(memoryKey))
+            if(this.experiences.containsKey(memoryKey))
             {
-                StableMemory thisMemory = (StableMemory)this.probabilityMemory.get(memoryKey);
+                Experience thisMemory = (Experience)this.experiences.get(memoryKey);
                 
                 if(res) {
                     thisMemory.incrementAttempts();
@@ -408,11 +412,11 @@ public class PlanNode extends Node{
                 }
                 thisMemory.updateProbability();
                 logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD already seen this state.");
-                this.probabilityMemory.put(memoryKey, thisMemory);
+                this.experiences.put(memoryKey, thisMemory);
             }
             else
             {
-                StableMemory thisMemory = new StableMemory(logger);
+                Experience thisMemory = new Experience(logger);
                 if(res) {
                     thisMemory.incrementAttempts();
                     thisMemory.incrementSuccesses();
@@ -421,7 +425,7 @@ public class PlanNode extends Node{
                 }
                 thisMemory.updateProbability();
                 logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD NOT seen this state before.");
-                this.probabilityMemory.put(memoryKey, thisMemory);
+                this.experiences.put(memoryKey, thisMemory);
             }
         }
     }
@@ -459,7 +463,7 @@ public class PlanNode extends Node{
         }
         double val = 0;
         try{
-            val = this.doStable?((Bagging)decisionTree).classifyInstance(instance):((J48)decisionTree).classifyInstance(instance);
+            val = (update_mode == STABLE)?((Bagging)decisionTree).classifyInstance(instance):((J48)decisionTree).classifyInstance(instance);
         }
         catch(Exception e){
             System.err.println("something went wrong when the instance was classified \n" +e);
@@ -480,20 +484,8 @@ public class PlanNode extends Node{
      */
     public double[] getProbability()
     {
-        /*if(doStable)
-         {
-         String memoryKey = this.stringOfState(lastState);
-         if(this.probabilityMemory.containsKey(memoryKey))
-         {
-         StableMemory thisMemory = (StableMemory)this.probabilityMemory.get(memoryKey);
-         double [] returnArray = {thisMemory.getPreviousProbability(), 1-thisMemory.getPreviousProbability()};
-         System.out.println("Returning: "+returnArray[0]+" and: "+returnArray[1]);
-         return returnArray;
-         }
-         }*/
-        
         double[] val = null;
-        if (this.doStable) {
+        if ((update_mode == STABLE)) {
             double success;
             boolean useDTnow = true;
             String thisState = this.stringOfState(lastState);
@@ -501,7 +493,7 @@ public class PlanNode extends Node{
                 /* Now build a bag of trees and test if the performance is within tolerance */
                 double tolerance = 0.5; /* TODO: Add this as an input parameter or use epsilon */
                 double ooberror = 1.0;
-                if (this.probabilityMemory.size() >= minNumInstances) {
+                if (this.experiences.size() >= minNumInstances) {
                     try{
                         ((Bagging)decisionTree).buildClassifier(data);
                     }
@@ -513,7 +505,7 @@ public class PlanNode extends Node{
                 }
                 if (ooberror >= tolerance) {
                     logger.writeLog("Plan "+this.getItem()+" is NOT USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+", since out-of-bag error "+ooberror+">="+tolerance);
-                    if (this.probabilityMemory.size() > 0) {
+                    if (this.experiences.size() > 0) {
                         String closestState = "";
                         double hMax = lastState.length;
                         double hdist = hMax+1;
@@ -522,7 +514,7 @@ public class PlanNode extends Node{
                          * hamming distance to the current state
                          * (could be the same as the current state).
                          */
-                        Enumeration e = this.probabilityMemory.keys();
+                        Enumeration e = this.experiences.keys();
                         while(e.hasMoreElements()) {
                             String prevState = (String)e.nextElement();
                             int dist = hamming(thisState, prevState);
@@ -542,7 +534,7 @@ public class PlanNode extends Node{
                          * hMax is the mximum hamming distance possible between states,
                          *
                          */
-                        StableMemory m = (StableMemory)this.probabilityMemory.get(closestState);
+                        Experience m = (Experience)this.experiences.get(closestState);
                         double ps = (double)(m.getNumberOfSuccesses())/(double)(m.getNumberOfAttempts());
                         success = ps + ((hdist/hMax) * (0.5-ps));
                         logger.writeLog("Plan "+this.getItem()+" using hamming distance between state "+thisState+" and closest previous state "+closestState+" to bias probability, so will use success p="+success);
@@ -576,7 +568,7 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
             try{
-                val = this.doStable?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
+                val = (update_mode == STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
                 logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
 
             }
@@ -586,24 +578,26 @@ public class PlanNode extends Node{
             }
         }
         
-        /*String probDump  = "";
-         for(int i = 0; val.length>i;i++)
-         {
-         probDump = probDump + val[i] + ",";
-         }
-         System.out.print("Plan Node:" +name+", goal id "+goal_id+", Prob Dump: "+probDump);
-         if(this.isStable(lastState))
-         {
-         System.out.print(". I am considered stable though.\n");
-         //System.exit(0);
-         }
-         else
-         {
-         System.out.print(". I am unstable.\n");
-         }
-         
-         logger.writeLog("PlanNode: "+this.getItem()+" Probability:"+probDump,"Stability-Updates");
-         */
+        if (update_mode == COVERAGE) {
+            /* In COVERAGE mode we always use the DT but bias the probability 
+             * with the coverage of the goal/plan subtree using:
+             * P' = 0.5 + [ C * ( P - 0.5) ]
+             * where,
+             * P  : probability of success returned by DT
+             * C  : coverage [0..1] of the subtree with this node as root
+             * P' : revised probability
+             */
+            String lastStateReference = this.stringOfState(lastState);
+            double coverage = 0.0;
+            if(experiences.containsKey(lastStateReference)) {
+                Experience thisMemory = (Experience)this.experiences.get(lastStateReference);
+                coverage = thisMemory.coverage();
+            }
+            val[0] = 0.5 + ( coverage * (val[0] - 0.5) );
+            val[1] = 1 - val[0];
+            logger.writeLog("Plan "+this.getItem()+" REVISED the probability in state "+this.stringOfLastState()+" to p="+((double)((int)(val[0]*10000)))/10000+" based on coverage c="+((double)((int)(coverage*10000)))/10000);
+        }
+        
         return val;
         
     }
@@ -635,7 +629,8 @@ public class PlanNode extends Node{
      */
     public boolean useDT(int it){
         
-        if (doStable && it>-1) {
+        /* Always return true for STABLE */
+        if ((update_mode == STABLE) && it>-1) {
             return true;
         }
         
@@ -728,10 +723,10 @@ public class PlanNode extends Node{
         }
         if(lastStateReference!=null)
         {   
-            if(probabilityMemory.containsKey(lastStateReference))
+            if(experiences.containsKey(lastStateReference))
             {
                 //We have a record of this state being used before
-                StableMemory thisRecord  = (StableMemory)probabilityMemory.get(lastStateReference);
+                Experience thisRecord  = (Experience)experiences.get(lastStateReference);
                 if(this.getStableK()>thisRecord.getNumberOfAttempts())
                 {
                     //We haven't yet tried enough attempts to be considered stable.
@@ -778,10 +773,10 @@ public class PlanNode extends Node{
 
         if(lastStateReference!=null)
         {   
-            if(probabilityMemory.containsKey(lastStateReference))
+            if(experiences.containsKey(lastStateReference))
             {
                 //We have a record of this state being used before
-                StableMemory thisRecord  = (StableMemory)probabilityMemory.get(lastStateReference);
+                Experience thisRecord  = (Experience)experiences.get(lastStateReference);
                 if (thisRecord.getNumberOfSuccesses() > 0) {
                     //We have succeeded in this state before
                     return true;
@@ -828,7 +823,7 @@ public class PlanNode extends Node{
     
     public Enumeration getStableEnumeration()
     {
-        return this.probabilityMemory.elements();
+        return this.experiences.elements();
     }
     
     /** criterion to decide whether I trust the subtrees below.  This version
@@ -935,7 +930,7 @@ public class PlanNode extends Node{
         {
             out+=((Node) children.elementAt(i)).toString(pad+5); 
         }
-        out += " prop memory size: "+this.probabilityMemory.size();
+        out += " prop memory size: "+this.experiences.size();
         return out;
     }
     
@@ -989,7 +984,7 @@ public class PlanNode extends Node{
                 }
                 try
                 {
-                    val = this.doStable?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
+                    val = (update_mode == STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
                     writeCsv(j+","+val[0]+","+val[1], "dt."+this.getItem());
                 }
                 catch(Exception e)

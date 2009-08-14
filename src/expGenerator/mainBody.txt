@@ -1,162 +1,162 @@
 public static void main(String[] args)
 {
-   String filename = "outcomes.dat";
-   String targetDir = ".";
-   int staK;
-   double staE;
-   boolean feedMeTheWorld = false;
-   String feedMeFileName = "";
-   boolean recordMeTheWorld = false;
-   String recordMeFileName = "";
-   boolean doCompare = false;
-   String compareTemplate = "";
-   double noise;
+    String filename = "outcomes.dat";
+    String targetDir = ".";
+    int staK;
+    double staE;
+    boolean feedMeTheWorld = false;
+    String feedMeFileName = "";
+    boolean recordMeTheWorld = false;
+    String recordMeFileName = "";
+    boolean doCompare = false;
+    String compareTemplate = "";
+    double noise;
 
-   noise = 0.1;
-   staK = 3;
-   staE = 0.05;
-   boolean waitST = false;
-   int minNI = 10;
+    noise = 0.1;
+    staK = 3;
+    staE = 0.05;
+    boolean waitST = false;
+    int minNI = 10;
 
-   if (args.length > 0) {
-      int index = 0;
-      while (index < args.length) {
-	 String arg = args[index];
-	 index++;
-	 char option = arg.charAt(1);
-	 switch (option) {
-	 case 'u':
-	    String umode = args[index];
-	    index++;
-	    if (umode.equals("bottomUp")) {
-	       update_mode = BU;
-	       waitST = true;
-	    }
-	    if (umode.equals("concurrent")) {
-	       update_mode = CL;
-	       waitST = false;
-	    }
-	    if (umode.equals("stable")) {
-	       update_mode = STABLE_U;
-	    }
-	    break;
-	 case 'i':
-	    numIterations = Integer.parseInt(args[index]);
-	    index++;
-	    break;
-	 case 'm':
-	    minNI = Integer.parseInt(args[index]);
-	    index++;
-	    break;
-	 case 'd':
-	    targetDir = args[index];
-	    index++;
-	    break;
-	 case 'o':
-	    filename = args[index];
-	    index++;
-	    break;
-	 case 'n':
-	    noise = Double.parseDouble(args[index]);
-	    index++;
-	    break;
-	 case 's':
-	    String psmode = args[index];
-	    index++;
-	    if (psmode.equals("probabilistic"))
-	       plan_selection = PROBABILISTIC_PS;
-	    if (psmode.equals("random"))
-	       plan_selection = NO_DT_PS;
-	    if (psmode.equals("uniform"))
-	       plan_selection = RND_PS;
-	    if (psmode.equals("max"))
-	       plan_selection = MAX_PS;
-	    break;
-	 case 'k':
-	    staK = Integer.parseInt(args[index]);
-	    index++;
-	    break;
-	 case 'e':
-	    staE = Double.parseDouble(args[index]);
-	    index++;
-	    break;
-	 case 'w':
-	    feedMeTheWorld = true;
-	    feedMeFileName = args[index];
-	    index++;
-	    break;
-	 case 'r':
-	    recordMeTheWorld = true;
-	    recordMeFileName = args[index];
-	    index++;
-	    break;
-	 case 'c':
-	    doCompare = true;
-	    compareTemplate = args[index];
-	    index++;
-	    break;
+    if (args.length > 0) {
+        int index = 0;
+        while (index < args.length) {
+            String arg = args[index];
+            index++;
+            char option = arg.charAt(1);
+            switch (option) {
+            case 'u':
+                String umode = args[index];
+                index++;
+                if (umode.equals("bottomUp")) {
+                    update_mode = BU;
+                    waitST = true;
+                } else if (umode.equals("concurrent")) {
+                    update_mode = CL;
+                    waitST = false;
+                } else if (umode.equals("stable")) {
+                    update_mode = STABLE_U;
+                } else if (umode.equals("coverage")) {
+                    update_mode = COVERAGE;
+                }
+                break;
+            case 'i':
+                numIterations = Integer.parseInt(args[index]);
+                index++;
+                break;
+            case 'm':
+                minNI = Integer.parseInt(args[index]);
+                index++;
+                break;
+            case 'd':
+                targetDir = args[index];
+                index++;
+                break;
+            case 'o':
+                filename = args[index];
+                index++;
+                break;
+            case 'n':
+                noise = Double.parseDouble(args[index]);
+                index++;
+                break;
+            case 's':
+                String psmode = args[index];
+                index++;
+                if (psmode.equals("probabilistic"))
+                    plan_selection = PROBABILISTIC_PS;
+                if (psmode.equals("random"))
+                    plan_selection = NO_DT_PS;
+                if (psmode.equals("uniform"))
+                    plan_selection = RND_PS;
+                if (psmode.equals("max"))
+                    plan_selection = MAX_PS;
+                break;
+            case 'k':
+                staK = Integer.parseInt(args[index]);
+                index++;
+                break;
+            case 'e':
+                staE = Double.parseDouble(args[index]);
+                index++;
+                break;
+            case 'w':
+                feedMeTheWorld = true;
+                feedMeFileName = args[index];
+                index++;
+                break;
+            case 'r':
+                recordMeTheWorld = true;
+                recordMeFileName = args[index];
+                index++;
+                break;
+            case 'c':
+                doCompare = true;
+                compareTemplate = args[index];
+                index++;
+                break;
 
-	 }
-      }
+            }
+        }
 
-      RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
-      if (update_mode == STABLE_U) {
-	 agent.setStableUpdates(true);
-	 agent.setStableK(staK);
-	 agent.setStableE(staE);
-	 System.out.println("K: " + staK + ", e: " + staE);
-      }
-      Environment env = new Environment("Environment", targetDir, filename);
-      env.worldFed = feedMeTheWorld;
-      env.fedFileName = feedMeFileName;
-      env.recordWorldFeed = recordMeTheWorld;
-      env.recordFeedFileName = recordMeFileName;
-      env.compareToFile = doCompare;
-      env.compareTemplate = compareTemplate;
-      env.noise = noise;
+        RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
+        agent.setUpdateMode(update_mode);
+        if (update_mode == STABLE_U) {
+            agent.setStableK(staK);
+            agent.setStableE(staE);
+            System.out.println("K: " + staK + ", e: " + staE);
+        }
+        Environment env = new Environment("Environment", targetDir, filename);
+        env.worldFed = feedMeTheWorld;
+        env.fedFileName = feedMeFileName;
+        env.recordWorldFeed = recordMeTheWorld;
+        env.recordFeedFileName = recordMeFileName;
+        env.compareToFile = doCompare;
+        env.compareTemplate = compareTemplate;
+        env.noise = noise;
 
-      if (feedMeTheWorld) {
-	 env.openWorldFedConnection();
-      }
-      agent.setEnvironment(env);
-      agent.minNumInstances = minNI;
-      agent.waitForSubTree = waitST;
-      env.filenameOutcome = filename;
-      env.learningAgent = agent;
-      System.out.println("Start the simulation with " + env.numIterations +
-			 " iterations \n min num instances to build a tree is set to " + agent.minNumInstances);
-      switch (plan_selection) {
-      case PROBABILISTIC_PS:
-	 System.out.println("Probabilistic Plan Selection");
-	 break;
-      case RND_PS:
-	 System.out.println("Random Plan Selection (pick an applicable plan at random)");
-	 break;
-      case MAX_PS:
-	 System.out.println("Optimistic Plan Selection (pick the plan with the highest frequency of success)");
-	 break;
-      case NO_DT_PS:
-	 System.out.println("No decision trees used for plan selection");
-	 break;
-      }
-      switch (update_mode) {
-      case CL:
-	 System.out.println("Concurrent Learning");
-	 break;
-      case BU:
-	 System.out.println("Bottom Up Learning");
-	 break;
-      case STABLE_U:
-	 System.out.println("Stability Updated Learning");
-	 break;
-      }
+        if (feedMeTheWorld) {
+            env.openWorldFedConnection();
+        }
+        agent.setEnvironment(env);
+        agent.minNumInstances = minNI;
+        agent.waitForSubTree = waitST;
+        env.filenameOutcome = filename;
+        env.learningAgent = agent;
+        System.out.println("Start the simulation with " + env.numIterations +
+                           " iterations \n min num instances to build a tree is set to " + agent.minNumInstances);
+        switch (plan_selection) {
+        case PROBABILISTIC_PS:
+            System.out.println("Probabilistic Plan Selection");
+            break;
+        case RND_PS:
+            System.out.println("Random Plan Selection (pick an applicable plan at random)");
+            break;
+        case MAX_PS:
+            System.out.println("Optimistic Plan Selection (pick the plan with the highest frequency of success)");
+            break;
+        case NO_DT_PS:
+            System.out.println("No decision trees used for plan selection");
+            break;
+        }
+        switch (update_mode) {
+        case CL:
+            System.out.println("Concurrent Learning");
+            break;
+        case BU:
+            System.out.println("Bottom Up Learning");
+            break;
+        case STABLE_U:
+            System.out.println("Stability Updated Learning");
+            break;
+        }
 
-      agent.generateTree();
-      env.runOneIteration();
+        agent.generateTree();
+        env.runOneIteration();
 
-   } else {
-      System.out.println(" Run with no arguments. Please add some");
-   }
+    } else {
+        System.out.println(" Run with no arguments. Please add some");
+    }
 }
 
 
@@ -164,68 +164,68 @@ public static void main(String[] args)
 
 public void indentRight()
 {
-   logindent += " ";
+    logindent += " ";
 }
 
 public void indentLeft()
 {
-   int len = logindent.length();
-   if (len >= 2) {
-      logindent = logindent.substring(0, len - 2);
-   } else {
-      logindent = "";
-   }
+    int len = logindent.length();
+    if (len >= 2) {
+        logindent = logindent.substring(0, len - 2);
+    } else {
+        logindent = "";
+    }
 }
 
 public void writeLog(String msg)
 {
-   try
-   {
-      log.println(logindent + msg);
-      log.flush();
-   }
-   catch(Exception e) {
-      System.out.println("Error: File could not be created.");
-   }
+    try
+    {
+        log.println(logindent + msg);
+        log.flush();
+    }
+    catch(Exception e) {
+        System.out.println("Error: File could not be created.");
+    }
 }
 /*************************/
 
 
 public void openWorldFedConnection()
 {
-   try
-   {
-      br = new BufferedReader(new FileReader(fedFileName));
-   }
-   catch(Exception e) {
-      System.out.println("br failed");
-      System.exit(0);
-   }
+    try
+    {
+        br = new BufferedReader(new FileReader(fedFileName));
+    }
+    catch(Exception e) {
+        System.out.println("br failed");
+        System.exit(0);
+    }
 }
 
 
 public void openCompareConnection()
 {
-   try
-   {
-      compareReader = new BufferedReader(new FileReader(compareTemplate));
-      try
-      {
-	 String thisLine = compareReader.readLine();
-	 while (thisLine != null) {
-	    thisLine = thisLine.trim();
-	    int planNodeIndex = learningAgent.findPlanNodeByID(thisLine);
-	    String msg = learningAgent.planNodes[planNodeIndex].getDT();
-	    thisLine = compareReader.readLine();
-	 }
-      }
-      catch(Exception e) {
-	 System.out.println("Compare file Line reading failed. failed");
-	 System.exit(0);
-      }
-   }
-   catch(Exception e) {
-      System.out.println("Compare file reading failed. failed");
-      System.exit(0);
-   }
+    try
+    {
+        compareReader = new BufferedReader(new FileReader(compareTemplate));
+        try
+        {
+            String thisLine = compareReader.readLine();
+            while (thisLine != null) {
+                thisLine = thisLine.trim();
+                int planNodeIndex = learningAgent.findPlanNodeByID(thisLine);
+                String msg = learningAgent.planNodes[planNodeIndex].getDT();
+                thisLine = compareReader.readLine();
+            }
+        }
+        catch(Exception e) {
+            System.out.println("Compare file Line reading failed. failed");
+            System.exit(0);
+        }
+    }
+    catch(Exception e) {
+        System.out.println("Compare file reading failed. failed");
+        System.exit(0);
+    }
 }

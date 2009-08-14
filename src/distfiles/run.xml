@@ -270,6 +270,7 @@
   <attribute name="every" default="1"/>
   <attribute name="window" default="100"/>
   <attribute name="label" default="@{test.name}"/>
+  <attribute name="compare" default="-S -C"/>
   <sequential>
 	<exec executable="${plot.sh}">
 		<arg value="-t"/>
@@ -286,6 +287,7 @@
 		<arg value="@{window}"/>
 		<arg value="-l"/>
 		<arg value="@{label}"/>
+		<arg value="@{compare}"/>
 	</exec>
   </sequential>
 </macrodef>
@@ -474,12 +476,13 @@
 </target>
 <target name="runtestImpactvars1" description="Run testImpactvars1">
     <failIfBuildNotFound test.name="testImpactvars1"/>
+	<runTestRepeats test.name="testImpactvars1" run.type="coverage"    run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
 	<runTestRepeats test.name="testImpactvars1" run.type="stable"      run.params="-n 0.1 -i 4000 -s probabilistic -m 3 -k 3 -e 0.3"/>
 	<runTestRepeats test.name="testImpactvars1" run.type="concurrent"  run.params="-n 0.1 -i 4000 -s probabilistic -m 1"/>
 </target>
 <target name="plottestImpactvars1" description="Plot testImpactvars1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars1"/>
-	<plotResult test.name="testImpactvars1" label="testImpactvars1:n=0.1,m=1+3,k=3,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<plotResult test.name="testImpactvars1" compare="-C -S -U" label="testImpactvars1:n=0.1,m=1+3,k=3,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
 </target>
 
 

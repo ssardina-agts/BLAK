@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import agents.StableMemory;
+import agents.Experience;
 import trees.Node;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -983,8 +983,9 @@ public class ExpGenerator {
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
 		+ "public double noise = 0.1;\n"
 		+ "public static final int CL = 1;\n"
-		+ "public static final int BU = 2;\n"
-		+ "public static final int STABLE_U = 3;\n"
+		+ "public static final int STABLE_U = 2;\n"
+		+ "public static final int COVERAGE = 3;\n"
+		+ "public static final int BU = 4;\n"
 		+ "public static final int RND_PS = 1;\n"
 		+ "public static final int MAX_PS= 2;\n"
 		+ "public static final int PROBABILISTIC_PS = 3;\n"
@@ -1164,7 +1165,7 @@ public class ExpGenerator {
 		+"\t\t\twhile(thisEnu.hasMoreElements())\n"
 		+"\t\t\t{\n"
 		+"\t\t\t\t\tindCount++;\n"
-		+"\t\t\t\t\tStableMemory thisMemory = (StableMemory)thisEnu.nextElement();\n"
+		+"\t\t\t\t\tExperience thisMemory = (Experience)thisEnu.nextElement();\n"
 		+"\t\t\t\t\tstableTotal++;\n"
 		+"\t\t\t\t\tif(thisMemory.isStateStable(node.getStableK(),node.getStableEpsilon()))\n"
 		+"\t\t\t\t\t{\n"
@@ -1339,7 +1340,7 @@ public class ExpGenerator {
 		//Constructor
 		code +="\n\npublic RefinerAgent(String name){\n"
 		+"\tsuper(name);\n"
-		+"\tstableUpdates = false;\n"
+		+"\tupdate_mode = Environment.CL;\n /* default: Concurrent */"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
@@ -1399,21 +1400,23 @@ public class ExpGenerator {
 		+"\tprivate FastVector classVal;\n"
 		+"\tprivate FastVector boolVal;\n"
 		+"\tpublic Random generator;\n"
-		+"\tpublic boolean stableUpdates;\n"
+		+"\tpublic int update_mode;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
-		
+
+		/*
 		+"\tpublic boolean isStableUpdates()\n"
 		+"\t{\n"
 		+"\t\treturn stableUpdates;\n"
 		+"\t}\n\n"
-		
-		+"\tpublic void setStableUpdates(boolean state)\n"
+		*/
+
+		+"\tpublic void setUpdateMode(int state)\n"
 		+"\t{\n"
-		+"\t\tthis.stableUpdates = state;\n"
+		+"\t\tthis.update_mode = state;\n"
 		+"\t}\n\n"
 		+"\tpublic int getStableK()\n"
 		+"\t{\n"
@@ -1475,7 +1478,7 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, stableUpdates, stableE, stableK, (trees.Logger)env);\n";
+			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, update_mode, stableE, stableK, (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
@@ -1621,7 +1624,7 @@ public class ExpGenerator {
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
 		+"\t\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
 		
-		+"\tif(res && stableUpdates)\n"
+		+"\tif(res && (update_mode == Environment.STABLE_U))\n"
 		+"\t{\n"
 		+"\t\tplanNodes[plan_id].setSuccessful(true);\n"
         +"\t\tenv.indentRight();\n"
