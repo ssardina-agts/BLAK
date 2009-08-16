@@ -25,6 +25,7 @@ public class Experience
 		deltaProbability = 0.0;//Double.MAX_VALUE;
 		numberOfSuccesses = 0;
 		numberOfAttempts = 0;
+        coverage = 0.0;
 		
 	}
 
@@ -118,7 +119,7 @@ public class Experience
 	public String toString()
 	{
 		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
-		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts;
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+((double)((int)(coverage*10000)))/10000;
 		
 		return returnString;
 	}
@@ -126,7 +127,7 @@ public class Experience
 	public String toString(int k, double e)
 	{
 		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
-		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts;
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+((double)((int)(coverage*10000)))/10000;
 		if(this.isStateStable(k, e))
 		{
 			returnString = returnString + ", stable: yes";

@@ -124,6 +124,40 @@ public class GoalNode extends Node{
 		return false;
 	}
 
+    public double calculateCoverage(String[] state) {
+        double coverage = 0.0;
+        int nChildren = this.children.size();
+        String stateStr = this.stringOfState(state);
+        if(nChildren > 0) {
+            double cCoverage = 0.0;
+            logger.writeLog("Goal "+this.getItem()+" is checking children for coverage in state "+stateStr);
+            logger.indentRight();
+            for(int j = 0; nChildren > j; j++) {
+				PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+                double c = thisNode.calculateCoverage(state);
+                cCoverage += c;
+                logger.writeLog("Child plan "+thisNode.getItem()+" has coverage="+((double)((int)(c*10000)))/10000+" in state "+stateStr);
+                if (thisNode.isSuccessful(state)) {
+                    /* This plan succeeded in this state
+                     * so all subsequent subplans can be considered
+                     * covered since they will almost never be
+                     * selected in this state.
+                     */
+                    logger.writeLog("Child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
+                    cCoverage = nChildren;
+                    break;
+                }
+            }
+            logger.indentLeft();
+            coverage = cCoverage/nChildren;
+        } else {
+            /* Goal has no children, should never happen */
+            logger.writeLog("ERROR: Goal "+this.getItem()+" has no children, so will consider full coverage for state "+stateStr);
+            coverage = 1;
+        }
+        logger.writeLog("Goal "+this.getItem()+" calculated coverage="+((double)((int)(coverage*10000)))/10000+" in state "+stateStr);
+        return coverage;
+    }
     
 	public boolean equals(Object obj)
 	{

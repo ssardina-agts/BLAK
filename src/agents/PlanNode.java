@@ -400,37 +400,66 @@ public class PlanNode extends Node{
         if((update_mode == STABLE) || (update_mode == COVERAGE))
         {
             String memoryKey = this.stringOfState(lastState);
-            if(this.experiences.containsKey(memoryKey))
-            {
-                Experience thisMemory = (Experience)this.experiences.get(memoryKey);
-                
-                if(res) {
-                    thisMemory.incrementAttempts();
-                    thisMemory.incrementSuccesses();
-                } else {
-                    thisMemory.incrementAttempts();
-                }
-                thisMemory.updateProbability();
-                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD already seen this state.");
-                this.experiences.put(memoryKey, thisMemory);
+            Experience thisMemory = (this.experiences.containsKey(memoryKey)) ? (Experience)this.experiences.get(memoryKey) : new Experience(logger);
+            String newold = (this.experiences.containsKey(memoryKey)) ? "EXISTING" : "NEW";
+            if(res) {
+                thisMemory.incrementAttempts();
+                thisMemory.incrementSuccesses();
+            } else {
+                thisMemory.incrementAttempts();
             }
-            else
-            {
-                Experience thisMemory = new Experience(logger);
-                if(res) {
-                    thisMemory.incrementAttempts();
-                    thisMemory.incrementSuccesses();
-                } else {
-                    thisMemory.incrementAttempts();
-                }
-                thisMemory.updateProbability();
-                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to key "+memoryKey+". We HAD NOT seen this state before.");
+            thisMemory.updateProbability();
+            if (update_mode == COVERAGE) {
+                /* Store this experience first, so that coverage can find it */ 
+                this.experiences.put(memoryKey, thisMemory);
+                /* Now calculate the coverage and store back */
+                thisMemory.setCoverage(calculateCoverage(lastState));
+                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
+                this.experiences.put(memoryKey, thisMemory);
+            } else {
+                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to "+newold+" key "+memoryKey);
                 this.experiences.put(memoryKey, thisMemory);
             }
         }
     }
     
-    
+    public double calculateCoverage(String[] state) {
+        double coverage = 0.0;
+        int nChildren = this.children.size();
+        String stateStr = this.stringOfState(state);
+        if(nChildren > 0) {
+            double cCoverage = 0.0;
+            logger.writeLog("Plan "+this.getItem()+" is checking children for coverage in state "+stateStr);
+            logger.indentRight();
+            for(int j = 0; nChildren > j; j++) {
+                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
+                double c = thisNode.calculateCoverage(state);
+                cCoverage += c;
+                logger.writeLog("Child goal "+thisNode.getItem()+" has coverage="+((double)((int)(c*10000)))/10000+" in state "+stateStr);
+                if (!thisNode.isSuccessful(state)) {
+                    /* This subgoal did not succeed in this state
+                     * so all subsequent subgoals can be considered
+                     * covered since they will never execute
+                     * in this state.
+                     */
+                    logger.writeLog("Child goal "+thisNode.getItem()+" previously failed in state "+stateStr+" so will consider remaining subgoals covered");
+                    cCoverage += nChildren - (j+1);
+                    break;
+                }
+            }
+            logger.indentLeft();
+            coverage = cCoverage/nChildren;
+        } else {
+            /* Plan has no children, so calculate coverage for this
+             * node only. We do not care about stochasticity here.
+             */
+            coverage = (this.experiences.containsKey(stateStr)) ? 1.0 : 0.0;
+            String covStr = (this.experiences.containsKey(stateStr)) ? "1.0" : "0.0";
+            logger.writeLog("Plan "+this.getItem()+" has coverage="+covStr+" in state "+stateStr);
+        }
+        logger.writeLog("Plan "+this.getItem()+" calculated coverage="+((double)((int)(coverage*10000)))/10000+" in state "+stateStr);
+        return coverage;
+    }
     
     /**
      * sets the state of the world each time the plan is chosen
@@ -576,30 +605,28 @@ public class PlanNode extends Node{
                 System.err.println("something went wrong when the instance was classified \n" +e);
                 System.exit(9);
             }
-        }
-        
-        if (update_mode == COVERAGE) {
-            /* In COVERAGE mode we always use the DT but bias the probability 
-             * with the coverage of the goal/plan subtree using:
-             * P' = 0.5 + [ C * ( P - 0.5) ]
-             * where,
-             * P  : probability of success returned by DT
-             * C  : coverage [0..1] of the subtree with this node as root
-             * P' : revised probability
-             */
-            String lastStateReference = this.stringOfState(lastState);
-            double coverage = 0.0;
-            if(experiences.containsKey(lastStateReference)) {
-                Experience thisMemory = (Experience)this.experiences.get(lastStateReference);
-                coverage = thisMemory.coverage();
+            
+            if (update_mode == COVERAGE) {
+                /* In COVERAGE mode we always use the DT but bias the probability 
+                 * with the coverage of the goal/plan subtree using:
+                 * P' = 0.5 + [ C * ( P - 0.5) ]
+                 * where,
+                 * P  : probability of success returned by DT
+                 * C  : coverage [0..1] of the subtree with this node as root
+                 * P' : revised probability
+                 */
+                String lastStateReference = this.stringOfState(lastState);
+                double coverage = 0.0;
+                if(experiences.containsKey(lastStateReference)) {
+                    Experience thisMemory = (Experience)this.experiences.get(lastStateReference);
+                    coverage = thisMemory.coverage();
+                }
+                val[0] = 0.5 + ( coverage * (val[0] - 0.5) );
+                val[1] = 1 - val[0];
+                logger.writeLog("Plan "+this.getItem()+" REVISED the probability in state "+this.stringOfLastState()+" to p="+((double)((int)(val[0]*10000)))/10000+" based on coverage c="+((double)((int)(coverage*10000)))/10000);
             }
-            val[0] = 0.5 + ( coverage * (val[0] - 0.5) );
-            val[1] = 1 - val[0];
-            logger.writeLog("Plan "+this.getItem()+" REVISED the probability in state "+this.stringOfLastState()+" to p="+((double)((int)(val[0]*10000)))/10000+" based on coverage c="+((double)((int)(coverage*10000)))/10000);
         }
-        
         return val;
-        
     }
     
     /** 
