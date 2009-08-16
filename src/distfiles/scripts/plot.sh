@@ -29,13 +29,13 @@ else
     plotcmd="plot $5 "
 fi
 if [ "$2" != "nil" ]; then
-    plotcmd+="\"$2\" every $7 title \"Stable\" lt 1 lw 2 with lines"
+    plotcmd+="\"$2\" every $7 title \"Stable\" lt 2 lw 2 with lines"
 fi
 if [ "$3" != "nil" ]; then
     if [ "$2" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$3\" every $7 title \"Concurrent\" lt 2 lw 2 with lines"
+    plotcmd+="\"$3\" every $7 title \"Concurrent\" lt 1 lw 2 with lines"
 fi
 if [ "$4" != "nil" ]; then
     if [ "$2" != "nil" ] || [ "$3" != "nil" ]; then
