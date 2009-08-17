@@ -303,7 +303,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest01" description="Build test01" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test01"/>
-	<buildTest test.name="test01" specs.file="${specs.dir}/concurrentFail.txt"/>
+	<buildTest test.name="test01" specs.file="${specs.dir}/test01/test01v1.txt"/>
 </target>
 <target name="graphtest01" description="Graph test01" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test01"/>
@@ -316,7 +316,7 @@
 </target>
 <target name="plottest01" description="Plot test01" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01"/>
-	<plotResult test.name="test01" range="[:2500]" compare="-C -S -U" label="test01:n=0.1,m=1,k=3,e=0.3:concurrentFail.txt"/>
+	<plotResult test.name="test01" range="[:2500]" compare="-C -S -U" label="test01:n=0.1,m=1,k=3,e=0.3:test01v1.txt"/>
 </target>
 
 
@@ -325,7 +325,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest02" description="Build test02" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test02"/>
-	<buildTest test.name="test02" specs.file="${specs.dir}/concurrentFailDepth3Easier.txt"/>
+	<buildTest test.name="test02" specs.file="${specs.dir}/test02/test02v1.txt"/>
 </target>
 <target name="graphtest02" description="Graph test02" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test02"/>
@@ -338,7 +338,7 @@
 </target>
 <target name="plottest02" description="Plot test02" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test02"/>
-	<plotResult test.name="test02" range="[:8000]" compare="-C -S -U" label="test02:n=0.1,m=1,k=3,e=0.3:concurrentFailDepth3Easier.txt"/>
+	<plotResult test.name="test02" range="[:8000]" compare="-C -S -U" label="test02:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
 </target>
 
 
@@ -347,7 +347,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest03" description="Build test03" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test03"/>
-	<buildTest test.name="test03" specs.file="${specs.dir}/concurrentFailDepth3Easier-balanced17.txt"/>
+	<buildTest test.name="test03" specs.file="${specs.dir}/test03/test03v1.txt"/>
 </target>
 <target name="graphtest03" description="Graph test03" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test03"/>
@@ -360,7 +360,7 @@
 </target>
 <target name="plottest03" description="Plot test03" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03"/>
-	<plotResult test.name="test03" range="[:2000]" compare="-C -S -U" label="test03:n=0.1,m=1,k=3,e=0.3:concurrentFailDepth3Easier-balanced17.txt"/>
+	<plotResult test.name="test03" range="[:2000]" compare="-C -S -U" label="test03:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
 </target>
 
 
@@ -369,7 +369,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest04" description="Build test04" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test04"/>
-	<buildTest test.name="test04" specs.file="${specs.dir}/concurrentFailDepth3Easier-balanced20.txt"/>
+	<buildTest test.name="test04" specs.file="${specs.dir}/test04/test04v1.txt"/>
 </target>
 <target name="graphtest04" description="Graph test04" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test04"/>
@@ -382,7 +382,7 @@
 </target>
 <target name="plottest04" description="Plot test04" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test04"/>
-	<plotResult test.name="test04" range="[:3000]" compare="-C -S -U" label="test04:n=0.1,m=1,k=3,e=0.3:concurrentFailDepth3Easier-balanced20.txt"/>
+	<plotResult test.name="test04" range="[:3000]" compare="-C -S -U" label="test04:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
 </target>
 
 
@@ -391,7 +391,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest05" description="Build test05" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test05"/>
-	<buildTest test.name="test05" specs.file="${specs.dir}/concurrentFailDepth4-t15.txt"/>
+	<buildTest test.name="test05" specs.file="${specs.dir}/test05/test05v1.txt"/>
 </target>
 <target name="graphtest05" description="Graph test05" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="test05"/>
@@ -404,7 +404,7 @@
 </target>
 <target name="plottest05" description="Plot test05" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05"/>
-	<plotResult test.name="test05" range="[:10000]" compare="-C -S -U" label="test05:n=0.1,m=1,k=3,e=0.3:concurrentFailDepth4-t15.txt"/>
+	<plotResult test.name="test05" range="[:10000]" compare="-C -S -U" label="test05:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
 </target>
 
 
