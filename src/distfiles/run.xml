@@ -45,11 +45,11 @@
 <target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
 <target name="testImpactvars" description="Build, run and plot testImpactvars (Tests impact of relevant variables)" depends="buildtestImpactvars1,graphtestImpactvars1,runtestImpactvars1,plottestImpactvars1"/>
 <target name="testDummyvars" description="Build, run and plot testDummyvars (Tests impact of dummy variables)" depends="buildtestDummyvars2,graphtestDummyvars2,runtestDummyvars2,plottestDummyvars2,buildtestDummyvars1,graphtestDummyvars1,runtestDummyvars1,plottestDummyvars1"/>
-<target name="test01" description="Build, run and plot tests 01" depends="buildtest01,graphtest01,runtest01,plottest01"/>
-<target name="test02" description="Build, run and plot tests 02" depends="buildtest02,graphtest02,runtest02,plottest02"/>
-<target name="test03" description="Build, run and plot tests 03" depends="buildtest03,graphtest03,runtest03,plottest03"/>
-<target name="test04" description="Build, run and plot tests 04" depends="buildtest04,graphtest04,runtest04,plottest04"/>
-<target name="test05" description="Build, run and plot tests 05" depends="buildtest05,graphtest05,runtest05,plottest05"/>
+<target name="test01" description="Build, run and plot tests 01" depends="buildtest01v10,graphtest01v10,runtest01v10,plottest01v10"/>
+<target name="test02" description="Build, run and plot tests 02" depends="buildtest02v10,graphtest02v10,runtest02v10,plottest02v10"/>
+<target name="test03" description="Build, run and plot tests 03" depends="buildtest03v5,graphtest03v5,runtest03v5,plottest03v5"/>
+<target name="test04" description="Build, run and plot tests 04" depends="buildtest04v5,graphtest04v5,runtest04v5,plottest04v5"/>
+<target name="test05" description="Build, run and plot tests 05" depends="buildtest05v5,graphtest05v5,runtest05v5,plottest05v5"/>
 
 <!-- Clean -->
 <target name="clean" description="Delete all build files">
@@ -299,112 +299,212 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 01 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST01v1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest01" description="Build test01" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test01"/>
-	<buildTest test.name="test01" specs.file="${specs.dir}/test01/test01v1.txt"/>
+<target name="buildtest01v1" description="Build test01v1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test01v1"/>
+	<buildTest test.name="test01v1" specs.file="${specs.dir}/test01/test01v1.txt"/>
 </target>
-<target name="graphtest01" description="Graph test01" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test01"/>
+<target name="graphtest01v1" description="Graph test01v1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test01v1"/>
 </target>
-<target name="runtest01" description="Run test01">
-    <failIfBuildNotFound test.name="test01"/>
-	<runTestRepeats test.name="test01" run.type="coverage"   run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
-	<runTestRepeats test.name="test01" run.type="stable"     run.params="-n 0.1 -i 2500 -s probabilistic -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test01" run.type="concurrent" run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
+<target name="runtest01v1" description="Run test01v1">
+    <failIfBuildNotFound test.name="test01v1"/>
+	<runTestRepeats test.name="test01v1" run.type="coverage"   run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test01v1" run.type="stable"     run.params="-n 0.1 -i 2500 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test01v1" run.type="concurrent" run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
 </target>
-<target name="plottest01" description="Plot test01" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test01"/>
-	<plotResult test.name="test01" range="[:2500]" compare="-C -S -U" label="test01:n=0.1,m=1,k=3,e=0.3:test01v1.txt"/>
+<target name="plottest01v1" description="Plot test01v1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test01v1"/>
+	<plotResult test.name="test01v1" range="[:2500]" compare="-C -S -U" label="test01v1:n=0.1,m=1,k=3,e=0.3:test01v1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test01v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest01v10" description="Build test01v10" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test01v10"/>
+	<buildTest test.name="test01v10" specs.file="${specs.dir}/test01/test01v10.txt"/>
+</target>
+<target name="graphtest01v10" description="Graph test01v10" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test01v10"/>
+</target>
+<target name="runtest01v10" description="Run test01v10">
+    <failIfBuildNotFound test.name="test01v10"/>
+	<runTestRepeats test.name="test01v10" run.type="coverage"   run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test01v10" run.type="stable"     run.params="-n 0.1 -i 2500 -s probabilistic -m 10 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test01v10" run.type="concurrent" run.params="-n 0.1 -i 2500 -s probabilistic -m 1"/>
+</target>
+<target name="plottest01v10" description="Plot test01v10" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test01v10"/>
+	<plotResult test.name="test01v10" range="[:2500]" compare="-C -S -U" label="test01v10:n=0.1,m=1,k=3,e=0.3:test01v10.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 02 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST02v1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest02" description="Build test02" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test02"/>
-	<buildTest test.name="test02" specs.file="${specs.dir}/test02/test02v1.txt"/>
+<target name="buildtest02v1" description="Build test02v1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test02v1"/>
+	<buildTest test.name="test02v1" specs.file="${specs.dir}/test02/test02v1.txt"/>
 </target>
-<target name="graphtest02" description="Graph test02" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test02"/>
+<target name="graphtest02v1" description="Graph test02v1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test02v1"/>
 </target>
-<target name="runtest02" description="Run test02">
-    <failIfBuildNotFound test.name="test02"/>
-	<runTestRepeats test.name="test02" run.type="coverage"   run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
-	<runTestRepeats test.name="test02" run.type="stable"     run.params="-n 0.1 -i 8000 -s probabilistic -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test02" run.type="concurrent" run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
+<target name="runtest02v1" description="Run test02v1">
+    <failIfBuildNotFound test.name="test02v1"/>
+	<runTestRepeats test.name="test02v1" run.type="coverage"   run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test02v1" run.type="stable"     run.params="-n 0.1 -i 8000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test02v1" run.type="concurrent" run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest02" description="Plot test02" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test02"/>
-	<plotResult test.name="test02" range="[:8000]" compare="-C -S -U" label="test02:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
+<target name="plottest02v1" description="Plot test02v1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test02v1"/>
+	<plotResult test.name="test02v1" range="[:8000]" compare="-C -S -U" label="test02v1:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST02v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest02v10" description="Build test02v10" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test02v10"/>
+	<buildTest test.name="test02v10" specs.file="${specs.dir}/test02/test02v10.txt"/>
+</target>
+<target name="graphtest02v10" description="Graph test02v10" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test02v10"/>
+</target>
+<target name="runtest02v10" description="Run test02v10">
+    <failIfBuildNotFound test.name="test02v10"/>
+	<runTestRepeats test.name="test02v10" run.type="coverage"   run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test02v10" run.type="stable"     run.params="-n 0.1 -i 8000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test02v10" run.type="concurrent" run.params="-n 0.1 -i 8000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest02v10" description="Plot test02v10" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test02v10"/>
+	<plotResult test.name="test02v10" range="[:8000]" compare="-C -S -U" label="test02v10:n=0.1,m=1,k=3,e=0.3:test02v10.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 03 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST03v1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest03" description="Build test03" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test03"/>
-	<buildTest test.name="test03" specs.file="${specs.dir}/test03/test03v1.txt"/>
+<target name="buildtest03v1" description="Build test03v1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test03v1"/>
+	<buildTest test.name="test03v1" specs.file="${specs.dir}/test03/test03v1.txt"/>
 </target>
-<target name="graphtest03" description="Graph test03" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test03"/>
+<target name="graphtest03v1" description="Graph test03v1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test03v1"/>
 </target>
-<target name="runtest03" description="Run test03">
-    <failIfBuildNotFound test.name="test03"/>
-	<runTestRepeats test.name="test03" run.type="coverage"   run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
-	<runTestRepeats test.name="test03" run.type="stable"     run.params="-n 0.1 -i 2000 -s probabilistic -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test03" run.type="concurrent" run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
+<target name="runtest03v1" description="Run test03v1">
+    <failIfBuildNotFound test.name="test03v1"/>
+	<runTestRepeats test.name="test03v1" run.type="coverage"   run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test03v1" run.type="stable"     run.params="-n 0.1 -i 2000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test03v1" run.type="concurrent" run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest03" description="Plot test03" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test03"/>
-	<plotResult test.name="test03" range="[:2000]" compare="-C -S -U" label="test03:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
+<target name="plottest03v1" description="Plot test03v1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test03v1"/>
+	<plotResult test.name="test03v1" range="[:2000]" compare="-C -S -U" label="test03v1:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test03v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest03v5" description="Build test03v5" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test03v5"/>
+	<buildTest test.name="test03v5" specs.file="${specs.dir}/test03/test03v5.txt"/>
+</target>
+<target name="graphtest03v5" description="Graph test03v5" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test03v5"/>
+</target>
+<target name="runtest03v5" description="Run test03v5">
+    <failIfBuildNotFound test.name="test03v5"/>
+	<runTestRepeats test.name="test03v5" run.type="coverage"   run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test03v5" run.type="stable"     run.params="-n 0.1 -i 2000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test03v5" run.type="concurrent" run.params="-n 0.1 -i 2000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest03v5" description="Plot test03v5" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test03v5"/>
+	<plotResult test.name="test03v5" range="[:2000]" compare="-C -S -U" label="test03v5:n=0.1,m=1,k=3,e=0.3:test03v5.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 04 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST04v1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest04" description="Build test04" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test04"/>
-	<buildTest test.name="test04" specs.file="${specs.dir}/test04/test04v1.txt"/>
+<target name="buildtest04v1" description="Build test04v1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test04v1"/>
+	<buildTest test.name="test04v1" specs.file="${specs.dir}/test04/test04v1.txt"/>
 </target>
-<target name="graphtest04" description="Graph test04" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test04"/>
+<target name="graphtest04v1" description="Graph test04v1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test04v1"/>
 </target>
-<target name="runtest04" description="Run test04">
-    <failIfBuildNotFound test.name="test04"/>
-	<runTestRepeats test.name="test04" run.type="coverage"   run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
-	<runTestRepeats test.name="test04" run.type="stable"     run.params="-n 0.1 -i 3000 -s probabilistic -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test04" run.type="concurrent" run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
+<target name="runtest04v1" description="Run test04v1">
+    <failIfBuildNotFound test.name="test04v1"/>
+	<runTestRepeats test.name="test04v1" run.type="coverage"   run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test04v1" run.type="stable"     run.params="-n 0.1 -i 3000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test04v1" run.type="concurrent" run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest04" description="Plot test04" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test04"/>
-	<plotResult test.name="test04" range="[:3000]" compare="-C -S -U" label="test04:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
+<target name="plottest04v1" description="Plot test04v1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test04v1"/>
+	<plotResult test.name="test04v1" range="[:3000]" compare="-C -S -U" label="test04v1:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test04v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest04v5" description="Build test04v5" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test04v5"/>
+	<buildTest test.name="test04v5" specs.file="${specs.dir}/test04/test04v5.txt"/>
+</target>
+<target name="graphtest04v5" description="Graph test04v5" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test04v5"/>
+</target>
+<target name="runtest04v5" description="Run test04v5">
+    <failIfBuildNotFound test.name="test04v5"/>
+	<runTestRepeats test.name="test04v5" run.type="coverage"   run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test04v5" run.type="stable"     run.params="-n 0.1 -i 3000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test04v5" run.type="concurrent" run.params="-n 0.1 -i 3000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest04v5" description="Plot test04v5" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test04v5"/>
+	<plotResult test.name="test04v5" range="[:3000]" compare="-C -S -U" label="test04v5:n=0.1,m=1,k=3,e=0.3:test04v5.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST 05 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST05v1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtest05" description="Build test05" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="test05"/>
-	<buildTest test.name="test05" specs.file="${specs.dir}/test05/test05v1.txt"/>
+<target name="buildtest05v1" description="Build test05v1" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test05v1"/>
+	<buildTest test.name="test05v1" specs.file="${specs.dir}/test05/test05v1.txt"/>
 </target>
-<target name="graphtest05" description="Graph test05" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="test05"/>
+<target name="graphtest05v1" description="Graph test05v1" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test05v1"/>
 </target>
-<target name="runtest05" description="Run test05">
-    <failIfBuildNotFound test.name="test05"/>
-	<runTestRepeats test.name="test05" run.type="coverage"   run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
-	<runTestRepeats test.name="test05" run.type="stable"     run.params="-n 0.1 -i 10000 -s probabilistic -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test05" run.type="concurrent" run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
+<target name="runtest05v1" description="Run test05v1">
+    <failIfBuildNotFound test.name="test05v1"/>
+	<runTestRepeats test.name="test05v1" run.type="coverage"   run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test05v1" run.type="stable"     run.params="-n 0.1 -i 10000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test05v1" run.type="concurrent" run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
 </target>
-<target name="plottest05" description="Plot test05" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="test05"/>
-	<plotResult test.name="test05" range="[:10000]" compare="-C -S -U" label="test05:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
+<target name="plottest05v1" description="Plot test05v1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test05v1"/>
+	<plotResult test.name="test05v1" range="[:10000]" compare="-C -S -U" label="test05v1:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test05v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest05v5" description="Build test05v5" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test05v5"/>
+	<buildTest test.name="test05v5" specs.file="${specs.dir}/test05/test05v5.txt"/>
+</target>
+<target name="graphtest05v5" description="Graph test05v5" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test05v5"/>
+</target>
+<target name="runtest05v5" description="Run test05v5">
+    <failIfBuildNotFound test.name="test05v5"/>
+	<runTestRepeats test.name="test05v5" run.type="coverage"   run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
+	<runTestRepeats test.name="test05v5" run.type="stable"     run.params="-n 0.1 -i 10000 -s probabilistic -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test05v5" run.type="concurrent" run.params="-n 0.1 -i 10000 -s probabilistic -m 1"/>
+</target>
+<target name="plottest05v5" description="Plot test05v5" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test05v5"/>
+	<plotResult test.name="test05v5" range="[:10000]" compare="-C -S -U" label="test05v5:n=0.1,m=1,k=3,e=0.3:test05v5.txt"/>
 </target>
 
 
