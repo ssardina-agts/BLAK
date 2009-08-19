@@ -364,11 +364,11 @@ The test results from applying the changes are included in the Appendix \ref{sec
 \label{sec:coverage1}
 \subsection{Motivation}
 
-The latest revision of the \st approach described in Section \ref{sec:stable2} works for our base tests but suffers from the genral issue of determining \textit{when} a \dt is ready for use. The usefulness of the confidence measure of Section \ref{subsubsec:confidence-measure} depends heavily on the \textit{richness} of the sample set used in the measure, for which we use (an arbitrary) $m$ value. Overall the performance of the \st approach is controlled by three user defined parameters: $m$, $k$, and $\epsilon$. It is difficult to see how these values should be defined for different settings. 
+The latest revision of the \st approach described in Section \ref{sec:stable2} works for our base tests but suffers from the general issue of determining \textit{when} a \dt is ready for use. The usefulness of the confidence measure of Section \ref{subsubsec:confidence-measure} depends heavily on the \textit{richness} of the sample set used in the measure, for which we use an (arbitrary) $m$ value. Overall the performance of the \st approach is controlled by three user defined parameters: $m$, $k$, and $\epsilon$. It is not obvious how these values should be selected for the general setting.
 
-To understand the motivation for a new approach, let us first revisit the idea of interpolation with {\dt}s in our context. Consider the $P4$ plan sub-tree of Figure \ref{fig:testImpactvarsTree} where the only solution consists of the sequential selection $[P4\_1\_1 \cdot P4\_2\_2 \cdot P4\_3\_3]$ in state $a\bar{b}\bar{c}$. Now assume that we are armed with a \dt for $P4$ (disregard it's readiness for now) and we witness world $a\bar{b}\bar{c}$ for the first time. What should we expect from the {\dt} in terms of classification of the world $a\bar{b}\bar{c}$? The answer is that we would like to classify this world as best we can based on some generalisation of worlds that we have seen before. Previously we have said that such classification lies at the core of our intuition to use {\dt}s in the first place. 
+To understand the motivation for a new approach, let us first revisit the idea of interpolation with {\dt}s in our context. Consider the $P4$ plan sub-tree of Figure \ref{fig:testImpactvarsTree} where the only solution consists of the sequential selection $[P4\_1\_1 \cdot P4\_2\_2 \cdot P4\_3\_3]$ in state $a\bar{b}\bar{c}$. Now assume that we are armed with a \dt for $P4$ (disregard it's readiness for now) and we witness world $a\bar{b}\bar{c}$ for the first time. What should we expect from the {\dt} in terms of classification of the world $a\bar{b}\bar{c}$? The answer of course is to classify this world as best we can based on the generalisation of worlds that we have seen before. Previously we have said that such classification lies at the core of our intuition to use {\dt}s in the first place. 
 
-However, our faith in the \dt is slightly misplaced here because we do not consider the goal/plan hierarchy in that argument. For the \dt to make useful predictions about the plan $P4$ in world $a\bar{b}\bar{c}$ not only should it have seen the world before, but in fact seen it a few times in different configurations i.e. different combination of choices at the child nodes (for $P4$ there are $27$ configurations possible in a given world). So our expectation that the \dt generalise between worlds makes sense only for \textit{leaf} nodes of a goal/plan tree, but weakens as we move further up the hierarchy. 
+However, our faith in the \dt is slightly misplaced here because we do not consider the goal/plan hierarchy in that argument. For the \dt to make useful predictions about the plan $P4$ in world $a\bar{b}\bar{c}$ for instance, not only should it have seen the world $a\bar{b}\bar{c}$ before, but in fact seen it sereval times in different configurations i.e. different combination of choices at the child nodes (for $P4$ there are $27$ configurations possible for a given world). So our expectation that the \dt generalise between worlds holds value only for \textit{leaf} nodes of a goal/plan tree, but weakens as we move further up the hierarchy. 
 
 This observation leads us to think of the readiness of the \dt of a goal/plan node $n$ for a given world $W$ in terms of the \textit{coverage} of the goal/plan sub-tree of node $n$ in that world, and forms the basis of the new {\cov}-based approach.
 
@@ -384,11 +384,13 @@ p'_n(W)= 0.5 + \left[  c_n(W) *  \left( p_n(W) - 0.5 \right)  \right]
 
 Intuitively, this approach lies somewhere between \cc that makes no consideration of coverage, and \st that inherently waits for full coverage during the stability check. The immediate impact is that we no longer have to answer the question of when a \dt is ready. We do away with the boundary calculation for readiness as in \st and replace it with a smooth transition function. Furthermore, the approach is more robust since we do not require the user defined runtime parameters  $m$, $k$, and $\epsilon$.
 
+The coverage $c_n(W)$ itself is calculated and stored each time a result is recorded for node $n$ in world $W$. Note that to achieve full coverage it takes less samples than all possible combinations of the child node selections. For instance, plan $P4$ in Figure \ref{fig:testImpactvarsTree} has $27$ possible configurations for a given world, but not all of these will be tried. In general, for plan nodes if a sub-goal did not succeed in the given world then all sibling sub-goals may be considered covered since they will never execute in that world, while for goal nodes if a sub-plan succeeded in a given world then all sibling sub-plans may be considered covered since they will almost never be selected in that world.
+                     
 \subsection{Test results}
 The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 63" shows the baseline results.
-\item "Repository Revision 69" shows the results after applying the changes from Section \ref{sec:coverage1}. We see that \cov has the best performance for the basic tests $1$ to $5$ (these are the same tests reported in the IJCAI submission and run in one world). For the multiple-worlds cases, the approach compares well to \st (with hamming distance based exploration). Notably though, \cov performs very poorly for \textit{testDummyVars} that has $19$ dummy variables.
+\item "Repository Revision 69" shows the results after applying the changes from Section \ref{sec:coverage1}. We see that \cov has the best performance for the basic tests $1$ to $5$ (these are the same tests reported in the IJCAI submission and run in one world). For the remaining tests with multiple worlds, the approach compares well to \st with hamming distance based exploration. Notably though, \cov performs poorly for \textit{testDummyvars} where $19$ of $20$ variables are irrelevant.
 \end{itemize}
 
 %% Section
@@ -398,16 +400,16 @@ The test results comparing \cov performance to \cc and \st are included in the A
 \subsection{Motivation}
 \label{subsec:coverage2-motivation}
 
-In Appendix \ref{sec:results} "Repository Revision 69" the poor \cov performance for \textit{testDummyVars} highlights a weakness in the approach as the number of variables grows. This is evident in the bias of Equation \ref{eqn:coverage} which defaults to $0.5$ for as yet unseen worlds. For \textit{testDummyVars} we have $2^{20}$ different worlds and so the likelihood of having seen a given world previously is small in the early stages. As such \cov is essentially guessing for a large part of the experiment. While \textit{testDummyVars} uses dummy variables only, it is nonetheless obvious that \cov performance would be similar even if all variables were in fact relevant.
+In Appendix \ref{sec:results} "Repository Revision 69" the poor \cov performance for \textit{testDummyvars} highlights a weakness in the approach as the number of variables grows. This is evident in the bias of Equation \ref{eqn:coverage} which defaults to $0.5$ for as yet unseen worlds. For \textit{testDummyvars} we have $2^{20}$ different worlds and so the likelihood of having seen a given world previously is small in the early stages. As such \cov is essentially guessing for a large part of the experiment. While \textit{testDummyvars} uses dummy variables, it nonetheless shows that \cov performance would be similar even if all variables were relevant.
 
 
 \subsection{Implementation changes}
 
 To improve \cov performance for unseen worlds, we adjust our probability bias slightly to use the coverage of world $W'$ that we have seen before and is the \textit{most relevant} match to $W$. This allows us to exploit our existing experiences to make a decision for the unseen world $W$. 
 
-At this point, we may question how this is any different to just using the \dt as is, considering this is exactly the sort of scenario we hoped to use the decision tree for in the first place. Why not simply use the \dt prediction $p_n(W)$ as is, when faced with an unseen world $W$? The problem with that approach of course is that of misclassification. Instead what we would like is a smoother integration of the \dt prediction into our decision making based on some measure of our confidence in that prediction.
+At this point, we may question how this is any different to just using the \dt as is, considering this is exactly the sort of scenario we hoped to use the decision tree for in the first place. Why not simply use the \dt prediction $p_n(W)$ as is, when faced with an unseen world $W$? The problem with that approach of course is that of misclassification. Instead what we would like is a biased integration of the \dt prediction into our decision based on some measure of our confidence in that prediction.
 
-One simple option we have used before to measure the relatedness of two worlds is using the \textit{hamming distance} as described in Section \ref{subsec:hamming}. While this is not optimal (we would prefer an information-based approach), it nonetheless gives us a numeric measure to bias the probability with.
+One simple notion we have used before to measure the relatedness of two worlds is \textit{hamming distance} as described in Section \ref{subsec:hamming}. While this is not optimal (we would prefer an information-based approach), it nonetheless gives us a numeric measure to bias the probability with.
 
 
 \begin{equation}
@@ -417,15 +419,18 @@ p'_n(W)= 0.5 + \left[  \left( \frac{h_{W'}}{H} * c_n(W') \right) *  \left( p_n(W
 
 Equation \ref{eqn:coverage2} shows the updated probability calculation based on the shortest hamming distance $h_{W'}$ between two worlds $W$ and $W'$ . For $W = W'$ this reduces to the original Equation \ref{eqn:coverage}, but for all cases where $W \ne W'$ we now have a way to exploit our existing experiences to make a decision for the unseen world $W$. 
 
+Finally, also in this case we use the method described in Section \ref{subsec:consequence-p} to boost the relative probabilities of the most promising plans during meta-level reasoning.
+
 \subsection{Test results}
 
 
 The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 69" shows the baseline results.
-\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $v$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. Overall though we believe \cov is a more robust and generally applicable approach than \st. 
-\end{itemize}
+\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $v$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. \end{itemize}
 
+\textit{Comment: Overall \cov seems more robust and generally applicable than \st. However the current implementation should be improved further in two areas; (1) the hamming distance based selection should be replaced by an information-gain based approach; and  (2) the modification to the probabilistc plan selection should be more robust.
+}
 %% Section 
 \section{Acknowledgements}
 
