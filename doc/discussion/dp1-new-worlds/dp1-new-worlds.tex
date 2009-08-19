@@ -288,6 +288,7 @@ Note here that the choice of $m$ for a given experiment is not obvious. As a fir
 
 %% Section
 \subsection{Exploring when not using {\dt}s}
+\label{subsec:hamming}
 
 Introducing a measure of confidence for the {\dt}s (Section \ref{subsec:confidence}) implies that for each node in the goal/plan hierarchy several samples may pass before we begin to rely on the respective \dt. For the duration that the \dt is not ready, we currently use a random exploration strategy based on the default probability of success. This strategy to explore randomly when not using a \dt is far from ideal. A better strategy would be to utilise the information being recorded at each episode in order to make informed choices in these early stages. 
 
@@ -391,10 +392,39 @@ The test results comparing \cov performance to \cc and \st are included in the A
 \end{itemize}
 
 %% Section
-%\section{Improving {\cov}-based performance}
-%\subsection{Motivation}
-%\subsection{Implementation}
-%\subsection{Test results}
+\section{Improving {\cov} performance}
+\label{sec:coverage2}
+
+\subsection{Motivation}
+\label{subsec:coverage2-motivation}
+
+In Appendix \ref{sec:results} "Repository Revision 69" the poor \cov performance for \textit{testDummyVars} highlights a weakness in the approach as the number of variables grows. This is evident in the bias of Equation \ref{eqn:coverage} which defaults to $0.5$ for as yet unseen worlds. For \textit{testDummyVars} we have $2^{20}$ different worlds and so the likelihood of having seen a given world previously is small in the early stages. As such \cov is essentially guessing for a large part of the experiment. While \textit{testDummyVars} uses dummy variables only, it is nonetheless obvious that \cov performance would be similar even if all variables were in fact relevant.
+
+
+\subsection{Implementation changes}
+
+To improve \cov performance for unseen worlds, we adjust our probability bias slightly to use the coverage of world $W'$ that we have seen before and is the \textit{most relevant} match to $W$. This allows us to exploit our existing experiences to make a decision for the unseen world $W$. 
+
+At this point, we may question how this is any different to just using the \dt as is, considering this is exactly the sort of scenario we hoped to use the decision tree for in the first place. Why not simply use the \dt prediction $p_n(W)$ as is, when faced with an unseen world $W$? The problem with that approach of course is that of misclassification. Instead what we would like is a smoother integration of the \dt prediction into our decision making based on some measure of our confidence in that prediction.
+
+One simple option we have used before to measure the relatedness of two worlds is using the \textit{hamming distance} as described in Section \ref{subsec:hamming}. While this is not optimal (we would prefer an information-based approach), it nonetheless gives us a numeric measure to bias the probability with.
+
+
+\begin{equation}
+\label{eqn:coverage2}   
+p'_n(W)= 0.5 + \left[  \left( \frac{h_{W'}}{H} * c_n(W') \right) *  \left( p_n(W) - 0.5 \right)  \right]
+\end{equation}
+
+Equation \ref{eqn:coverage2} shows the updated probability calculation based on the shortest hamming distance $h_{W'}$ between two worlds $W$ and $W'$ . For $W = W'$ this reduces to the original Equation \ref{eqn:coverage}, but for all cases where $W \ne W'$ we now have a way to exploit our existing experiences to make a decision for the unseen world $W$. 
+
+\subsection{Test results}
+
+
+The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
+\begin{itemize}
+\item "Repository Revision 69" shows the baseline results.
+\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $vNN$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. However, we believe \cov is a more robust approach than \st. 
+\end{itemize}
 
 %% Section 
 \section{Acknowledgements}
@@ -416,7 +446,7 @@ Revisions of this document are a result of an ongoing discussion and contributio
 \includepdf[pages={1-},nup=2x3]{blak61.pdf}
 \includepdf[pages={1-},nup=2x3]{blak63.pdf}
 \includepdf[pages={1-},nup=2x3]{blak69.pdf}
-%\includepdf[pages={1-},nup=2x3]{blak75.pdf}
+\includepdf[pages={1-},nup=2x3]{blak77.pdf}
 
 
 %% Appendix Section
