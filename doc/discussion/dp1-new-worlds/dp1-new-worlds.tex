@@ -23,13 +23,14 @@
 % Macros
 \newcommand{\cc}{\emph{Concurrent}\xspace}
 \newcommand{\st}{\emph{Stable}\xspace}
+\newcommand{\cov}{\emph{Coverage}\xspace}
 \newcommand{\tiv}{\emph{testImpactvars}\xspace}
 \newcommand{\dt}{{decision tree}\xspace}
 \newcommand{\DT}{{Decision Tree}\xspace}
 \newcommand{\stephane}{{St\'ephane}\xspace}
 
 % Begin
-\title{BDI-Learning Discussion Paper:\\ Towards Improving \st Performance}
+\title{BDI-Learning Discussion Paper:\\Improving Performance in Multiple Worlds}
 
 \author{
 Dhirendra Singh\\ 
@@ -38,7 +39,7 @@ dhirendra.singh@rmit.edu.au\\
 
 \begin{document}
 
-\date{30 June 2009}
+%\date{30 June 2009}
 
 \maketitle
 
@@ -100,7 +101,7 @@ This result suggests that other factors are at play here than those determined a
 
 
 %% Section
-\section{Understanding the Problem}
+\section{Understanding the problem}
 \label{sec:understanding}
 
 \subsection{When is it ok to start using a \dt?}
@@ -171,8 +172,35 @@ Table \ref{tab:p1Bad} shows the impact of the default probability $p$ on plan se
 \end{itemize}
 
 
+\subsection{Some insights into the workings of \cc and \st}
+
+Finally, before we address the individual issues, here is some general insight into the differences between the two approaches and the scenarios where one performs better than the other.
+
+\begin{itemize}
+\item \st performs better when
+\begin{enumerate}
+\item One solution exists in a deep sub-tree (note that differences between the approaches is amplified when the the probability of hitting that solution is lowered by fine-tuning the breath/depth of the sub-tree); and
+\item At least one other sub-tree is \emph{shallower}; and
+\item the shallower sub-tree \emph{does not} hold a solution.
+\end{enumerate}
+
+In this case, \st will realise first that the shallower sub-tree does not hold the solution and that the deeper sub-tree \emph{may}. So it will assign a lower probability to the shallower sub-tree. (\cc will assign more or less equal probability to all sub-trees since none of them seem to work). In effect the probability of picking the deeper sub-tree increases and therefore \st has a better chance of finding the solution there first.
+
+\item \cc performs better when
+\begin{enumerate}
+\item One solution exists in a deep sub-tree (same as before); and
+\item At least one other sub-tree is also \emph{deep}; and
+\item All other \emph{deep} sub-trees \emph{do not} have a solution (the more the number of failing deep sub-trees the more amplified the difference).
+\end{enumerate}
+
+In this case, \cc performs the same as before. \st however takes a long time to be confident that the failing deep sub-trees are in fact fruitless so it does not change their probabilities for a long time. When a solution is finally found, \cc favours that sub-tree whereas \st still devotes exploration to the fruitless sub-trees until it is confident that no solution exists there.
+
+\item At the leaf nodes, the differences between \cc and \st are minimal, but \st takes longer to be confident that an observation of failure is in fact a true failure and not due to a stochastic environment.
+
+\end{itemize}
+
 %% Section
-\section{Improving \textit{Stable} Performance I}
+\section{Improving \textit{Stable} performance I}
 
 \subsection{When to use a \dt?}
 \label{sec:deciding-when-to-use}
@@ -209,8 +237,8 @@ Section \ref{subsec:defaultP} explains how the default values of $p=1$ or $p=0$ 
 \item When no other information is considered, and we have to \emph{estimate} (i.e. by setting a default) at design time what the chances of success of a plan are, then the logical choice is $50/50$, so a $p=0.5$ makes rational sense.
 \end{itemize}
 
-\subsection{Test Results}
-The test results from applying the recommended changes are included in the Appendix \ref{sec:results1}.
+\subsection{Test results}
+The test results from applying the recommended changes are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 49" shows the baseline results before any changes were applied. Notice the problematic \tiv result here.
 \item "Repository Revision 61" shows the results after applying the changes from Section \ref{subsec:use-p-05}. The change does not break any previous tests but also does not show any significant improvement in any results. Nonetheless, the change is appropriate and has been committed.
@@ -218,7 +246,7 @@ The test results from applying the recommended changes are included in the Appen
 
 
 %% Section
-\section{Improving \textit{Stable} Performance II}
+\section{Improving \textit{Stable} performance II}
 \label{sec:stable2}
 
 \subsection{When to use a \dt: The \textit{confidence} measure}
@@ -272,7 +300,7 @@ In repository revision 63, we have implemented an exploration strategy that is b
 p_W= 0.5 + \left[ \left( \frac{{success_{W'}}}{attemepts_{W'}} - 0.5 \right) *  \left( 1 - \frac{h_{W'}}{H} \right)  \right]
 \end{equation}
 
-\textit{Comment: Biasing exploration based on feature similarity between worlds (as used in the hamming distance) is not a satisfactory solution because we cannot make a general claim that such a bias even makes sense. An exploration strategy based on information gain is preferred.}
+\textit{Comment: Biasing exploration based on feature similarity between worlds (as used in the hamming distance) is not a satisfactory solution because we cannot make a general claim that such a bias even makes sense. An exploration strategy based on information gain (per feature) is preferred. Nonetheless these results are useful and may be used as a baseline measure for the information-based strategy.}
 
 \subsubsection{Ideas for information-based plan choice}
 
@@ -286,8 +314,6 @@ An informed exploration strategy might bias selection in order to maximise the \
 \end{itemize}
 
 
-
-%% Section
 \subsection{Consequences of using a default $p=0.5$}
 \label{subsec:consequence-p}
 
@@ -322,24 +348,58 @@ When doing stability checks for children of a node, a termination check was adde
 
 This fixes an existing issue with the stability checking algorithm.
 
-\subsection{Test Results}
-The test results from applying the changes are included in the Appendix \ref{sec:results1}.
+\subsection{Test results}
+The test results from applying the changes are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 61" is the baseline results before any changes were applied. Notice the problematic \tiv result.
 \item "Repository Revision 63" shows the results after applying the changes from Section \ref{sec:stable2}. Noticeably, \tiv performance is now fixed. Interestingly, the change also resolves the dummy variables issue of test \textit{testDummyvars} (using m=20, where \st performs poorly when forced to consider features of the world that have no final bearing on the results (her $19/20$ features have no impact on results). The \textit{testDummyvars} result was produced using $m=20$ as described in Section \ref{subsubsec:confidence-measure}
 \end{itemize}
 
-\textit{Comment: Repository revision 63 fixes all our existing tests! However we have not approved these changes because (1) the hamming distance based exploration does not make good sense; (2) the modification to the probabilistc plan selection in Section \ref{subsec:consequence-p} is the result of an arbitrary formulation that works for our purpose but has not been evaluated for the general case; and (3) the confidence measure based on a modified $m$ semantic and a out-of-bag error is not robust enough. }
+\textit{Comment: Repository revision 63 fixes all our existing tests! However we have not approved these changes because (1) the hamming distance based exploration should be replaced by an information-gain based approach; (2) the modification to the probabilistc plan selection in Section \ref{subsec:consequence-p} is the result of an arbitrary formulation that works for our purpose but has not been evaluated for the general case; and (3) the confidence measure based on a modified $m$ semantic and a out-of-bag error is not robust enough. }
 
 
 %% Section
-%\section{Improving \textit{Stable} Performance III}
-%\subsection{Improved book keeping}
+\section{A new {\cov}-based approach}
+\label{sec:coverage1}
+\subsection{Motivation}
+
+The latest revision of the \st approach described in Section \ref{sec:stable2} works for our base tests but suffers from the genral issue of determining \textit{when} a \dt is ready for use. The usefulness of the confidence measure of Section \ref{subsubsec:confidence-measure} depends heavily on the \textit{richness} of the sample set used in the measure, for which we use (an arbitrary) $m$ value. Overall the performance of the \st approach is controlled by three user defined parameters: $m$, $k$, and $\epsilon$. It is difficult to see how these values should be defined for different settings. 
+
+Let us first revisit the idea of interpolation with {\dt}s in our context. Consider the $P4$ plan sub-tree of Figure \ref{fig:testImpactvarsTree} where the only solution consists of the sequential selection $[P4\_1\_1 \cdot P4\_2\_2 \cdot P4\_3\_3]$ in state $a\bar{b}\bar{c}$. Now, given that we are armed with a \dt for $P4$ (disregard the readiness for now) and we enter the world $a\bar{b}\bar{c}$ for the first time, what should we expect from the {\dt} in terms of classification of the world $a\bar{b}\bar{c}$? The answer is that we would like to classify this world as best we can based on some generalisation of worlds that we have in fact seen. Previously we have said that such classification lies at the core of our intuition to use {\dt}s in the first place. 
+
+However, our faith in the \dt is slightly misplaced here because we do not consider the goal/plan hierarchy in that argument. For the \dt to make useful predictions about the plan $P4$ in world $a\bar{b}\bar{c}$ not only should it have seen the world before, but in fact seen it a few times in different configurations i.e. different combination of choices at the child nodes (for $P4$ there are $27$ configurations possible in a given world). So our expectation that the \dt generalise between worlds makes sense only for \textit{leaf} nodes of a goal/plan tree, but weakens as we move further up the hierarchy. 
+
+This observation leads us to think of the readiness of the \dt of a goal/plan node $n$ to generalise for a given world $W$ in terms of the \textit{coverage} of the goal/plan sub-tree of node $n$ in that world, and forms the basis of the new {\cov}-based approach.
+
+
+\subsection{\cov Implementation}
+
+Equation \ref{eqn:coverage} shows how coverage is used to revise the \dt prediction. The \cov approach biases the probability $p_n(W)$ of success of a node $n$ in a given world $W$ by the coverage $c_n(W) \in [0,1]$. As coverage $ c_n(W) \rightarrow 0$, the revised probability $p'_n(W) \rightarrow 0.5$ and we favour the default probability of success, while as  $ c_n(W) \rightarrow 1$, then $p'_n(W) \rightarrow p_n(W)$ and we favour the \dt classification.
+
+\begin{equation}
+\label{eqn:coverage}   
+p'_n(W)= 0.5 + \left[  c_n(W) *  \left( p_n(W) - 0.5 \right)  \right]
+\end{equation}
+
+Intuitively, this approach lies somewhere between \cc that makes no consideration of coverage, and \st that inherently waits for full coverage during the stability check. The immediate impact is that we no longer have to answer the question of when a \dt is ready. We do away with the boundary calculation for readiness as in \st and replace it with a smooth transition function. Furthermore, the approach is more robust since we no longer require the user defined runtime parameters  $m$, $k$, and $\epsilon$.
+
+\subsection{Test results}
+The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
+\begin{itemize}
+\item "Repository Revision 63" shows the baseline results.
+\item "Repository Revision 69" shows the results after applying the changes from Section \ref{sec:coverage1}. We see that \cov has the best performance for the basic tests $1$ to $5$ (these are the same tests reported in the IJCAI submission and run in one world). For the multiple-worlds cases, the approach compares well to \st (with hamming distance based exploration). Notably though, \cov performs very poorly for \textit{testDummyVars} that has $19$ dummy variables.
+\end{itemize}
+
+%% Section
+%\section{Improving {\cov}-based performance}
+%\subsection{Motivation}
+%\subsection{Implementation}
+%\subsection{Test results}
 
 %% Section 
 \section{Acknowledgements}
 
-Revisions of this document are a result of an ongoing discussion and contributions from \stephane Airiau of the University of Amsterdam, and Sebastian Sardina and Professor Lin Padgham of RMIT University.
+Revisions of this document are a result of an ongoing discussion and contributions from \stephane Airiau of the University of Amsterdam, and Sebastian Sardina, Andy Song, and Professor Lin Padgham of RMIT University.
 
 %% Bibliography
 \bibliographystyle{plain}
@@ -348,68 +408,41 @@ Revisions of this document are a result of an ongoing discussion and contributio
 
 %% Appendix
 \appendix
-\section{Appendix}
 
-
-%% Appendix Section
-\subsection{Results}
-\label{sec:results1}
+%% Section
+\section{Results}
+\label{sec:results}
 \includepdf[pages={1-},nup=2x3]{blak49.pdf}
 \includepdf[pages={1-},nup=2x3]{blak61.pdf}
 \includepdf[pages={1-},nup=2x3]{blak63.pdf}
+\includepdf[pages={1-},nup=2x3]{blak69.pdf}
+%\includepdf[pages={1-},nup=2x3]{blak75.pdf}
 
 
 %% Appendix Section
-\subsection{Test coverage}
-Sebastian and I briefly discussed the \tiv result and agreed that it exposes some grey area about our understanding of \cc and \st. Moreover, from our current tests it is difficult to understand the conditions under which one approach performs better than the other. 
+%\subsection{Test coverage}
+%Sebastian and I briefly discussed the \tiv result and agreed that it exposes some grey area about our understanding of \cc and \st. Moreover, from our current tests it is difficult to understand the conditions under which one approach performs better than the other. 
 
-In considering how we can improve context learning, we need a better understanding of how the two current approaches perform in a combination of factors as listed in Table \ref{tab:perofrmanceFactors}. So far we have experimented with some of these factors but not enough to get a good understanding of how they influence our approaches.
+%In considering how we can improve context learning, we need a better understanding of how the two current approaches perform in a combination of factors as listed in Table \ref{tab:perofrmanceFactors}. So far we have experimented with some of these factors but not enough to get a good understanding of how they influence our approaches.
 
-\begin{table}[!htb]
-  \begin{tabular}{ p{0.7\textwidth} l }
-    \hline
-    Factor & Tested\\ \hline
-    Branching factor of tree & Yes\\
-    Depth of tree & Yes\\
-    Stochastic nature of the environment & Yes\\
-    Number of worlds & Yes recently\\
-    If the G/P hierarchy is balanced (all sub-trees have the same breath/depth) & Barely (recently)\\
-    If the distribution of worlds within the G/P hierarchy is balanced (sub-trees handle an equal share of all possible worlds) & Barely (recently)\\
-    If more than one sub-tree holds a solution & No\\
-    If failure has a cost & No\\
-    \hline
-  \end{tabular}
-  \caption{Factors that impact the performance of \cc and \st}
-  \label{tab:perofrmanceFactors}
-\end{table}
+%\begin{table}[!htb]
+%  \begin{tabular}{ p{0.7\textwidth} l }
+%    \hline
+%    Factor & Tested\\ \hline
+%    Branching factor of tree & Yes\\
+%    Depth of tree & Yes\\
+%    Stochastic nature of the environment & Yes\\
+%    Number of worlds & Yes recently\\
+%    If the G/P hierarchy is balanced (all sub-trees have the same breath/depth) & Barely (recently)\\
+%    If the distribution of worlds within the G/P hierarchy is balanced (sub-trees handle an equal share of all possible worlds) & Barely (recently)\\
+%    If more than one sub-tree holds a solution & No\\
+%    If failure has a cost & No\\
+%    \hline
+%  \end{tabular}
+%  \caption{Factors that impact the performance of \cc and \st}
+%  \label{tab:perofrmanceFactors}
+%\end{table}
 
-Our testing strategy is open for discussion. Should we conduct systematic testing to understand the influences of the various factors on the two approaches? If so, what is the best strategy here since the number of combinations is too high.
-
-\subsection{Insights into the workings of \cc and \st}
-
-Finally, here I have collected some insights into the workings of our two approaches in a generalised manner.
-
-\begin{itemize}
-\item \st performs better when
-\begin{enumerate}
-\item One solution exists in a deep sub-tree (note that differences between the approaches is amplified when the the probability of hitting that solution is lowered by fine-tuning the breath/depth of the sub-tree); and
-\item At least one other sub-tree is \emph{shallower}; and
-\item the shallower sub-tree \emph{does not} hold a solution.
-\end{enumerate}
-
-In this case, \st will realise first that the shallower sub-tree does not hold the solution and that the deeper sub-tree \emph{may}. So it will assign a lower probability to the shallower sub-tree. (\cc will assign more or less equal probability to all sub-trees since none of them seem to work). In effect the probability of picking the deeper sub-tree increases and therefore \st has a better chance of finding the solution there first.
-
-\item \cc performs better when
-\begin{enumerate}
-\item One solution exists in a deep sub-tree (same as before); and
-\item At least one other sub-tree is also \emph{deep}; and
-\item All other \emph{deep} sub-trees \emph{do not} have a solution (the more the number of failing deep sub-trees the more amplified the difference).
-\end{enumerate}
-
-In this case, \cc performs the same as before. \st however takes a long time to be confident that the failing deep sub-trees are in fact fruitless so it does not change their probabilities for a long time. When a solution is finally found, \cc favours that sub-tree whereas \st still devotes exploration to the fruitless sub-trees until it is confident that no solution exists there.
-
-\item At the leaf nodes, the differences between \cc and \st are minimal, but \st takes longer to be confident that an observation of failure is in fact a true failure and not due to a stochastic environment.
-
-\end{itemize}
+%Our testing strategy is open for discussion. Should we conduct systematic testing to understand the influences of the various factors on the two approaches? If so, what is the best strategy here since the number of combinations is too high.
 
 \end{document}
