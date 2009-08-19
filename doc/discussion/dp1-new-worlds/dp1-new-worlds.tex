@@ -366,23 +366,23 @@ The test results from applying the changes are included in the Appendix \ref{sec
 
 The latest revision of the \st approach described in Section \ref{sec:stable2} works for our base tests but suffers from the genral issue of determining \textit{when} a \dt is ready for use. The usefulness of the confidence measure of Section \ref{subsubsec:confidence-measure} depends heavily on the \textit{richness} of the sample set used in the measure, for which we use (an arbitrary) $m$ value. Overall the performance of the \st approach is controlled by three user defined parameters: $m$, $k$, and $\epsilon$. It is difficult to see how these values should be defined for different settings. 
 
-Let us first revisit the idea of interpolation with {\dt}s in our context. Consider the $P4$ plan sub-tree of Figure \ref{fig:testImpactvarsTree} where the only solution consists of the sequential selection $[P4\_1\_1 \cdot P4\_2\_2 \cdot P4\_3\_3]$ in state $a\bar{b}\bar{c}$. Now, given that we are armed with a \dt for $P4$ (disregard the readiness for now) and we enter the world $a\bar{b}\bar{c}$ for the first time, what should we expect from the {\dt} in terms of classification of the world $a\bar{b}\bar{c}$? The answer is that we would like to classify this world as best we can based on some generalisation of worlds that we have in fact seen. Previously we have said that such classification lies at the core of our intuition to use {\dt}s in the first place. 
+To understand the motivation for a new approach, let us first revisit the idea of interpolation with {\dt}s in our context. Consider the $P4$ plan sub-tree of Figure \ref{fig:testImpactvarsTree} where the only solution consists of the sequential selection $[P4\_1\_1 \cdot P4\_2\_2 \cdot P4\_3\_3]$ in state $a\bar{b}\bar{c}$. Now assume that we are armed with a \dt for $P4$ (disregard it's readiness for now) and we witness world $a\bar{b}\bar{c}$ for the first time. What should we expect from the {\dt} in terms of classification of the world $a\bar{b}\bar{c}$? The answer is that we would like to classify this world as best we can based on some generalisation of worlds that we have seen before. Previously we have said that such classification lies at the core of our intuition to use {\dt}s in the first place. 
 
 However, our faith in the \dt is slightly misplaced here because we do not consider the goal/plan hierarchy in that argument. For the \dt to make useful predictions about the plan $P4$ in world $a\bar{b}\bar{c}$ not only should it have seen the world before, but in fact seen it a few times in different configurations i.e. different combination of choices at the child nodes (for $P4$ there are $27$ configurations possible in a given world). So our expectation that the \dt generalise between worlds makes sense only for \textit{leaf} nodes of a goal/plan tree, but weakens as we move further up the hierarchy. 
 
-This observation leads us to think of the readiness of the \dt of a goal/plan node $n$ to generalise for a given world $W$ in terms of the \textit{coverage} of the goal/plan sub-tree of node $n$ in that world, and forms the basis of the new {\cov}-based approach.
+This observation leads us to think of the readiness of the \dt of a goal/plan node $n$ for a given world $W$ in terms of the \textit{coverage} of the goal/plan sub-tree of node $n$ in that world, and forms the basis of the new {\cov}-based approach.
 
 
 \subsection{\cov Implementation}
 
-Equation \ref{eqn:coverage} shows how coverage is used to revise the \dt prediction. The \cov approach biases the probability $p_n(W)$ of success of a node $n$ in a given world $W$ by the coverage $c_n(W) \in [0,1]$. As coverage $ c_n(W) \rightarrow 0$, the revised probability $p'_n(W) \rightarrow 0.5$ and we favour the default probability of success, while as  $ c_n(W) \rightarrow 1$, then $p'_n(W) \rightarrow p_n(W)$ and we favour the \dt classification.
+Equation \ref{eqn:coverage} shows how coverage is used to revise the \dt prediction. The \cov approach biases the probability $p_n(W)$ of success of a node $n$ in a given world $W$ by the coverage $c_n(W) \in [0,1]$. As coverage $ c_n(W) \rightarrow 0$, the revised probability $p'_n(W) \rightarrow 0.5$ i.e. we favour the default probability of success, while as  $ c_n(W) \rightarrow 1$, then $p'_n(W) \rightarrow p_n(W)$ and we favour the \dt classification.
 
 \begin{equation}
 \label{eqn:coverage}   
 p'_n(W)= 0.5 + \left[  c_n(W) *  \left( p_n(W) - 0.5 \right)  \right]
 \end{equation}
 
-Intuitively, this approach lies somewhere between \cc that makes no consideration of coverage, and \st that inherently waits for full coverage during the stability check. The immediate impact is that we no longer have to answer the question of when a \dt is ready. We do away with the boundary calculation for readiness as in \st and replace it with a smooth transition function. Furthermore, the approach is more robust since we no longer require the user defined runtime parameters  $m$, $k$, and $\epsilon$.
+Intuitively, this approach lies somewhere between \cc that makes no consideration of coverage, and \st that inherently waits for full coverage during the stability check. The immediate impact is that we no longer have to answer the question of when a \dt is ready. We do away with the boundary calculation for readiness as in \st and replace it with a smooth transition function. Furthermore, the approach is more robust since we do not require the user defined runtime parameters  $m$, $k$, and $\epsilon$.
 
 \subsection{Test results}
 The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
@@ -423,7 +423,7 @@ Equation \ref{eqn:coverage2} shows the updated probability calculation based on 
 The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 69" shows the baseline results.
-\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $vNN$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. However, we believe \cov is a more robust approach than \st. 
+\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $v$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. Overall though we believe \cov is a more robust and generally applicable approach than \st. 
 \end{itemize}
 
 %% Section 
