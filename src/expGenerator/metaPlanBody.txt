@@ -130,7 +130,7 @@
       double mass;
       double max = 0;
       int POWER = 3;
-      if (ag.env.update_mode == ag.env.STABLE_U) {
+      if (ag.env.update_mode == ag.env.STABLE_U || ag.env.update_mode == ag.env.COVERAGE) {
 	 for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
 	    if (s.getInfo() instanceof PlanIdInfo) {
 	       PlanIdInfo info = (PlanIdInfo) s.getInfo();
@@ -142,7 +142,7 @@
       }
       for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
 	 if (s.getInfo() instanceof PlanIdInfo) {
-	    if (ag.env.update_mode == ag.env.STABLE_U) {
+	    if (ag.env.update_mode == ag.env.STABLE_U || ag.env.update_mode == ag.env.COVERAGE) {
 	       PlanIdInfo info = (PlanIdInfo) s.getInfo();
 	       if (info.pSuccess < 0.0001) {
 		  mass += 0.0001;
@@ -163,7 +163,7 @@
 	 num++;
       }
       if (num > 0) {
-	 if (ag.env.update_mode == ag.env.STABLE_U) {
+	 if (ag.env.update_mode == ag.env.STABLE_U || ag.env.update_mode == ag.env.COVERAGE) {
 	    mass += num * numSuccess;
 	 }
 	 double[] prob = new double[num];
@@ -177,7 +177,7 @@
 	       PlanIdInfo info = (PlanIdInfo) s.getInfo();
 	       str += "(" + ag.planNodes[info.plan_id].getItem() + ") for state " +
 		  ag.planNodes[info.plan_id].stringOfLastState() + " is ";
-	       if (ag.env.update_mode == ag.env.STABLE_U) {
+	       if (ag.env.update_mode == ag.env.STABLE_U || ag.env.update_mode == ag.env.COVERAGE) {
 		  if (info.pSuccess < 0.0001) {
 		     str += "0.0001/" + mass;
 		     acc += 0.0001 / mass;

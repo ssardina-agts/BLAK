@@ -620,6 +620,45 @@ public class PlanNode extends Node{
                 if(experiences.containsKey(lastStateReference)) {
                     Experience thisMemory = (Experience)this.experiences.get(lastStateReference);
                     coverage = thisMemory.coverage();
+                } else {
+                    if (this.experiences.size() > 0) {
+                        String closestState = "";
+                        double hMax = lastState.length;
+                        double hdist = hMax+1;
+                        
+                        /* Find the previous state that has the minimum 
+                         * hamming distance to the current state
+                         * (could be the same as the current state).
+                         */
+                        Enumeration e = this.experiences.keys();
+                        while(e.hasMoreElements()) {
+                            String prevState = (String)e.nextElement();
+                            int dist = hamming(lastStateReference, prevState);
+                            if ( dist < hdist) {
+                                hdist = dist;
+                                closestState = prevState;
+                            }
+                        }
+                        /* Now calculate a coverage biased by the hamming distance.
+                         * c' = [h(s',s)/hMax] * c
+                         * where,
+                         * s' is the current state,
+                         * s is some previous state,
+                         * c' is the coverage in state s',
+                         * c is the coverage in state s,
+                         * h(s',s) is the hamming distance between states s' and s,
+                         * hMax is the maximum hamming distance possible between states,
+                         *
+                         */
+                        Experience m = (Experience)this.experiences.get(closestState);
+                        double c = m.coverage();
+                        coverage = ((hMax-hdist)/hMax) * c;
+                        logger.writeLog("Plan "+this.getItem()+" is using hamming distance between state "+lastStateReference+" and closest previous state "+closestState+" to bias coverage, so will use c="+((double)((int)(coverage*10000)))/10000+"<="+((double)((int)(c*10000)))/10000);
+                    } else {
+                        coverage = 0.0;
+                        logger.writeLog("Plan "+this.getItem()+" has never seen state "+lastStateReference+" before and has no previous state to leverage, so will use coverage c="+coverage);
+                    }
+                    
                 }
                 val[0] = 0.5 + ( coverage * (val[0] - 0.5) );
                 val[1] = 1 - val[0];
@@ -668,7 +707,7 @@ public class PlanNode extends Node{
         if (subtreeOK && data.numInstances() >= minNumInstances){
             if (startToUseDT ==0){
                 startToUseDT = it;
-                logger.writeLog("Plan "+this.getItem()+" is OK to use DT with "+data.numInstances()+" instances, having seen state state "+this.stringOfLastState()+" before");
+                logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+data.numInstances()+">=M("+minNumInstances+")");
             }
             try{
                 //System.out.println("print data " + data);
