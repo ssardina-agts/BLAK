@@ -22,36 +22,48 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: Stable data,  $3: Concurrent data,  $4: Coverage data,  $5: plotrange,  $6: label,  $7: every
-if ( [ "$2" == "nil" ] && [ "$3" == "nil" ] && [ "$4" == "nil" ] ); then
+# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5: StableP data,  $6: StableC data,  $7: ConcurrentP data,  $8: ConcurrentP data
+local o=$1
+local r=$2
+local l=$3
+local e=$4
+local sp=$5
+local sc=$6
+local cp=$7
+local cc=$8
+if ( [ "$sp" == "nil" ] && [ "$sc" == "nil" ] && [ "$cp" == "nil" ] && [ "$cc" == "nil" ]); then
     plotcmd=""
 else 
-    plotcmd="plot $5 "
+    plotcmd="plot $r "
 fi
-if [ "$2" != "nil" ]; then
-    plotcmd+="\"$2\" every $7 title \"Stable\" lt 2 lw 2 with lines"
+if [ "$cp" != "nil" ]; then
+    plotcmd+="\"$cp\" every $e title \"Concurrent+P\" lt 1 lw 2 with lines"
 fi
-if [ "$3" != "nil" ]; then
-    if [ "$2" != "nil" ]; then
+if [ "$sp" != "nil" ]; then
+    if [ "$cp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$3\" every $7 title \"Concurrent\" lt 1 lw 2 with lines"
+    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 2 lw 2 with lines"
 fi
-if [ "$4" != "nil" ]; then
-    if [ "$2" != "nil" ] || [ "$3" != "nil" ]; then
+if [ "$cc" != "nil" ]; then
+    if [ "$cp" != "nil" ] || [ "$sp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$4\" every $7 title \"Coverage\" lt 3 lw 2 with lines"
+    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 3 lw 2 with lines"
+fi
+if [ "$sc" != "nil" ]; then
+    if [ "$cp" != "nil" ] || [ "$sp" != "nil" ] || [ "$cc" != "nil" ]; then
+        plotcmd+=", "
+    fi
+    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 4 lw 2 with lines"
 fi
 
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
 set terminal postscript landscape color rounded 
-#set output "$1.tex"
-set output "$1"
-set title "$6"
+set output "$o"
+set title "$l"
 set xlabel "Iteration"
-#set xtics 0, 250
 set ylabel "Success"
 set yrange [0:1.1]
 set ytic 0, 0.2
@@ -78,9 +90,6 @@ HELP='
 Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
        -t testname   Test name (must match srcdir/**/testname**.csv)
-       -S            Look for Stable results (srcdir/**/testname*stable*.csv)
-       -C            Look for Concurrent results (srcdir/**/testname*concurrent*.csv)
-       -U            Look for Coverage results (srcdir/**/testname*coverage*.csv)
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
        -l label      String to use as plot title
@@ -96,15 +105,6 @@ do
 	case "$i" in
 		-t)
 			testname="$2"; shift;
-			shift;;
-		-C)
-			cmpC="concurrent";
-			shift;;
-		-S)
-			cmpS="stable";
-			shift;;
-		-U)
-			cmpU="coverage";
 			shift;;
 		-d)
 			srcdir="$2"; shift;
@@ -131,7 +131,7 @@ do
 			shift; break;;
 	esac
 done
-if [ "$testname" == "" ] || [ "$srcdir" == "" ] || [ "$outfile" == "" ] || [ "$gnuplot" == "" ] || (  [ "$cmpC" == "" ] && [ "$cmpS" == "" ] && [ "$cmpU" == "" ] )
+if [ "$testname" == "" ] || [ "$srcdir" == "" ] || [ "$outfile" == "" ] || [ "$gnuplot" == "" ]
 then
 	echo "$HELP"
 	exit 65
@@ -141,9 +141,6 @@ then
 	echo "Directory [$srcdir] does not exist. Exiting."
 	exit -1
 fi
-#echo cmpC=$cmpC
-#echo cmpS=$cmpS
-#echo cmpU=$cmpU
 #echo outfile=$outfile
 #echo srcdir=$srcdir
 #echo testname=$testname
@@ -167,48 +164,52 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
-if [ "$cmpS" != "" ]; then
-set1=`find $srcdir -name "$testname-stable*.csv" -print`
-fi
-if [ "$cmpC" != "" ]; then
-set2=`find $srcdir -name "$testname-concurrent*.csv" -print`
-fi
-if [ "$cmpU" != "" ]; then
-set3=`find $srcdir -name "$testname-coverage*.csv" -print`
-fi
-if [ "$set1" == "" ] && [ "$set2" == "nil" ] && [ "$set3" == "nil" ] ; then
+set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
+set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
+set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`
+set2c=`find $srcdir -name "$testname-concurrent-coverage*.csv" -print`
+if [ "$set1p" == "" ] && [ "$set1c" == "nil" ] && [ "$set2p" == "nil" ] && [ "$set2c" == "nil" ]; then
  echo "No data found for test $testname"
  exit 0
 fi
 
 #--- Generate the averaged results
-if [ "$set1" == "" ]; then 
-stableDataFile=nil 
+if [ "$set1p" == "" ]; then 
+stableP=nil 
 else 
-stableDataFile=$tmpdir/.stable.data
-avg $set1 > $stableDataFile
-`$mov_avg -i $stableDataFile -o $stableDataFile.mavg -w $window`
-/bin/mv $stableDataFile.mavg $stableDataFile
+stableP=$tmpdir/.stable.pdata
+avg $set1p > $stableP
+`$mov_avg -i $stableP -o $stableP.mavg -w $window`
+/bin/mv $stableP.mavg $stableP
 fi
-if [ "$set2" == "" ]; then 
-concurrentDataFile=nil
+if [ "$set1c" == "" ]; then 
+stableC=nil 
 else 
-concurrentDataFile=$tmpdir/.concurrent.data
-avg $set2 > $concurrentDataFile
-`$mov_avg -i $concurrentDataFile -o $concurrentDataFile.mavg -w $window`
-/bin/mv $concurrentDataFile.mavg $concurrentDataFile
+stableC=$tmpdir/.stable.cdata
+avg $set1c > $stableC
+`$mov_avg -i $stableC -o $stableC.mavg -w $window`
+/bin/mv $stableC.mavg $stableC
 fi
-if [ "$set3" == "" ]; then 
-coverageDataFile=nil
+
+if [ "$set2p" == "" ]; then 
+concurrentP=nil
 else 
-coverageDataFile=$tmpdir/.coverage.data
-avg $set3 > $coverageDataFile
-`$mov_avg -i $coverageDataFile -o $coverageDataFile.mavg -w $window`
-/bin/mv $coverageDataFile.mavg $coverageDataFile
+concurrentP=$tmpdir/.concurrent.pdata
+avg $set2p > $concurrentP
+`$mov_avg -i $concurrentP -o $concurrentP.mavg -w $window`
+/bin/mv $concurrentP.mavg $concurrentP
+fi
+if [ "$set2c" == "" ]; then 
+concurrentP=nil
+else 
+concurrentC=$tmpdir/.concurrent.cdata
+avg $set2c > $concurrentC
+`$mov_avg -i $concurrentC -o $concurrentC.mavg -w $window`
+/bin/mv $concurrentC.mavg $concurrentC
 fi
 
 #--- Generate the gnuplot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $stableDataFile $concurrentDataFile $coverageDataFile $range > $tmpdir/.gnuplot.commands $label $every
+makePlotCommands $tmpdir/.gnuplot.eps $range $label $every $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands

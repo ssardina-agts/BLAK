@@ -36,8 +36,6 @@ public static void main(String[] args)
                     waitST = false;
                 } else if (umode.equals("stable")) {
                     update_mode = STABLE_U;
-                } else if (umode.equals("coverage")) {
-                    update_mode = COVERAGE;
                 }
                 break;
             case 'i':
@@ -71,6 +69,8 @@ public static void main(String[] args)
                     plan_selection = RND_PS;
                 if (psmode.equals("max"))
                     plan_selection = MAX_PS;
+                if (psmode.equals("coverage"))
+                    plan_selection = COVERAGE_PS;
                 break;
             case 'k':
                 staK = Integer.parseInt(args[index]);

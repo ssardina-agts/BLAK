@@ -440,10 +440,15 @@ public class ExpGenerator {
 		+ "\npublic class PlanIdInfo extends PlanInstanceInfo{\n\n"
 		+"\tpublic int plan_id;\n"
 		+"\tpublic double pSuccess;\n"
+		+"\tpublic double coverage;\n"
 		+"\npublic PlanIdInfo(int id ,int pre, double prob){\n"
+		+"\tthis(id ,pre, prob, 0.0);\n"
+        +"}\n"
+		+"\npublic PlanIdInfo(int id ,int pre, double prob, double cov){\n"
 		+"\tsuper(pre);\n"
 		+"\tplan_id = id;\n"
 		+"\tpSuccess = prob;\n"
+		+"\tcoverage = cov;\n"
 		+"}\n}";
 		try{	
 			PrintWriter writer = new PrintWriter(targetDir+"/plans/PlanIdInfo.java");
@@ -490,14 +495,13 @@ public class ExpGenerator {
 	public String writeGetInstanceInfo(){
 		return	"public PlanInstanceInfo getInstanceInfo(){\n"
 		+"\tag.setLastInstance(plan_id);\n"
+		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
 		+"\tif (ag.useDT(plan_id)){\n"
 		+"\t\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\t\t//System.out.println(\"plan \"+name+\" apply:\" + ps[0]+\" not apply \"+ps[1]);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0]);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage);\n"
 		+"\t}\n"
 		+"\telse{\n" 
-		+"\t\t//System.out.println(\"plan \"+name+\"\t DT not use, return 1\");\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, (ag.env.update_mode==ag.env.STABLE_U)?0.5:1);\n\t}\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage);\n\t}\n"
 		+"}\n\n";
 	}
 	
@@ -984,13 +988,13 @@ public class ExpGenerator {
 		+ "public double noise = 0.1;\n"
 		+ "public static final int CL = 1;\n"
 		+ "public static final int STABLE_U = 2;\n"
-		+ "public static final int COVERAGE = 3;\n"
 		+ "public static final int BU = 4;\n"
 		+ "public static final int RND_PS = 1;\n"
 		+ "public static final int MAX_PS= 2;\n"
-		+ "public static final int PROBABILISTIC_PS = 3;\n"
-		+ "public static final int NO_DT_PS = 4;\n"
-		+ "public static final int STABLE_PS = 5;\n"
+		+ "public static final int COVERAGE_PS = 3;\n"
+		+ "public static final int PROBABILISTIC_PS = 4;\n"
+		+ "public static final int NO_DT_PS = 5;\n"
+		+ "public static final int STABLE_PS = 6;\n"
 		+ "public static int plan_selection = RND_PS;\n"
 		+ "public static int update_mode = CL;\n"
 		+ "public boolean worldFed;\n"
@@ -1725,6 +1729,10 @@ public class ExpGenerator {
 		+"\treturn planNodes[plan_id].getProbability();\n"
 		+"}\n\n";
 		
+		// getCoverage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		code+="public double getCoverage(int plan_id){\n"
+		+"\treturn planNodes[plan_id].getCoverage(planNodes[plan_id].lastState);\n"
+		+"}\n\n";
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		
 		code += "public void notify(";

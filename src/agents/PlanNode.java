@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import weka.core.Instances;
 import java.util.*;
-import weka.classifiers.meta.Bagging;
 import java.lang.Math;
 
 /**
@@ -22,12 +21,11 @@ public class PlanNode extends Node{
     
     private static final int CONCURRENT = 1;
     private static final int STABLE = 2;
-    private static final int COVERAGE = 3;
 
     public int goal_id;
     public String name;
     Hashtable memory;
-    public Object decisionTree;
+    public J48 decisionTree;
     String[] options;
     String[] lastState;
     int update_mode;
@@ -186,26 +184,10 @@ public class PlanNode extends Node{
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
-            if (update_mode == STABLE) {
-                decisionTree = new Bagging();
-                options = new String[9];
-                int i = 0;
-                options[i++] = "-P";
-                options[i++] = "100";
-                options[i++] = "-O";
-                options[i++] = "-S";
-                options[i++] = "1";
-                options[i++] = "-W";
-                options[i++] = "weka.classifiers.trees.J48";
-                options[i++] = "--";
-                options[i++] = "-U";
-                ((Bagging)decisionTree).setOptions(options);
-            } else {
-                decisionTree = new J48();
-                options = new String[1];
-                options[0] = "-U";            // unpruned tree
-                ((J48)decisionTree).setOptions(options);     // set the options
-            }
+            decisionTree = new J48();
+            options = new String[1];
+            options[0] = "-U";            // unpruned tree
+            ((J48)decisionTree).setOptions(options);     // set the options
         }
         catch(Exception e){
             System.err.println("error with weka when creating the decision tree \n" + e);
@@ -397,33 +379,55 @@ public class PlanNode extends Node{
         }
         
         /* Now record the experience */
-        if((update_mode == STABLE) || (update_mode == COVERAGE))
-        {
-            String memoryKey = this.stringOfState(lastState);
-            Experience thisMemory = (this.experiences.containsKey(memoryKey)) ? (Experience)this.experiences.get(memoryKey) : new Experience(logger);
-            String newold = (this.experiences.containsKey(memoryKey)) ? "EXISTING" : "NEW";
-            if(res) {
-                thisMemory.incrementAttempts();
-                thisMemory.incrementSuccesses();
-            } else {
-                thisMemory.incrementAttempts();
-            }
-            thisMemory.updateProbability();
-            if (update_mode == COVERAGE) {
-                /* Store this experience first, so that coverage can find it */ 
-                this.experiences.put(memoryKey, thisMemory);
-                /* Now calculate the coverage and store back */
-                thisMemory.setCoverage(calculateCoverage(lastState));
-                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
-                this.experiences.put(memoryKey, thisMemory);
-            } else {
-                logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString(this.getStableK(), this.getStableEpsilon())+" to "+newold+" key "+memoryKey);
-                this.experiences.put(memoryKey, thisMemory);
-            }
+        String memoryKey = this.stringOfState(lastState);
+        Experience thisMemory = (this.experiences.containsKey(memoryKey)) ? (Experience)this.experiences.get(memoryKey) : new Experience(logger);
+        String newold = (this.experiences.containsKey(memoryKey)) ? "EXISTING" : "NEW";
+        if(res) {
+            thisMemory.incrementAttempts();
+            thisMemory.incrementSuccesses();
+        } else {
+            thisMemory.incrementAttempts();
         }
+        thisMemory.updateProbability();
+        
+        /* Store this experience first, so that coverage can find it */ 
+        this.experiences.put(memoryKey, thisMemory);
+        /* Now calculate the coverage and store back */
+        thisMemory.setCoverage(calculateCoverage(lastState));
+        logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
+        this.experiences.put(memoryKey, thisMemory);
     }
     
-    public double calculateCoverage(String[] state) {
+    public double getCoverage(String[] state) {
+        double coverage = 0.0;
+        String memoryKey = this.stringOfState(state);
+        if (this.experiences.containsKey(memoryKey)) {
+            Experience thisMemory = (Experience)this.experiences.get(memoryKey);
+            coverage = thisMemory.coverage();
+            logger.writeLog("Plan "+this.getItem()+" has seen state "+memoryKey+" before with coverage="+((double)((int)(coverage*10000)))/10000);
+        } else {
+            /* When we haven't seen the world, we will use the coverage 
+             * of a previously seen world as a approximate measure.
+             * We can do this because for the given goa/plan tree
+             * te coverage of all previously seen worlds is likely to be
+             * similar.
+             */
+            if (this.experiences.size() > 0) {
+                Object[] earr = this.experiences.values().toArray();
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(earr.length);
+                Experience m = (Experience)earr[randomInt];
+                coverage = m.coverage();
+                logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before so randomly selected a previous world with coverage="+((double)((int)(coverage*10000)))/10000);
+            } else {
+                coverage = 0.0;
+                logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before and has no previous state to leverage, so will use coverage c="+coverage);
+            }
+        }
+        return coverage;
+    }    
+    
+    protected double calculateCoverage(String[] state) {
         double coverage = 0.0;
         int nChildren = this.children.size();
         String stateStr = this.stringOfState(state);
@@ -436,13 +440,14 @@ public class PlanNode extends Node{
                 double c = thisNode.calculateCoverage(state);
                 cCoverage += c;
                 logger.writeLog("Child goal "+thisNode.getItem()+" has coverage="+((double)((int)(c*10000)))/10000+" in state "+stateStr);
-                if (!thisNode.isSuccessful(state)) {
+                if (c==1.0 && !thisNode.isSuccessful(state)) {
                     /* This subgoal did not succeed in this state
-                     * so all subsequent subgoals can be considered
+                     * AND it has full coverage then
+                     * all subsequent subgoals can be considered
                      * covered since they will never execute
                      * in this state.
                      */
-                    logger.writeLog("Child goal "+thisNode.getItem()+" previously failed in state "+stateStr+" so will consider remaining subgoals covered");
+                    logger.writeLog("Child goal "+thisNode.getItem()+" previously failed in state "+stateStr+" has has coverage=1.0, so will consider remaining subgoals covered");
                     cCoverage += nChildren - (j+1);
                     break;
                 }
@@ -492,7 +497,7 @@ public class PlanNode extends Node{
         }
         double val = 0;
         try{
-            val = (update_mode == STABLE)?((Bagging)decisionTree).classifyInstance(instance):((J48)decisionTree).classifyInstance(instance);
+            val = decisionTree.classifyInstance(instance);
         }
         catch(Exception e){
             System.err.println("something went wrong when the instance was classified \n" +e);
@@ -514,77 +519,6 @@ public class PlanNode extends Node{
     public double[] getProbability()
     {
         double[] val = null;
-        if ((update_mode == STABLE)) {
-            double success;
-            boolean useDTnow = true;
-            String thisState = this.stringOfState(lastState);
-            if (data.numInstances() > 0) {
-                /* Now build a bag of trees and test if the performance is within tolerance */
-                double tolerance = 0.5; /* TODO: Add this as an input parameter or use epsilon */
-                double ooberror = 1.0;
-                if (this.experiences.size() >= minNumInstances) {
-                    try{
-                        ((Bagging)decisionTree).buildClassifier(data);
-                    }
-                    catch(Exception e){
-                        System.err.println("Something went wrong during the construction of the decision tree\n" + e);
-                        System.exit(9);
-                    }
-                    ooberror = ((Bagging)decisionTree).measureOutOfBagError();
-                }
-                if (ooberror >= tolerance) {
-                    logger.writeLog("Plan "+this.getItem()+" is NOT USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+", since out-of-bag error "+ooberror+">="+tolerance);
-                    if (this.experiences.size() > 0) {
-                        String closestState = "";
-                        double hMax = lastState.length;
-                        double hdist = hMax+1;
-                        
-                        /* Find the previous state that has the minimum 
-                         * hamming distance to the current state
-                         * (could be the same as the current state).
-                         */
-                        Enumeration e = this.experiences.keys();
-                        while(e.hasMoreElements()) {
-                            String prevState = (String)e.nextElement();
-                            int dist = hamming(thisState, prevState);
-                            if ( dist < hdist) {
-                                hdist = dist;
-                                closestState = prevState;
-                            }
-                        }
-                        /* Now calculate a probability biased by the hamming distance.
-                         * p(s') = p(s) + [[h(s',s)/hMax] * [0.5-p(s)] ]
-                         * where,
-                         * s' is the current state,
-                         * s is some previous state,
-                         * p(s') is the probability of success in state s',
-                         * p(s) is the probability of success in state s,
-                         * h(s',s) is the hamming distance between states s' and s,
-                         * hMax is the mximum hamming distance possible between states,
-                         *
-                         */
-                        Experience m = (Experience)this.experiences.get(closestState);
-                        double ps = (double)(m.getNumberOfSuccesses())/(double)(m.getNumberOfAttempts());
-                        success = ps + ((hdist/hMax) * (0.5-ps));
-                        logger.writeLog("Plan "+this.getItem()+" using hamming distance between state "+thisState+" and closest previous state "+closestState+" to bias probability, so will use success p="+success);
-                    } else {
-                        success = 0.5;
-                        logger.writeLog("Plan "+this.getItem()+" has never seen state "+thisState+" before (no previous state), so will use success p="+success);
-                    }
-                    double[] parr = {success, 1-success};
-                    return parr;
-                } else {
-                    /* DT prediction is within tolerance so use it */
-                    logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+", since out-of-bag error "+ooberror+"<"+tolerance);
-                }
-            } else {
-                /* No previous instances so use 0.5 */
-                success = 0.5;
-                logger.writeLog("Plan "+this.getItem()+" has never seen state "+thisState+" before (no previous data), so will use success p="+success);
-                double[] parr = {success, 1-success};
-                return parr;
-            }
-        }
         if (useDT(goal_id)){
             Instance instance = new Instance(numAttributes);
             instance.setDataset(data);
@@ -597,7 +531,7 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
             try{
-                val = (update_mode == STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
+                val = decisionTree.distributionForInstance(instance);
                 logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
 
             }
@@ -606,64 +540,6 @@ public class PlanNode extends Node{
                 System.exit(9);
             }
             
-            if (update_mode == COVERAGE) {
-                /* In COVERAGE mode we always use the DT but bias the probability 
-                 * with the coverage of the goal/plan subtree using:
-                 * P' = 0.5 + [ C * ( P - 0.5) ]
-                 * where,
-                 * P  : probability of success returned by DT
-                 * C  : coverage [0..1] of the subtree with this node as root
-                 * P' : revised probability
-                 */
-                String lastStateReference = this.stringOfState(lastState);
-                double coverage = 0.0;
-                if(experiences.containsKey(lastStateReference)) {
-                    Experience thisMemory = (Experience)this.experiences.get(lastStateReference);
-                    coverage = thisMemory.coverage();
-                } else {
-                    if (this.experiences.size() > 0) {
-                        String closestState = "";
-                        double hMax = lastState.length;
-                        double hdist = hMax+1;
-                        
-                        /* Find the previous state that has the minimum 
-                         * hamming distance to the current state
-                         * (could be the same as the current state).
-                         */
-                        Enumeration e = this.experiences.keys();
-                        while(e.hasMoreElements()) {
-                            String prevState = (String)e.nextElement();
-                            int dist = hamming(lastStateReference, prevState);
-                            if ( dist < hdist) {
-                                hdist = dist;
-                                closestState = prevState;
-                            }
-                        }
-                        /* Now calculate a coverage biased by the hamming distance.
-                         * c' = [h(s',s)/hMax] * c
-                         * where,
-                         * s' is the current state,
-                         * s is some previous state,
-                         * c' is the coverage in state s',
-                         * c is the coverage in state s,
-                         * h(s',s) is the hamming distance between states s' and s,
-                         * hMax is the maximum hamming distance possible between states,
-                         *
-                         */
-                        Experience m = (Experience)this.experiences.get(closestState);
-                        double c = m.coverage();
-                        coverage = ((hMax-hdist)/hMax) * c;
-                        logger.writeLog("Plan "+this.getItem()+" is using hamming distance between state "+lastStateReference+" and closest previous state "+closestState+" to bias coverage, so will use c="+((double)((int)(coverage*10000)))/10000+"<="+((double)((int)(c*10000)))/10000);
-                    } else {
-                        coverage = 0.0;
-                        logger.writeLog("Plan "+this.getItem()+" has never seen state "+lastStateReference+" before and has no previous state to leverage, so will use coverage c="+coverage);
-                    }
-                    
-                }
-                val[0] = 0.5 + ( coverage * (val[0] - 0.5) );
-                val[1] = 1 - val[0];
-                logger.writeLog("Plan "+this.getItem()+" REVISED the probability in state "+this.stringOfLastState()+" to p="+((double)((int)(val[0]*10000)))/10000+" based on coverage c="+((double)((int)(coverage*10000)))/10000);
-            }
         }
         return val;
     }
@@ -694,35 +570,22 @@ public class PlanNode extends Node{
      * @return
      */
     public boolean useDT(int it){
-        
-        /* Always return true for STABLE */
-        if ((update_mode == STABLE) && it>-1) {
-            return true;
-        }
-        
-        boolean subtreeOK = true;
-        if (waitForSubTree)
-            subtreeOK = subTreeOK();
-        
-        if (subtreeOK && data.numInstances() >= minNumInstances){
+        if (data.numInstances() >= minNumInstances){
             if (startToUseDT ==0){
                 startToUseDT = it;
                 logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+data.numInstances()+">=M("+minNumInstances+")");
             }
             try{
-                //System.out.println("print data " + data);
-                //this.logger.writeLog("This Node: "+this.getItem()+" is refreshing its D-Tree", "Stability-Tree");
-                ((J48)decisionTree).buildClassifier(data);
+                decisionTree.buildClassifier(data);
             }
             catch(Exception e){
                 System.err.println("Something went wrong during the construction of the decision tree\n" + e);
                 System.exit(9);
             }
             return true;
-        }
-        else 
+        } else {
             return false;
-        
+        }
     }
     
     public String stringOfLastState()
