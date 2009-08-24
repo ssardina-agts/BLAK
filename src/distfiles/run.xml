@@ -39,7 +39,7 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="all" description="Build, run and plot all tests" depends="testEcai,testImpactvars,testDummyvars,test01v10,test02v10,test03v5,test04v5,test05v5,test01v1,test02v1,test03v1,test04v1,test05v1"/>
+<target name="all" description="Build, run and plot all tests" depends="testEcai,testImpactvars,testDummyvars,test01v10,test02v10,test03v5,test03bv5,test04v5,test05v5,test01v1,test02v1,test03v1,test04v1,test05v1"/>
 
 <target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
 <target name="testImpactvars" description="Build, run and plot testImpactvars (Tests impact of relevant variables)" depends="buildtestImpactvars,graphtestImpactvars,runtestImpactvars,plottestImpactvars"/>
@@ -52,6 +52,7 @@
 <target name="test01v10" description="Build, run and plot test01v10" depends="buildtest01v10,graphtest01v10,runtest01v10,plottest01v10"/>
 <target name="test02v10" description="Build, run and plot test02v10" depends="buildtest02v10,graphtest02v10,runtest02v10,plottest02v10"/>
 <target name="test03v5"  description="Build, run and plot test03v5"  depends="buildtest03v5, graphtest03v5, runtest03v5, plottest03v5" />
+<target name="test03bv5" description="Build, run and plot test03bv5" depends="buildtest03bv5,graphtest03bv5,runtest03bv5,plottest03bv5"/>
 <target name="test04v5"  description="Build, run and plot test04v5"  depends="buildtest04v5, graphtest04v5, runtest04v5, plottest04v5" />
 <target name="test05v5"  description="Build, run and plot test05v5"  depends="buildtest05v5, graphtest05v5, runtest05v5, plottest05v5" />
 
@@ -368,7 +369,7 @@
 	<plotResult test.name="test02v1" range="[:8000]" label="test02v1:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- test02v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test02v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest02v10" description="Build test02v10" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test02v10"/>
@@ -412,7 +413,7 @@
 	<plotResult test.name="test03v1" range="[:2000]" label="test03v1:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- test03v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test03v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest03v5" description="Build test03v5" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test03v5"/>
@@ -423,14 +424,35 @@
 </target>
 <target name="runtest03v5" description="Run test03v5">
     <failIfBuildNotFound test.name="test03v5"/>
-	<runTestRepeats test.name="test03v5" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 2000 -m 1"/>
-	<runTestRepeats test.name="test03v5" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 2000 -m 1"/>
-	<runTestRepeats test.name="test03v5" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 2000 -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test03v5" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 2000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test03v5" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 8000 -m 1"/>
+	<runTestRepeats test.name="test03v5" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 8000 -m 1"/>
+	<runTestRepeats test.name="test03v5" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 8000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test03v5" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 8000 -m 1 -k 3 -e 0.3"/>
 </target>
 <target name="plottest03v5" description="Plot test03v5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03v5"/>
-	<plotResult test.name="test03v5" range="[:2000]" label="test03v5:n=0.1,m=1,k=3,e=0.3:test03v5.txt"/>
+	<plotResult test.name="test03v5" range="[:8000]" label="test03v5:n=0.1,m=1,k=3,e=0.3:test03v5.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test03bv5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest03bv5" description="Build test03bv5" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test03bv5"/>
+	<buildTest test.name="test03bv5" specs.file="${specs.dir}/test03/test03bv5.txt"/>
+</target>
+<target name="graphtest03bv5" description="Graph test03bv5" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test03bv5"/>
+</target>
+<target name="runtest03bv5" description="Run test03bv5">
+    <failIfBuildNotFound test.name="test03bv5"/>
+	<runTestRepeats test.name="test03bv5" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 8000 -m 1"/>
+	<runTestRepeats test.name="test03bv5" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 8000 -m 1"/>
+	<runTestRepeats test.name="test03bv5" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 8000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test03bv5" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 8000 -m 1 -k 3 -e 0.3"/>
+</target>
+<target name="plottest03bv5" description="Plot test03bv5" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test03bv5"/>
+	<plotResult test.name="test03bv5" range="[:8000]" label="test03bv5:n=0.1,m=1,k=3,e=0.3:test03bv5.txt"/>
 </target>
 
 
@@ -456,7 +478,7 @@
 	<plotResult test.name="test04v1" range="[:3000]" label="test04v1:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- test04v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test04v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest04v5" description="Build test04v5" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test04v5"/>
@@ -500,7 +522,7 @@
 	<plotResult test.name="test05v1" range="[:10000]" label="test05v1:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- test05v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test05v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtest05v5" description="Build test05v5" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="test05v5"/>
@@ -523,7 +545,7 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testEcai ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testEcai ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestEcai" description="Build testEcai" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testEcai"/>
@@ -546,7 +568,7 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testDummyvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testDummyvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestDummyvars" description="Build testDummyvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testDummyvars"/>
@@ -569,7 +591,7 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST testImpactvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- TEST testImpactvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestImpactvars" description="Build testImpactvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testImpactvars"/>
