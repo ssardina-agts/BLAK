@@ -145,6 +145,10 @@ public class GoalNode extends Node{
                      */
                     logger.writeLog("Child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
                     cCoverage = nChildren;
+                    for(int k = 0; nChildren > k; k++) {
+                        PlanNode kNode = (PlanNode)this.children.elementAt(k);
+                        kNode.setCoverage(stateStr,1.0);
+                    }
                     break;
                 }
             }

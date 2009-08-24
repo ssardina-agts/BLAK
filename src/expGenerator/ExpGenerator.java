@@ -1496,8 +1496,12 @@ public class ExpGenerator {
 		// make all the links
 		index=0;
 		for (Goal g: goals){
-			for (Plan p : g.handlers)
+			for (Plan p : g.handlers) {
+                if (index==0) {
+				code += "\tplanNodes["+p.index +"].setTopGoal((GoalNode)goalNodes["+index+"]);\n";
+                };
 				code += "\tgoalNodes["+index+"].addChild(planNodes["+p.index +"]);\n";
+            }
 			index++;
 		}
 		for (Plan p: plans){

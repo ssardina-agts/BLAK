@@ -44,6 +44,8 @@ public class PlanNode extends Node{
     
     Instances data;
     
+    GoalNode topGoal;
+    
     /*
     public boolean isDoStable() {
         return doStable;
@@ -181,6 +183,7 @@ public class PlanNode extends Node{
         stableK = kStable;
         stableEpsilon = epsilion;
         successfulChildren = 0;
+        topGoal = null;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
@@ -394,8 +397,28 @@ public class PlanNode extends Node{
         this.experiences.put(memoryKey, thisMemory);
         /* Now calculate the coverage and store back */
         thisMemory.setCoverage(calculateCoverage(lastState));
+        if (this.topGoal != null) {
+            /* This is a root level plan so manually update siblings */
+            logger.writeLog("Plan "+this.getItem()+" is a top level goal so will initialise coverage calculation for siblings");
+            topGoal.calculateCoverage(lastState);
+        } else {
+            
+        }
+        
         logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
         this.experiences.put(memoryKey, thisMemory);
+    }
+    
+    public void setTopGoal(GoalNode val) {
+        topGoal = val;
+    }
+    
+    public void setCoverage(String memoryKey, double coverage) {
+        Experience thisMemory = (this.experiences.containsKey(memoryKey)) ? (Experience)this.experiences.get(memoryKey) : new Experience(logger);
+        String newold = (this.experiences.containsKey(memoryKey)) ? "EXISTING" : "NEW";
+        thisMemory.setCoverage(coverage);
+        this.experiences.put(memoryKey, thisMemory);
+        logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
     }
     
     public double getCoverage(String[] state) {
@@ -429,8 +452,16 @@ public class PlanNode extends Node{
     
     protected double calculateCoverage(String[] state) {
         double coverage = 0.0;
-        int nChildren = this.children.size();
         String stateStr = this.stringOfState(state);
+        if (this.experiences.containsKey(stateStr)) {
+            Experience thisMemory = (Experience)this.experiences.get(stateStr);
+            if (thisMemory.coverage() == 1.0) {
+                coverage = 1.0;
+                logger.writeLog("Plan "+this.getItem()+" has maximum coverage="+coverage+" for state "+stateStr);
+                return coverage;
+            }
+        }
+        int nChildren = this.children.size();
         if(nChildren > 0) {
             double cCoverage = 0.0;
             logger.writeLog("Plan "+this.getItem()+" is checking children for coverage in state "+stateStr);
