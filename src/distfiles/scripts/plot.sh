@@ -43,19 +43,19 @@ if [ "$sp" != "nil" ]; then
     if [ "$cp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 2 lw 2 with lines"
+    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 2 lw 3 with lines"
 fi
 if [ "$cc" != "nil" ]; then
     if [ "$cp" != "nil" ] || [ "$sp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 3 lw 2 with lines"
+    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 4 lw 4 with lines"
 fi
 if [ "$sc" != "nil" ]; then
     if [ "$cp" != "nil" ] || [ "$sp" != "nil" ] || [ "$cc" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 4 lw 2 with lines"
+    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 3 lw 4 with lines"
 fi
 
 cat << EOF
@@ -70,7 +70,7 @@ set ytic 0, 0.2
 set mytics 2
 set grid noxtics ytics mytics
 show grid
-set key center right
+set key bottom right
 set key spacing 1.3
 $plotcmd
 reset

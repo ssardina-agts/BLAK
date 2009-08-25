@@ -134,20 +134,26 @@ public class GoalNode extends Node{
             logger.indentRight();
             for(int j = 0; nChildren > j; j++) {
 				PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-                double c = thisNode.calculateCoverage(state);
+                double c = 0.0;
+                if (thisNode.isDirty) {
+                    c = thisNode.calculateCoverage(state);
+                    thisNode.isDirty = false;
+                } else {
+                    c = thisNode.getCoverage(state);
+                }
                 cCoverage += c;
-                logger.writeLog("Child plan "+thisNode.getItem()+" has coverage="+((double)((int)(c*10000)))/10000+" in state "+stateStr);
                 if (thisNode.isSuccessful(state)) {
                     /* This plan succeeded in this state
                      * so all subsequent subplans can be considered
                      * covered since they will almost never be
                      * selected in this state.
                      */
-                    logger.writeLog("Child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
+                    logger.writeLog("Goal "+this.getItem()+"'s child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
                     cCoverage = nChildren;
                     for(int k = 0; nChildren > k; k++) {
                         PlanNode kNode = (PlanNode)this.children.elementAt(k);
                         kNode.setCoverage(stateStr,1.0);
+                        kNode.isDirty = false;
                     }
                     break;
                 }
@@ -159,7 +165,6 @@ public class GoalNode extends Node{
             logger.writeLog("ERROR: Goal "+this.getItem()+" has no children, so will consider full coverage for state "+stateStr);
             coverage = 1;
         }
-        logger.writeLog("Goal "+this.getItem()+" calculated coverage="+((double)((int)(coverage*10000)))/10000+" in state "+stateStr);
         return coverage;
     }
     

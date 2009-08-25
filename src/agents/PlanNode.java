@@ -45,7 +45,8 @@ public class PlanNode extends Node{
     Instances data;
     
     GoalNode topGoal;
-    
+    public boolean isDirty;
+
     /*
     public boolean isDoStable() {
         return doStable;
@@ -184,6 +185,7 @@ public class PlanNode extends Node{
         stableEpsilon = epsilion;
         successfulChildren = 0;
         topGoal = null;
+        isDirty = false;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
@@ -264,12 +266,12 @@ public class PlanNode extends Node{
             if (res)
             {
                 record += "+";
-                logger.writeLog("Plan "+this.getItem()+" is updating as it was successful in state "+this.stringOfLastState());
+                logger.writeLog("Plan "+this.getItem()+" is updating (+) result in state "+this.stringOfLastState());
             }
             else
             {
                 record += "-";
-                logger.writeLog("Plan "+this.getItem()+" is updating in state "+this.stringOfLastState()+" even though it failed. It must have stable (or zero) children");
+                logger.writeLog("Plan "+this.getItem()+" is updating (-) result in state "+this.stringOfLastState());
             }
             Integer num = (Integer)memory.remove(record);
             if (num !=null)
@@ -419,6 +421,7 @@ public class PlanNode extends Node{
         thisMemory.setCoverage(coverage);
         this.experiences.put(memoryKey, thisMemory);
         logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
+        this.isDirty = true;
     }
     
     public double getCoverage(String[] state) {
@@ -427,7 +430,6 @@ public class PlanNode extends Node{
         if (this.experiences.containsKey(memoryKey)) {
             Experience thisMemory = (Experience)this.experiences.get(memoryKey);
             coverage = thisMemory.coverage();
-            logger.writeLog("Plan "+this.getItem()+" has seen state "+memoryKey+" before with coverage="+((double)((int)(coverage*10000)))/10000);
         } else {
             /* When we haven't seen the world, we will use the coverage 
              * of a previously seen world as a approximate measure.
@@ -491,7 +493,7 @@ public class PlanNode extends Node{
              */
             coverage = (this.experiences.containsKey(stateStr)) ? 1.0 : 0.0;
             String covStr = (this.experiences.containsKey(stateStr)) ? "1.0" : "0.0";
-            logger.writeLog("Plan "+this.getItem()+" has coverage="+covStr+" in state "+stateStr);
+            logger.writeLog("Plan "+this.getItem()+" is a leaf plan and has coverage="+covStr+" in state "+stateStr);
         }
         logger.writeLog("Plan "+this.getItem()+" calculated coverage="+((double)((int)(coverage*10000)))/10000+" in state "+stateStr);
         return coverage;

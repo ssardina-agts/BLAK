@@ -323,7 +323,7 @@
 </target>
 <target name="plottest01v1" description="Plot test01v1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01v1"/>
-	<plotResult test.name="test01v1" label="test01v1:n=0.1,m=1,k=3,e=0.3:test01v1.txt"/>
+	<plotResult test.name="test01v1" every="2" label="test01v1:n=0.1,m=1,k=3,e=0.3:test01v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test01v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -344,7 +344,7 @@
 </target>
 <target name="plottest01v10" description="Plot test01v10" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01v10"/>
-	<plotResult test.name="test01v10" label="test01v10:n=0.1,m=1,k=3,e=0.3:test01v10.txt"/>
+	<plotResult test.name="test01v10" every="7" label="test01v10:n=0.1,m=1,k=3,e=0.3:test01v10.txt"/>
 </target>
 
 
@@ -367,7 +367,7 @@
 </target>
 <target name="plottest02v1" description="Plot test02v1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test02v1"/>
-	<plotResult test.name="test02v1" label="test02v1:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
+	<plotResult test.name="test02v1" every="4" label="test02v1:n=0.1,m=1,k=3,e=0.3:test02v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test02v10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -388,7 +388,7 @@
 </target>
 <target name="plottest02v10" description="Plot test02v10" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test02v10"/>
-	<plotResult test.name="test02v10" label="test02v10:n=0.1,m=1,k=3,e=0.3:test02v10.txt"/>
+	<plotResult test.name="test02v10" every="4" label="test02v10:n=0.1,m=1,k=3,e=0.3:test02v10.txt"/>
 </target>
 
 
@@ -411,7 +411,7 @@
 </target>
 <target name="plottest03v1" description="Plot test03v1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03v1"/>
-	<plotResult test.name="test03v1" label="test03v1:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
+	<plotResult test.name="test03v1" every="2" label="test03v1:n=0.1,m=1,k=3,e=0.3:test03v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test03v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -432,7 +432,7 @@
 </target>
 <target name="plottest03v5" description="Plot test03v5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03v5"/>
-	<plotResult test.name="test03v5" label="test03v5:n=0.1,m=1,k=3,e=0.3:test03v5.txt"/>
+	<plotResult test.name="test03v5" every="5" label="test03v5:n=0.1,m=1,k=3,e=0.3:test03v5.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test03bv5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -453,7 +453,7 @@
 </target>
 <target name="plottest03bv5" description="Plot test03bv5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test03bv5"/>
-	<plotResult test.name="test03bv5" label="test03bv5:n=0.1,m=1,k=3,e=0.3:test03bv5.txt"/>
+	<plotResult test.name="test03bv5" every="5" label="test03bv5:n=0.1,m=1,k=3,e=0.3:test03bv5.txt"/>
 </target>
 
 
@@ -476,7 +476,7 @@
 </target>
 <target name="plottest04v1" description="Plot test04v1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test04v1"/>
-	<plotResult test.name="test04v1" label="test04v1:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
+	<plotResult test.name="test04v1" every="4" label="test04v1:n=0.1,m=1,k=3,e=0.3:test04v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test04v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -497,7 +497,7 @@
 </target>
 <target name="plottest04v5" description="Plot test04v5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test04v5"/>
-	<plotResult test.name="test04v5" label="test04v5:n=0.1,m=1,k=3,e=0.3:test04v5.txt"/>
+	<plotResult test.name="test04v5" every="4" label="test04v5:n=0.1,m=1,k=3,e=0.3:test04v5.txt"/>
 </target>
 
 
@@ -520,7 +520,7 @@
 </target>
 <target name="plottest05v1" description="Plot test05v1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05v1"/>
-	<plotResult test.name="test05v1" label="test05v1:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
+	<plotResult test.name="test05v1" every="4" label="test05v1:n=0.1,m=1,k=3,e=0.3:test05v1.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- test05v5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -541,7 +541,7 @@
 </target>
 <target name="plottest05v5" description="Plot test05v5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05v5"/>
-	<plotResult test.name="test05v5" label="test05v5:n=0.1,m=1,k=3,e=0.3:test05v5.txt"/>
+	<plotResult test.name="test05v5" every="4" label="test05v5:n=0.1,m=1,k=3,e=0.3:test05v5.txt"/>
 </target>
 
 
@@ -564,7 +564,7 @@
 </target>
 <target name="plottestEcai" description="Plot testEcai" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testEcai"/>
-	<plotResult test.name="testEcai" label="testEcai:n=0.1,m=1,k=3,e=0.3:ecai.txt"/>
+	<plotResult test.name="testEcai" every="3" label="testEcai:n=0.1,m=1,k=3,e=0.3:ecai.txt"/>
 </target>
 
 
@@ -587,12 +587,12 @@
 </target>
 <target name="plottestDummyvars" description="Plot testDummyvars" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testDummyvars"/>
-	<plotResult test.name="testDummyvars" label="testDummyvars:n=0.1,m=1,k=3,e=0.3:pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
+	<plotResult test.name="testDummyvars" every="5" label="testDummyvars:n=0.1,m=1,k=3,e=0.3:pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST testImpactvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testImpactvars ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestImpactvars" description="Build testImpactvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testImpactvars"/>
@@ -610,12 +610,12 @@
 </target>
 <target name="plottestImpactvars" description="Plot testImpactvars" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars"/>
-	<plotResult test.name="testImpactvars" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<plotResult test.name="testImpactvars" every="4" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- TEST testMultiSolutions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testMultiSolutions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestMultiSolutions" description="Build testMultiSolutions" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testMultiSolutions"/>
@@ -626,14 +626,14 @@
 </target>
 <target name="runtestMultiSolutions" description="Run testMultiSolutions">
     <failIfBuildNotFound test.name="testMultiSolutions"/>
-	<runTestRepeats test.name="testMultiSolutions" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 15000 -m 1"/>
-	<runTestRepeats test.name="testMultiSolutions" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 15000 -m 1"/>
-	<runTestRepeats test.name="testMultiSolutions" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 15000 -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="testMultiSolutions" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 15000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testMultiSolutions" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 10000 -m 1"/>
+	<runTestRepeats test.name="testMultiSolutions" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 10000 -m 1"/>
+	<runTestRepeats test.name="testMultiSolutions" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 10000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testMultiSolutions" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 10000 -m 1 -k 3 -e 0.3"/>
 </target>
 <target name="plottestMultiSolutions" description="Plot testMultiSolutions" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testMultiSolutions"/>
-	<plotResult test.name="testMultiSolutions" label="testMultiSolutions:n=0.1,m=1,k=3,e=0.3:testMultiSolutions.txt"/>
+	<plotResult test.name="testMultiSolutions" range="[:10000]" every="10" label="testMultiSolutions:n=0.1,m=1,k=3,e=0.3:testMultiSolutions.txt"/>
 </target>
 
 
