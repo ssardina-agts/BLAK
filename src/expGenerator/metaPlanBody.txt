@@ -127,22 +127,8 @@
     case 3:			/* ~~~~~~~~~ case ag.env.COVERAGE_PS */
     case 4:			/* ~~~~~~~~~ case ag.env.PROBABILISTIC_PS */
 	int num = 0;
-	int numSuccess = 0;
 	double mass;
-	double max = 0;
-	int POWER = 3;
-	for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
-	    if (s.getInfo() instanceof PlanIdInfo) {
-		PlanIdInfo info = (PlanIdInfo) s.getInfo();
-		double p = info.pSuccess;
-		if (ag.env.plan_selection == ag.env.COVERAGE_PS) {
-		    p = 0.5 + (info.coverage * (p - 0.5));
-		}
-		if (p > max) {
-		    max = p;
-		}
-	    }
-	}
+	int POWER = 1;
 	for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
 	    if (s.getInfo() instanceof PlanIdInfo) {
 		PlanIdInfo info = (PlanIdInfo) s.getInfo();
@@ -158,16 +144,13 @@
 		}
 		if (p < 0.0001) {
 		    mass += 0.0001;
-		} else if (p == max) {
-		    numSuccess++;
 		} else {
-		    mass += Math.pow(p / max, POWER);
+		    mass += Math.pow(p, POWER);
 		}
 	    }
 	    num++;
 	}
 	if (num > 0) {
-	    mass += num * numSuccess;
 	    double[] prob = new double[num];
 	    double acc = 0;
 	    int i;
@@ -186,12 +169,9 @@
 		    if (p < 0.0001) {
 			str += "0.0001/" + mass;
 			acc += 0.0001 / mass;
-		    } else if (p == max) {
-			str += num + "/" + mass;
-			acc += num / mass;
 		    } else {
-			str += (p / max) + "^" + POWER + "/" + mass;
-			acc += Math.pow(p / max, POWER) / mass;
+			str += p + "^" + POWER + "/" + mass;
+			acc += Math.pow(p, POWER) / mass;
 		    }
 		    prob[i] = acc;
 		} else {
