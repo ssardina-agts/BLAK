@@ -45,6 +45,7 @@ dhirendra.singh@rmit.edu.au\\
 
 \setcounter{tocdepth}{2} 
 \tableofcontents 
+\newpage
 
 %% Section
 \section{Motivating example}
@@ -338,6 +339,7 @@ Algorithm \ref{alg:pselect} shows the final heuristic we use to calculate the re
 Since the choice of the probabilistic selection mechanism has a significant impact on the results, a better approach would be to formally validate this function so as to guarantee a probability profile. Algorithm \ref{alg:pselect} has only been verified empirically.
 
 \subsection{Changes to stability checking for child nodes}
+\label{subsec:stability-fixes}
 
 When doing stability checks for children of a node, a termination check was added to ensure the following:
 
@@ -350,6 +352,8 @@ When doing stability checks for children of a node, a termination check was adde
 This fixes an existing issue with the stability checking algorithm.
 
 \subsection{Test results}
+\label{sec:results-stable2}
+
 The test results from applying the changes are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 61" is the baseline results before any changes were applied. Notice the problematic \tiv result.
@@ -374,6 +378,7 @@ This observation leads us to think of the readiness of the \dt of a goal/plan no
 
 
 \subsection{\cov Implementation}
+\label{subsec:coverage1-implementation}
 
 Equation \ref{eqn:coverage} shows how coverage is used to revise the \dt prediction. The \cov approach biases the probability $p_n(W)$ of success of a node $n$ in a given world $W$ by the coverage $c_n(W) \in [0,1]$. As coverage $ c_n(W) \rightarrow 0$, the revised probability $p'_n(W) \rightarrow 0.5$ i.e. we favour the default probability of success, while as  $ c_n(W) \rightarrow 1$, then $p'_n(W) \rightarrow p_n(W)$ and we favour the \dt classification.
 
@@ -404,6 +409,7 @@ In Appendix \ref{sec:results} "Repository Revision 69" the poor \cov performance
 
 
 \subsection{Implementation changes}
+\label{subsec:coverage2-implementation}
 
 To improve \cov performance for unseen worlds, we adjust our probability bias slightly to use the coverage of world $W'$ that we have seen before and is the \textit{most relevant} match to $W$. This allows us to exploit our existing experiences to make a decision for the unseen world $W$. 
 
@@ -423,14 +429,115 @@ Finally, also in this case we use the method described in Section \ref{subsec:co
 
 \subsection{Test results}
 
-
 The test results comparing \cov performance to \cc and \st are included in the Appendix \ref{sec:results}.
 \begin{itemize}
 \item "Repository Revision 69" shows the baseline results.
-\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $v$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. \end{itemize}
+\item "Repository Revision 77" shows the results after applying the changes from Section \ref{sec:coverage2}. Note that the tests $1$ to $5$ have been updated here for multiple worlds. The $v$ in the test name indicates the number of variables used. Tests 1-2 use v=10 and tests 3-5 use v=5. The \cov performance for all tests is now comparable to \st. 
+\end{itemize}
 
 \textit{Comment: Overall \cov seems more robust and generally applicable than \st. However the current implementation should be improved further in two areas; (1) the hamming distance based selection should be replaced by an information-gain based approach; and  (2) the modification to the probabilistc plan selection should be more robust.
 }
+
+%% Section
+\section{\st \cc and \cov revisited}
+\label{sec:coverage3}
+
+\subsection{Motivation}
+\label{subsec:coverage3-motivation}
+
+First, it turns out that there is nothing inherent in the \cov idea to be considered a new approach i.e. an alternative to \st or \cc. To be consistent with the original work (IJATS/IJCAI), we must clarify that \st and \cc refer to differences in approach for \textit{recording in the event of failure} only. They each use a separate method for the probabilistic selection of applicable plans, which is the same for both and is not considered integral to the two approaches. In other words, \st and \cc have been previously treated not as two separate \textit{algorithms} for learning, but as two separate \textit{update methods} during learning. Now, since \cov does not relate to recording of information and only to probability updates, then it makes sense to treat it as an alternative method for plan selection only that may be used either with \st or \cc. 
+
+Second, in this study we are concerned with analysing the performance of \st and \cc in multiple worlds, keeping everything else constant and as close to the original work as possible to allow sensible comparison. Over the last few iterations, several changes have been introduced that make \st and \cc separate algorithms rather than recording methods making comparison with previous work difficult. In particular, \st now uses Bagging (Section \ref{subsubsec:confidence-measure}), hamming distance based reasoning (Section \ref{subsec:hamming}), and probability boosting (Section \ref{subsec:consequence-p}). Furthermore, it is difficult to know that this point how these features individually impact the overall \st performance reported in Section \ref{sec:results-stable2}. Ideally these changes should be de-coupled and made consistent across both \st and \cc. In this iteration we will aim to do just that. 
+
+In particular, and after all final changes, we would like run configurations like that shown in Table \ref{tab:final-config} in order to show that the original work generalises to multiple worlds. Furthermore, the \cov idea gives us a new set of configurations that may be used to evaluate if \cov adds value to the \st and \cc approaches.
+
+\begin{table}[!htb]
+\centering
+  %\begin{tabular}{ p{0.7\textwidth} l }
+  \begin{tabular}{ p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth}p{0.4\textwidth} }
+    \hline \hline
+    Configuration & Recording Method & Selection Method & World Features & Comment\\ \hline
+    CPS & \cc & Probabilistic & Single & Original work (Baseline 49)\\ \hline
+    SPS & \st & Probabilistic & Single &  Original work (Baseline 49)\\ \hline
+    CPM & \cc & Probabilistic & Multi & Generalise to m-worlds\\ \hline
+    SPM & \st & Probabilistic & Multi & Generalise to m-worlds\\ \hline
+    CCS & \cc & Coverage & Single & New\\ \hline
+    SCS & \st & Coverage & Single & New\\ \hline
+    CCM & \cc & Coverage & Multi & New\\ \hline
+    SCM & \st & Coverage & Multi & New\\ \hline
+  \end{tabular}
+  \caption{Run configurations for \cc and \st}
+  \label{tab:final-config}
+\end{table}
+
+\subsection{Implementation changes}
+
+\subsubsection{\st changes}
+
+For reasons mentioned earlier, the hamming-distance based reasoning of Section \ref{subsec:hamming} is not preferred. The purpose of this heuristic was to improve over random exploration when the \dt is not ready for use. The readiness notion in turn came from the Bagging-based confidence measure introduced in Section \ref{subsubsec:confidence-measure}. In this iteration we have reverted back both those changes, so that \st now behaves the same as \cc in that aspect. We found that neither of those changes explained the good \st performance in \tiv reported in Section \ref{sec:results-stable2} and after the reversion the \st performance did not change.
+
+Second, we reverted back the probability boosting introduced in Section \ref{subsec:consequence-p}. In essence this method was boosting probabilities to heavily favour the higher probabilities. The obvious impact was that our runs were converging \textit{earlier} (in the number of iterations) than they would have using the original probabilistic selection method. Since that is just a synthetic change and does not impact the overall relative performances, then the boosting is really not necessary. The result of reverting back this change was that the \st performance in \tiv reported in Section \ref{sec:results-stable2} remained good.
+
+These reversions now mean that our \st implementation is very similar to the original but only that it now works for \tiv. The only real changes from the original system are the default probability change of Section \ref{subsec:use-p-05} and the stability fixes of Section \ref{subsec:stability-fixes} and any other minor implementation fixes over time that are not reported in this paper.
+
+\subsubsection{\cov changes}
+
+First, we reconfigured \cov as an external probability update function that may be swapped for the original probabilistic selection function for either \st or \cc resulting in the several new configurations of Table \ref{tab:final-config}.
+
+Second, and importantly we remove the bias of Section \ref{subsec:coverage2-implementation} and replace it with a new bias that does not suffer from the original criticism. Section \ref{subsec:coverage2-implementation} is concerned with improving \cov choice for unseen worlds by using the hamming-distance to a previously seen world. Here, instead we simply bias with the coverage of a randomly selected world from the set of all previously seen worlds. The reasoning is that \textit{in general the coverage $C_n(W)$ of the sub-tree for a given goal/plan node $n$ increases relatively uniformly for all worlds $W$}, so the coverage of \textit{any} previous world $W'$ gives us a good indication of how the \dt of node $n$ should be used for the new world $W$. Remember that coverage is used to decide how much to rely on the \dt, so when we haven't seen a world before we will essentially consult any (randomly selected) previous world to see how the \dt of this node is being used in that world. This gives us a fairly good starting point over random for the initial choice in a new world. Once we have seen this world then of source we don't have to deliberate this way and we use the coverage calculation as outlined in Section \ref{subsec:coverage1-implementation}. 
+
+We find that biasing with the coverage of a randomly-selected previous world works equally well as the hamming-distance bias of Section \ref{subsec:coverage2-implementation}, but saves us the criticism of the latter.
+
+
+\subsection{Test results}
+
+The test results comparing \cc and \st performance in various configurations are included in the Appendix \ref{sec:results}.
+\begin{itemize}
+\item "Repository Revision 49" is the baseline for our results. These are the results reported for the IJCAI submission.
+\item "Repository Revision 87" shows the results after applying the changes from Section \ref{sec:coverage3}. Note the following:
+\begin{itemize}
+\item All tests now run in four configurations - \st and \cc with probabilistic and \cov-based selection (labelled {\st}+P, {\cc}+P, {\st}+C and {\cc}+C respectively).
+\item Tests $[test01 \ldots test05]$ are the original tests, while  $[test01v* \ldots test05v*]$ are the same tests (i.e. keeping the original goal/plan hierarchy) extended for multiple worlds. Here $v$ in the test name specifies the number of variables or features in the world such that there are $2^v$ worlds. $test03bv5$ is a new test based on $test03v5$ but where the solutions have been distributed into each top level plan hierarchy (in $test03v5$ all solutions are under one top level plan hierarchy).
+\item For all tests with multiple worlds, the distribution of the solutions is non-uniform i.e. plans have solutions for several worlds but the distribution of worlds handled by each is different. Also all solutions are unique so that a given world is handled by one and only one plan.
+\item $testMultiSolutions$ is a new test and the only one that has an alternative solution for some worlds. Optimal performance is achieved in this test when both solutions are discovered and used in decision making. This test was created to highlight the local minima problem.
+\end{itemize}
+\end{itemize}
+
+\subsection{Discussion and Conclusion}
+
+\begin{itemize}
+
+\item Tests $[test01 \ldots test05]$ replicate the baseline results for {\st}+P and {\cc}+P as expected. Moreover, these can now be compared against the {\st}+C and {\cc}+C results.
+\begin{itemize}
+\item Firstly, {\st}+P and {\st}+C performance is the same for all tests. As hinted in Section \ref{subsec:coverage1-implementation} this is because in \st the stability checking in effect yields full coverage and as a result coverage plays no part in the overall performance.
+\item Importantly, we see that \cov improves \cc results across all baseline tests i.e. {\cc}+C generally performs better than {\cc}+P. This is expected because {\cc}+C in effect forces a less aggressive approach over {\cc}+P. This is important, and in fact we will argue that for the general case {\cc}+C is the better configuration over all others, including any \st based configurations.
+\end{itemize}
+
+\item In test $test01v10$ \st perform poorly compared to \cc. This test has $10$ deep plan hierarchies at the top level and only one has a solution. In this case \cc is relatively aggressive in adjusting the top level plans probabilities towards zero, whereas for \st the top level plans probabilities stay at $0.5$ for a long time. The difference comes into play when a solution is found. For \cc the sub-tree with the solution gets maximum attention (since all others are driven down to zero already), whereas for \st the non-stable sub-trees get the majority of attention (See Section \ref{subsec:consequence-p} for a discussion on this). 
+
+Note also that {\cc}+C has no added penalty over {\cc}+P here because of the coverage update rule for sub-plans as described in Section \ref{subsec:coverage1-implementation}.
+
+\item Tests $test02v5$ and $test05v5$ show the intuitive cases where \st is expected to perform better. In these tests the only solution exists in the deeper sub-tree. In this case, \st will cover the shallow sub-trees and confirm that they do not hold the solution (i.e. their probabilities get driven down to zero) and that the deeper sub-tree \emph{may} (it's probability stays at $0.5$ as it is not yet stable). \cc will assign more or less equally low probabilities to all sub-trees since none of them seem to work. In effect the probability of picking the deeper sub-tree increases for \st and it has a better chance of finding the solution first. 
+
+In both tests, {\cc}+P is incapable of finding the solution before the experiment end. Importantly, {\cc}+C does better and finds a solution fairly quickly. However it does not immediately commit to the solution and still spends significant time in exploring towards full coverage. Instead {\cc}+C performance steadily improves as better overall coverage is achieved. At first this may seem wasteful. After all why spend resources exploring when you have already found a solution. The reason is that the found solution may not be optimal. In the general case, we are interested in finding the optimal solution that may in fact lie in another sub-tree. This, we will argue is an important advantage of {\cc}+C and why it is better suited for worlds where multiple solutions exists. {\st}+P/C and {\cc}+P all suffer form the local minima problem as they immediately bias exploration in favour of the goal/plan sub-tree that holds the first found solution.
+
+\item Tests $test03v5$, $test03bv5$ and $test04v5$ are variations of the above and do not require special mention. In all these tests {\cc}+C outperforms the other configurations.
+
+\item In test $testDummyvars$, $19$ of $20$ variables are irrelevant for the decision making. This impacts \st for the same reason as $test01v10$ i.e. the top level nodes do not become stable for a very long time. Since there are $2^{20}$ worlds, there is a good chance that a given world has not been witnessed before, and it takes a very long time to become stable for that world. Until that happens, the top level plans stay at $p=0.5$ for a very long time. Note that this is a problem regardless of dummy variables. \st perormance will be poor even if all $20$ variables in this case were relevant. In general, \st performance suffers with the growing number of variables.
+
+\item Test $testEcai$ is {\stephane}'s tree and $testImpactvars$ is the tree that started this discussion paper. All configurations perform suitably in these tests although {\cc}+* is generally better.
+
+\item Test $testMultiSolutions$ highlights the local minima problem. In this test two solutions exist in separate sub-trees for some worlds and one solution is better than the other (in our case one solution is of action sequence length 4 while another is of sequence length 1 so is more likely to succeed since each action has a 10\% chance of failure). For optimal performance, both solutions should be found and considered in the decision making. This test shows the advantage of the {\cc}+C approach. Here {\cc}+C finds the optimal solution by $\approx5,000$ episodes whereas the other configurations have not found the optimal solution by the end of the experiment at $10,000$ episodes as they bias their exploration around the first solution found.
+\end{itemize}
+
+So here are some conclusion we may draw:
+\begin{enumerate}
+\item Regarding the original work presented in the IJCAI paper, we can now claim that the idea generalises to multiple worlds. This is what we originally set out to achieve. Now we have sufficient tests to support this ($test01v* \ldots test05v*$). The only downside I can see is that \st performance seems to suffer with the number of growing variables. (That can be improved somewhat by applying a probability boosting method like that of Section \ref{subsec:consequence-p}.)
+\item We present an improvement to the probabilistic selection method based on \cov of the goal/plan sub-tree and show that it significantly improves \cc performance. Importantly, it brings \cc performance on par with \st even for the intuitive cases where the latter is expected to perform better ($test02$, $test02v5$, $test05$ and $test05v5$). Note that \cc is a much simpler approach than \st. The comparable performance of {\cc}+C then weakens the case for the use of the \st approach altogether. In other words, the system designer could do away with the choice between \st and \cc, and instead use {\cc}+C always.
+\item We claim that {\cc}+C is the only configuration that does not suffer from the local minima problem ($testMultiSolutions$).
+\end{enumerate}
+
+
 %% Section 
 \section{Acknowledgements}
 
@@ -452,6 +559,7 @@ Revisions of this document are a result of an ongoing discussion and contributio
 \includepdf[pages={1-},nup=2x3]{blak63.pdf}
 \includepdf[pages={1-},nup=2x3]{blak69.pdf}
 \includepdf[pages={1-},nup=2x3]{blak77.pdf}
+\includepdf[pages={1-},nup=2x3]{blak87.pdf}
 
 
 %% Appendix Section
