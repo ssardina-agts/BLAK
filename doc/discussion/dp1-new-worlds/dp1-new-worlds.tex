@@ -387,6 +387,13 @@ Equation \ref{eqn:coverage} shows how coverage is used to revise the \dt predict
 p'_n(W)= 0.5 + \left[  c_n(W) *  \left( p_n(W) - 0.5 \right)  \right]
 \end{equation}
 
+\begin{figure}[ht]
+   \centering
+   \includegraphics[width=0.65\textwidth]{coverage-surface.pdf}
+   \caption{Impact of \cov on the \dt probability}
+   \label{fig:coverage-surface}
+\end{figure}
+
 Intuitively, this approach lies somewhere between \cc that makes no consideration of coverage, and \st that inherently waits for full coverage during the stability check. The immediate impact is that we no longer have to answer the question of when a \dt is ready. We do away with the boundary calculation for readiness as in \st and replace it with a smooth transition function. Furthermore, the approach is more robust since we do not require the user defined runtime parameters  $m$, $k$, and $\epsilon$.
 
 The coverage $c_n(W)$ itself is calculated and stored each time a result is recorded for node $n$ in world $W$. Note that to achieve full coverage it takes less samples than all possible combinations of the child node selections. For instance, plan $P4$ in Figure \ref{fig:testImpactvarsTree} has $27$ possible configurations for a given world, but not all of these will be tried. In general, for plan nodes if a sub-goal did not succeed in the given world then all sibling sub-goals may be considered covered since they will never execute in that world, while for goal nodes if a sub-plan succeeded in a given world then all sibling sub-plans may be considered covered since they will almost never be selected in that world.
