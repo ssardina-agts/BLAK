@@ -1,0 +1,86 @@
+\documentclass[landscape,a4paper,title page]{article}
+
+% Use these
+\usepackage{times}
+\usepackage{rotating}
+\usepackage{wasysym}
+
+\setlength{\oddsidemargin}{-0.65in}		% default=0in
+\setlength{\textwidth}{11in}		% default=9in
+\setlength{\textheight}{6.85in}		% default=5.15in
+\setlength{\topmargin}{-1.0in}		% default=0.20in
+\setlength{\headsep}{0.35in}		% default=0.35in
+\setlength{\parskip}{1.2ex}
+\setlength{\parindent}{0mm}
+
+% Macros
+\newcommand{\cc}{\emph{Concurrent}\xspace}
+\newcommand{\st}{\emph{Stable}\xspace}
+\newcommand{\cov}{\emph{Coverage}\xspace}
+\newcommand{\tiv}{\emph{testImpactvars}\xspace}
+\newcommand{\dt}{{decision tree}\xspace}
+\newcommand{\DT}{{Decision Tree}\xspace}
+\newcommand{\stephane}{{St\'ephane}\xspace}
+\newcommand{\x}{{\checked}}
+
+% Begin
+\title{BDI-Learning Test Matrix}
+
+\author{
+Dhirendra Singh\\ 
+dhirendra.singh@rmit.edu.au\\
+}
+
+\begin{document}
+
+\maketitle
+
+%% Section
+\begin{table}[!htb]
+  \caption{BDI-Learning Test Matrix}
+  \begin{tabular}{ r | c  c  c  c  c  c  c  c  c  c  c  c  c  c  c  c }
+  \begin{turn}{60}\end{turn} &
+  \begin{turn}{60} test01v1 \end{turn} &
+  \begin{turn}{60} test02v1 \end{turn} &
+  \begin{turn}{60} test03v1 \end{turn} &
+  \begin{turn}{60} test04v1 \end{turn} &
+  \begin{turn}{60} test05v1 \end{turn} &
+  \begin{turn}{60} tes01v10 \end{turn} &
+  \begin{turn}{60} tes02v10 \end{turn} &
+  \begin{turn}{60} tes03v5 \end{turn} &
+  \begin{turn}{60} tes03bv5 \end{turn} &
+  \begin{turn}{60} tes04v5 \end{turn} &
+  \begin{turn}{60} tes05v5 \end{turn} &
+  \begin{turn}{60} testDummyvars \end{turn} &
+  \begin{turn}{60} testEcai \end{turn} &
+  \begin{turn}{60} testImpactvars \end{turn} &
+  \begin{turn}{60} testMultiSolutions \end{turn}
+  \\ \hline \\
+  Varying GPT Hierarchy & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x \\
+  \\ \hline \\
+  Stochastic Environment & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x \\
+  \\ \hline \\
+  Action Pre-Conditions & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x \\
+  \\ \hline \\
+  Multiple Worlds &   &   &   &   &   & \x & \x & \x & \x & \x & \x & \x & \x & \x & \x \\
+  \\ \hline \\
+  Solution in Multiple Sub-trees &   &   &   &   &   & \x & \x & \x & \x & \x & \x &   & \x & \x & \x  \\
+  \\ \hline \\
+  Action Post-Conditions &   &   &   &   &   &   &   &   &   &   &   &   & \x &   &   \\
+  \\ \hline \\
+  Multiple Solutions per World &   &   &   &   &   &   &   &   &   &   &   &   &   &   & \x \\
+  \\ \hline \\
+  \textit{Failure Recovery} &   &   &   &   &   &   &   &   &   &   &   &   &   &   &   \\
+  \\ \hline \\
+  \textit{Goal Interdependence} &   &   &   &   &   &   &   &   &   &   &   &   &   &   &   \\
+  \\ \hline \\
+  \textit{Partial Context Conditions} &   &   &   &   &   &   &   &   &   &   &   &   &   &   &   \\
+  \\ \hline \\
+  \textit{Cost of Failure} &   &   &   &   &   &   &   &   &   &   &   &   &   &   &   \\
+  \\ \hline \\ \\
+  \end{tabular}
+  \label{tab:perofrmanceFactors}
+\end{table}
+
+
+\end{document}
