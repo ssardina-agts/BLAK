@@ -543,29 +543,20 @@ public class ExpGenerator {
 	 */
 	public String writeBody(Plan p){
 		String meth = "#reasoning method \n body(){\n";
-        Vector actions = new Vector();
 		int index=0;
 		for (GoalPlan g: p.body){
 			if (g instanceof Goal){
 				meth +="\t@subtask(subgoal"+ index +".subgoal());\n";
 				index++;
-			} else if (g instanceof Action) {
-                actions.add(new Integer(g.index));
-			} else{
+			}
+			else if (g instanceof Action)
+				meth += "\tag.env.simulate("+ g.index +");\n";
+			else{
 				System.err.println("error writing the body of the plan"+p);
 				System.exit(9);
 			}
 			
 		}
-        if (!actions.isEmpty()) {
-            int sz  = actions.size();
-            meth += "\tint[] actions;\n"
-            + "\tactions = new int["+sz+"];\n";
-            for (int i=0; i<sz; i++) {
-                meth += "\tactions["+i+"]="+((Integer)(actions.get(i))).intValue()+";\n";
-            }
-            meth += "\tag.env.simulate(actions);\n";
-        }
 		meth +="}\n\n";
 		return meth;
 	}
@@ -1068,16 +1059,7 @@ public class ExpGenerator {
 		}
 		code +="\t}\n"
 		+"\treturn true;\n}\n\n";
-
-        code+= "\npublic boolean simulate(int[] actions){\n"
-        +"\tboolean result = true;\n"
-        +"\tfor (int i=0; i<actions.length; i++) {\n"
-        +"\t\tif(!(result = result && this.simulate(actions[i]))) {\n"
-        +"\t\t\tbreak;\n"
-        +"\t\t}\n"
-        +"\t}\n"
-		+"\treturn result;\n}\n\n";
-
+		
 		//run one iteration
 		code+="public void runOneIteration(){\n"
 		+"\tlearningAgent.clearAllNodeSuccesses();\n"
