@@ -25,19 +25,19 @@
 	@post 
 @action a_1
 	@pre  (a)
-	@post 
+	@post a=false;
 @action a_2
 	@pre  (!a && b)
-	@post 
+	@post b=false;
 @action a_3
 	@pre  (!a && !b && c)
-	@post 
+	@post c=false;
 @action a_4
 	@pre  (!a && !b && !c && d)
-	@post 
+	@post d=false;
 @action a_5
 	@pre  (!a && !b && !c && !d)
-	@post 
+	@post a=true;
 
 @plan P1
     @handles TopGoal

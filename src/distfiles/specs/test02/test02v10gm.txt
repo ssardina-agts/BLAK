@@ -20,34 +20,34 @@
 	@post 
 @action a_1
 	@pre  (a)
-	@post 
+	@post a=false;
 @action a_2
 	@pre  (!a && b)
-	@post 
+	@post b=false; 
 @action a_3
 	@pre  (!a && !b && c)
-	@post 
+	@post c=false;
 @action a_4
 	@pre  (!a && !b && !c && d)
-	@post 
+	@post d=false;
 @action a_5
 	@pre  (!a && !b && !c && !d && e)
-	@post 
+	@post e=false;
 @action a_6
 	@pre  (!a && !b && !c && !d && !e && f)
-	@post 
+	@post f=false;
 @action a_7
 	@pre  (!a && !b && !c && !d && !e && !f && g)
-	@post 
+	@post g=false;
 @action a_8
 	@pre  (!a && !b && !c && !d && !e && !f && !g && h)
-	@post 
+	@post h=false;
 @action a_9
 	@pre  (!a && !b && !c && !d && !e && !f && !g && !h && i)
-	@post 
+	@post i=false;
 @action a_10
 	@pre  (!a && !b && !c && !d && !e && !f && !g && !h && !i)
-	@post 
+	@post a=true;
 @plan P1
     @handles TopGoal
     @initPre true;
