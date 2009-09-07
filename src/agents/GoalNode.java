@@ -142,7 +142,7 @@ public class GoalNode extends Node{
                     c = thisNode.getCoverage(state);
                 }
                 cCoverage += c;
-                if (thisNode.isSuccessful(state)) {
+                if (/*NEVER*/false & thisNode.isSuccessful(state)) {
                     /* This plan succeeded in this state
                      * so all subsequent subplans can be considered
                      * covered since they will almost never be
