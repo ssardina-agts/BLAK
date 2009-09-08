@@ -461,9 +461,9 @@ In particular, and after all final changes, we would like run configurations lik
 \begin{table}[!htb]
 \centering
   %\begin{tabular}{ p{0.7\textwidth} l }
-  \begin{tabular}{ p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.15\textwidth}p{0.4\textwidth} }
+  \begin{tabular}{ p{0.08\textwidth} p{0.15\textwidth} p{0.15\textwidth} p{0.1\textwidth} p{0.35\textwidth} }
     \hline \hline
-    Configuration & Recording Method & Selection Method & World Features & Comment\\ \hline
+    Config & Recording Method & Selection Method & World Features & Comment\\ \hline
     CPS & \cc & Probabilistic & Single & Original work (Baseline 49)\\ \hline
     SPS & \st & Probabilistic & Single &  Original work (Baseline 49)\\ \hline
     CPM & \cc & Probabilistic & Multi & Generalise to m-worlds\\ \hline
@@ -488,6 +488,7 @@ Second, we reverted back the probability boosting introduced in Section \ref{sub
 These reversions now mean that our \st implementation is very similar to the original but only that it now works for \tiv. The only real changes from the original system are the default probability change of Section \ref{subsec:use-p-05} and the stability fixes of Section \ref{subsec:stability-fixes} and any other minor implementation fixes over time that are not reported in this paper.
 
 \subsubsection{\cov changes}
+\label{subsubsec:cov-rand-select}
 
 First, we reconfigured \cov as an external probability update function that may be swapped for the original probabilistic selection function for either \st or \cc resulting in the several new configurations of Table \ref{tab:final-config}.
 
@@ -511,7 +512,7 @@ The test results comparing \cc and \st performance in various configurations are
 \end{itemize}
 
 \subsection{Discussion and Conclusion}
-
+\label{subsec:discussion}
 \begin{itemize}
 
 \item Tests $[test01 \ldots test05]$ replicate the baseline results for {\st}+P and {\cc}+P as expected. Moreover, these can now be compared against the {\st}+C and {\cc}+C results.
@@ -544,6 +545,33 @@ So here are some conclusion we may draw:
 \item We claim that {\cc}+C is the only configuration that does not suffer from the local minima problem ($testMultiSolutions$).
 \end{enumerate}
 
+%% Section
+\section{Minor updates to \cov}
+\label{sec:coverage4}
+
+One improvement suggested (by \stephane) to the \cov approach is to replace the random selection of Section \ref{subsubsec:cov-rand-select} with the \textit{average} coverage of all previously seen worlds. We see two ways in which this could be utilised:
+
+\begin{itemize}
+
+\item Implementation A: If we have not seen world $W$ before, then instead of randomly picking the coverage of a previously seen world, we will use the average coverage of \textit{all previously seen worlds}. This should give more consistent results since we will not pick extreme coverage values that is a possibility in the random selection of Section \ref{subsubsec:cov-rand-select} presently. 
+
+\item Implementation B: Regardless of whether we have seen world $W$ before, \textit{always use the average coverage of all previously seen worlds}. This would make the approach consistent for all worlds regardless of their (seen/unseen) status. However, this would also mean that we would average down the good results. For instance if we have previously succeeded in world $W$ and we encounter world $W$ again in the future, then averaging could potentially tone down the coverage result (and hence minimise the importance) of the good path. By the same token averaging could potentially boost the coverage for a world $W$ that was previously seen with low coverage, because of success in another world $W'$ that was previously seen with high coverage. By this reasoning then, it is unclear if this implementation is useful.
+
+\end{itemize}
+
+\subsection{Test results}
+
+The test results comparing \cc and \st performance in various configurations are included in the Appendix \ref{sec:results}.
+\begin{itemize}
+\item "Repository Revision 87" is the baseline for this change.
+
+\item "Repository Revision 93+" shows Implementation A results. As expected, the change works well and has been committed (final repository revision for this commit is 95).
+
+\item  "Repository Revision 93++" shows Implementation B results. As eluded to earlier, it is unclear why this is a useful implementation. Nonetheless it works well. Interestingly in $test02v10$ (this is a showcase test where Stable is meant to perform better) this approach brings Concurrent+\cov completely on par with any Stable approach. That further strengthens our conclusion. However, since we do not have a explanation for this improvement yet then we have not committed this change.
+
+\end{itemize}
+
+These results are consistent with the previous results and do not impact the discussion of Section \ref{subsec:discussion}.
 
 %% Section 
 \section{Acknowledgements}
@@ -567,32 +595,7 @@ Revisions of this document are a result of an ongoing discussion and contributio
 \includepdf[pages={1-},nup=2x3]{blak69.pdf}
 \includepdf[pages={1-},nup=2x3]{blak77.pdf}
 \includepdf[pages={1-},nup=2x3]{blak87.pdf}
-
-
-%% Appendix Section
-%\subsection{Test coverage}
-%Sebastian and I briefly discussed the \tiv result and agreed that it exposes some grey area about our understanding of \cc and \st. Moreover, from our current tests it is difficult to understand the conditions under which one approach performs better than the other. 
-
-%In considering how we can improve context learning, we need a better understanding of how the two current approaches perform in a combination of factors as listed in Table \ref{tab:perofrmanceFactors}. So far we have experimented with some of these factors but not enough to get a good understanding of how they influence our approaches.
-
-%\begin{table}[!htb]
-%  \begin{tabular}{ p{0.7\textwidth} l }
-%    \hline
-%    Factor & Tested\\ \hline
-%    Branching factor of tree & Yes\\
-%    Depth of tree & Yes\\
-%    Stochastic nature of the environment & Yes\\
-%    Number of worlds & Yes recently\\
-%    If the G/P hierarchy is balanced (all sub-trees have the same breath/depth) & Barely (recently)\\
-%    If the distribution of worlds within the G/P hierarchy is balanced (sub-trees handle an equal share of all possible worlds) & Barely (recently)\\
-%    If more than one sub-tree holds a solution & No\\
-%    If failure has a cost & No\\
-%    \hline
-%  \end{tabular}
-%  \caption{Factors that impact the performance of \cc and \st}
-%  \label{tab:perofrmanceFactors}
-%\end{table}
-
-%Our testing strategy is open for discussion. Should we conduct systematic testing to understand the influences of the various factors on the two approaches? If so, what is the best strategy here since the number of combinations is too high.
+\includepdf[pages={1-},nup=2x3]{blak93+.pdf}
+\includepdf[pages={1-},nup=2x3]{blak93++.pdf}
 
 \end{document}
