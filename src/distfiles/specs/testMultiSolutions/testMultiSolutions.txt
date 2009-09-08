@@ -3,6 +3,7 @@
 @attribute c observable boolean
 @attribute d observable boolean
 @attribute e observable boolean
+
 @topgoal TopGoal
 @goal G1_1
 @goal G1_2
@@ -34,24 +35,38 @@
 @goal G5_1_1_2
 @goal G5_2_1_1
 @goal G5_2_1_2
-@action a_0
+
+@action A-0
 	@pre  (e && !e)
 	@post 
-@action a_1
+@action A+a
 	@pre  (a)
-	@post 
-@action a_2
+	@post a=false;
+@action A-a
+	@pre  (!a)
+	@post a=true;
+@action A-a+b
 	@pre  (!a && b)
-	@post 
-@action a_3
+	@post b=false;
+@action A-a-b
+	@pre  (!a && !b)
+	@post b=true;
+@action A-a-b+c
 	@pre  (!a && !b && c)
-	@post 
-@action a_4
+	@post c=false;
+@action A-a-b-c
+	@pre  (!a && !b && !c)
+	@post c=true;
+@action A-a-b-c+d
 	@pre  (!a && !b && !c && d)
-	@post 
-@action a_5
+	@post d=false;
+@action A-a-b-c-d
+	@pre  (!a && !b && !c && !d)
+	@post d=true;
+@action A+d
 	@pre  (d)
 	@post 
+
 @plan P1
     @handles TopGoal
     @initPre true;
@@ -66,22 +81,22 @@
     @handles G1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_3
     @handles G1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_4
     @handles G1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_5
     @handles G1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P1_2_1
     @handles G1_2
     @initPre true;
@@ -91,122 +106,123 @@
     @handles G1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_3
     @handles G1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_4
     @handles G1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_5
     @handles G1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P1_1_1_1_1
     @handles G1_1_1_1
     @initPre true;
 	@pre true;
-    @body a_1
+    @body A+a
 @plan P1_1_1_1_2
     @handles G1_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_1_3
     @handles G1_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_1_4
     @handles G1_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_1_5
     @handles G1_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0  
+    @body A-0  
 @plan P1_1_1_2_1
     @handles G1_1_1_2
     @initPre true;
 	@pre true;
-    @body a_1
+    @body A-a
 @plan P1_1_1_2_2
     @handles G1_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_2_3
     @handles G1_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_2_4
     @handles G1_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_1_1_2_5
     @handles G1_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P1_2_1_1_1
     @handles G1_2_1_1
     @initPre true;
 	@pre true;
-    @body a_1
+    @body A+a
 @plan P1_2_1_1_2
     @handles G1_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_1_3
     @handles G1_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_1_4
     @handles G1_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_1_5
     @handles G1_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0 
+    @body A-0 
 @plan P1_2_1_2_1
     @handles G1_2_1_2
     @initPre true;
 	@pre true;
-    @body a_1
+    @body A-a
 @plan P1_2_1_2_2
     @handles G1_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_2_3
     @handles G1_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_2_4
     @handles G1_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P1_2_1_2_5
     @handles G1_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
+
 @plan P2
     @handles TopGoal
     @initPre true;
@@ -221,22 +237,22 @@
     @handles G2_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_3
     @handles G2_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_4
     @handles G2_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_5
     @handles G2_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P2_2_1
     @handles G2_2
     @initPre true;
@@ -246,122 +262,122 @@
     @handles G2_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_3
     @handles G2_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_4
     @handles G2_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_5
     @handles G2_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P2_1_1_1_1
     @handles G2_1_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_1_2
     @handles G2_1_1_1
     @initPre true;
  	@pre true;
-    @body a_2
+    @body A-a+b
 @plan P2_1_1_1_3
     @handles G2_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_1_4
     @handles G2_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_1_5
     @handles G2_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P2_1_1_2_1
     @handles G2_1_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_2_2
     @handles G2_1_1_2
     @initPre true;
  	@pre true;
-    @body a_2
+    @body A-a-b
 @plan P2_1_1_2_3
     @handles G2_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_2_4
     @handles G2_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_1_1_2_5
     @handles G2_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P2_2_1_1_1
     @handles G2_2_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_1_2
     @handles G2_2_1_1
     @initPre true;
  	@pre true;
-    @body a_2
+    @body A-a+b
 @plan P2_2_1_1_3
     @handles G2_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_1_4
     @handles G2_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_1_5
     @handles G2_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P2_2_1_2_1
     @handles G2_2_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_2_2
     @handles G2_2_1_2
     @initPre true;
  	@pre true;
-    @body a_2
+    @body A-a-b
 @plan P2_2_1_2_3
     @handles G2_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_2_4
     @handles G2_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P2_2_1_2_5
     @handles G2_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 
 @plan P3
     @handles TopGoal
@@ -377,22 +393,22 @@
     @handles G3_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_3
     @handles G3_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_4
     @handles G3_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_5
     @handles G3_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P3_2_1
     @handles G3_2
     @initPre true;
@@ -402,122 +418,122 @@
     @handles G3_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_3
     @handles G3_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_4
     @handles G3_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_5
     @handles G3_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P3_1_1_1_1
     @handles G3_1_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_1_2
     @handles G3_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_1_3
     @handles G3_1_1_1
     @initPre true;
  	@pre true;
-    @body a_3
+    @body A-a-b+c
 @plan P3_1_1_1_4
     @handles G3_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_1_5
     @handles G3_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P3_1_1_2_1
     @handles G3_1_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_2_2
     @handles G3_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_2_3
     @handles G3_1_1_2
     @initPre true;
  	@pre true;
-    @body a_3
+    @body A-a-b-c
 @plan P3_1_1_2_4
     @handles G3_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_1_1_2_5
     @handles G3_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P3_2_1_1_1
     @handles G3_2_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_1_2
     @handles G3_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_1_3
     @handles G3_2_1_1
     @initPre true;
  	@pre true;
-    @body a_3
+    @body A-a-b+c
 @plan P3_2_1_1_4
     @handles G3_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_1_5
     @handles G3_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P3_2_1_2_1
     @handles G3_2_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_2_2
     @handles G3_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_2_3
     @handles G3_2_1_2
     @initPre true;
  	@pre true;
-    @body a_3
+    @body A-a-b-c
 @plan P3_2_1_2_4
     @handles G3_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P3_2_1_2_5
     @handles G3_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 
 @plan P4
     @handles TopGoal
@@ -533,22 +549,22 @@
     @handles G4_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_3
     @handles G4_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_4
     @handles G4_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_5
     @handles G4_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P4_2_1
     @handles G4_2
     @initPre true;
@@ -558,122 +574,122 @@
     @handles G4_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_3
     @handles G4_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_4
     @handles G4_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_5
     @handles G4_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P4_1_1_1_1
     @handles G4_1_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_1_2
     @handles G4_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_1_3
     @handles G4_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_1_4
     @handles G4_1_1_1
     @initPre true;
  	@pre true;
-    @body a_4
+    @body A-a-b-c+d
 @plan P4_1_1_1_5
     @handles G4_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P4_1_1_2_1
     @handles G4_1_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_2_2
     @handles G4_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_2_3
     @handles G4_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_1_1_2_4
     @handles G4_1_1_2
     @initPre true;
  	@pre true;
-    @body a_4
+    @body A-a-b-c-d
 @plan P4_1_1_2_5
     @handles G4_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P4_2_1_1_1
     @handles G4_2_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_1_2
     @handles G4_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_1_3
     @handles G4_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_1_4
     @handles G4_2_1_1
     @initPre true;
  	@pre true;
-    @body a_4
+    @body A-a-b-c+d
 @plan P4_2_1_1_5
     @handles G4_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P4_2_1_2_1
     @handles G4_2_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_2_2
     @handles G4_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_2_3
     @handles G4_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P4_2_1_2_4
     @handles G4_2_1_2
     @initPre true;
  	@pre true;
-    @body a_4
+    @body A-a-b-c-d
 @plan P4_2_1_2_5
     @handles G4_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 
 @plan P5
     @handles TopGoal
@@ -689,22 +705,22 @@
     @handles G5_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_3
     @handles G5_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_4
     @handles G5_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_5
     @handles G5_1
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P5_2_1
     @handles G5_2
     @initPre true;
@@ -714,42 +730,42 @@
     @handles G5_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_3
     @handles G5_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_4
     @handles G5_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_5
     @handles G5_2
     @initPre true;
  	@pre true;
-    @body a_0   
+    @body A-0   
 @plan P5_1_1_1_1
     @handles G5_1_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_1_2
     @handles G5_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_1_3
     @handles G5_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_1_4
     @handles G5_1_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_1_5
     @handles G5_1_1_1
     @initPre true;
@@ -759,22 +775,22 @@
     @handles G5_1_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_2_2
     @handles G5_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_2_3
     @handles G5_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_2_4
     @handles G5_1_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_1_1_2_5
     @handles G5_1_1_2
     @initPre true;
@@ -784,22 +800,22 @@
     @handles G5_2_1_1
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_1_2
     @handles G5_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_1_3
     @handles G5_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_1_4
     @handles G5_2_1_1
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_1_5
     @handles G5_2_1_1
     @initPre true;
@@ -809,25 +825,25 @@
     @handles G5_2_1_2
     @initPre true;
 	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_2_2
     @handles G5_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_2_3
     @handles G5_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_2_4
     @handles G5_2_1_2
     @initPre true;
  	@pre true;
-    @body a_0
+    @body A-0
 @plan P5_2_1_2_5
     @handles G5_2_1_2
     @initPre true;
  	@pre true;
-    @body a_5
+    @body A+d
 
