@@ -22,40 +22,41 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5: StableP data,  $6: StableC data,  $7: ConcurrentP data,  $8: ConcurrentP data
+# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5:key location,  $6: StableP data,  $7: StableC data,  $8: ConcurrentP data,  $9: ConcurrentP data
 local o=$1
 local r=$2
 local l=$3
 local e=$4
-local sp=$5
-local sc=$6
-local cp=$7
-local cc=$8
+local k=$5
+local sp=$6
+local sc=$7
+local cp=$8
+local cc=$9
 if ( [ "$sp" == "nil" ] && [ "$sc" == "nil" ] && [ "$cp" == "nil" ] && [ "$cc" == "nil" ]); then
     plotcmd=""
 else 
     plotcmd="plot $r "
 fi
-if [ "$cp" != "nil" ]; then
-    plotcmd+="\"$cp\" every $e title \"Concurrent+P\" lt 1 lw 2 with lines"
-fi
-if [ "$sp" != "nil" ]; then
-    if [ "$cp" != "nil" ]; then
-        plotcmd+=", "
-    fi
-    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 2 lw 3 with lines"
-fi
 if [ "$cc" != "nil" ]; then
-    if [ "$cp" != "nil" ] || [ "$sp" != "nil" ]; then
+    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 1 pt 4 lw 2 lc rgb 'dark-magenta' with linespoints"
+fi
+if [ "$cp" != "nil" ]; then
+    if [ "$cc" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 4 lw 4 with lines"
+    plotcmd+="\"$cp\" every $e title \"Concurrent+P\" lt 5 pt 8 lw 3 lc rgb 'red' with linespoints"
 fi
 if [ "$sc" != "nil" ]; then
-    if [ "$cp" != "nil" ] || [ "$sp" != "nil" ] || [ "$cc" != "nil" ]; then
+    if [ "$cc" != "nil" ] || [ "$cp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 3 lw 4 with lines"
+    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 8 pt 10 lw 3 lc rgb 'blue' with linespoints"
+fi
+if [ "$sp" != "nil" ]; then
+    if [ "$cc" != "nil" ] || [ "$cp" != "nil" ] || [ "$sc" != "nil" ]; then
+        plotcmd+=", "
+    fi
+    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 3 pt 6 lw 3 lc rgb 'dark-green' with linespoints"
 fi
 
 cat << EOF
@@ -65,13 +66,14 @@ set output "$o"
 set title "$l"
 set xlabel "Iteration"
 set ylabel "Success"
-set yrange [0:1.1]
+set yrange [-0.1:1.1]
 set ytic 0, 0.2
 set mytics 2
 set grid noxtics ytics mytics
 show grid
-set key bottom right
+set key $k
 set key spacing 1.3
+set pointsize 2
 $plotcmd
 reset
 EOF
@@ -85,7 +87,8 @@ label=""
 every=1
 window=1
 gnuplot=gnuplot
-
+j=bottom
+k=right
 HELP='
 Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
@@ -93,12 +96,14 @@ Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
        -l label      String to use as plot title
+       -j loc1       Legend key location
+       -k loc2       Legend key location
        -r plotrange  X-data range in gnuplot format to plot (optional - default is "'$range'")
        -e N          Plot every N point (optional - default is '$every')
        -w N          Use moving average window of size N (optional - default is '$window')
 '
 
-args=`getopt t:d:o:r:e:w:g:l:SCU $*`
+args=`getopt t:d:o:r:e:w:g:l:j:k:SCU $*`
 set -- $args
 for i
 do
@@ -127,6 +132,12 @@ do
 		-l)
 			label="$2"; shift;
 			shift;;
+		-j)
+			j=$2; shift;
+			shift;;
+		-k)
+			k=$2; shift;
+			shift;;
 		--)
 			shift; break;;
 	esac
@@ -141,6 +152,8 @@ then
 	echo "Directory [$srcdir] does not exist. Exiting."
 	exit -1
 fi
+keyloc="$j $k"
+
 #echo outfile=$outfile
 #echo srcdir=$srcdir
 #echo testname=$testname
@@ -149,6 +162,7 @@ fi
 #echo window=$window
 #echo gnuplot=$gnuplot
 #echo label=$label
+#echo keyloc=$keyloc
 }
 
 
@@ -209,7 +223,7 @@ avg $set2c > $concurrentC
 fi
 
 #--- Generate the gnuplot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $range $label $every $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
+makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
 
 #--- Plot and PDF
 $gnuplot $tmpdir/.gnuplot.commands
