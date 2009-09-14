@@ -498,6 +498,7 @@ We find that biasing with the coverage of a randomly-selected previous world wor
 
 
 \subsection{Test results}
+\label{subsec:results-coverage3}
 
 The test results comparing \cc and \st performance in various configurations are included in the Appendix \ref{sec:results}.
 \begin{itemize}
@@ -574,6 +575,15 @@ The test results comparing \cc and \st performance in various configurations are
 These results are consistent with the previous results and do not impact the discussion of Section \ref{subsec:discussion}.
 
 %% Section 
+\section{Final Testing}
+
+Appendix \ref{sec:results} Page "BDI-Learning Test Matrix" shows the extended test suite and the various identified features tested. See Section \ref{subsec:discussion} for a description of the various tests. 
+
+The main change is that several tests were updated to include more features for testing. The only new test added is $testMultiSolutionsR$ to test for goal reuse (without conflicting inter-dependence). 
+
+"Repository Revision 106" shows the final test results.
+
+%% Section 
 \section{Acknowledgements}
 
 Revisions of this document are a result of an ongoing discussion and contributions from \stephane Airiau of the University of Amsterdam, and Sebastian Sardina, Andy Song, and Professor Lin Padgham of RMIT University.
@@ -597,5 +607,7 @@ Revisions of this document are a result of an ongoing discussion and contributio
 \includepdf[pages={1-},nup=2x3]{blak87.pdf}
 \includepdf[pages={1-},nup=2x3]{blak93+.pdf}
 \includepdf[pages={1-},nup=2x3]{blak93++.pdf}
+\includepdf[pages={2-},nup=1x1]{test-matrix.pdf}
+\includepdf[pages={1-},nup=2x3]{blak106.pdf}
 
 \end{document}
