@@ -1,0 +1,137 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Preliminaries}\label{sec:preliminaries}
+\section{BDI Programming}\label{sec:preliminaries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+BDI agent-oriented programming is a popular, well-studied, and practical paradigm for
+building intelligent agents situated in complex and dynamic environments with
+(soft) real-time reasoning and control requirements \cite{Georgeff89-PRS}.
+%
+BDI systems enable \emph{abstract plans} written by programmers to be combined and used in
+real-time, in a way that is both flexible and robust. 
+%
+There are a plethora of agent programming languages and development
+platforms in the BDI tradition, such as  \PRS\ \cite{Georgeff89-PRS},
+\JACK~\cite{BRHL98}, \TAPL~\cite{Hindriks99:Agent}, and \JASON~\cite{jasonbook}, among others.
+
+
+In a BDI-style system, an agent consists, basically, of a belief base (akin
+to a database), a set of recorded pending events, a plan library, and an
+intention base. While the belief base encodes the agent's knowledge about the world, the
+pending events stand for the \emph{goals} the agent wants to achieve/resolve. 
+%
+The \textit{plan library}, in turn, contains \emph{plan rules} of the general 
+form $e: \psi \leftarrow P$ encoding the standard domain operation-strategy $P$
+(that is, a program) for achieving the event-goal $e$ when so-called \textit{context condition}
+$\psi$ is believed true---program $P$ is a reasonable strategy to resolve event $e$ whenever $\psi$
+is believed to hold.
+%
+The plan-body program $P$ typically contains actions ($act$) to be performed in the environment,
+belief updates ($+b$ and $-b$ to add or delete a proposition, respectively), tests ($?\phi$)
+operations, and subgoals ($!e$) to post internal subgoal-events which ought to be in turn resolved
+by selecting suitable plans for that event.
+%
+Lastly, the intention base accounts for the current, partially instantiated, plans
+that the agent has already committed to in order to handle or achieve some event-goal.
+
+
+The basic reactive goal-oriented behavior of BDI systems involves the system responding to
+events, the inputs to the system, by committing to handle one pending event-goal, \textit{selecting
+a plan} from the library, and placing its program body  into the intention base.
+%
+A plan may be selected if it is \textit{relevant}, that is, it is a plan designed for the even in
+question, and it is \emph{applicable}, that is, its context condition is believed true.
+%
+In contrast with traditional planning, execution happens at each step. The assumption is that
+the use of plans' context-preconditions to make choices as late as possible, together with
+the built-in goal-failure mechanisms, ensures that a successful execution will eventually be
+obtained while the system is sufficiently responsive to changes in the environment.
+
+
+For the purposes of this paper, we shall mostly focus on the plan library, as we investigate ways of
+learning how agents can make a better use of it over time.
+%
+It is not hard to see that, by grouping together plans responding to the same event type, the
+plan library can be seen as a set of \emph{goal-plan tree} templates: a goal (or event) node has
+children representing the alternative relevant plans for achieving it; and a plan node,
+in turn, has children nodes representing the subgoals (including primitive actions) of the plan. 
+%
+These structures, can be seen as AND/OR trees: for a plan to succeed all the subgoals and
+actions of the plan must be successful (AND); for a subgoal to succeed one of the plans to
+achieve it must succeed (OR).
+
+Consider, for instance, the goal-plan tree structure depicted in Figure~\ref{fig:tree03}.
+%
+A link from a goal to a plan means that this plan is relevant (i.e., potentially suitable)
+for achieving the goal (e.g., $P_1,P_1',P_2',P_3'$, and $P_4'$ are the relevant plans for
+$G$); whereas a link from a plan to a goal means that the plan needs to achieve that goal as part of
+its (sequential) execution (e.g., $P_1$ needs to achieve first goal $G_1$ and then $G_2$). 
+%
+An edge with a label $\times n$ states that there are $n$ edges of such type. 
+% Indexes are used to represent different goals/plans under such labeled edges (e.g., the indexes
+% below $P_1$ are understood as $i \in \{1,2\}$, $j \in \{1,\ldots,3\}$, and $k \in
+% \{2,\ldots,5\}$).
+%
+Leaf plans are assumed to directly succeed or fail when executed in the environment, and are
+marked accordingly in the figure for some particular world.
+%
+In some world, for our example, the agent may achieve goal $G_2$ by
+selecting and executing $P_1^2$ followed by selecting and executing $3$
+working plans, namely, $P_1^a$, $P_1^b$, and $P_1^c$ to resolve goals $G_a$, $G_b$, and $G_c$,
+respectively. An analogous situation arises below plan $P_1^1$, but it is abstracted out in
+the figure for legibility. If the agent succeeds with goals $G_1$ and
+$G_2$, then it succeeds for plan
+$P_1$, achieving thus the top-level goal. There is no possible successful execution, though, if the
+agent decides to carry on any of the four plans $P_i'$, $i \in \{1,\ldots,4\}$, instead for
+achieving the top-level goal $G$.
+
+
+The problem of \textit{plan-selection} is at the core of the
+whole BDI approach: \emph{which plan should the agent commit to in order to achieve a certain
+goal?}
+%
+This problem amounts, at least partly, to what has been referred to as \emph{means-end analysis} in the
+agent foundational literature \cite{Pollack92-IRMA,Bratman88}, that is, the decision of \textit{how}
+goals are achieved.
+%
+To tackle the plan-selection task, BDI systems leverage domain
+expertise by means of the 
+context conditions of plans. However, crafting fully correct context conditions at design-time can,
+in some applications, be a demanding and error-prone task. In addition, fixed context conditions do
+not allow agents to adapt to new environments. 
+%
+% Very little work has been devoted to extend the paradigm to richer accounts of plan-selection,
+% with the notable exception of \cite{Bordini02} that uses .......
+%
+In the rest of the paper, we shall provide an extended framework for BDI agent systems that allows
+agents to learn/adapt plans' context conditions, and discuss and evaluate two possible approaches
+for such learning task.
+
+
+
+
+
+
+
+% 
+% Interestingly, the structured information contained in the goal plan tree can
+% also be used to provide guidance to the learning module. In particular, consider
+% the context condition of plans, which are critical for guiding the execution of
+% the agent program. A plan will not be used in the current state if its context
+% condition is not satisfied.  Incorrect or inadequate context conditions can lead
+% to two types of problems.  If the context condition of a plan is
+% \textit{over-constrained} and evaluates to false in some situations where the
+% plan could succeed then this plan will simply never be tried in those
+% situations, resulting in possible utility loss to the agent.  On the other hand,
+% if the context condition is \textit{under-specified}, it may evaluate to true in
+% some situations where the plan will be ineffective.  Such ``false triggers''
+% will result in unnecessary failures, and although the agent may recover by
+% choosing alternative plans, it may lose valuable time or waste resources
+% unnecessarily, thereby losing utility.  Hence, it would be preferable to learn
+% from experience to avoid using plans that are unlikely to succeed at particular
+% environmental states.
+% 
+% The rest of this paper explores the issue of learning to improve the
+% context conditions specified by the programmer.
+
+

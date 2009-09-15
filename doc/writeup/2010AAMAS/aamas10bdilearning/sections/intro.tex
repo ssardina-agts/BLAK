@@ -1,0 +1,122 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}\label{sec:intro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+It is widely believed that learning is a key aspect of intelligence, as
+it enables adaptation to complex and changing environments.  
+%
+Agents developed under the Belief-Desire-Intention (BDI)
+approach~\cite{Bratman88} are capable of \textit{simple} adaptations to their
+behaviors, implicitly encoded in their \textit{plan library} (a collection of
+pre-defined \textit{hierarchical plans} indexed by goals and representing the
+standard operations of the domain).
+%
+This adaptation is due to the fact that \textit{(i)} execution relies entirely
+on \textit{context sensitive subgoal expansion}, and therefore, plan choices at
+each level of abstraction  are made wrt to the \textit{current}
+situation; and  \textit{(ii)} if a plan happens to fail, often because the
+environment has changed unexpectedly, agents ``backtrack'' and choose a
+different plan-strategy.
+
+However, BDI-style agents are generally unable to go beyond such level of
+adaptation. Both the actual behaviours (the plans) and the situations
+for which they are appropriate are fixed at deployment time. It is
+possible to use meta-level reasoning regarding selections of plans for
+particular situations, which may provide substantial flexibility, but
+there is no principled learning. In this paper we explore the details
+of how effective plan selection can be learnt, based on experience of
+what works in which world states.  This mechanism can then be applied
+to either refine existing context conditions for plan selection, or
+even to learn the context conditions from scratch as we have done in
+our experimental work.
+
+% In earlier work \cite{IJATS} we have detailed why we expect that
+% there could be problems if the BDI hierarchical structure is not
+% taken into account.
+
+%Stephane changed to 'comply with' anonymity 
+%I reworked to match own writing style.
+In \cite{APSS08} the authors detail why it may be problematic for
+learning if the BDI hierarchical structure is not taken into account.
+They showed why it can be problematic to assume a mistake at a
+higher level in the hierarchy, when a poor outcome may have been
+related to a mistake in selection further down.  However their
+empirical work suggested that perhaps the advantages of an aggressive
+approach, where all failures were considered meaningful, outweighed
+the advantages of careful consideration.
+
+In this work, we have used a more sophisticated algorithm to determine
+when a decision should be considered sufficiently informed to record a
+mistake if it fails to produce a positive outcome. We have also
+analysed the kinds of structures which will benefit from careful
+consideration vs aggressive learning and demonstrate empirically the
+relative advantages of each. 
+%
+Finally, we have considered the situation where
+plans that are unlikely to succeed (based on current information) are
+excluded from consideration, and have shown that, in this scenario, the
+aggressive approach may never learn, whereas the careful consideration
+is much more robust.
+
+
+
+The issue of combining learning and deliberative approaches for decision
+making of autonomous systems has not been widely addressed. Learning
+has been used to learn independent low level skills (for example learn
+how to pass a ball for robots in RoboCup soccer (e.g., \cite{Riedmiller01}), which are
+then used by the deliberative decision making center of the agent.  In
+our work, what is learnt from experience is actually used by the
+deliberative component of the BDI agents. Initially, instead of having
+a blind exploration strategy 
+(as is the case when agents are learning with no initial knowledge), 
+% (as is the case when agents are learning from experience and have no initial knowledge), 
+our agent has an optimistic strategy: it trusts the existing BDI hierarchy, in other
+words, our agent uses existing domain knowledge and keeps on improving
+it.
+
+
+We believe this approach, which takes a BDI program and 
+''tune it'' using learning, can be very powerful. While substantial
+knowledge is encoded at design and implementation of the system, there
+are often additional \textit{nuances} which can be learnt over
+time. Particularly in some environments, it may be very difficult to
+predict in advance, exactly how certain aspects of the world affect
+goal achievability. Our approach allows for encoding what we know,
+and learning the rest.
+
+
+
+The rest of the paper is organized as follows. In the next section, we
+provide a quick overview of typical BDI-style agents.
+%
+We then discuss modifications to the BDI framework to accommodate learning capabilities by
+extending context conditions and the agent plan-selection function. 
+%
+After that, we describe two approaches to learning the context condition of plans.
+%
+We then report on the empirical results obtained and conclude that care must be taken to
+achieve robust and successful learning in a typical BDI hierarchical program. 
+%
+We conclude with a brief summary and discussion.
+
+% The rest of the paper is organized as follows. In the next section, we
+% provide an overview of the relevant aspects of typical BDI-style
+% agents.
+% %
+% We then discuss modifications to the BDI framework to include decision
+% trees as part of the representation of the context condition, and a
+% probabilistic selection which ensures both exploration and
+% exploitation. Following this we describe our approach and algorithm,
+% which allows to vary the level of care we take before using failure
+% data for learning. This is followed by empirical verification and
+% discussion of results to illustrate the care that must be taken to
+% achieve robust and successful learning in a typical BDI hierarchical
+% program. We conclude with a brief summary and discussion.
+
+
+
+
+
+

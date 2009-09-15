@@ -1,0 +1,38 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}\label{sec:discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this paper, we proposed a technique to enhance the typical plan selection mechanism
+in BDI agent systems by allowing agents to learn and adapt the context condition of existing plans
+in the agent's plan library.
+%
+As defining adequate context conditions for plans may be a difficult, and
+sometimes 
+impossible, task, a framework that allows the \emph{refinement} of (initial) context
+conditions would allow BDI agents to achieve better performance over time.
+%
+The contributions of this paper are twofold. First, we develop an extended BDI framework in which
+learning mechanisms can be used. This is done using decision trees as (part of) context
+conditions, and developing a \textit{probabilistic} plan selection function that caters for both
+exploration and exploitation of plans. Second, we propose and empirically evaluate two approaches
+for learning such decision trees based on agent executions. We found that, in general, the more
+conservative approach \BUL, which learns from failed execution traces only when decisions were
+``substantially'' informed, yields more robust agent performance than the simpler aggressive
+approach \CL which records every execution experience.
+
+
+Our evaluation results were based on some important simplifying assumptions. In particular,
+we have not considered the effects of using failure recovery, under which alternative plans are
+tried upon the failure of a plan for a achieving a goal. Clearly, failure recovery would induce much
+less ``pure'' execution traces, as execution of partial plans would be represented in them. Also,
+we have focused on plan executability as the only objective. In some context, though, agents 
+should also consider the \textit{utility} of plans and expect to learn how to achieve better utility
+overall.
+%
+One limitation of our learning framework is that the learning is \emph{local} to plans, in the
+sense that it is not possible to learn interactions between sub-goals for a higher-level plan (e.g.,
+learn that goal $G_b$ may \textit{only} succeed if goal $G_a$ is achieved in a certain manner).
+%
+Finally, we are planning to do further experimentation, in particular with some more realistic
+programs from existing applications. 
+

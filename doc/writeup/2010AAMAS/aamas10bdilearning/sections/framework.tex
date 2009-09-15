@@ -1,0 +1,97 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Learning Framework}\label{sec:framework}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The learning task of interest is as follows: determine whether a plan is applicable in the
+current world state given past execution data, as well as conditions programmed by the developer.
+We use decision trees ``attached'' to each plan.
+
+Decision trees~\cite{Mitchell97:ML} are a natural classification
+mechansim to choose for our purposes as they can deal with noise
+(potentially created by an environment with some non-determinism, or
+by other factors), and they are able to support disjunctive
+hypotheses. Also, they are readily convertible to rules, which are the
+standard representation for context conditions.  Data is then
+collected regarding the world state at time of selection of the plan,
+and whether the plan is considered to have succeeded or
+failed. Success data is always recorded, whereas the recording of
+failure data may be subject to some analysis as described in the
+following section. For the real system we intend to use algorithms for
+incremental induction of the decision tree, such as those described in
+\cite{Swere06:Fast,Utgoff97Decision}, but for the purpose of our analysis we will use
+\textsf{J48} from \textsf{weka} \cite{weka99}, a version of \textsf{c4.5} \cite{Mitchell97:ML}, and
+recreate the decision tree after each new piece of data is collected.  We also record the number of
+both successful and failed executions of the plan in the different leaf nodes. This
+information will be used to estimate the quality of the decision tree, as described below. 
+
+
+% comments by Stephane: I preferred to write that we record something
+% in addition to the weka code so as to make clear that we do not
+% modify the way the weka code generate the decision tree (true
+% though, we needed to modify some code in weka). Once the tree is
+% generated, we use it in a special way.
+
+% We have modified ??? to enable us to extract, for a particular world
+% state, the number of both successful and failed executions of the
+% plan, as opposed to simply a recommendation that it will succeed or
+% fail. This is useful for the calculations regarding when we have
+% sufficient information, as described in the following section.
+
+A decision tree will thus give us information for each relevant 
+plan, in a particular world state, regarding how likely it
+% (or relevant?) plan, in a particular world state, regarding how likely it
+is to succeed/fail, based on the agent's experience so far. Given this
+information the agent must select which plan to try. There are various
+mechanisms for doing this in a standard BDI system, including plan
+precedence and meta-level reasoning, 
+%stephane adds: I felt a need to justify why adding another mechanism is needed. Feel free to change/remove/improve :-)
+but all these mechanisms are pre-programmed and do not take into
+account the experience of the agent.
+%end add 
+However in the context of learning, we must consider the standard
+dilemma of exploitation vs exploration.  We have taken a fairly simple
+approach to this which appears to work well. We
+% simply normalise the information regarding the relative success of
+% each plan, and then
+select a plan using a probabilistic function, which selects a plan
+with a probability proportional to its relative success.
+
+In the following work we make a number of assumptions to enable us to
+explore the basic issues we are concerned with, and to be able to more
+easily compare two extreme approaches. These assumptions are:
+\begin{tightenumerate}
+\item
+Actions in the environment may fail with some probability, even in
+world states where they ''should'' succeed. 
+This captures the non-deterministic nature of most real
+world environments. 
+\item
+No changes happen in the environment, during execution, other than
+those made by the agent. (Although this may appear too
+limiting, the previous assumption of non-determinism mitigates against
+the over-simplification for many cases, by treating other changes as
+non-deterministic failures.)
+\item
+The agent is only executing a single intention (i.e., pursuing a single
+goal). 
+%
+Without this assumption it would be necessary for the agent to
+reason about potentially negative interactions between concurrent goals. While such reasoning is
+possible
+\cite{Thangarajah02}, it complicates the situation for this work.
+% Without this assumption it would be necessary for the agent to
+% reason about potentially damaging changes it may have itself made, in
+% pursuit of a different goal. While such reasoning is possible
+% \cite{Thangarajah02}, it complicates the situation for this work.
+
+\item
+There is no automated failure handling, whereby the BDI system retries
+a goal with an alternative plan, if the selected plan fails. This will
+certainly be integrated into the system for real use, but again
+complicates the understanding of the basic mechanisms. In fact,
+its integration may help achieve faster learning.
+%  for real applications. 
+\end{tightenumerate}
+
+
+

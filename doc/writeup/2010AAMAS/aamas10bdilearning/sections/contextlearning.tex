@@ -1,0 +1,205 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Context Learning}\label{sec:context_learning}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+With the classical BDI programming framework extended with decision
+trees and a probabilistic plan selection scheme, we are now ready to
+develop mechanisms for improving the selection of plans, based on
+experience.
+%
+To that end, in this section, we develop two approaches for learning
+the context condition of plans.
+
+What we are aiming to learn is which plans are best selected for
+achieving a particular goal, in the various world states that
+occur. Given that we have no measure of cost of particular
+plans,\footnote{This could also be a useful addition, but is not part
+  of standard BDI programming languages.} a good plan for a
+particular world state is simply one which (usually) succeeds in that
+situation. Thus we need to store in our decision trees information
+about world states in which plans succeeded and failed.  However, as
+we will show with an example, while it is always meaningful to record
+success, some failures may be better not recorded.
+
+\begin{figure}[t]
+\begin{center}
+\input{figs/gptree}
+\end{center}
+% \caption{Goal-plan tree hierarchy. Rounded boxes stand for event goals; rectangles for plans.}
+\caption{Goal-plan tree hierarchy $\T_3$. Rounded boxes stand for event goals; rectangles for
+plans.}
+%
+% \caption{Goal-plan tree hierarchy $\T_3$. Rounded boxes stand for event goals; rectangles for
+% plans. Leaf plans are assumed to directly succeed or fail when executed in the environment, and
+% are marked accordingly. 
+% %
+% An edge with a label $\times n$ states that there are $n$ edges of such type (e.g.,  goal $G$ has
+% $5$ relevant plans). Indexes are used to represent different goals/plans under such labeled edges.
+% For instance, below $P_1$, the indexes are understood as $i \in \{1,2\}$, $j \in \{1,\ldots,3\}$,
+% and $k \in \{2,\ldots,5\}$.
+% %
+% To succeed, an agent should execute $6$ working plans, namely, $P_{1111}^1$, $P_{1112}^1$, and 
+% $P_{1113}^1$ to resolve goal $G_1^1$, and $P_{1211}^1$, $P_{1212}^1$, and 
+% $P_{1213}^1$ to resolve goal $G_1^2$.}
+\label{fig:tree03}
+\end{figure}
+
+Consider the example in Figure \ref{fig:tree03}. 
+%
+Suppose that in some execution, plan $P_1$ is chosen to address goal $G$, in some world state $w_1$;
+that subgoal $G_1$ is successfully executed; and that plan $P_1^2$ is chosen to try and achieve
+the second subgoal $G_2$, requiring the achievement of $G_a$, $G_b$ and $G_c$.
+%
+Suppose further that $G_a$ is successfully achieved using $P_1^a$, but execution \emph{fails}
+when trying plan $P_3^b$ for achieving subgoal $G_b$.  As we have no failure recovery, this will
+immediately cause $G_b$ to fail, and recursively will cause failure at each stage. 
+%
+Clearly, the failure should be recorded in the decision tree of the plan that caused the
+failure, namely, plan $P_3^b$. However, it is not so clear, as will be discussed next, whether the
+failure should be recorded in the decision trees for plans higher up in the hierarchy, that is,
+plan $P_1^2$ and even top-level plan $P_1$.
+
+% Consider the example shown in Figure \ref{fig:gptree}: a link from a
+% goal to a plan means that this plan is relevant (potentially suitable)
+% for achieving the goal (e.g. $P_2$ is a relevant plan for $G_0$). A
+% link from a plan to a goal means that the plan needs to achieve that
+% goal as part of its execution (e.g. $P_1$ needs to achieve $G_1$ and
+% then $G_2$).  Suppose that in some execution, plan $P$ is chosen to
+% address goal $G$, in some world state $w$, and $G_0$ is the first step
+% in plan $P$. Suppose further that plan $P_1$ is chosen to try and
+% achieve $G_0$, requiring achievement of $G_1$, $G_2$ and $G_3$; $G_1$
+% is successfully achieved using, say, $P_3$, but after choosing $P_5$
+% to achieve $G_2$, there is a failure in $P_5$.  As we have no failure
+% recovery, this will immediately cause $G_2$ to fail, and recursively
+% will cause failure at each stage. Clearly the failure at the bottom of
+% the tree ($P_5$) should be recorded in the decision tree data for that
+% plan. However it is not so clear, as will be discussed next, whether
+% the failure should be recorded in the decision trees for $P_1$ and
+% $P$.
+
+
+In order to discuss further which data should be recorded where, we
+define the notion of an \textit{active execution trace} of the form
+$G_0[P_0:w_0] \cdot G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, which
+represents the sequence of currently active goals, along with the plans which 
+have been selected to achieve each of them, and the world state in which the selection 
+was made---plan $P_i$ has been selected in world state $w_i$ in order to achieve the $i$-th
+active subgoal $G_i$.
+%
+In our example, the trace at the moment of failure would be the following one:
+\[
+\lambda=G[P_1:w_1] \cdot G_2[P_1^2:w_2] \cdot G_b[P_3^b:w_3].
+\]
+
+When the final goal of $\lambda$ fails, it is clear that the decision
+tree of the plan being used to achieve that goal ought to be updated, in
+the example, a failure should be recorded for the world state $w_3$
+for the decision tree attached to plan $P_3^b$.  Although it may be the case
+that the plan usually succeeds in the situation in which it was
+chosen, and failure is simply due to some non-determinism (or in the
+general case, actions of other agents, interactions, etc.), there is
+no way to determine this and the learning process will eventually
+recognise such cases as ``noise.'' However, it is less clear whether
+the decision trees of plans associated with earlier goals in $\lambda$
+should be updated.  It may be, in fact, that the failure of $G_b$ could
+have been avoided, had the alternative plan $P_1^b$ been chosen instead.
+If this is the case, then recording a failure against $P_1^2$ and $P_1$ is not
+justified.  It may therefore be better to wait before recording failures
+against a plan until one is reasonably confident that subsequent choices were ``well informed.''
+
+\newcommand{\procedurefont}[1]{\mathsf{#1}}
+\newcommand{\StableGoal}{\procedurefont{StableGoal}}
+\newcommand{\RecordTrace}{\procedurefont{RecordFailedTrace}}
+\newcommand{\RecordWorldDT}{\procedurefont{RecordWorldDT}}
+
+% The judgment as to whether the decisions made were sufficiently ``well
+% informed'', is however not a trivial one. We develop an algorithm that
+% makes the decision as to whether to record a failure, based on a
+% notion of stability, where a plan is considered to be stable for a
+% particular world state $w$ if the rate of success of $P$ in $w$ is
+% changing below a certain threshold, $\epsilon$. We also allow
+% specification of a minimum number of execution experiences for $P$ in
+% $w$, in order to have the change of rate of success be sufficiently
+% meaningful. A goal is considered to be stable for world state $w$ if
+% all its relevant plans are stable for $w$.
+
+% Stephane replaced the paragraph. I thought it was better to present
+% the notion of stability first, then to say that stability is what we
+% consider as well informed, and then introduce the algorithm.
+
+The judgment as to whether the decisions made were sufficiently ``well
+informed,'' is however not a trivial one.  A plan $P$ is considered to
+be \emph{stable} for a particular world state $w$ if the rate of
+success of $P$ in $w$ is changing below a certain threshold,
+$\epsilon$.
+% comments by Stephane 
+% o I guess here, something more correct would be that the rate of
+% success of P in the leaf node of the decision tree that contains w.
+% I'm not sure it is worth precising.
+% o is the rate of change computing over a window of the last n use of
+% the plan?
+%stephane adds:
+If the rate of success does not change much after some
+observations, we can start to build confidence about it.
+% end add
+We also allow specification of a minimum number of execution
+experiences for $P$ in $w$, in order to have the change of rate of
+success be sufficiently meaningful. A goal is considered to be stable
+for world state $w$ if all its relevant plans are stable for $w$.  We
+consider that the decision of recording a failure for a plan is ``well
+informed'' when the goal it is being chosen for is stable.  We use a function
+$\StableGoal(G,w,k,\epsilon)$ which returns true iff goal $G$ is
+considered \textit{stable} for world state $w$, under minimal
+% stephane changed from minimal execution traces to number of
+% execution, I was getting confused whether there was a concpet of
+% "minimal trace". I thought it would be clearer like this.
+ number of executions and change of success rate thresholds $k \geq 0$
+ and $0 < \epsilon \leq 1$, respectively.
+
+\begin{algorithm}\caption{$\RecordTrace(\lambda,k,\epsilon)$}\label{algo:record_failed_exec}
+KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $k\geq0$; $\epsilon > 0$}
+\medskip
+
+$\RecordWorldDT(P_n,w_n,failure)$
+
+If{$[\StableGoal(G_n,w_n,k,\epsilon) \land |\lambda|>1]$} {
+	tcp{\small decision for $G_n$ was informed}
+	$\lambda' \longleftarrow G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$
+	$\RecordTrace(\lambda',k,\epsilon)$
+}
+\end{algorithm}
+
+The algorithm starts by assimilating the failure in the last plan
+$P_n$ in the trace, by recording the world $w_n$ in which $P_n$ was
+started as a ``failure'' case.
+% Stephane modified here to mention that there must be a previous node
+% here, which explains the |\lambda| > 1
+If there is a previous node in the trace (i.e. for the plan $P_{n-1}$
+which required achievement of the failed goal $G_n$) and the choice of
+executing plan $P_n$ to achieve goal $G_n$ was indeed an informed one
+(that is, goal $G_n$ was stable for $w_n$), the procedure is repeated
+for the previous node in the trace.  If, on the other hand, the last
+goal $G_n$ in the trace is not considered stable enough, the procedure
+terminates and no more data is assimilated.
+%
+It follows then that, in order to update the decision tree of a certain
+plan, it has to be the case that the (failed) decisions taken during
+the plan execution must have been informed enough.
+The closer to 0 $\epsilon$ is, and the higher $k$ is, the more
+conservative the agent will be in considering its decisions well
+informed. With $\epsilon$ = 1 and k = 0 we obtain a more standard
+learning approach where all information is accumulated, and the
+assumption is made that faulty information will eventually disappear
+as noise.
+
+So, in the remaining of the paper, we shall compare two cases. The first we call
+aggressive concurrent learning (\CL) and is exactly the more traditional approach where all data is
+assimilated by the learner, that is, we take $\epsilon = 1$ and $k = 0$.
+% \footnote{Those values imply that plans/goals are always deemed stable.}
+%Stephane questions: is it really k=0? Shouldn'it be at least 1?
+The second we call bottom-up learning (\BUL), and we use $\epsilon = 0.3$ and
+$k = 3$.
+%according to Scott's email.
+We explore these two approaches on some programs with different
+structures  and discuss the results.
