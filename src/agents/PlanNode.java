@@ -427,28 +427,23 @@ public class PlanNode extends Node{
     public double getCoverage(String[] state) {
         double coverage = 0.0;
         String memoryKey = this.stringOfState(state);
-        if (this.experiences.containsKey(memoryKey)) {
-            Experience thisMemory = (Experience)this.experiences.get(memoryKey);
-            coverage = thisMemory.coverage();
-        } else {
-            /* When we haven't seen the world, we will use the avg coverage 
-             * of all previously seen worlds as a approximate measure.
-             * We can do this because for the given goal/plan tree
-             * the coverage of all previously seen worlds is likely to be
-             * similar.
-             */
-            if (this.experiences.size() > 0) {
-                Object[] earr = this.experiences.values().toArray();
-                for (int i = 0; i < earr.length; i ++) {
-                    Experience m = (Experience)earr[i];
-                    coverage += m.coverage();
-                }
-                coverage /= earr.length;
-                logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before so averaging previous worlds coverage="+((double)((int)(coverage*10000)))/10000);
-            } else {
-                coverage = 0.0;
-                logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before and has no previous state to leverage, so will use coverage c="+coverage);
+        /* We will use the average coverage 
+         * of all previously seen worlds as a approximate measure.
+         * We can do this because for the given goal/plan tree
+         * the coverage of all previously seen worlds is likely to be
+         * similar.
+         */
+        if (this.experiences.size() > 0) {
+            Object[] earr = this.experiences.values().toArray();
+            for (int i = 0; i < earr.length; i ++) {
+                Experience m = (Experience)earr[i];
+                coverage += m.coverage();
             }
+            coverage /= earr.length;
+            logger.writeLog("Plan "+this.getItem()+" in state "+memoryKey+" is averaging previous worlds coverage="+((double)((int)(coverage*10000)))/10000);
+        } else {
+            coverage = 0.0;
+            logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before and has no previous state to leverage, so will use coverage c="+coverage);
         }
         return coverage;
     }    

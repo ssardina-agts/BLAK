@@ -556,7 +556,9 @@ One improvement suggested (by \stephane) to the \cov approach is to replace the 
 
 \item Implementation A: If we have not seen world $W$ before, then instead of randomly picking the coverage of a previously seen world, we will use the average coverage of \textit{all previously seen worlds}. This should give more consistent results since we will not pick extreme coverage values that is a possibility in the random selection of Section \ref{subsubsec:cov-rand-select} presently. 
 
-\item Implementation B: Regardless of whether we have seen world $W$ before, \textit{always use the average coverage of all previously seen worlds}. This would make the approach consistent for all worlds regardless of their (seen/unseen) status. However, this would also mean that we would average down the good results. For instance if we have previously succeeded in world $W$ and we encounter world $W$ again in the future, then averaging could potentially tone down the coverage result (and hence minimise the importance) of the good path. By the same token averaging could potentially boost the coverage for a world $W$ that was previously seen with low coverage, because of success in another world $W'$ that was previously seen with high coverage. By this reasoning then, it is unclear if this implementation is useful.
+\item Implementation B: Regardless of whether we have seen world $W$ before, \textit{always use the average coverage of all previously seen worlds}. This would make the approach consistent for all worlds regardless of their (seen/unseen) status. At first, this approach seems counter-intuitive. For instance if we have previously succeeded in world $W$ and we encounter world $W$ again in the future, then averaging could potentially tone down the coverage result (and hence minimise the importance) of the good path. By the same token averaging could potentially boost the coverage for a world $W$ that was previously seen with low coverage, because of success in another world $W'$ that was previously seen with high coverage. 
+
+However, the approach makes good sense if we consider the subspace $S$ (where $W \in S$) that the \dt is trying to learn. Since coverage is a measure of our confidence in the \dt over the subspace $S$ (not just one world $W$) we desire that this function increase monotonically from $0\to1$ over $S$. Implementation A is non-monotonic over $S$ because it will give fluctuating confidence values based on whether $W$ was seen before or not. By averaging over all worlds (seen or unseen), we can remove this fluctuation.
 
 \end{itemize}
 
@@ -566,13 +568,13 @@ The test results comparing \cc and \st performance in various configurations are
 \begin{itemize}
 \item "Repository Revision 87" is the baseline for this change.
 
-\item "Repository Revision 93+" shows Implementation A results. As expected, the change works well and has been committed (final repository revision for this commit is 95).
+\item "Repository Revision 106" shows Implementation A results. As expected, the change works well.
 
-\item  "Repository Revision 93++" shows Implementation B results. As eluded to earlier, it is unclear why this is a useful implementation. Nonetheless it works well. Interestingly in $test02v10$ (this is a showcase test where Stable is meant to perform better) this approach brings Concurrent+\cov completely on par with any Stable approach. That further strengthens our conclusion. However, since we do not have a explanation for this improvement yet then we have not committed this change.
+\item  "Repository Revision 110" shows Implementation B results. The approach gives good overall results. Interestingly in $test02v10$ (this is a showcase test where Stable is meant to perform better) this approach brings \cc+\cov completely on par with any \st approach. This further strengthens our conclusion. 
 
 \end{itemize}
 
-These results are consistent with the previous results and do not impact the discussion of Section \ref{subsec:discussion}.
+Note: These results are consistent with the previous results and do not impact the discussion of Section \ref{subsec:discussion}.
 
 %% Section 
 \section{Final Testing}
@@ -581,7 +583,7 @@ Appendix \ref{sec:results} Page "BDI-Learning Test Matrix" shows the extended te
 
 The main change is that several tests were updated to include more features for testing. The only new test added is $testMultiSolutionsR$ to test for goal reuse (without conflicting inter-dependence). 
 
-"Repository Revision 106" shows the final test results.
+"Repository Revision 110" shows the final test results.
 
 %% Section 
 \section{Acknowledgements}
@@ -605,9 +607,8 @@ Revisions of this document are a result of an ongoing discussion and contributio
 \includepdf[pages={1-},nup=2x3]{blak69.pdf}
 \includepdf[pages={1-},nup=2x3]{blak77.pdf}
 \includepdf[pages={1-},nup=2x3]{blak87.pdf}
-\includepdf[pages={1-},nup=2x3]{blak93+.pdf}
-\includepdf[pages={1-},nup=2x3]{blak93++.pdf}
-\includepdf[pages={2-},nup=1x1]{test-matrix.pdf}
 \includepdf[pages={1-},nup=2x3]{blak106.pdf}
+\includepdf[pages={1-},nup=2x3]{blak110.pdf}
+\includepdf[pages={2-},nup=1x1]{test-matrix.pdf}
 
 \end{document}
