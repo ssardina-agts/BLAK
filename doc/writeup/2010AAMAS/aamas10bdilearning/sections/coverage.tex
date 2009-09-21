@@ -27,3 +27,56 @@ Equation \ref{eqn:coverage} shows how a confidence measure based on coverage may
 
 The coverage $c_T(S)$ itself is calculated and stored each time a result is recorded for node $T$. The calculation is performed in turn for each node in the active execution trace starting at the leaf node where the failure occurred, and the coverage is updated progressively up the tree hierarchy. Full coverage at a node $T$ has a computation cost of $C(T)*|S|$ where $C(T)$ is the total number of choices below $T$ and $|S|$ is the number of worlds in the subspace. Practically however, it costs significantly less since choices below $T$ are effectively AND/OR trees, and each time an AND node fails the subsequent nodes are not tried and are assumed covered for that world. The full memory cost for a subspace with $n$ boolean attributes is $2^a*C(T)$ however we only require $2^a$ for the implementation since we do not keep track of each individual path below $T$ but only how many distinct paths below $T$ have been tried in a given world. The only unknown in the coverage calculation is $S$ since we do not know upfront the subspace to be learnt. A fairly useful estimate of $c_T(S)$ for practical use can however be constructed by averaging the individual coverages $c_T(W_i)$ of all previously seen worlds at node $T$. 
 
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=0.0015cm,y=4cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (5000,1) -- (5000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=5000] (0,0) grid (5000,1);
+    \foreach \x in {0,1000,...,5000}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {1000/1000, 2000/2000, 3000/3000, 4000/4000} \node at (\x,0) [below] {$\xtext$};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
+    \node at (0,1.1) {Success};
+    \node at (4500,0.1) {Iterations};
+    \draw[-] plot[mark=square,mark size=2,mark options={color=black}] 
+			file {data/test05v5gm.CC.tikzdata};
+    \draw[-,thin,densely dashed,gray] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+			file {data/test05v5gm.CP.tikzdata};
+    \draw[-] plot[mark=diamond,mark size=3,mark options={color=black}] 
+			file {data/test05v5gm.SC.tikzdata};
+    \draw[-,thin,densely dashed,gray] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+			file {data/test05v5gm.SP.tikzdata};
+
+\end{tikzpicture}
+\caption{$\T_2$}
+\end{figure}
+
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=0.0007cm,y=4cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (10000,1) -- (10000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=10000] (0,0) grid (10000,1);
+    \foreach \x in {0,1000,...,10000}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {2000/2000, 4000/4000, 6000/6000, 8000/8000} \node at (\x,0) [below] {$\xtext$};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
+    \node at (0,1.1) {Success};
+    \node at (8900,0.1) {Iterations};
+    \draw[-] plot[mark=square,mark size=2,mark options={color=black}] 
+			file {data/testMultiSolutionsR.CC.tikzdata};
+    \draw[-,thin,densely dashed,gray] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+			file {data/testMultiSolutionsR.CP.tikzdata};
+    \draw[-] plot[mark=diamond,mark size=3,mark options={color=black}] 
+			file {data/testMultiSolutionsR.SC.tikzdata};
+    \draw[-,thin,densely dashed,gray] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+			file {data/testMultiSolutionsR.SP.tikzdata};
+
+\end{tikzpicture}
+\caption{$\T_4$}
+\end{figure}
+
+

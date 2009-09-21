@@ -6,6 +6,9 @@ mov_avg="$(cd "${0%/*}" 2>/dev/null; echo "$PWD")"/movingAvg.pl
 #---- Helper Functions -----
 #---------------------------
 
+function makeTikZ() {
+awk -v c="$2" '{if (count++%c==0) print $0;}' $1
+}
 
 function avg() {
 rm -f $tmpdir/.paste
@@ -89,6 +92,8 @@ window=1
 gnuplot=gnuplot
 j=bottom
 k=right
+tikz=0
+
 HELP='
 Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
@@ -101,9 +106,10 @@ Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange
        -r plotrange  X-data range in gnuplot format to plot (optional - default is "'$range'")
        -e N          Plot every N point (optional - default is '$every')
        -w N          Use moving average window of size N (optional - default is '$window')
+       -z N          Generate TikZ data file with every N point
 '
 
-args=`getopt t:d:o:r:e:w:g:l:j:k:SCU $*`
+args=`getopt t:d:o:r:e:w:g:l:j:k:z: $*`
 set -- $args
 for i
 do
@@ -137,6 +143,9 @@ do
 			shift;;
 		-k)
 			k=$2; shift;
+			shift;;
+		-z)
+			tikz=$2; shift;
 			shift;;
 		--)
 			shift; break;;
@@ -195,6 +204,9 @@ stableP=$tmpdir/.stable.pdata
 avg $set1p > $stableP
 `$mov_avg -i $stableP -o $stableP.mavg -w $window`
 /bin/mv $stableP.mavg $stableP
+if [ "$tikz" -ne "0" ]; then
+makeTikZ $stableP $tikz > $outfile.SP.tikzdata
+fi
 fi
 if [ "$set1c" == "" ]; then 
 stableC=nil 
@@ -203,6 +215,9 @@ stableC=$tmpdir/.stable.cdata
 avg $set1c > $stableC
 `$mov_avg -i $stableC -o $stableC.mavg -w $window`
 /bin/mv $stableC.mavg $stableC
+if [ "$tikz" -ne "0" ]; then
+makeTikZ $stableC $tikz > $outfile.SC.tikzdata
+fi
 fi
 
 if [ "$set2p" == "" ]; then 
@@ -212,6 +227,9 @@ concurrentP=$tmpdir/.concurrent.pdata
 avg $set2p > $concurrentP
 `$mov_avg -i $concurrentP -o $concurrentP.mavg -w $window`
 /bin/mv $concurrentP.mavg $concurrentP
+if [ "$tikz" -ne "0" ]; then
+makeTikZ $concurrentP $tikz > $outfile.CP.tikzdata
+fi
 fi
 if [ "$set2c" == "" ]; then 
 concurrentP=nil
@@ -220,14 +238,17 @@ concurrentC=$tmpdir/.concurrent.cdata
 avg $set2c > $concurrentC
 `$mov_avg -i $concurrentC -o $concurrentC.mavg -w $window`
 /bin/mv $concurrentC.mavg $concurrentC
+if [ "$tikz" -ne "0" ]; then
+makeTikZ $concurrentC $tikz > $outfile.CC.tikzdata
+fi
 fi
 
-#--- Generate the gnuplot commands script
-makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
-
 #--- Plot and PDF
+if [ "$tikz" == "0" ]; then
+makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
 $gnuplot $tmpdir/.gnuplot.commands
 ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
+fi
 
 #--- Cleanup
 rm -rf $tmpdir

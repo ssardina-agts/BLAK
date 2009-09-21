@@ -1,11 +1,11 @@
-TEXINPUTS=.:`pwd`/figs:
+#TEXINPUTS=.:`pwd`/figs:
 PAPER=aamas10bdilearning
 SECTIONS := $(wildcard sections/*.tex)
 FIGS := $(wildcard figs/*.*)
-
+DATA := $(wildcard data**/*.*data)
 all: ${PAPER}.pdf test
 
-${PAPER}.pdf: ${PAPER}.tex ${PAPER}.bib ${SECTIONS} ${FIGS}
+${PAPER}.pdf: ${PAPER}.tex ${PAPER}.bib ${SECTIONS} ${FIGS} ${DATA}
 	pdflatex ${PAPER}
 	bibtex ${PAPER}
 	pdflatex ${PAPER}

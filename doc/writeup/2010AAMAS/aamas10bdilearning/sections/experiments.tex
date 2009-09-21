@@ -2,74 +2,137 @@
 \section{Experimental Results}\label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%\begin{figure*}[t]
+%\begin{center}
+%\subfigure[Structures $\T_1$ (crosses) and $\T_3$ (circles)]{\label{fig:tree01_result}
+%\begin{tikzpicture}[x=0.0075cm,y=4cm]
+%	% DRAW AXES LINES
+%    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (1050,0);
+%    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
+
+%	% DRAW AXES NUMBERS
+%    \foreach \x/\xtext in {0/0,1.5/200,3/400,4.5/600,6/800,7.5/1000}
+%        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
+%            node[anchor=north] {$\xtext$};
+%    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
+%        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
+
+%	% WRITE AXES LABELS
+%    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
+%%     \node[below=.5cm] at (x axis mid) {Iterations};
+%    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
+
+%	% PLOT bul DATA TEST 01
+%    \draw[-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
+%			file {data/previous/failtest01-bul.data};
+%	% PLOT cl DATA TEST 01
+%    \draw[dashed,-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
+%			file {data/previous/failtest01-cl.data};
+
+%	% PLOT bul DATA TEST 18
+%    \draw[-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
+%			file {data/previous/failtest18-bul.data};
+%	% PLOT cl DATA TEST 18
+%    \draw[dashed,-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
+%			file {data/previous/failtest18-cl.data};
+%\end{tikzpicture}
+%}
+%\qquad
+%\subfigure[Structure $\T_2$]{\label{fig:tree08_result}
+%\begin{tikzpicture}[x=0.00121cm,y=4cm]
+%	% DRAW AXES LINES
+%    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (6300,0);
+%    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
+
+%	% DRAW AXES NUMBERS
+%    \foreach \x/\xtext in {0/0,1.452/1200,2.904/2400,4.356/3600,5.808/4800,7.26/6000}
+%        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
+%            node[anchor=north] {$\xtext$};
+%    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
+%        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
+
+%	% WRITE AXES LABELS
+%    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
+%%     \node[below=.5cm] at (x axis mid) {Iterations};
+%    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
+%%     \node[left=0.5cm,rotate=90,xshift=1cm] at (y axis mid) {Success Income};
+
+%	% PLOT STABLE DATA
+%    \draw[-] plot[mark=*,mark size=0,smooth,mark options={color=black}] 
+%			file {data/previous/failtest08-bul.data};
+%	% PLOT STABLE DATA
+%    \draw[dashed,-] plot[mark=x,mark size=0,smooth,mark options={color=black}] 
+%			file {data/previous/failtest08-cl.data};
+%\end{tikzpicture}
+%}
+%\caption{Agent performance under \BUL\ and \CL\ schemes. Solid lines
+%represent agent performance under the \BUL\ approach; dashed lines represent agent performance under
+%the \CL\ approach. Each point stands for the average of the last $20$ executions.}
+%\end{center}
+%\end{figure*}
+
 \begin{figure*}[t]
 \begin{center}
-\subfigure[Structures $\T_1$ (crosses) and $\T_3$ (circles)]{\label{fig:tree01_result}
-\begin{tikzpicture}[x=0.0075cm,y=4cm]
-	% DRAW AXES LINES
-    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (1050,0);
-    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
+\subfigure[Structure $\T_1$]{\label{fig:tree01_result}
+\begin{tikzpicture}[x=0.00061cm,y=4cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (7000,1) -- (7000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=7000] (0,0) grid (7000,1);
+    \foreach \x in {1500,3500,5500}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {1500/1500, 3500/3500, 5500/5500} \node at (\x,0) [below] {$\xtext$};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
+    \node at (0,1.1) {Success};
+    \node at (5500,0.15) {Iterations};
+    \draw[-] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+			file {data/test01v10gm.CP.tikzdata};
+    \draw[-] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+			file {data/test01v10gm.SP.tikzdata};
 
-	% DRAW AXES NUMBERS
-    \foreach \x/\xtext in {0/0,1.5/200,3/400,4.5/600,6/800,7.5/1000}
-        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
-            node[anchor=north] {$\xtext$};
-    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
-        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
-
-	% WRITE AXES LABELS
-    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
-%     \node[below=.5cm] at (x axis mid) {Iterations};
-    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
-
-	% PLOT bul DATA TEST 01
-    \draw[-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
-			file {data/previous/failtest01-bul.data};
-	% PLOT cl DATA TEST 01
-    \draw[dashed,-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
-			file {data/previous/failtest01-cl.data};
-
-	% PLOT bul DATA TEST 18
-    \draw[-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
-			file {data/previous/failtest18-bul.data};
-	% PLOT cl DATA TEST 18
-    \draw[dashed,-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
-			file {data/previous/failtest18-cl.data};
 \end{tikzpicture}
 }
 \qquad
 \subfigure[Structure $\T_2$]{\label{fig:tree08_result}
-\begin{tikzpicture}[x=0.00121cm,y=4cm]
-	% DRAW AXES LINES
-    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (6300,0);
-    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
+\begin{tikzpicture}[x=0.00086cm,y=4cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (5000,1) -- (5000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=5000] (0,0) grid (5000,1);
+    \foreach \x in {1000, 2500, 4000}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {1000/1000, 2500/2500, 4000/4000} \node at (\x,0) [below] {$\xtext$};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
+    \node at (0,1.1) {Success};
+    \node at (4000,0.15) {Iterations};
+    \draw[-] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+			file {data/test05v5gm.CP.tikzdata};
+    \draw[-] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+			file {data/test05v5gm.SP.tikzdata};
 
-	% DRAW AXES NUMBERS
-    \foreach \x/\xtext in {0/0,1.452/1200,2.904/2400,4.356/3600,5.808/4800,7.26/6000}
-        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
-            node[anchor=north] {$\xtext$};
-    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
-        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
-
-	% WRITE AXES LABELS
-    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
-%     \node[below=.5cm] at (x axis mid) {Iterations};
-    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
-%     \node[left=0.5cm,rotate=90,xshift=1cm] at (y axis mid) {Success Income};
-
-	% PLOT STABLE DATA
-    \draw[-] plot[mark=*,mark size=0,smooth,mark options={color=black}] 
-			file {data/previous/failtest08-bul.data};
-	% PLOT STABLE DATA
-    \draw[dashed,-] plot[mark=x,mark size=0,smooth,mark options={color=black}] 
-			file {data/previous/failtest08-cl.data};
 \end{tikzpicture}
 }
-\caption{Agent performance under \BUL\ and \CL\ schemes. Solid lines
-represent agent performance under the \BUL\ approach; dashed lines represent agent performance under
-the \CL\ approach. Each point stands for the average of the last $20$ executions.}
+\qquad
+\subfigure[Structure $\T_3$]{\label{fig:tree08_result}
+\begin{tikzpicture}[x=0.00108cm,y=4cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (4000,1) -- (4000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=4000] (0,0) grid (4000,1);
+    \foreach \x in {0,1000,...,4000}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {1000/1000, 2000/2000, 3000/3000} \node at (\x,0) [below] {$\xtext$};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
+    \node at (0,1.1) {Success};
+    \node at (3200,0.15) {Iterations};
+    \draw[-] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+			file {data/testImpactvars.CP.tikzdata};
+    \draw[-] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+			file {data/testImpactvars.SP.tikzdata};
+
+\end{tikzpicture}
+}
+\caption{Agent performance under \BUL\ (circles) and \CL\ (triangles) schemes. Each point represents results from $5$ experiment runs using a moving average of $100$ samples.}
 \end{center}
 \end{figure*}
+
 
 In order to explore the difference between \BUL\ and \CL\ we 
 set up testbed programs composed of several goals and plans combined
