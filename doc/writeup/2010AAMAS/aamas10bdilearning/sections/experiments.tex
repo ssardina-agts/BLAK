@@ -73,7 +73,7 @@
 
 \begin{figure*}[t]
 \begin{center}
-\subfigure[Structure $\T_1$]{\label{fig:tree01_result}
+\subfigure[Structure $\T_1$]{\label{fig:T1_result}
 \begin{tikzpicture}[x=0.00061cm,y=4cm]
     % Draw the axes and grid lines
     \draw[-] (0,0) -- (0,1) -- (7000,1) -- (7000,0) -- cycle; 
@@ -92,7 +92,7 @@
 \end{tikzpicture}
 }
 \qquad
-\subfigure[Structure $\T_2$]{\label{fig:tree08_result}
+\subfigure[Structure $\T_2$]{\label{fig:T2_result}
 \begin{tikzpicture}[x=0.00086cm,y=4cm]
     % Draw the axes and grid lines
     \draw[-] (0,0) -- (0,1) -- (5000,1) -- (5000,0) -- cycle; 
@@ -111,7 +111,7 @@
 \end{tikzpicture}
 }
 \qquad
-\subfigure[Structure $\T_3$]{\label{fig:tree08_result}
+\subfigure[Structure $\T_3$]{\label{fig:T3_result}
 \begin{tikzpicture}[x=0.00108cm,y=4cm]
     % Draw the axes and grid lines
     \draw[-] (0,0) -- (0,1) -- (4000,1) -- (4000,0) -- cycle; 
@@ -205,7 +205,7 @@ very low, then the \CL\ approach collapses completely whereas the
 % two.
 
 
-In Figure \ref{fig:tree01}, we show the goal-plan tree structure
+In Figure \ref{fig:T1}, we show the goal-plan tree structure
 $\T_1$. Initially, the agent has $20$ options to resolve the top-level
 goal $G$. However, $19$ of them lead to failure (plans
 $P_i'$). The benefit of using \CL\ comes from the fact that the agent
@@ -218,7 +218,7 @@ three subgoals to be ``stable.''
 %
 As we expected the \CL\ scheme does perform
 better in that it achieves optimal performance faster (Figure
-\ref{fig:tree01_result}, cross marked). The \CL\
+\ref{fig:T1_result}, cross marked). The \CL\
 approach yields optimal agent performance after around $300$
 iterations, whereas \BUL\ achieves such performance after around $400$
 iterations\footnote{Optimal performance amounts to a $90\%$
@@ -241,7 +241,7 @@ choices to result in a successful execution; there are also many
 chances for the agent to fail under $P$.
 %
 Although one would expect \BUL\ to yield better agent performance than
-\CL, the difference is enormous. Figure \ref{fig:tree08_result} shows
+\CL, the difference is enormous. Figure \ref{fig:T2_result} shows
 that while the \BUL\ approach, achieves optimal performance in around
 $100$ iterations, the \CL\ scheme, requires around $5000$ execution
 experiences.  
@@ -268,7 +268,7 @@ each of them having a probability of success of $90\%$ when performed
 in the real world. 
 
 Let us now consider the third hierarchical structure $\T_3$, depicted
-in Figure \ref{fig:tree03}. In this case, the top-level goal $G$ has
+in Figure \ref{fig:T3}. In this case, the top-level goal $G$ has
 five relevant plans, which are all ``complex,'' that is, they all have
 several levels and multiple goals and plans. However, only one
 particular path in this hierarchy will lead to a successful 
@@ -289,7 +289,7 @@ explore, and find a solution, within the working top-level plan.
 %
 This balance is corroborated by the fact that both agents have
 comparable performance, with \BUL\ yielding improved behavior slightly
-quicker (see Figure \ref{fig:tree01_result}, circle marked). 
+quicker (see Figure \ref{fig:T1_result}, circle marked). 
 
 However, we are currently considering all plans as potentially
 applicable and worth trying - even when there is a very low chance of
@@ -309,7 +309,7 @@ probability check, to avoid randomly cutting off options that happen
 to have failed on one iteration. However in the interests of
 simplicity we deal with the simplified case.}
 %
-The differences, shown in Figure \ref{fig:tree08_result} are striking.
+The differences, shown in Figure \ref{fig:T2_result} are striking.
 
 Using the structure 
 $\T_3$ we  found that whereas \BUL\ maintains its performance (and in
@@ -393,7 +393,7 @@ two correct choices, including selecting $P$ at the top-level.}
 % when executed in the environment. An edge with a label $\times n$ states that there are $n$ edges
 % of such type. As a result, goals $G$ and $G_P$ have $20$ relevant plans each. To succeed, an agent
 % is thus required to make two correct choices, including selecting $P$ at the top-level.}
-\label{fig:tree01}
+\label{fig:T1}
 \end{figure}
 
 

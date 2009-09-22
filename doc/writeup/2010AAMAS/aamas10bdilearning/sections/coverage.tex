@@ -4,7 +4,7 @@
 
 The first part of this paper addresses the task of determining when decisions along the active execution trace may be considered \textit{informed enough} for outcomes to be included as learnable instances for each \dt in that trace. For this we contrast two schemes, \CL\ and \BUL\ - and show that the conservative \BUL\ approach delivers more robust performance than the simpler \CL\ approach for the cases considered. For both approaches, the same probabilistic function $E$ (or exploration strategy) was used to make the plan selection at each junction of the active execution trace.
 
-In subsequent work we keep the \CL\ and \BUL\ recording methods constant, and adjust the probabilistic plan selection function $E$ to evaluate the impact on the learning outcome. Motivated by the polarity between the two approaches, we consider if an informed probabilistic selection function $E'$ may be constructed to yield a "middle ground" approach that applies better in the general case. This would be valuable since if a \CL+$E'$-based approach yields comparable performance to any \BUL+$E^*$-based approach, then the former is preferred as \CL\ is much simpler than \BUL. Interestingly we find that such a formulation is possible and that an informed exploration strategy that leverages both the domain knowledge (inherent in the goal-plan tree hierarchy) as well as the ongoing learning (agent's experience so far) can combine the benefits of both \CL\ and \BUL.
+In subsequent work we keep the \CL\ and \BUL\ recording methods constant, and adjust the probabilistic plan selection function $E$ to evaluate the impact on the learning outcome. Motivated by the polarity between the two approaches, we consider if an informed probabilistic selection function $E'$ may be constructed to yield a \textit{middle ground} approach that applies better in the general case. This would be valuable since if a \CL+$E'$-based approach yields comparable performance to any \BUL+$E^*$-based approach, then the former is preferred as \CL\ is much simpler than \BUL. Interestingly we find that such a formulation is possible and that an informed exploration strategy that leverages both the domain knowledge (inherent in the goal-plan tree hierarchy) as well as the ongoing learning (agent's experience so far) can combine the benefits of both \CL\ and \BUL.
 
 We start by quantifying the quality of (or our \textit{confidence} in) the hypotheses of a \dt for a unknown but learnable subspace $S$ of worlds $[W_1 \ldots W_n]$. At the beginning of a run we have no learnable instances and for a given goal-plan tree node $T$ our probability of success $p_T(W)$ in world $W \in S$ is given by the default probability $P_d=0.5$. After the first instance is recorded, the \dt will generalise the result to the full space of $S$ (i.e. $\forall W \in S$) leading to likely \textit{misclassification}. Intuitively we know that as more and more $W \in S$ are witnessed and recorded, the \dt's classification over $S$ will improve. Our two approaches may be described in terms of confidence as follows: \CL\ always assumes full confidence in the \dt but suffers from misclassification errors (that are eventually rectified through subsequent learning from misinformed choices); \BUL\ uses the static $\epsilon$ and $k$ values to determine the boundary for our confidence in the \dt (with the trade-off that for the period of no confidence the best we can do is use $P_d$).
 
@@ -20,13 +20,20 @@ Equation \ref{eqn:coverage} shows how a confidence measure based on coverage may
 \begin{figure}[ht]
    \centering
    \includegraphics[width=\columnwidth]{figs/coverage-surface}
-   \caption{How coverage impacts \dt classification}
+   \caption{How confidence (coverage) is used to adjust \dt classification for plan selection}
    \label{fig:coverage-surface}
 \end{figure}
 
 
 The coverage $c_T(S)$ itself is calculated and stored each time a result is recorded for node $T$. The calculation is performed in turn for each node in the active execution trace starting at the leaf node where the failure occurred, and the coverage is updated progressively up the tree hierarchy. Full coverage at a node $T$ has a computation cost of $C(T)*|S|$ where $C(T)$ is the total number of choices below $T$ and $|S|$ is the number of worlds in the subspace. Practically however, it costs significantly less since choices below $T$ are effectively AND/OR trees, and each time an AND node fails the subsequent nodes are not tried and are assumed covered for that world. The full memory cost for a subspace with $n$ boolean attributes is $2^a*C(T)$ however we only require $2^a$ for the implementation since we do not keep track of each individual path below $T$ but only how many distinct paths below $T$ have been tried in a given world. The only unknown in the coverage calculation is $S$ since we do not know upfront the subspace to be learnt. A fairly useful estimate of $c_T(S)$ for practical use can however be constructed by averaging the individual coverages $c_T(W_i)$ of all previously seen worlds at node $T$. 
 
+\subsection{Results}
+
+Given our base approaches \CL\ and \BUL, the original probabilistic plan selection function $E$, and the new coverage-based plan selection function $E'$ (Equation \ref{eqn:coverage}), we are able to run four different learning configurations: the earlier $+E$ configurations (\CL+$E$, \BUL+$E$) and the new $+E'$ configurations (\CL+$E'$, \BUL+$E'$).
+
+For the \CL-favouring structure $\T_1$ we find that the new $+E'$ configurations perform equally well to the original $+E$ configurations, so while there is no significant improvement in either \CL\ or \BUL, there is also no loss in performance. Similarly, for the typical structure $\T_3$ where both \CL\ and \BUL\ perform equally well, the choice of $E*$ has no significant impact. For $\T_1$ and $\T_3$ then, the $+E'$ results are the same as those reported for the original $+E$ configurations in Figure \ref{fig:T1_result} and Figure \ref{fig:T3_result}.
+
+The impact of $E'$ is apparent in $\T_2$ however, a structure that favours the conservative \BUL\ approach (Figure \ref{fig:T2_result}). While \BUL\ shows similar performance in this case irrespective of the choice of $E^*$, \CL\ however is dramatically improved as a result of $E'$. Figure \ref{fig:T2_result2} shows this change with the new $+E'$ configurations (diamonds for \BUL\ and squares for \CL) superimposed over the original $+E$ results of Figure \ref{fig:T2_result} (circles for \BUL\ and triangles for \CL). So for the \BUL-favouring structure $\T_2$, the \CL+$E'$ (squares) approach is now much closer to \BUL+$E^*$ performance than the previous \CL+$E$ (triangles) approach.
 
 \begin{figure}[ht]
 \centering
@@ -51,8 +58,10 @@ The coverage $c_T(S)$ itself is calculated and stored each time a result is reco
 
 \end{tikzpicture}
 \caption{$\T_2$}
+\label{fig:T2_result2}
 \end{figure}
 
+We now consider a new structure $\T_4$ that is based on the typical setting (so is not intentionally biased towards one approach), and that has the property that a world $W$ may have two solutions, each in a different sub-tree. Furthermore one solution is always \textit{better} than the other because it has a higher chance of success (in our environment we model this by varying the number of actions required in the solution where each action has a $10\%$ chance of failure). Finally, the structure is crafted so that the likelihood of finding the sub-optimal solution is higher. The purpose is to understand how our approaches behave when optimality is important. Here we expect that the coverage-based exploration of $E'$ should benefit over $E$ in finding the optimal solutions first. 
 
 \begin{figure}[ht]
 \centering
@@ -77,6 +86,18 @@ The coverage $c_T(S)$ itself is calculated and stored each time a result is reco
 
 \end{tikzpicture}
 \caption{$\T_4$}
+\label{fig:T4_result}
 \end{figure}
+
+Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ easily outperforms all other configurations. The reason why the $+E$ configurations suffer is because they do not take into account the structure of the tree and therefore tend to focus exploration towards the first found solution (that more likely is the sub-optimal one in this case). 
+
+Note that \BUL+$E'$ does not perform well in $\T_4$ even though it is coverage-based and does consider the tree structure. In fact, an interesting observation during our extensive testing with several different tree structures is that \BUL+$E'$ always show similar performance to \BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of \BUL\ inherently results in close to full coverage, effectively reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This means that for \BUL\, the $E$ and $E'$ selection functions are effectively the same.
+
+These results are significant because we now have a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Note also that any \CL-based configuration is a much simpler implementation than the alternative \BUL-based configuration.
+
+
+%\subsection{Discussion}
+
+
 
 
