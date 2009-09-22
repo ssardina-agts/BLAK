@@ -42,24 +42,36 @@ In \cite{APSS08} the authors detail why it may be problematic for
 learning if the BDI hierarchical structure is not taken into account.
 They showed why it can be problematic to assume a mistake at a
 higher level in the hierarchy, when a poor outcome may have been
-related to a mistake in selection further down.  However their
+related to a mistake in selection further down.  Their
 empirical work suggested that perhaps the advantages of an aggressive
 approach, where all failures were considered meaningful, outweighed
 the advantages of careful consideration.
 
 In this work, we have used a more sophisticated algorithm to determine
 when a decision should be considered sufficiently informed to record a
-mistake if it fails to produce a positive outcome. We have also
+mistake if it fails to produce a positive outcome. We have 
 analysed the kinds of structures which will benefit from careful
 consideration vs aggressive learning and demonstrate empirically the
 relative advantages of each. 
 %
-Finally, we have considered the situation where
-plans that are unlikely to succeed (based on current information) are
-excluded from consideration, and have shown that, in this scenario, the
+One important finding is that when plans that are unlikely to succeed
+(based on current information) are excluded from consideration, the
 aggressive approach may never learn, whereas the careful consideration
 is much more robust.
-
+% 
+In order to address this limitation we have developed an approach which
+modifies our confidence in what we have learnt, depending on how much
+we have explored the space. We show that this approach, which we call
+{\em coverage}\footnote{We use the term coverage because it takes
+  account of what portion of the goal plan tree has been {\em covered}
+  in our exploration so far.} allows the agressive
+approach to be successful, even in those cases where previously it was
+unable to learn. Coverage assessment, although orthogonal to the
+aggressive vs careful consideration dilemma, does in many ways achieve
+the aims of the careful consideration approach. We show experimental
+results and conclude that if there is no specialised information about
+the structure of the domain, then an agressive approach with coverage
+assessment is likely to be most useful for learning context conditions.
 
 
 The issue of combining learning and deliberative approaches for decision
@@ -75,7 +87,6 @@ a blind exploration strategy
 our agent has an optimistic strategy: it trusts the existing BDI hierarchy, in other
 words, our agent uses existing domain knowledge and keeps on improving
 it.
-
 
 We believe this approach, which takes a BDI program and 
 ''tune it'' using learning, can be very powerful. While substantial
@@ -94,12 +105,23 @@ provide a quick overview of typical BDI-style agents.
 We then discuss modifications to the BDI framework to accommodate learning capabilities by
 extending context conditions and the agent plan-selection function. 
 %
-After that, we describe two approaches to learning the context condition of plans.
+After that, we describe two approaches to learning the context
+condition of plans, aggressive and careful consideration.
 %
-We then report on the empirical results obtained and conclude that care must be taken to
-achieve robust and successful learning in a typical BDI hierarchical program. 
+We report on the empirical results obtained and analyse situations in
+which each is advantageous or problematic.
 %
-We conclude with a brief summary and discussion.
+We then develop the notion of coverage assessment to influence plan
+selection and show that this addresses many of the issues that can
+otherwise arise when using the aggressive learning approach.
+%
+We conclude that care must be taken to
+achieve robust and successful learning in a typical BDI hierarchical
+program, and that in the absence of specialised information about
+program structure, an aggressive learning approach with coverage
+assessment during plan selection, is most likely to perform best.
+%
+%We conclude with a brief summary and discussion.
 
 % The rest of the paper is organized as follows. In the next section, we
 % provide an overview of the relevant aspects of typical BDI-style
