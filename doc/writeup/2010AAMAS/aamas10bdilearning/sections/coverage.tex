@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Informed Plan Selection}\label{sec:coverage-intro}
+\section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The first part of this paper addresses the task of determining when decisions along the active execution trace may be considered \textit{informed enough} for outcomes to be included as learnable instances for each \dt in that trace. For this we contrast two schemes, \CL\ and \BUL\ - and show that the conservative \BUL\ approach delivers more robust performance than the simpler \CL\ approach for the cases considered. For both approaches, the same probabilistic function $E$ (or exploration strategy) was used to make the plan selection at each junction of the active execution trace.
@@ -20,12 +20,12 @@ Equation \ref{eqn:coverage} shows how a confidence measure based on coverage may
 \begin{figure}[ht]
    \centering
    \includegraphics[width=\columnwidth]{figs/coverage-surface}
-   \caption{How confidence (coverage) is used to adjust \dt classification for plan selection}
+   \caption{How confidence (coverage) is used to adjust \dt classification for plan selection.}
    \label{fig:coverage-surface}
 \end{figure}
 
 
-The coverage $c_T(S)$ itself is calculated and stored each time a result is recorded for node $T$. The calculation is performed in turn for each node in the active execution trace starting at the leaf node where the failure occurred, and the coverage is updated progressively up the tree hierarchy. Full coverage at a node $T$ has a computation cost of $C(T)*|S|$ where $C(T)$ is the total number of choices below $T$ and $|S|$ is the number of worlds in the subspace. Practically however, it costs significantly less since choices below $T$ are effectively AND/OR trees, and each time an AND node fails the subsequent nodes are not tried and are assumed covered for that world. The full memory cost for a subspace with $n$ boolean attributes is $2^a*C(T)$ however we only require $2^a$ for the implementation since we do not keep track of each individual path below $T$ but only how many distinct paths below $T$ have been tried in a given world. The only unknown in the coverage calculation is $S$ since we do not know upfront the subspace to be learnt. A fairly useful estimate of $c_T(S)$ for practical use can however be constructed by averaging the individual coverages $c_T(W_i)$ of all previously seen worlds at node $T$. 
+The coverage $c_T(S)$ itself is calculated and stored each time a result is recorded for node $T$. The calculation is performed in turn for each node in the active execution trace starting at the leaf node where the failure occurred, and the coverage is updated progressively up the tree hierarchy. Full coverage at a node $T$ has a computation cost of $C(T)*|S|$ where $C(T)$ is the total number of choices below $T$ and $|S|$ is the number of worlds in the subspace. Practically however, it costs significantly less since choices below $T$ are effectively AND/OR trees, and each time an AND node fails the subsequent nodes are not tried and are assumed covered for that world. The full memory cost for a subspace with $a$ boolean attributes is $2^a*C(T)$ however we only require $2^a$ for the implementation since we do not keep track of each individual path below $T$ but only how many distinct paths below $T$ have been tried in a given world. The only unknown in the coverage calculation is $S$ since we do not know upfront the subspace to be learnt. A fairly useful estimate of $c_T(S)$ for practical use can however be constructed by averaging the individual coverages $c_T(W_i)$ of all previously seen worlds at node $T$. 
 
 \subsection{Results}
 
@@ -57,7 +57,7 @@ The impact of $E'$ is apparent in $\T_2$ however, a structure that favours the c
 			file {data/test05v5gm.SP.tikzdata};
 
 \end{tikzpicture}
-\caption{$\T_2$}
+\caption{Comparison of the new configurations \BUL+$E'$ (diamonds) and \CL+$E'$ (squares) against the earlier \BUL+$E$ (circles) and \CL+$E$ (triangles) for the \BUL-favouring structure $\T_2$.}
 \label{fig:T2_result2}
 \end{figure}
 
@@ -85,19 +85,22 @@ We now consider a new structure $\T_4$ that is based on the typical setting (so 
 			file {data/testMultiSolutionsR.SP.tikzdata};
 
 \end{tikzpicture}
-\caption{$\T_4$}
+\caption{Comparison of all configurations (\BUL+$E'$ (diamonds), \CL+$E'$ (squares), \BUL+$E$ (circles), \CL+$E$ (triangles)) for new structure $\T_4$ with local solutions.}
 \label{fig:T4_result}
 \end{figure}
 
-Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ easily outperforms all other configurations. The reason why the $+E$ configurations suffer is because they do not take into account the structure of the tree and therefore tend to focus exploration towards the first found solution (that more likely is the sub-optimal one in this case). 
+Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ (squares) easily outperforms all other configurations. The reason why the $+E$ configurations (circles and triangles) are sub-optimal is because they do not take into account the structure of the tree and therefore tend to focus exploration in the sub-tree where the first solution was found (which likely is the sub-optimal one in our case). 
 
-Note that \BUL+$E'$ does not perform well in $\T_4$ even though it is coverage-based and does consider the tree structure. In fact, an interesting observation during our extensive testing with several different tree structures is that \BUL+$E'$ always show similar performance to \BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of \BUL\ inherently results in close to full coverage, effectively reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This means that for \BUL\, the $E$ and $E'$ selection functions are effectively the same.
+Note that \BUL+$E'$ (diamonds) does not perform well in $\T_4$ even though it is coverage-based and does consider the tree structure. In fact, an interesting observation during our extensive testing with several different tree structures is that \BUL+$E'$ always show similar performance to \BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of \BUL\ inherently results in close to full coverage, effectively reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This means that for \BUL\, the $E$ and $E'$ selection functions are effectively the same.
 
-These results are significant because we now have a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Note also that any \CL-based configuration is a much simpler implementation than the alternative \BUL-based configuration.
-
-
-%\subsection{Discussion}
+The above results are significant because they highlight a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Moreover, the \CL-based configuration is a simpler alternative to the \BUL-based configuration, further adding to it's appeal.
 
 
+\subsection{Discussion}
 
+In Section \ref{sec:coverage} we presented a \textit{coverage}-based confidence measure that combined with the \dt classification gives an informed plan selection function (Equation \ref{eqn:coverage}) that benefits our context learning approaches \CL\ and \BUL. Now, since the coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a confidence measure, then the way it is \textit{used} will determine the weighting of the confidence towards the final plan selection probability $p'_T(W)$. For instance we could replace $c_T(S)$ in Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the weighting (and $b=1$ gives us the original Equation \ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$) we get more \BUL+$E$-like performance, while adjusting $b \rightarrow \infty (b > 1)$ will result in more \CL+$E$-like performance. In fact, an improved agent could reference the (static) goal-plan tree structure at runtime and adjust $b$ automatically based on the offline compiled knowledge of which approach works better for which tree topology. This extension is left as a future implementation exercise.
+
+We noted earlier in Section \ref{sec:experiments} that plan execution in real systems is often not cost-free, so presumably the agent would not execute a plan with too low a probability of success. We also show that such deliberation does not favour \CL\ but does \BUL. It is clear that choosing not to execute a plan below a threshold probability of failure would also hurt the candidate \CL+$E'$ configuration (though not as much as \CL+$E$). For such systems, we suggest that the weighting $b$ be used to get the preferred \BUL-like performance.
+
+One critique of the coverage-based confidence measure is that it has a defined start ($c_T(S)=0$) and end state ($c_T(S)=1$). For a real system however, learning and re-learning will occur in an endless loop as the agent continually tries to adapt to a changing environment. This implies that our confidence in a \dt's classification would also require calibration based on a changing environment. If the change in the environment is deliberate (for instance the agent was moved into a new environment) then the coverage $c_T(S)$ could be reset and confidence \textit{re-built}. Without such a signal the agent must rely of measuring per-goal performance in order to pick up failures that could be attributed to environmental changes. The problem of identifying changes that warrant new learning as compared to adapting previous learning, however, is generally considered to be a much harder one.
 
