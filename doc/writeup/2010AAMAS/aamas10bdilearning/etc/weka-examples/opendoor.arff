@@ -1,0 +1,115 @@
+@relation openingADoor
+
+@attribute lockState {locked, unlocked}
+@attribute wet {TRUE, FALSE}
+@attribute obstructed {TRUE, FALSE}
+@attribute weather {sunny, cloudy, rain}
+@attribute success {yes, no}
+
+%%% Hard precondition: has to be not obstructed
+%% If locked, then we can unlock it if not wet
+%% The weather state is irrelevant
+
+
+@data
+%% If obstructed then it is never opened
+%%
+locked,FALSE,TRUE,sunny,no
+locked,FALSE,TRUE,sunny,no
+locked,FALSE,TRUE,rain,no
+locked,FALSE,TRUE,cloudy,no
+locked,FALSE,TRUE,cloudy,no
+locked,FALSE,TRUE,cloudy,no
+locked,TRUE,TRUE,sunny,no
+locked,TRUE,TRUE,sunny,no
+locked,TRUE,TRUE,sunny,no
+locked,TRUE,TRUE,sunny,no
+locked,TRUE,TRUE,rain,no
+locked,TRUE,TRUE,rain,no
+locked,TRUE,TRUE,cloudy,no
+locked,FALSE,TRUE,cloudy,no
+unlocked,FALSE,TRUE,sunny,no
+unlocked,FALSE,TRUE,sunny,no
+unlocked,FALSE,TRUE,rain,no
+unlocked,FALSE,TRUE,cloudy,no
+unlocked,FALSE,TRUE,cloudy,no
+unlocked,FALSE,TRUE,cloudy,no
+unlocked,TRUE,TRUE,sunny,no
+unlocked,TRUE,TRUE,sunny,no
+unlocked,TRUE,TRUE,sunny,no
+unlocked,TRUE,TRUE,sunny,no
+unlocked,TRUE,TRUE,rain,no
+unlocked,TRUE,TRUE,rain,no
+unlocked,TRUE,TRUE,cloudy,no
+unlocked,FALSE,TRUE,cloudy,no
+
+
+%% From now on, it is NOT obstructed, so there are chances of opening.
+%% If it is not wet, then we most often succeed
+locked,FALSE,FALSE,sunny,yes
+locked,FALSE,FALSE,sunny,yes
+locked,FALSE,FALSE,rain,yes
+locked,FALSE,FALSE,cloudy,yes
+locked,FALSE,FALSE,cloudy,yes
+locked,FALSE,FALSE,cloudy,yes
+locked,FALSE,FALSE,sunny,yes
+locked,FALSE,FALSE,sunny,yes
+locked,FALSE,FALSE,sunny,yes
+locked,FALSE,FALSE,sunny,no
+locked,FALSE,FALSE,rain,yes
+locked,FALSE,FALSE,rain,yes
+locked,FALSE,FALSE,cloudy,yes
+locked,FALSE,FALSE,cloudy,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,rain,yes
+unlocked,FALSE,FALSE,cloudy,yes
+unlocked,FALSE,FALSE,cloudy,no
+unlocked,FALSE,FALSE,cloudy,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,sunny,yes
+unlocked,FALSE,FALSE,rain,no
+unlocked,FALSE,FALSE,rain,yes
+unlocked,FALSE,FALSE,cloudy,yes
+unlocked,FALSE,FALSE,cloudy,yes
+
+
+
+%% From now on, it is NOT obstructed, so there are chances of opening.
+%% If wet, then we most often fail
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,rain,no
+locked,TRUE,FALSE,cloudy,no
+locked,TRUE,FALSE,cloudy,no
+locked,TRUE,FALSE,cloudy,no
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,sunny,no
+locked,TRUE,FALSE,rain,no
+locked,TRUE,FALSE,rain,no
+locked,TRUE,FALSE,cloudy,no
+locked,TRUE,FALSE,cloudy,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,rain,no
+unlocked,TRUE,FALSE,cloudy,no
+unlocked,TRUE,FALSE,cloudy,no
+unlocked,TRUE,FALSE,cloudy,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,sunny,no
+unlocked,TRUE,FALSE,rain,no
+unlocked,TRUE,FALSE,rain,no
+unlocked,TRUE,FALSE,cloudy,no
+unlocked,TRUE,FALSE,cloudy,no
+
+
+
+
+
+
