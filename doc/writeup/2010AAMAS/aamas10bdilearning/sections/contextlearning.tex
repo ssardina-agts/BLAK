@@ -121,93 +121,91 @@ also be justified.
 \newcommand{\RecordTrace}{\procedurefont{RecordFailedTrace}}
 \newcommand{\RecordWorldDT}{\procedurefont{RecordWorldDT}}
 
-% The judgment as to whether the decisions made were sufficiently ``well
-% informed'', is however not a trivial one. We develop an algorithm that
-% makes the decision as to whether to record a failure, based on a
-% notion of stability, where a plan is considered to be stable for a
-% particular world state $w$ if the rate of success of $P$ in $w$ is
-% changing below a certain threshold, $\epsilon$. We also allow
-% specification of a minimum number of execution experiences for $P$ in
-% $w$, in order to have the change of rate of success be sufficiently
-% meaningful. A goal is considered to be stable for world state $w$ if
-% all its relevant plans are stable for $w$.
-
-% Stephane replaced the paragraph. I thought it was better to present
-% the notion of stability first, then to say that stability is what we
-% consider as well informed, and then introduce the algorithm.
 
 The judgment as to whether the decisions made were sufficiently ``well
-informed,'' is however not a trivial one.  A plan $P$ is considered to
-be \emph{stable} for a particular world state $w$ if the rate of
-success of $P$ in $w$ is changing below a certain threshold,
-$\epsilon$.
-% comments by Stephane 
-% o I guess here, something more correct would be that the rate of
-% success of P in the leaf node of the decision tree that contains w.
-% I'm not sure it is worth precising.
-% o is the rate of change computing over a window of the last n use of
-% the plan?
-%stephane adds:
-If the rate of success does not change much after some
-observations, we can start to build confidence about it.
-% end add
-We also allow specification of a minimum number of execution
-experiences for $P$ in $w$, in order to have the change of rate of
-success be sufficiently meaningful. A goal is considered to be stable
-for world state $w$ if all its relevant plans are stable for $w$.  We
-consider that the decision of recording a failure for a plan is ``well
-informed'' when the goal it is being chosen for is stable.  We use a function
-$\StableGoal(G,w,k,\epsilon)$ which returns true iff goal $G$ is
-considered \textit{stable} for world state $w$, under minimal
-% stephane changed from minimal execution traces to number of
-% execution, I was getting confused whether there was a concpet of
-% "minimal trace". I thought it would be clearer like this.
- number of executions and change of success rate thresholds $k \geq 0$
- and $0 < \epsilon \leq 1$, respectively.
+informed,'' is however not a trivial one.  A plan $P$ is considered to be
+\emph{stable} for a particular world state $w$ if the rate of success of $P$ in
+$w$ is changing below a certain threshold $\epsilon$.
+% %
+In such a case, the agent can start to build confidence about the applicability
+level of $P$.
+% % We also allow specification of a minimum number of execution experiences for
+% $P$ in $w$, in order to have the change of rate of success be sufficiently
+% meaningful. %
+The stability notion extends to goals in the expected way: a goal is considered
+\emph{stable} for world state $w$ if all its relevant plans are stable for $w$. 
+%%
+When a goal is stable, we regard the plan selection for such goal as a ``well
+informed'' one. Thus, a plan failure is recorded in the plan if the subgoal
+that caused the plan failure is is stable for the world it was meant to be
+executed. In our example, we shall record the failure if goal $G_b$ is stable
+in world state $w_2$---the selection of option $P_b^2$ was an informed one.
 
-\begin{algorithm}\caption{$\RecordTrace(\lambda,k,\epsilon)$}\label{algo:record_failed_exec}
-KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $k\geq0$; $\epsilon > 0$}
-\medskip
+The following algorithm shows how a failure run is recorded in an active goal
+trace $\lambda$. Function $\StableGoal(G,w,k,\epsilon)$ returns true iff goal $G$
+is considered \textit{stable} for world state $w$, under change of success rate
+thresholds $0 < \epsilon \leq 1$ and minimal number of executions $k \geq 0$.
+ 
+ \renewcommand{\algorithmiccomment}[1]{\hfill \texttt{\small // #1}}
+ \newcommand{\assign}{\mbox{:=\ }}
+ \begin{algorithm}[h]
+	\caption{$\RecordTrace(\lambda,k,\epsilon)$}\label{algo:record_failed_exec}
+	\label{alg:NDS}
+  \begin{algorithmic}[1]
+    \REQUIRE $\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $k\geq0$;
+    $\epsilon > 0$ \ENSURE Propagates DT updates for plans
 
-$\RecordWorldDT(P_n,w_n,failure)$
+	\STATE $\RecordWorldDT(P_n,w_n,\failure)$
 
-If{$[\StableGoal(G_n,w_n,k,\epsilon) \land |\lambda|>1]$} {
-	tcp{\small decision for $G_n$ was informed}
-	$\lambda' \longleftarrow G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$
-	$\RecordTrace(\lambda',k,\epsilon)$
-}
+    \IF{$\StableGoal(G_n,w_n,k,\epsilon) \land |\lambda|>1$}
+    	 \STATE $\lambda' \assign G_0[P_0:w_0] \cdot \ldots \cdot
+    				G_{n-1}[P_{n-1}:w_{n-1}]$
+    	\STATE $\RecordTrace(\lambda',k,\epsilon)$ \COMMENT{recursive call}
+    \ENDIF
+  \end{algorithmic}
 \end{algorithm}
 
-The algorithm starts by assimilating the failure in the last plan
-$P_n$ in the trace, by recording the world $w_n$ in which $P_n$ was
-started as a ``failure'' case.
-% Stephane modified here to mention that there must be a previous node
-% here, which explains the |\lambda| > 1
-If there is a previous node in the trace (i.e. for the plan $P_{n-1}$
-which required achievement of the failed goal $G_n$) and the choice of
-executing plan $P_n$ to achieve goal $G_n$ was indeed an informed one
-(that is, goal $G_n$ was stable for $w_n$), the procedure is repeated
-for the previous node in the trace.  If, on the other hand, the last
-goal $G_n$ in the trace is not considered stable enough, the procedure
-terminates and no more data is assimilated.
-%
-It follows then that, in order to update the decision tree of a certain
-plan, it has to be the case that the (failed) decisions taken during
-the plan execution must have been informed enough.
-The closer to 0 $\epsilon$ is, and the higher $k$ is, the more
-conservative the agent will be in considering its decisions well
-informed. With $\epsilon$ = 1 and k = 0 we obtain a more standard
-learning approach where all information is accumulated, and the
-assumption is made that faulty information will eventually disappear
-as noise.
+ 
+The algorithm starts by recording the failure against the last plan $P_n$ in the
+trace.
+% %
+Next, if the choice of executing plan $P_n$ to achieve goal $G_n$ was indeed an
+informed one (that is, goal $G_n$ was stable for $w_n$), then the procedure
+should be repeated for the previous goal-plan nodes, if any.
+% %
+If, on the other hand, the last goal $G_n$ in the trace is not deemed stable
+enough, the procedure terminates and no more failure data is assimilated.
+% %
+Observe that, in order to update the decision tree of a certain plan that was
+chosen along the execution, it has to be the case that the (failed) decisions
+taken during execution must have all been informed ones.
 
-So, in the remaining of the paper, we shall compare two cases. The first we call
-aggressive concurrent learning (\CL) and is exactly the more traditional approach where all data is
-assimilated by the learner, that is, we take $\epsilon = 1$ and $k = 0$.
-% \footnote{Those values imply that plans/goals are always deemed stable.}
-%Stephane questions: is it really k=0? Shouldn'it be at least 1?
-The second we call bottom-up learning (\BUL), and we use $\epsilon = 0.3$ and
-$k = 3$.
-%according to Scott's email.
-We explore these two approaches on some programs with different
-structures  and discuss the results.
+
+So, in the remaining of the paper, we shall consider two learning approaches. The
+first, which we call \emph{aggressive concurrent learning} (\CL), corresponds to
+the more traditional approach where all data is always assimilated by the
+learner, that is, we take $\epsilon = 1$ and $k = 0$. In other words, every plan
+and every goal is always considered stable and, as a result, a failure in a plan
+is always recorded. The assumption is that misleading information, as
+discussed above, will eventually disappear as noise.
+% %
+The second one, which we refer to as \emph{bottom-up learning} (\BUL), is more
+cautious and records a failure execution experience when some stability on
+decisions is deemed, that is, $\epsilon > 0$. In our work, we have taken
+$\epsilon = 0.3$ and $k = 3$; although these values may seem very close to the
+ones used by \CL, they do indeed have a substantial impact on the results.
+%%
+Note that the lower $\epsilon$ is and the higher $k$ is, the more
+conservative the agent will be in considering its decisions ``well informed.'' 
+%
+% With $\epsilon$ = 1 and
+% k = 0 we obtain a more standard learning approach where all information is
+% accumulated, and the assumption is made that faulty information will eventually
+% disappear as noise.
+
+In the following section, we shall explore these two approaches against
+different programs with different structures.
+
+
+
+
