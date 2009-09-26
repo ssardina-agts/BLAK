@@ -58,68 +58,63 @@ tree structure below them as shown for plan $P_i$.}
 \label{fig:T3}
 \end{figure}
 
-Consider the example in Figure \ref{fig:T3}. 
-%
-Suppose that in some execution, plan $P_1$ is chosen to address goal $G$, in some world state $w_1$;
-that subgoal $G_1$ is successfully executed; and that plan $P_1^2$ is chosen to try and achieve
-the second subgoal $G_2$, requiring the achievement of $G_a$, $G_b$ and $G_c$.
-%
-Suppose further that $G_a$ is successfully achieved using $P_1^a$, but execution \emph{fails}
-when trying plan $P_3^b$ for achieving subgoal $G_b$.  As we have no failure recovery, this will
-immediately cause $G_b$ to fail, and recursively will cause failure at each stage. 
-%
-Clearly, the failure should be recorded in the decision tree of the plan that caused the
-failure, namely, plan $P_3^b$. However, it is not so clear, as will be discussed next, whether the
-failure should be recorded in the decision trees for plans higher up in the hierarchy, that is,
-plan $P_1^2$ and even top-level plan $P_1$.
-
-% Consider the example shown in Figure \ref{fig:gptree}: a link from a
-% goal to a plan means that this plan is relevant (potentially suitable)
-% for achieving the goal (e.g. $P_2$ is a relevant plan for $G_0$). A
-% link from a plan to a goal means that the plan needs to achieve that
-% goal as part of its execution (e.g. $P_1$ needs to achieve $G_1$ and
-% then $G_2$).  Suppose that in some execution, plan $P$ is chosen to
-% address goal $G$, in some world state $w$, and $G_0$ is the first step
-% in plan $P$. Suppose further that plan $P_1$ is chosen to try and
-% achieve $G_0$, requiring achievement of $G_1$, $G_2$ and $G_3$; $G_1$
-% is successfully achieved using, say, $P_3$, but after choosing $P_5$
-% to achieve $G_2$, there is a failure in $P_5$.  As we have no failure
-% recovery, this will immediately cause $G_2$ to fail, and recursively
-% will cause failure at each stage. Clearly the failure at the bottom of
-% the tree ($P_5$) should be recorded in the decision tree data for that
-% plan. However it is not so clear, as will be discussed next, whether
-% the failure should be recorded in the decision trees for $P_1$ and
-% $P$.
 
 
-In order to discuss further which data should be recorded where, we
-define the notion of an \textit{active execution trace} of the form
+Consider the example in Figure \ref{fig:T3}.
+% %
+Suppose that in some execution, plan $P_\ell$, for some $\ell \in \{1,\ldots,k\}$
+is selected in order to resolve top-goal $G$ in some world state $w_1$. The plan
+involves, in turn, the successful resolution of three sequential goals $G_a$,
+$G_b$, and finally $G_c$. Suppose further that subgoal $G_1$ has been resolved
+successfully, yielding new state $w_2$, and that plan $P_b^2$ has been chosen
+next to try and achieve the second subgoal $G_b$.
+% %
+Suppose next that the execution of plan $P_b^2$, which may involve more subgoals,
+happens to \emph{fail}. As we have no failure recovery, this will immediately
+cause goal $G_b$ itself to fail, and recursively will cause failure at each level
+until top-level goal $G$ itself fails.
+% %
+Clearly, the failure should be recorded in the decision tree of the plan where
+the failure originated, namely, plan $P_b^2$. However, it is not so clear, as
+will be discussed next, whether the failure should also be recorded in the
+decision trees for plans higher up in the hierarchy, for example, in plan
+$P_\ell$ (the one selected to address $G$).
+
+
+In order to discuss further which data should be recorded where, we define the
+notion of an \textit{active execution trace}, as a sequence of the form
 $G_0[P_0:w_0] \cdot G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, which
-represents the sequence of currently active goals, along with the plans which 
-have been selected to achieve each of them, and the world state in which the selection 
-was made---plan $P_i$ has been selected in world state $w_i$ in order to achieve the $i$-th
-active subgoal $G_i$.
-%
-In our example, the trace at the moment of failure would be the following one:
-\[
-\lambda=G[P_1:w_1] \cdot G_2[P_1^2:w_2] \cdot G_b[P_3^b:w_3].
-\]
+represents the sequence of currently active goals, along with the plans which
+have been selected to achieve each of them, and the world state in which the
+selection was made---plan $P_i$ has been selected in world state $w_i$ in order
+to achieve the $i$-th active subgoal $G_i$.
+% %
+In our example, the trace at the moment of failure is as follows:
+\[ \lambda=G[P_\ell:w_1] \cdot G_b[P_b^2:w_2]. \]
 
-When the final goal of $\lambda$ fails, it is clear that the decision
-tree of the plan being used to achieve that goal ought to be updated, in
-the example, a failure should be recorded for the world state $w_3$
-for the decision tree attached to plan $P_3^b$.  Although it may be the case
-that the plan usually succeeds in the situation in which it was
-chosen, and failure is simply due to some non-determinism (or in the
-general case, actions of other agents, interactions, etc.), there is
-no way to determine this and the learning process will eventually
-recognise such cases as ``noise.'' However, it is less clear whether
-the decision trees of plans associated with earlier goals in $\lambda$
-should be updated.  It may be, in fact, that the failure of $G_b$ could
-have been avoided, had the alternative plan $P_1^b$ been chosen instead.
-If this is the case, then recording a failure against $P_1^2$ and $P_1$ is not
-justified.  It may therefore be better to wait before recording failures
-against a plan until one is reasonably confident that subsequent choices were ``well informed.''
+
+So, when the final goal of $\lambda$ fails, namely $G_b$, it is clear that the
+decision tree of the plan being used to achieve that goal ought to be updated, in
+the example, a failure should be recorded for the world state $w_2$ for the
+decision tree attached to plan $P_2^b$.  Although it may be the case that the
+plan usually succeeds in the situation in which it was chosen, and failure is
+simply due to some non-determinism (or in the general case, actions of other
+agents, interactions, etc.), there is no way to determine this and the learning
+process will eventually recognise such cases as ``noise.''
+% %
+However, should the decision trees of plans associated with earlier goals in
+$\lambda$ (e.g., the one for $P_\ell$) be updated?  The point is that it is
+conceivable that the failure of goal $G_b$ could have been avoided, had an
+alternative plan, say $P_b^1$, been chosen instead. If this is the case, then
+recording a failure against plan $P_\ell$ would not not be justified.
+% %
+Informally, one could argue that it is best to wait before recording failures
+against a plan until one is reasonably confident that subsequent choices down the
+goal-plan tree hierarchy were ``well informed.'' In order words, if the agent
+knows that the plan selection for goal $G_b$ was as good and informed as
+possible, then recording the failure for world $w_1$ in plan $P_\ell$ would
+also be justified.
+
 
 \newcommand{\procedurefont}[1]{\mathsf{#1}}
 \newcommand{\StableGoal}{\procedurefont{StableGoal}}
