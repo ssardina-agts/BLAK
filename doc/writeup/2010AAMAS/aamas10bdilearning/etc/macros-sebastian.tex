@@ -350,13 +350,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Margin notes for comments  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\setlength{\marginparwidth}{0.8in}
+\setlength{\marginparwidth}{0.1in}
 \let\oldmarginpar\marginpar
 \renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
 {\raggedright\footnotesize #1}}
 
 % \setlength{\marginparwidth}{0.5in}
-\newcommand{\notem}[1]{\marginpar{\textbf{#1}}}
+\newcommand{\notem}[1]{**** \textbf{#1} ****}
 \newcommand{\notetext}[1]{\notem{OBS} \textit{#1}}
 
 \newcommand{\ncheck}{\notem{CHECK!}}
@@ -481,6 +481,7 @@ x}}}}}
 % \newcommand{\Lemma}[1]{ \begin{lemma} #1 \end{lemma} }
 % \newcommand{\Claim}[1]{ \begin{claim} #1 \end{claim} }
 % \newcommand{\Example}[1]{ \begin{example} #1 \end{example} }
+
 
 
 
