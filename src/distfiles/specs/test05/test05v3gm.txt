@@ -10,12 +10,10 @@
 @goal G1_2_1_1
 @goal G1_2_1_2
 @goal G1_1_1_1_1_1
-@goal G1_1_1_1_1_1_1_1
 @goal G1_1_1_1_1_2
 @goal G1_1_1_2_1_1
 @goal G1_1_1_2_1_2
 @goal G1_2_1_1_1_1
-@goal G1_2_1_1_1_1_1_1
 @goal G1_2_1_1_1_2
 @goal G1_2_1_2_1_1
 @goal G1_2_1_2_1_2
@@ -32,9 +30,6 @@
 @action a_3
 	@pre  (!a && !b)
 	@post a=true;
-@action a_4
-	@pre  (c || !c)
-	@post 
 
 @plan P1
     @handles TopGoal
@@ -146,35 +141,14 @@
     @handles G1_1_1_1_1_1
     @initPre true;
 	@pre true;
-    @body a_4 a_1
+    @body a_1
 @plan P1_1_1_1_1_1_2
     @handles G1_1_1_1_1_1
     @initPre true;
 	@pre true;
-    @body a_4 a_2
+    @body a_2
 @plan P1_1_1_1_1_1_3
     @handles G1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_4 a_3
-@plan P1_1_1_1_1_1_6
-    @handles G1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body G1_1_1_1_1_1_1_1
-
-@plan P1_1_1_1_1_1_1_1_1
-    @handles G1_1_1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_1
-@plan P1_1_1_1_1_1_1_1_2
-    @handles G1_1_1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_2
-@plan P1_1_1_1_1_1_1_1_3
-    @handles G1_1_1_1_1_1_1_1
     @initPre true;
 	@pre true;
     @body a_3
@@ -228,35 +202,14 @@
     @handles G1_2_1_1_1_1
     @initPre true;
 	@pre true;
-    @body a_4 a_1
+    @body a_1
 @plan P1_2_1_1_1_1_2
     @handles G1_2_1_1_1_1
     @initPre true;
 	@pre true;
-    @body a_4 a_2
+    @body a_2
 @plan P1_2_1_1_1_1_3
     @handles G1_2_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_4 a_3
-@plan P1_2_1_1_1_1_6
-    @handles G1_2_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body G1_2_1_1_1_1_1_1
-
-@plan P1_2_1_1_1_1_1_1_1
-    @handles G1_2_1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_1
-@plan P1_2_1_1_1_1_1_1_2
-    @handles G1_2_1_1_1_1_1_1
-    @initPre true;
-	@pre true;
-    @body a_2
-@plan P1_2_1_1_1_1_1_1_3
-    @handles G1_2_1_1_1_1_1_1
     @initPre true;
 	@pre true;
     @body a_3
