@@ -1,0 +1,45 @@
+\begin{tikzpicture}[level distance=1.2cm]
+
+\tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+
+\tikzstyle{level 1}=[sibling distance=2.5cm,level distance=0.5cm] 
+\tikzstyle{level 2}=[sibling distance=2.5cm,level distance=1.0cm]
+\tikzstyle{level 3}=[sibling distance=2.5cm,level distance=0.5cm]
+\tikzstyle{level 4}=[sibling distance=2.5cm,level distance=1.0cm]
+\tikzstyle{level 5}=[sibling distance=2.5cm,level distance=0.5cm]
+\tikzstyle{level 6}=[sibling distance=2.5cm,level distance=1.0cm]
+\tikzstyle{level 7}=[sibling distance=2.5cm,level distance=0.5cm]
+\tikzstyle{level 8}=[sibling distance=2.5cm,level distance=1.0cm]
+
+\node[goalbox] (T) {$G$}
+   child[solid] {node[planbox] (1) {$P$}
+      child {node[goalbox] (11) {$G$}
+		child {node[planbox] {$P$}
+			child {node[goalbox] {$G$}
+				child {node[planbox] {$P$}
+					child {node[goalbox] {$G$}
+						child {node[planbox] {$\surd$}}
+						child {node[planbox] {$\times$}
+							edge from parent node[above right,near start] {$\times 2$}
+						}
+						edge from parent node[left] {$\times 2$}
+					}
+				}
+				child {node[planbox] {$\times$}
+					edge from parent node[above right,near start] {$\times 2$}
+				}
+		               edge from parent node[left] {$\times 2$}
+			}
+		}
+		child {node[planbox] {$\times$}
+			edge from parent node[above right,near start] {$\times 2$}
+		}
+               edge from parent node[left] {$\times 2$}
+	}
+   }
+   child[solid] {node[planbox] (2) {$P$}
+	child {node[planbox] {$\times$}}
+   edge from parent node[above right,near start] {$\times 2$}};
+
+\end{tikzpicture}

@@ -345,47 +345,7 @@ relatively small.
 
 \begin{figure}
 \begin{center}
-\begin{tikzpicture}[level distance=1.2cm]
-
-\tikzstyle{planbox}=[draw]
-\tikzstyle{goalbox}=[draw,rounded corners]
-
-\tikzstyle{level 1}=[sibling distance=4cm,level distance=0.5cm] 
-\tikzstyle{level 2}=[sibling distance=3.4cm,level distance=1.2cm]
-\tikzstyle{level 3}=[sibling distance=1.5cm]
-\tikzstyle{level 4}=[sibling distance=1cm]
-
-\node[goalbox] (T) {$G$}
-   child[solid] {node[planbox] (1) {$P$}
-      child {node[goalbox] (11) {$G_P$} 
-		child {node[planbox] {$\surd$}}
-		child {node[planbox] {$\times$}
-			edge from parent node[right] {$\times 19$}		
-			}
-	}
-   }
-   child[solid] {node[planbox] (2) {$P_i'$}
-      child {node[goalbox] (22) {$G_i'$} 
-	child {node[planbox] {$\times$}}
-	child {node[planbox] {$\times$}}
-	child {node[planbox] {$\times$}}
-	edge from parent node[right] {$\times 3$}
-	}
-   edge from parent node[right,near start] {$\times 19$}};
-
-% \draw (T) -- (1) node (aux1) [coordinate,midway]{};
-% \draw (T) -- (2) node (aux2) [coordinate,midway]{};
-% \draw (aux1) .. controls +(0.3,-0.3) and +(-0.3,-0.3).. (aux2)
-% 			node[midway,above] {OR};
-
-% \draw (1) -- (11) node (aux21) [coordinate,midway]{};
-% \draw (1) -- (12) node (aux23) [coordinate,midway]{};
-% \draw (aux21) .. controls +(0.25,-0.25) and +(-0.25,-0.25).. (aux23)
-% 			node[midway,above] {AND};
-
-% \node[below left of=T,text width=2cm,xshift=-3cm] (label)
-% 		{$P_i$: plan \\ $G_i$: goals \\ $SG_i$: sub-goals};
-\end{tikzpicture}
+\input{figs/GPtree-T1}
 \end{center}
 \caption{Goal-plan tree hierarchical structure $\T_1$. To succeed, an agent is thus required to make
 two correct choices, including selecting $P$ at the top-level.}
@@ -397,40 +357,12 @@ two correct choices, including selecting $P$ at the top-level.}
 \end{figure}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\begin{figure}
+\begin{center}
+\input{figs/GPtree-T2}
+\end{center}
+\caption{Goal-plan tree hierarchical structure $\T_2$.}
+\label{fig:T2}
+\end{figure}
 
 
