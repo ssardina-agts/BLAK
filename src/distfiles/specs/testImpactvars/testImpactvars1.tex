@@ -1,0 +1,69 @@
+%%%% Document setup
+\documentclass[a4paper,landscape,title page]{article}
+\setlength{\oddsidemargin}{-0.65in}	% default=0in
+\setlength{\textwidth}{11in}		% default=9in
+\setlength{\textheight}{6.85in}		% default=5.15in
+\setlength{\topmargin}{-1.0in}		% default=0.20in
+\setlength{\headsep}{0.35in}		% default=0.35in
+\setlength{\parskip}{1.2ex}
+\setlength{\parindent}{0mm}
+
+%%%% Use packages
+\usepackage{times}
+\usepackage{tikz,pgf}
+\usetikzlibrary{arrows,automata,trees,plotmarks,calc}
+
+
+%%%%
+\title{Goal-Plan hierarchy for test \textit{testImpactvars1}}
+\author{
+Dhirendra Singh\\
+dhirendra.singh@rmit.edu.au}
+\begin{document}
+\maketitle
+
+\begin{figure*}[t]
+\begin{center}
+\begin{tikzpicture}[scale=2,level distance=1.5cm]
+\tikzstyle{txt}=[scale=1.8]
+\tikzstyle{planbox}=[scale=2,draw,minimum height=0.6cm,minimum width=0.6cm]
+\tikzstyle{goalbox}=[scale=2,draw,rounded corners,minimum height=0.6cm,minimum width=0.6cm]
+\tikzstyle{level 1}=[sibling distance=3cm] 
+\tikzstyle{level 2}=[sibling distance=3cm] 
+\tikzstyle{level 3}=[sibling distance=1.5cm]
+
+\node[goalbox] (T) {$G$}
+	child[dashed] {node[planbox] (P1) {$P_1$}}
+	child[solid] {node[planbox] (1) (Pi) {$P_i$}
+	child {node[goalbox] {$G_{i1}$}
+		child {node[planbox] {$P_{i1j}$} node[txt,below=0.3cm] {$\surd$}}
+		child {node[planbox] {$P_{i1j*}$} node[txt,below=0.3cm] {$\times$}
+			edge from parent node[txt,right,near start] {$\times 2$}
+		}
+	}
+	child {node[goalbox] {$G_{i2}$}
+		child {node[planbox] {$P_{i2j}$} node[txt,below=0.3cm] {$\surd$}}
+		child {node[planbox] {$P_{i2j*}$} node[txt,below=0.3cm] {$\times$}
+			edge from parent node[txt,right,near start] {$\times 2$}
+		}
+	}
+	child {node[goalbox] {$G_{i3}$}
+		child {node[planbox] {$P_{i3j}$} node[txt,below=0.3cm] {$\surd$}}
+		child {node[planbox] {$P_{i3j*}$} node[txt,below=0.3cm] {$\times$}
+			edge from parent node[txt,right,near start] {$\times 2$}
+		}
+	}
+	}
+   child[dashed] {node[planbox] (Pk) {$P_8$}};
+
+\node[txt] at ($ (P1)!.5!(Pi) $) {$\ldots$};
+\node[txt] at ($ (Pi)!.5!(Pk) $) {$\ldots$};
+
+\end{tikzpicture}
+\vskip 1.5cm
+\caption{Goal-Plan hierarchy for test \textit{testImpactvars1}. There are $2^3$ worlds whose solutions are distributed evenly in each of the $8$ top level plans. Successful execution trace is of length $3$.}
+\end{center}
+\end{figure*}
+
+\end{document}
+%%%%
