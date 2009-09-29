@@ -71,17 +71,29 @@ Of course, for a real-world implementation, one should appeal to algorithms for
 \emph{incremental} induction of the decision tree, such as those described in
 \cite{Swere06:Fast,Utgoff97Decision}.
 % %
-Observe that any algorithm for inducing a decision tree from a training set (in
-our case, the set of outcomes for different world states), would struggle for
-both classification accuracy as well as a compact representation (i.e., a smaller
-tree). Thus, algorithms like \textsf{J48}  may trade miss-classification of some
- past execution data (i.e., world states together with their final
-success/failure outcomes) for the sake of yielding a more compact decision tree.
-% %
-Nonetheless, together with the final success/failure classification at each leaf
-node, the number of both correct and incorrect classifications relative to
-the training set is also recorded. This shall provide then an estimate of therate of success of the plan for the world states classified under that leafnode.
+%Observe that any algorithm for inducing a decision tree from a training set (in
+%our case, the set of outcomes for different world states), would struggle for
+%both classification accuracy as well as a compact representation (i.e., a smaller
+%tree). Thus, algorithms like \textsf{J48}  may trade miss-classification of some
+% past execution data (i.e., world states together with their final
+%success/failure outcomes) for the sake of yielding a more compact decision tree.
+%% %
+%Nonetheless, together with the final success/failure classification at each leaf
+%node, the number of both correct and incorrect classifications relative to
+%the training set is also recorded. This shall provide then an
+%estimate of therate of success of the plan for the world states
+%classified under that leafnode. 
+%
 
+The algorithm for computing the decision tree aims to balance
+compactness of representation with accuracy. Information
+is maintained in the decision tree about the number of successes and
+failures for a given leaf node (representing a set of world states in
+our case) that have been encountered.
+We then use this information to estimate the rate of success of the
+plan to which this decision tree is attached, for the world states
+represented by the given leaf node - and in particular the world state
+currently under consideration.
 
 Finally, we should point out a number of assumptions that were made in order to
 be able to explore the basic issues we are concerned with.
