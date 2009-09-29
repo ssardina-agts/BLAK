@@ -43,9 +43,15 @@
 
 <target name="testMultiSolutionsR" description="Build, run and plot testMultiSolutionsR (Multiple Solutions with Goal Reuse)" depends="buildtestMultiSolutionsR,graphtestMultiSolutionsR,runtestMultiSolutionsR,plottestMultiSolutionsR"/>
 <target name="testMultiSolutions" description="Build, run and plot testMultiSolutions (Multiple Solutions)" depends="buildtestMultiSolutions,graphtestMultiSolutions,runtestMultiSolutions,plottestMultiSolutions"/>
+
 <target name="testEcai" description="Build, run and plot testEcai (Tests Stephane's tree)" depends="buildtestEcai,graphtestEcai,runtestEcai,plottestEcai"/>
+
 <target name="testImpactvars" description="Build, run and plot testImpactvars (Tests impact of relevant variables)" depends="buildtestImpactvars,graphtestImpactvars,runtestImpactvars,plottestImpactvars"/>
+<target name="testImpactvars2" description="Build, run and plot testImpactvars2 (Tests impact of relevant variables)" depends="buildtestImpactvars2,graphtestImpactvars2,runtestImpactvars2,plottestImpactvars2"/>
+<target name="testImpactvars3" description="Build, run and plot testImpactvars3 (Tests impact of relevant variables)" depends="buildtestImpactvars3,graphtestImpactvars3,runtestImpactvars3,plottestImpactvars3"/>
+
 <target name="testDummyvars" description="Build, run and plot testDummyvars (Tests impact of dummy variables)" depends="buildtestDummyvars,graphtestDummyvars,runtestDummyvars,plottestDummyvars"/>
+
 <target name="test01v1"   description="Build, run and plot test01v1"   depends="buildtest01v1,  graphtest01v1,  runtest01v1,  plottest01v1"  />
 <target name="test02v1"   description="Build, run and plot test02v1"   depends="buildtest02v1,  graphtest02v1,  runtest02v1,  plottest02v1"  />
 <target name="test03v1"   description="Build, run and plot test03v1"   depends="buildtest03v1,  graphtest03v1,  runtest03v1,  plottest03v1"  />
@@ -672,7 +678,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestImpactvars" description="Build testImpactvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testImpactvars"/>
-	<buildTest test.name="testImpactvars" specs.file="${specs.dir}/testImpactvars/pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<buildTest test.name="testImpactvars" specs.file="${specs.dir}/testImpactvars/testImpactvars1.txt"/>
 </target>
 <target name="graphtestImpactvars" description="Graph testImpactvars" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="testImpactvars"/>
@@ -686,7 +692,49 @@
 </target>
 <target name="plottestImpactvars" description="Plot testImpactvars" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars"/>
-	<plotResult test.name="testImpactvars" every="400" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<plotResult test.name="testImpactvars" every="400" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:testImpactvars1.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testImpactvars2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtestImpactvars2" description="Build testImpactvars2" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testImpactvars2"/>
+	<buildTest test.name="testImpactvars2" specs.file="${specs.dir}/testImpactvars/testImpactvars2.txt"/>
+</target>
+<target name="graphtestImpactvars2" description="Graph testImpactvars2" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testImpactvars2"/>
+</target>
+<target name="runtestImpactvars2" description="Run testImpactvars2">
+    <failIfBuildNotFound test.name="testImpactvars2"/>
+	<runTestRepeats test.name="testImpactvars2" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 5000 -m 1"/>
+	<runTestRepeats test.name="testImpactvars2" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 5000 -m 1"/>
+	<runTestRepeats test.name="testImpactvars2" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 5000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testImpactvars2" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 5000 -m 1 -k 3 -e 0.3"/>
+</target>
+<target name="plottestImpactvars2" description="Plot testImpactvars2" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testImpactvars2"/>
+	<plotResult test.name="testImpactvars2" every="500" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:testImpactvars2.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testImpactvars3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtestImpactvars3" description="Build testImpactvars3" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testImpactvars3"/>
+	<buildTest test.name="testImpactvars3" specs.file="${specs.dir}/testImpactvars/testImpactvars3.txt"/>
+</target>
+<target name="graphtestImpactvars3" description="Graph testImpactvars3" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testImpactvars3"/>
+</target>
+<target name="runtestImpactvars3" description="Run testImpactvars3">
+    <failIfBuildNotFound test.name="testImpactvars3"/>
+	<runTestRepeats test.name="testImpactvars3" run.mode="concurrent" run.select="coverage"      run.params="-n 0.1 -i 3000 -m 1"/>
+	<runTestRepeats test.name="testImpactvars3" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 3000 -m 1"/>
+	<runTestRepeats test.name="testImpactvars3" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 3000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testImpactvars3" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 3000 -m 1 -k 3 -e 0.3"/>
+</target>
+<target name="plottestImpactvars3" description="Plot testImpactvars3" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testImpactvars3"/>
+	<plotResult test.name="testImpactvars3" every="300" label="testImpactvars:n=0.1,m=1,k=3,e=0.3:testImpactvars3.txt"/>
 </target>
 
 
