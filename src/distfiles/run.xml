@@ -626,7 +626,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestEcai" description="Build testEcai" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testEcai"/>
-	<buildTest test.name="testEcai" specs.file="${specs.dir}/ecai/ecai.txt"/>
+	<buildTest test.name="testEcai" specs.file="${specs.dir}/testEcai/ecai.txt"/>
 </target>
 <target name="graphtestEcai" description="Graph testEcai" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="testEcai"/>
@@ -649,7 +649,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestDummyvars" description="Build testDummyvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testDummyvars"/>
-	<buildTest test.name="testDummyvars" specs.file="${specs.dir}/dummyvars/pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
+	<buildTest test.name="testDummyvars" specs.file="${specs.dir}/testDummyvars/pass-atdepth3-withseq1-invars20of20-withp001.txt"/>
 </target>
 <target name="graphtestDummyvars" description="Graph testDummyvars" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="testDummyvars"/>
@@ -672,7 +672,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildtestImpactvars" description="Build testImpactvars" if="available.buildDependencies" depends="buildDependencies">
 	<cleanTest test.name="testImpactvars"/>
-	<buildTest test.name="testImpactvars" specs.file="${specs.dir}/impactvars/pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
+	<buildTest test.name="testImpactvars" specs.file="${specs.dir}/testImpactvars/pass-atdepth3-withseq3-inworlds8of8-withp1by216.txt"/>
 </target>
 <target name="graphtestImpactvars" description="Graph testImpactvars" if="available.graphDependencies" depends="graphDependencies">
 	<graphInput test.name="testImpactvars"/>
