@@ -62,8 +62,8 @@ explored, relative to its ``complexity.''
 
 
 For the purpose of our analysis, in this work, we have used algorithm
-\textsf{J48}, a version of \textsf{c4.5} \cite{Mitchell97:ML}, from the
-well-known \textsf{weka} learning package \cite{weka99}. Consequently, we
+\propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
+well-known \weka\ learning package \cite{weka99}. Consequently, we
 recreate decision trees, from scratch, after each new piece of data is collected.
 % %
 Of course, for a real-world implementation, one should appeal to algorithms for
@@ -94,8 +94,9 @@ plan to which this decision tree is attached, for the world states
 represented by the given leaf node - and in particular the world state
 currently under consideration.
 
+
 Finally, we should point out a number of assumptions that were made in order to
-be able to explore the basic issues we are concerned with.
+focus on the core issues we are concerned with.
 % %
 First, we assume that actions in the environment may fail with some probability
 ($1$ if the action is not possible in a world sate).
@@ -110,7 +111,7 @@ Third, we consider the execution of a single intention; learning in the context
 of multiple, possibly interacting, intentions poses other extra challenges that
 would complicate our study substantially (see \cite{Thangarajah02}).
 % % %
-Finally, we assume no automated failure handling, whereby the BDI system retries
+Lastly, we assume no automated failure handling, whereby the BDI system retries
 a goal with alternative options, if the selected plan happens to fail. 
 Integrating failure handling would not alter any of our results, but it wouldcomplicate our implementation framework and the understanding of the basicmechanisms.
 

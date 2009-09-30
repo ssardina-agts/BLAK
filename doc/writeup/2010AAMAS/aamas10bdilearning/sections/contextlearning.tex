@@ -185,22 +185,18 @@ first, which we call \emph{aggressive concurrent learning} (\CL), corresponds to
 the more traditional approach where all data is always assimilated by the
 learner, that is, we take $\epsilon = 1$ and $k = 0$. In other words, every plan
 and every goal is always considered stable and, as a result, a failure in a plan
-is always recorded. The assumption is that misleading information, as
-discussed above, will eventually disappear as noise.
+is always recorded. The assumption is that misleading information, as discussed
+above, will eventually disappear as noise.
 % %
 The second one, which we refer to as \emph{bottom-up learning} (\BUL), is more
 cautious and records a failure execution experience when some stability on
 decisions is deemed, that is, $\epsilon > 0$. In our work, we have taken
-$\epsilon = 0.3$ and $k = 3$; although these values may seem very close to the
-ones used by \CL, they do indeed have a substantial impact on the results.
-%%
-Note that the lower $\epsilon$ is and the higher $k$ is, the more
-conservative the agent will be in considering its decisions ``well informed.'' 
-%
-% With $\epsilon$ = 1 and
-% k = 0 we obtain a more standard learning approach where all information is
-% accumulated, and the assumption is made that faulty information will eventually
-% disappear as noise.
+$\epsilon = 0.3$ and $k = 3$, that is, the context condition of a
+plan is considered stable (for a world state) if at least $3$ past execution experiences 
+have been recorded and the rate of success has lately been changing less than $0.3$.
+% %
+Note that the lower $\epsilon$ is and the higher $k$ is, the more conservative
+the agent is in considering its decisions ``well informed.''
 
 In the following section, we shall explore these two approaches against
 different programs with different structures.

@@ -89,19 +89,26 @@
 Each point represents results from $5$ experiment runs using a moving average of $100$ samples.}
 \end{center}
 \end{figure*}
-
+	
 
 In order to explore the difference between \BUL\ and \CL, we set up testbed
 programs composed of several goals and plans combined in a hierarchical manner
-and yielding goal-plan tree structures of different shapes. In particular, we
-crafted goal-plan tree structures representing different meaningful cases of BDI
-programs with one main top-level goal, i.e., the event to be resolved. In
-addition, each structure enjoys the, generally desirable, \emph{coverage}
-property, under which for every possible situation, (i.e., world state), there is
-always a way of addressing the main goal, i.e., there is at least one successful
-execution of the top-level event, provided the right plan choices are made.
-Observe that such successful (plan) choices may be different for different world
-states.
+and yielding goal-plan tree structures of different shapes.\footnote{We have
+implemented the learning agent system in the \JACK\ BDI platform
+\cite{Busetta99jack}. The fact that \JACK\ is a Java-based system and
+provides powerful meta-level reasoning capabilities, allows us to integrate \weka\ and
+probabilistic plan-selection mechanisms with not much effort. Nonetheless, all
+the results are independent on this and any other BDI agent system could
+have been used.}
+% %
+In particular, we crafted goal-plan tree structures representing different
+meaningful cases of BDI programs with one main top-level goal, i.e., the event to
+be resolved. In addition, each structure enjoys the, generally desirable,
+\emph{coverage} property, under which for every possible situation, (i.e., world
+state), there is always a way of addressing the main goal, i.e., there is at
+least one successful execution of the top-level event, provided the right plan
+choices are made. Observe that such successful (plan) choices may be different
+for different world states.
 % , as know-how information is generally predicated on the situation it is
 % applied in. %
 When it comes to describing the possible (observable) world states, we have used
@@ -113,30 +120,26 @@ not).
 Finally, we assume the agent is acting in a non-deterministic environment, in
 which actions that are expected to succeed, may still fail with some (small)
 probability. In most of our experiments, we assumed a $.1$ probability of
-uncontrolled failure for such actions. \footnote{See Discussion section on how
-our results generalize to a framework with world state built from non-binary
-fluents and with more complex accounts for stochastic actions.}
+uncontrolled failure for such actions.\footnote{See Discussion section on how our
+results generalize to a framework with world state built from non-binary fluents
+and with more complex accounts for stochastic actions.}
+% %
 
 
 
 
-The experiments consisted of posting the top-level goal repetitively
-under a random world state, running the corresponding \JACK\ learning
-agent, and recording whether the execution terminated successfully or
-not. We calculated the average rate of success of the goal every  $20$
-iterations, and investigate how this rate evolves as the agent refines
-the context condition of plans. 
-%
-We ran the tests using both a \BUL-based agent and a \CL-based
-agent, ensuring the same sampling of random world states for each
-agent. 
-%
+The experiments consisted in posting the top-level goal repetitively under random
+world states, running the corresponding  BDI learning agent, and finally
+recording whether the execution terminated successfully or not.
+% %
+Then, we calculated the average rate of success of the goal every some fixed
+number of iterations (in our case $20$), and investigated how this rate evolved
+as the agent refined the context condition of plans.
+% %%
+We ran the tests using both a \BUL-based agent and a \CL-based agent, ensuring
+the same sampling of random world states for each agent.
 % *** Could remove following sentence as we have already said this.
-With \BUL, we used $k=3$ and $\epsilon=0.3$, meaning that
-the context condition of a plan is considered stable at a certain
-world, if we have recorded at least $3$ past experiences and the rate
-of success has changed less than $0.3$ in the last executions.
-%
+With \BUL, we used $k=3$ and $\epsilon=0.3$, 
 
 From our set of experiments, we have selected three
 hierarchical structures, that best illustrate the results that we
