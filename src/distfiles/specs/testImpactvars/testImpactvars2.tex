@@ -38,41 +38,41 @@ dhirendra.singh@rmit.edu.au}
 \node[goalbox,yshift=1cm,solid] (T) {$G$}
 	child[dashed] {node[planbox] (P1) {$P_1$}}
 	child[solid] {node[planbox] (Pi) {$P_i$}
-		child {node[goalbox] {$G_{i1}$}
-			child {node[planbox] {$P_{i1j}$}
-				child {node[goalbox] {$G_{i1j1}$}
-					child {node[planbox] {$P_{i1j1k}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$P_{i1j1*}$} node[txt,below=0.3cm] {$\times$}
+		child {node[goalbox] {$G_{ia}$}
+			child {node[planbox] {$P_{iaj}$}
+				child {node[goalbox] {$G_{iaja}$}
+					child {node[planbox] {$P_{iajak}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{iaja*}$} node[txt,below=0.3cm] {$\times$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
-				child {node[goalbox] {$G_{i1j2}$}
-					child {node[planbox] {$P_{i1j2k}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$P_{i1j2*}$} node[txt,below=0.3cm] {$\times$}
+				child {node[goalbox] {$G_{iajb}$}
+					child {node[planbox] {$P_{iajbk}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{iajb*}$} node[txt,below=0.3cm] {$\times$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
 			}
-			child {node[planbox] {$P_{i1*}$} node[txt,below=0.3cm] {$\times$}
+			child {node[planbox] {$P_{ia*}$} node[txt,below=0.3cm] {$\times$}
 				edge from parent node[txt,right,near start] {$\times 3$}
 			}
 		}
-		child {node[goalbox] {$G_{i2}$}
-			child {node[planbox] {$P_{i2j}$}
-				child {node[goalbox] {$G_{i2j1}$}
-					child {node[planbox] {$P_{i2j1k}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$P_{i2j1*}$} node[txt,below=0.3cm] {$\times$}
+		child {node[goalbox] {$G_{ib}$}
+			child {node[planbox] {$P_{ibj}$}
+				child {node[goalbox] {$G_{ibja}$}
+					child {node[planbox] {$P_{ibjak}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{ibja*}$} node[txt,below=0.3cm] {$\times$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
-				child {node[goalbox] {$G_{i2j2}$}
-					child {node[planbox] {$P_{i2j2k}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$P_{i2j2*}$} node[txt,below=0.3cm] {$\times$}
+				child {node[goalbox] {$G_{ibjb}$}
+					child {node[planbox] {$P_{ibjbk}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{ibjb*}$} node[txt,below=0.3cm] {$\times$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
 			}
-			child {node[planbox] {$P_{i2*}$} node[txt,below=0.3cm] {$\times$}
+			child {node[planbox] {$P_{ib*}$} node[txt,below=0.3cm] {$\times$}
 				edge from parent node[txt,right,near start] {$\times 3$}
 			}
 		}
@@ -85,7 +85,7 @@ dhirendra.singh@rmit.edu.au}
 \end{tikzpicture}
 
 \vskip 1.5cm
-\caption{Goal-Plan hierarchy for test \textit{testImpactvars2}. There are $2^3$ worlds whose solutions are distributed evenly in each of the $4$ top level plans. Successful execution trace is of length $4$.}
+\caption{Goal-Plan hierarchy for test \textit{testImpactvars2} (based on the structure $T_3$ discussed in the IJCAI submission). There are $2^4$ worlds whose solutions are distributed evenly in each of the $4$ top level plans. Successful execution trace is of length $4$. Within each sub-tree $P_i$ \textit{Stable} is expected to perform better for a given world, but it suffers in the number of worlds. Overall, \textit{Concurrent} and \textit{Stable} perform equally well in this structure.}
 \end{center}
 \end{figure*}
 

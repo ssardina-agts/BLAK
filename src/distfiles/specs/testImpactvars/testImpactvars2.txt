@@ -1,6 +1,7 @@
 @attribute a observable boolean
 @attribute b observable boolean
 @attribute c observable boolean
+@attribute d observable boolean
 
 @topgoal TopGoal
 
@@ -40,10 +41,10 @@
 	@post c=false;
 @action A-45
 	@pre  (a && !b)
-	@post c=true;
+	@post d=true;
 @action A-67
 	@pre  (a && b)
-	@post c=false;
+	@post d=false;
 
 @plan P1
     @handles TopGoal
