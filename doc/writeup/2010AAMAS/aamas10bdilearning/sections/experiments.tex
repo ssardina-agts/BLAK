@@ -71,24 +71,6 @@
 %\end{center}
 %\end{figure*}
 
-
-\begin{figure*}[t]
-\begin{center}
-\subfigure[Structure $\T_1$]{\label{fig:T1_result}
-\input{figs/T1-result}
-}
-\qquad
-\subfigure[Structure $\T_2$]{\label{fig:T2_result}
-\input{figs/T2-result}
-}
-\qquad
-\subfigure[Structure $\T_3$]{\label{fig:T3_result}
-\input{figs/T3-result}
-}
-\caption{Agent performance under \BUL\ (circles) and \CL\ (triangles) schemes.
-Each point represents results from $5$ experiment runs using a moving average of $100$ samples.}
-\end{center}
-\end{figure*}
 	
 
 In order to explore the difference between \BUL\ and \CL, we set up testbed
@@ -132,40 +114,79 @@ The experiments consisted in posting the top-level goal repetitively under rando
 world states, running the corresponding  BDI learning agent, and finally
 recording whether the execution terminated successfully or not.
 % %
-Then, we calculated the average rate of success of the goal every some fixed
-number of iterations (in our case $20$), and investigated how this rate evolved
+We calculated the average rate of success of the goal every some fixed
+number of iterations (in our case $20$), and investigated how such rate evolved
 as the agent refined the context condition of plans.
 % %%
-We ran the tests using both a \BUL-based agent and a \CL-based agent, ensuring
-the same sampling of random world states for each agent.
-% *** Could remove following sentence as we have already said this.
-With \BUL, we used $k=3$ and $\epsilon=0.3$, 
+We ran the tests under both a \BUL-based agent and a \CL-based agent,
+ensuring the same sampling of random world states for each agent.
 
-From our set of experiments, we have selected three
-hierarchical structures, that best illustrate the results that we
-obtained, and the reason behind these results.
+\begin{figure}[t]
+\begin{center}
+\input{figs/GPtree-T1}
+\end{center}
+\caption{Goal-plan tree hierarchical structure $\T_1$. To succeed, an agent is thus required to make
+two correct choices, including selecting $P$ at the top-level.}
+\label{fig:T1}
+\end{figure}
+
+
+From our set of experiments, we have selected three hierarchical structures that
+best illustrate the results that we have obtained, namely:
+% %
 \begin{description}
-\item[(Tree $\T_1$)] A structure in which \CL\ is expected to have
-important advantages aver \BUL, since the former is capable of quickly
-assuming a top-level plan as not good, whereas \BUL\ is expected to
-devote substantial more time to get to the same conclusion. 
+\item[(Tree $\T_1$; Figure~\ref{fig:T1})] For each world state, the goal has
+one plan that can succeed (plan $P$), but many other options of comparable
+complexity that are bound to fail (plans $P_i'$). 
+%%
+An \CL-based agent will perform better on this structure than one using the 
+\BUL\ learning approach.
+% A structure in which \CL\ is expected to have important advantages over
+% \BUL, since the former is capable of quickly assuming a top-level plan as not
+% good, whereas \BUL\ is expected to devote substantial more time to get to the
+% same conclusion.
 
-\item[(Tree $\T_2$)] A structure in which \BUL\ is expected to have
-important advantages over \CL, since the latter may wrongly consider a
-top-level plan as a failing plan whereas there is a solution encoded
-under it. 
+\item[(Tree $\T_2$; ; Figure~\ref{fig:T2})] For each world state, the goal has
+one plan that can succeed (plan $P$), and a few others that would fail.
+However, the plan containing the solution is of substantial higher-complexity. 
+%%
+In this structure, a \BUL-based agent will outperform an \CL-based one.
+% A structure in which \BUL\ is
+% expected to have important advantages over \CL, since the latter may wrongly consider a
+% top-level plan as a failing plan whereas there is a solution encoded
+% under it. 
 
-\item[(Tree $\T_3$)] A structure that is arguably a general case for
-BDI systems and that provides different advantages for both \BUL\ and
-\CL\ in different parts of the tree. 
+\item[(Tree $\T_3$; Figure~\ref{fig:T3})] This stands for a ``balanced''
+structure that ends up providing different advantages for both \BUL\ and \CL\ in
+different parts of the tree.
 \end{description}
 
-In summary, we found that whereas the agent performance under the
-\BUL\ and \CL\ approaches is comparable on the first and third cases,
-the \BUL\ scheme provides substantial benefits in the second
-case. What is more important, if we consider agents that may choose
-not to consider a plan at all when its chances of success are believed
-very low, then the \CL\ approach collapses completely whereas the
+
+% \begin{description}
+% \item[(Tree $\T_1$; Figure~\ref{fig:T1})] A structure in which \CL\ is expected to
+% have important advantages over \BUL, since the former is capable of quickly
+% assuming a top-level plan as not good, whereas \BUL\ is expected to
+% devote substantial more time to get to the same conclusion. 
+% 
+% \item[(Tree $\T_2$; ; Figure~\ref{fig:T2})] A structure in which \BUL\ is
+% expected to have important advantages over \CL, since the latter may wrongly consider a
+% top-level plan as a failing plan whereas there is a solution encoded
+% under it. 
+% 
+% \item[(Tree $\T_3$; Figure~\ref{fig:T3})] A structure that is arguably a
+% general case for BDI systems and that provides different advantages for both \BUL\ and
+% \CL\ in different parts of the tree. 
+% \end{description}
+
+
+
+
+
+In summary, we found that whereas the agent performance under the \BUL\ and \CL\
+approaches is comparable on the first and third cases, the \BUL\ scheme provides
+substantial benefits in the second case. What is more important, if we consider
+agents that may choose not to consider a plan at all when its chances of success
+are believed very low, then the \CL\ approach collapses completely whereas the
 \BUL\ is robust enough to maintain performance.
 
 % For lack of space,
@@ -173,27 +194,51 @@ very low, then the \CL\ approach collapses completely whereas the
 % two.
 
 
-In Figure \ref{fig:T1}, we show the goal-plan tree structure
-$\T_1$. Initially, the agent has $20$ options to resolve the top-level
-goal $G$. However, $19$ of them lead to failure (plans
-$P_i'$). The benefit of using \CL\ comes from the fact that the agent
-will decrease the probability of selecting each of those $19$ plans as
-soon as they fail for the first time. \BUL\  however
-requires several failed experiences of each of those ``bad'' top-level
-options before decreasing their probability of selection---to update
-the decision tree of plan $P_i'$, \BUL\ would require each of their
-three subgoals to be ``stable.''
-%
-As we expected the \CL\ scheme does perform
-better in that it achieves optimal performance faster (Figure
-\ref{fig:T1_result}, cross marked). The \CL\
-approach yields optimal agent performance after around $300$
-iterations, whereas \BUL\ achieves such performance after around $400$
-iterations\footnote{Optimal performance amounts to a $90\%$
-success rate, as the environment fails with $.1$ probability and a
-successful run amounts to the execution of one action ($a_1$) only. If
-the environment is made fully deterministic, then agent performance
+
+In Figure \ref{fig:T1}, we show the goal-plan tree structure $\T_1$. Initially,
+the agent has $20$ options to resolve the top-level goal $G$. However, $19$ of
+them lead to failure (plans $P_i'$). The benefit of using \CL\ comes from the
+fact that the agent will decrease the probability of selecting each of those $19$
+plans as soon as they fail for the first time. \BUL\  however requires several
+failed experiences of each of those ``bad'' top-level options before decreasing
+their probability of selection---to update the decision tree of plan $P_i'$,
+\BUL\ would require each of their three subgoals to be ``stable.''
+% %%
+As we expected the \CL\ scheme does perform better in that it achieves optimal
+performance faster (Figure \ref{fig:T1_result}, cross marked). The \CL\ approach
+yields optimal agent performance after around $300$ iterations, whereas \BUL\
+achieves such performance after around $400$ iterations\footnote{Optimal
+performance amounts to a $90\%$ success rate, as the environment fails with $.1$
+probability and a successful run amounts to the execution of one action ($a_1$)
+only. If the environment is made fully deterministic, then agent performance
 eventually achieves complete success under both schemes.}.
+
+\begin{figure}[t]
+\begin{center}
+\input{figs/GPtree-T2}
+\end{center}
+\caption{Goal-plan tree hierarchical structure $\T_2$.}
+\label{fig:T2}
+\end{figure}
+
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[Structure $\T_1$]{\label{fig:T1_result}
+\input{figs/T1-result}
+}
+\qquad
+\subfigure[Structure $\T_2$]{\label{fig:T2_result}
+\input{figs/T2-result}
+}
+\qquad
+\subfigure[Structure $\T_3$]{\label{fig:T3_result}
+\input{figs/T3-result}
+}
+\caption{Agent performance under \BUL\ (circles) and \CL\ (triangles) schemes.
+Each point represents results from $5$ experiment runs using a moving average of $100$ samples.}
+\end{center}
+\end{figure*}
 
 
 The second structure $\T_2$ that we considered amounts to simplifying
@@ -311,26 +356,5 @@ costs, by considering some strategies as not viable too early. In
 those structures where \BUL\ performs worse, the difference is
 relatively small. 
 
-\begin{figure}
-\begin{center}
-\input{figs/GPtree-T1}
-\end{center}
-\caption{Goal-plan tree hierarchical structure $\T_1$. To succeed, an agent is thus required to make
-two correct choices, including selecting $P$ at the top-level.}
-% \caption{Goal-plan tree hierarchical structure $\T_1$. Leaf plans are assumed to succeed or fail
-% when executed in the environment. An edge with a label $\times n$ states that there are $n$ edges
-% of such type. As a result, goals $G$ and $G_P$ have $20$ relevant plans each. To succeed, an agent
-% is thus required to make two correct choices, including selecting $P$ at the top-level.}
-\label{fig:T1}
-\end{figure}
-
-
-\begin{figure}
-\begin{center}
-\input{figs/GPtree-T2}
-\end{center}
-\caption{Goal-plan tree hierarchical structure $\T_2$.}
-\label{fig:T2}
-\end{figure}
 
 
