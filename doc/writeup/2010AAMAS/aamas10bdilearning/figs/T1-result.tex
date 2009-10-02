@@ -12,5 +12,7 @@
 			file {data/test01v3gm.CP.tikzdata};
     \draw[-] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
 			file {data/test01v3gm.SP.tikzdata};
+    % Also draw the expected convergence: 0.9^4 actions=0.6561
+    \draw[dashed,-,yshift=0](0,0.6561) -- (3000,0.6561);
 
 \end{tikzpicture}

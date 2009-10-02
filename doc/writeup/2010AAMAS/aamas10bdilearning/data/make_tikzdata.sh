@@ -8,6 +8,10 @@
 SCRIPTDIR="$(cd "${0%/*}" 2>/dev/null; echo "$PWD")"
 PLOTSH=${SCRIPTDIR}/../../../../../src/distfiles/scripts/plot.sh
 
+##### Results 146 #####
+RESULTS=${SCRIPTDIR}/../../../../results/blak146
+${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
+
 ##### Results 137 #####
 RESULTS=${SCRIPTDIR}/../../../../results/blak137
 ${PLOTSH} -d ${RESULTS} -t testImpactvars2 -o ./testImpactvars2 -w 100 -z 450
@@ -15,7 +19,7 @@ ${PLOTSH} -d ${RESULTS} -t testImpactvars2 -o ./testImpactvars2 -w 100 -z 450
 
 ##### Results 130 #####
 RESULTS=${SCRIPTDIR}/../../../../results/blak130
-${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
+#${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
 ${PLOTSH} -d ${RESULTS} -t test05v3gm -o ./test05v3gm -w 100 -z 250
 
 ##### Results 110 #####
