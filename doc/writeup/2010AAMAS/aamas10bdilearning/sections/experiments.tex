@@ -136,17 +136,13 @@ best illustrate the results that we have obtained, namely:
 % %
 \begin{description}
 \item[(Tree $\T_1$; Figure~\ref{fig:T1})] For each world state, the goal has
-one plan that can succeed (plan $P$), but many other options of comparable
+few plans that can succeed (plans $P_i$), but many other options of comparable
 complexity that are bound to fail (plans $P_i'$). 
 %%
-An \CL-based agent will perform better on this structure than one using the 
-\BUL\ learning approach.
-% A structure in which \CL\ is expected to have important advantages over
-% \BUL, since the former is capable of quickly assuming a top-level plan as not
-% good, whereas \BUL\ is expected to devote substantial more time to get to the
-% same conclusion.
+Under this type of structure, an \CL-based agent will generally perform better 
+than an agent using the learning \BUL\ approach.
 
-\item[(Tree $\T_2$; ; Figure~\ref{fig:T2})] For each world state, the goal has
+\item[(Tree $\T_2$; Figure~\ref{fig:T2})] For each world state, the goal has
 one plan that can succeed (plan $P$), and a few others that would fail.
 However, the plan containing the solution is of substantial higher-complexity. 
 %%
@@ -162,56 +158,44 @@ different parts of the tree.
 \end{description}
 
 
-% \begin{description}
-% \item[(Tree $\T_1$; Figure~\ref{fig:T1})] A structure in which \CL\ is expected to
-% have important advantages over \BUL, since the former is capable of quickly
-% assuming a top-level plan as not good, whereas \BUL\ is expected to
-% devote substantial more time to get to the same conclusion. 
-% 
-% \item[(Tree $\T_2$; ; Figure~\ref{fig:T2})] A structure in which \BUL\ is
-% expected to have important advantages over \CL, since the latter may wrongly consider a
-% top-level plan as a failing plan whereas there is a solution encoded
-% under it. 
-% 
-% \item[(Tree $\T_3$; Figure~\ref{fig:T3})] A structure that is arguably a
-% general case for BDI systems and that provides different advantages for both \BUL\ and
-% \CL\ in different parts of the tree. 
-% \end{description}
+% In summary, we found that whereas the agent performance under the \BUL\ and \CL\
+% approaches is comparable on the first and third cases, the \BUL\ scheme provides
+% substantial benefits in the second case. What is more important, if we consider
+% agents that may choose not to consider a plan at all when its chances of success
+% are believed very low, then the \CL\ approach collapses completely whereas the
+% \BUL\ is robust enough to maintain performance.
+
+% For lack of space, we shall only give the form of tree $\T_1$ and informally
+% explain the characteristics of the other two.
+
+Let us next discuss each of the plan-goal structures and how the performance of
+\BUL-based and \CL-based agents compare.
 
 
-
-
-
-In summary, we found that whereas the agent performance under the \BUL\ and \CL\
-approaches is comparable on the first and third cases, the \BUL\ scheme provides
-substantial benefits in the second case. What is more important, if we consider
-agents that may choose not to consider a plan at all when its chances of success
-are believed very low, then the \CL\ approach collapses completely whereas the
-\BUL\ is robust enough to maintain performance.
-
-% For lack of space,
-% we shall only give the form of tree $\T_1$ and informally explain the characteristics of the other
-% two.
-
-
-
-In Figure \ref{fig:T1}, we show the goal-plan tree structure $\T_1$. Initially,
-the agent has $20$ options to resolve the top-level goal $G$. However, $19$ of
-them lead to failure (plans $P_i'$). The benefit of using \CL\ comes from the
-fact that the agent will decrease the probability of selecting each of those $19$
-plans as soon as they fail for the first time. \BUL\  however requires several
-failed experiences of each of those ``bad'' top-level options before decreasing
-their probability of selection---to update the decision tree of plan $P_i'$,
-\BUL\ would require each of their three subgoals to be ``stable.''
+Under a structure like $\T_1$, the agent basically has several options of the
+comparable complexity to resolve the top-level goal $G$ in certain world state,
+in our case, $20$ options. However, most of such options---$17$ in our example;
+plans $P_i'$---would inevitably lead to failure.
+% %
+The benefit of using the \CL\ approach comes from the fact that the agent will
+decrease the probability of selecting each of those $17$ failing plans as soon as
+they fail for the first time. In contrast, \BUL\ would require several failed
+experiences of each of those ``bad'' top-level options before decreasing their
+probability of selection---to update the decision tree of plan $P_i'$, \BUL\
+requires each of their three subgoals to be ``stable.''
 % %%
-As we expected the \CL\ scheme does perform better in that it achieves optimal
-performance faster (Figure \ref{fig:T1_result}, cross marked). The \CL\ approach
-yields optimal agent performance after around $300$ iterations, whereas \BUL\
-achieves such performance after around $400$ iterations\footnote{Optimal
-performance amounts to a $90\%$ success rate, as the environment fails with $.1$
-probability and a successful run amounts to the execution of one action ($a_1$)
-only. If the environment is made fully deterministic, then agent performance
-eventually achieves complete success under both schemes.}.
+As we expected the \CL\ scheme did perform better in our experiments, in that it
+achieved better success rate earlier; see Figure~\ref{fig:T1_result}.
+% %
+Note then that whereas the agent under the \CL\ approach reaches $50\%$ success
+after $1000$ iterations, it takes more than double for \BUL\ to achieve that
+performance.
+% %
+Eventually, both approaches will yield optimal performance. Observe that optimal
+performance amounts to a success rate of $81\%$, as the environment fails with
+probability $.1$ for every (working) action and each successful plan involves
+two actions.
+
 
 \begin{figure}[t]
 \begin{center}

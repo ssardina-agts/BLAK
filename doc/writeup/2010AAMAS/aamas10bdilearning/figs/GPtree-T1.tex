@@ -4,21 +4,31 @@
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
 
 \tikzstyle{level 1}=[sibling distance=4cm,level distance=0.5cm] 
-\tikzstyle{level 2}=[sibling distance=3.4cm,level distance=1.2cm]
-\tikzstyle{level 3}=[sibling distance=1.5cm]
+\tikzstyle{level 2}=[sibling distance=2.7cm,level distance=1.2cm]
+\tikzstyle{level 3}=[sibling distance=.9cm]
 \tikzstyle{level 4}=[sibling distance=1cm]
 
 \node[goalbox] (T) {$G$}
-   child[solid] {node[planbox] (1) {$P$}
-      child {node[goalbox] (11) {$G_P$}
-		child {node[planbox] {$\surd$}
-			edge from parent node[left] {$\times 2$}
-		}
-		child {node[planbox] {$\times$}
-			edge from parent node[right] {$\times 8$}
-		}
-               edge from parent node[right] {$\times 2$}
-	}
+   child[solid] {node[planbox] (1) {$P_i$}
+      	child {node[goalbox] (11) {$G_i^A$}
+			child {node[planbox] {$\surd$}
+			}
+			child {node[planbox] {$\surd$}
+			}
+			child {node[planbox] {$\times$}
+				edge from parent node[right,near start] {$\times 8$}
+			}
+	  	}
+      	child {node[goalbox] (11) {$G_i^B$}
+			child {node[planbox] {$\surd$}
+			}
+			child {node[planbox] {$\surd$}
+			}
+			child {node[planbox] {$\times$}
+				edge from parent node[right,near start] {$\times 8$}
+			}
+	  	}
+	edge from parent node[above left, near start] {$\times 3$}
    }
    child[solid] {node[planbox] (2) {$P_i'$}
       child {node[goalbox] (22) {$G_i'$} 
@@ -27,7 +37,7 @@
 	child {node[planbox] {$\times$}}
 	edge from parent node[right] {$\times 3$}
 	}
-   edge from parent node[above right,near start] {$\times 19$}};
+   edge from parent node[above right,near start] {$\times 17$}};
 
 % \draw (T) -- (1) node (aux1) [coordinate,midway]{};
 % \draw (T) -- (2) node (aux2) [coordinate,midway]{};
