@@ -2,8 +2,6 @@
 \section{Experimental Results}\label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
 In order to explore the difference between \BUL\ and \CL, we set up testbed
 programs composed of several goals and plans combined in a hierarchical manner
 and yielding goal-plan tree structures of different shapes.\footnote{We have
@@ -226,61 +224,57 @@ Because executing a plan is often not cost-free in real systems, it is likely
 that an adequate plan selection mechanism would in fact \emph{not} execute plans
 with too low probability of success. This, in turn, implies that the system
 may, at some point, decide to fail a goal without even trying it if it
-considers that the cost of failing at that point is preferrable to expected
+considers that the cost of failing at that point is preferable to expected
 benefits of executing some available plan.
 %%
 In fact, this is exactly what standards BDI systems do when no applicable plan
 is found for a certain event goal: the event goal is failed right away.
 
 
+To understand the impact of applicability in our BDI learning framework, we
+modified the probabilistic plan selection so that the agent does not consider
+plans whose chances of success are deemed below a threshold; in our case we set
+such threshold to $0.2$.
+% %
+For simplicity, we  removed the non-determinism in the model of the
+environment---actions either fail or succeed in each world state.
 
-This would presumably hurt \CL.
 
-To understand the impact of such
-In order to demonstrate this we modified the probabilistic plan
-selection explained in Section \ref{sec:framework} so that the \JACK\
-agent does not consider plans whose chance of success are below 0.2.
-In this experiment we also removed the non-determinism---actions
-always fail or succeed in each world state.\footnote{Managing the
-non-determinism without continuing to, with some probability, try all
-plans, requires a more sophisticated mechanism than a simple
-probability check, to avoid randomly cutting off options that happen
-to have failed on one iteration. However in the interests of
-simplicity we deal with the simplified case.}
-%
-The differences, shown in Figure \ref{fig:T2_result} are striking.
 
-Using the structure 
-$\T_3$ we  found that whereas \BUL\ maintains its performance (and in
-fact slightly improves, as failing leaf plans are discarded earlier
-than before thus reaching optimal performance around $100$
-iterations), the \CL\ approach is never able to learn and eventually
-is guaranteed to always fail the top-level goal.
+The difference between \CL-based and \BUL-based agents performance when run with
+an applicability threshold could be striking
+% %
+Using the structure $\T_3$ we found that whereas the \BUL\ scheme maintains its
+performance (and in fact may slightly improve due to truly failing leaf plans
+being ruled out earlier), the \CL\ approach may not able to learn at all and
+could end up eventually failing the top-level goal \emph{always}. This is
+reported in Figure \ref{fig:T3_result} (dotted lines).
 
-The explanation for this wrong behavior under \CL\ is as
-follows. Initially, the agent tries all top-level plans for the
-top-level goal. Because of their complexity, it is extremely unlikely
-that the set of correct choices are made randomly. Thus their
-executions fail.
-This causes \CL\ to decrease the feasibility of all plans
-tried, including the top-level ones. As this will likely happen
-for several iterations, eventually all plans for a goal reach a probability of
-success lower than required, thus
-running out of options, failing the goal in question, and propagating
-the failure up in the hierarchy. Eventually, the top-level plans end
-up with low expectations of success and are ruled out.
-This will give no options to try and the goal will always
-fail.\footnote{Such behavior does not arise in the original
-system because even if all plans have extremely low success chances,
-the agent would pick one anyway. As a result, the successful path
-would be eventually be found and plans' context conditions would start
-``recovering.''}
+The explanation for this undesirable behavior under \CL\ is as follows.
+% %
+Initially, the agent tries all top-level plans for the top-level goal, including
+the ones containing potential successful executions. Because of their complexity,
+their executions tend to fail initially. In each failure, \CL\ decreases the
+feasibility of all plans tried, including the top-level ones.  After several
+failures, eventually all plans for the top-level goal go below the applicability
+threshold of the system (including the ``good'' plans); from now on the system
+has no more applicable plans for the goal and will therefore fail it always.
+% %
+Observe that this behavior does not arise in the original system, because even if
+all plans perform very poorly initially, the agent would always pick one anyway,
+the successful path would be eventually be found, and the context decision trees
+of the plans associated with such path would then start ``recovering.''
 
-We conclude then that overall \BUL\ clearly exhibits more robust
-behaviour. In addition, in some structures \CL\ can pay significant
-costs, by considering some strategies as not viable too early. In
-those structures where \BUL\ performs worse, the difference is
-relatively small. 
+
+The reason why \BUL\ exhibits more robust behaviour here is that false negative
+execution runs (i.e., failing executions of a plan that do encode a successful
+execution) will \emph{not} be recorded.
+% %
+The \BUL\ account provides a \emph{confident} test---the stability test---that
+will preclude that to happen and which the \CL\ unfortunately lacks.
+% %
+In the next section, we shall explore an alternative way for providing a
+confident test that is indeed compatible with the \CL\ scheme.
 
 
 
