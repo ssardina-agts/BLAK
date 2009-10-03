@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Context Learning}\label{sec:context_learning}
+\section{Two Approaches to Context Learning}\label{sec:context_learning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\success}{\mbox{\emph{succ}}}
@@ -37,7 +37,11 @@ this issue by means of an example.
 \begin{center}
 \input{figs/GPtree-T3}
 \end{center}
-\caption{Goal-Plan hierarchy $\T_3$. There are $2^4$ worlds whose solutions are distributed evenly in each of the $4$ top level plans. Successful execution trace is of length $4$. Within each sub-tree $P_i$ \BUL\ is expected to perform better for a given world, but it suffers in the number of worlds. Overall, \CL and \BUL\ perform equally well in this structure.}
+\caption{Goal-Plan hierarchy $\T_3$. There are $2^4$ worlds whose solutions are
+distributed evenly in each of the $4$ top level plans. Successful execution trace
+is of length $4$. Within each sub-tree $P_i$ \BUL\ is expected to perform better
+for a given world, but it suffers in the number of worlds. Overall, \CL and \BUL\
+perform equally well in this structure.}
 \label{fig:T3}
 \end{figure}
 
@@ -45,58 +49,84 @@ this issue by means of an example.
 
 Consider the example in Figure \ref{fig:T3}.
 % %
-Suppose that in some execution, plan $P_\ell$, for some $\ell \in \{1,\ldots,k\}$
-is selected in order to resolve top-goal $G$ in some world state $w_1$. The plan
-involves, in turn, the successful resolution of three sequential goals $G_a$,
-$G_b$, and finally $G_c$. Suppose further that subgoal $G_1$ has been resolved
-successfully, yielding new state $w_2$, and that plan $P_b^2$ has been chosen
-next to try and achieve the second subgoal $G_b$.
+Suppose that in some execution, plan $P_i$, for some $i \in \{1,\ldots,4\}$ is
+selected in order to resolve top-goal $G$ in some world state $w_1$. The plan
+involves, in turn, the successful resolution of sequential goals $G_A$ and $G_B$.
+Suppose further that subgoal $G_A$ has been resolved successfully, yielding new
+state $w_2$, and that plan $P_B$ has been chosen next to try and achieve the
+second subgoal $G_B$.
 % %
-Suppose next that the execution of plan $P_b^2$, which may involve more subgoals,
-happens to \emph{fail}. As we have no failure recovery, this will immediately
-cause goal $G_b$ itself to fail, and recursively will cause failure at each level
-until top-level goal $G$ itself fails.
+Suppose next that the first subgoal of plan $P_B$, namely $G_{B1}$ has been
+successfully resolved, yielding new state $w_3$, but that the non-working plan
+$P_{B2}'$ for subgoal $G_{B2}$ is selected in $w_3$ and execution thus
+\emph{fails}.
 % %
-Clearly, the failure should be recorded in the decision tree of the plan where
-the failure originated, namely, plan $P_b^2$. However, it is not so clear, as
-will be discussed next, whether the failure should also be recorded in the
-decision trees for plans higher up in the hierarchy, for example, in plan
-$P_\ell$ (the one selected to address $G$).
+As there is no failure recovery, this failure will be propagated upwards in the
+hierarchy, causing goals $G_{B2}$ as well as $G_B$ and top-level goal $G$ itself
+fail.
+% %
+First of all, the failure (in world state $w_3$) must be recorded in the decision
+tree of the plan where the failure originated, namely, plan $P_{B2}'$. Such plan
+is in fact ``low-level,'' in that it has no subgoals and thus interacts with the
+external world directly. Hence, all we can expect is to learn such interaction
+over time.
+% %
+On the other hand, it is not so clear  whether the failure should also be
+recorded in the decision trees for plans higher up in the hierarchy (e.g., plans
+$P_B$ and $P_i$).
 
 
-In order to discuss further which data should be recorded where, we define the
-notion of an \textit{active execution trace}, as a sequence of the form
-$G_0[P_0:w_0] \cdot G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, which
+
+
+
+
+In order to discuss further \emph{which} data should be recorded \emph{where}, we
+define the notion of an \textit{active execution trace}, as a sequence of the
+form $G_0[P_0:w_0] \cdot G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, which
 represents the sequence of currently active goals, along with the plans which
 have been selected to achieve each of them, and the world state in which the
 selection was made---plan $P_i$ has been selected in world state $w_i$ in order
 to achieve the $i$-th active subgoal $G_i$.
 % %
-In our example, the trace at the moment of failure is as follows:
-\[ \lambda=G[P_\ell:w_1] \cdot G_b[P_b^2:w_2]. \]
+In our example, the trace at the moment of failure is as follows: \[
+\lambda=G[P_i:w_1] \cdot G_B[P_B:w_2] \cdot G_{B2}[P_{B2}':w_3]. \]
 
 
-So, when the final goal of $\lambda$ fails, namely $G_b$, it is clear that the
-decision tree of the plan being used to achieve that goal ought to be updated, in
-the example, a failure should be recorded for the world state $w_2$ for the
-decision tree attached to plan $P_2^b$.  Although it may be the case that the
-plan usually succeeds in the situation in which it was chosen, and failure is
-simply due to some non-determinism (or in the general case, actions of other
-agents, interactions, etc.), there is no way to determine this and the learning
-process will eventually recognise such cases as ``noise.''
+So, when the final goal of $\lambda$ fails, namely $G_{B2}$, it is clear that the
+decision tree of the plan being used to achieve such goal ought to be updated,
+and a failure should be recorded for the world state $w_3$ against 
+the decision tree attached to plan $P_{B2}'$.  
+%%
+By recording every outcome for the lowest plans, i.e., plans with no subgoals,
+the system eventually learns how such plans performs in the environment.
+%%
+% Although it may be the case
+% that the plan usually succeeds in the situation in which it was chosen, and failure is
+% simply due to some non-determinism (or in the general case, actions of other
+% agents, interactions, etc.), there is no way to determine this and the learning
+% process will eventually recognise such cases as ``noise.''
 % %
-However, should the decision trees of plans associated with earlier goals in
-$\lambda$ (e.g., the one for $P_\ell$) be updated?  The point is that it is
-conceivable that the failure of goal $G_b$ could have been avoided, had an
-alternative plan, say $P_b^1$, been chosen instead. If this is the case, then
-recording a failure against plan $P_\ell$ would not not be justified.
+
+What is more difficult to determine is whether the decision trees of plans
+associated with \emph{earlier goals} in $\lambda$ should also be updated.
 % %
-Informally, one could argue that it is best to wait before recording failures
-against a plan until one is reasonably confident that subsequent choices down the
-goal-plan tree hierarchy were ``well informed.'' In order words, if the agent
-knows that the plan selection for goal $G_b$ was as good and informed as
-possible, then recording the failure for world $w_1$ in plan $P_\ell$ would
-also be justified.
+More concretely, should failure cases in world states $w_2$ and $w_1$ be recorded
+against plans $P_B$ and $P_i$, respectively?
+% %
+The point is that it is conceivable that the failure of subgoal $G_{B2}$ in plan
+$P_B$, for instance, could indeed have been avoided, had the alternative plan
+$P_{B2}$, been chosen instead. Therefore, recording a failure against plan $P_B$
+would not not be justified---it is not true that plan $P_{B}$ is a ``bad'' one
+when in world state $w_3$.
+% %
+Informally, one could argue that it is more appropiate to \emph{wait} before
+recording failures against a plan until one is reasonably confident that
+subsequent choices down the goal-plan tree hierarchy were ``well informed.'' In
+our case, if the agent knows that the plan selection for goal $G_{B2}$ was as
+good and informed as possible, then recording the failure for world $w_2$ in plan
+$P_B$ would also be justified. Similarly, if the agent considers that the plan
+selection for subgoal $G_B$ was an informed choice, then recording the failure
+for world $w_1$ against $P_i$'s decision tree would be justified too.
 
 
 \newcommand{\procedurefont}[1]{\mathsf{#1}}
@@ -105,29 +135,30 @@ also be justified.
 \newcommand{\RecordWorldDT}{\procedurefont{RecordWorldDT}}
 
 
-The judgment as to whether the decisions made were sufficiently ``well
-informed,'' is however not a trivial one.  A plan $P$ is considered to be
-\emph{stable} for a particular world state $w$ if the rate of success of $P$ in
-$w$ is changing below a certain threshold $\epsilon$.
-% %
-In such a case, the agent can start to build confidence about the applicability
-level of $P$.
-% % We also allow specification of a minimum number of execution experiences for
-% $P$ in $w$, in order to have the change of rate of success be sufficiently
-% meaningful. %
-The stability notion extends to goals in the expected way: a goal is considered
-\emph{stable} for world state $w$ if all its relevant plans are stable for $w$. 
-%%
-When a goal is stable, we regard the plan selection for such goal as a ``well
-informed'' one. Thus, a plan failure is recorded in the plan if the subgoal
-that caused the plan failure is is stable for the world it was meant to be
-executed. In our example, we shall record the failure if goal $G_b$ is stable
-in world state $w_2$---the selection of option $P_b^2$ was an informed one.
 
-The following algorithm shows how a failure run is recorded in an active goal
-trace $\lambda$. Function $\StableGoal(G,w,k,\epsilon)$ returns true iff goal $G$
-is considered \textit{stable} for world state $w$, under change of success rate
-thresholds $0 < \epsilon \leq 1$ and minimal number of executions $k \geq 0$.
+
+The judgment as to whether plan choices were sufficiently ``well informed,'' is
+however not a trivial one.  A plan $P$ is considered to be \emph{stable} for a
+particular world state $w$ if the rate of success of $P$ in $w$ is changing below
+a certain threshold $\epsilon$. In such a case, the agent can start to build
+confidence about the applicability level of $P$. The stability notion extends to
+goals as follows: a goal is considered \emph{stable} for world state $w$ if all
+its relevant plans are stable for $w$.
+% %
+When a goal is stable, we regard the plan selection for such goal as a ``well
+informed'' one. Thus, a plan failure is recorded in the plan if the subgoal that
+failed is stable for the world it was meant to be resolved in. In our example, we
+record the failure in plan $P_B$ ($P_i$) if goal $G_B$ ($G_B$) is deemed stable
+in world state $w_3$ ($w_2$), that is, if the selection of option $P_{B2}'$
+($P_B$) was an informed one.
+
+
+
+The $\RecordTrace$ algorithm below shows how a failed execution run $\lambda$ is
+recorded. Function
+$\StableGoal(G,w,k,\epsilon)$ returns true iff goal $G$ is considered \textit{stable} for world state $w$, under change of
+success rate thresholds $0 < \epsilon \leq 1$ and minimal number of executions $k
+\geq 0$.
  
  \renewcommand{\algorithmiccomment}[1]{\hfill \texttt{\small // #1}}
  \newcommand{\assign}{\mbox{:=\ }}
@@ -152,11 +183,11 @@ thresholds $0 < \epsilon \leq 1$ and minimal number of executions $k \geq 0$.
 The algorithm starts by recording the failure against the last plan $P_n$ in the
 trace.
 % %
-Next, if the choice of executing plan $P_n$ to achieve goal $G_n$ was indeed an
+Next, if the choice of executing plan $P_n$ to achieve goal $G_n$ was deemed an
 informed one (that is, goal $G_n$ was stable for $w_n$), then the procedure
 should be repeated for the previous goal-plan nodes, if any.
 % %
-If, on the other hand, the last goal $G_n$ in the trace is not deemed stable
+If, on the other hand, the last goal $G_n$ in the trace is not considered stable
 enough, the procedure terminates and no more failure data is assimilated.
 % %
 Observe that, in order to update the decision tree of a certain plan that was
@@ -164,20 +195,23 @@ chosen along the execution, it has to be the case that the (failed) decisions
 taken during execution must have all been informed ones.
 
 
-So, in the remaining of the paper, we shall consider two learning approaches. The
-first, which we call \emph{aggressive concurrent learning} (\CL), corresponds to
-the more traditional approach where all data is always assimilated by the
-learner, that is, we take $\epsilon = 1$ and $k = 0$. In other words, every plan
-and every goal is always considered stable and, as a result, a failure in a plan
-is always recorded. The assumption is that misleading information, as discussed
-above, will eventually disappear as noise.
+
+So, in the remaining of the paper, we shall consider two learning approaches
+compatible with the framework developed in the previous section. The first, which
+we call \emph{aggressive concurrent learning} (\CL), corresponds to the more
+traditional approach where all data is always assimilated by the learner, that
+is, we take $\epsilon = 1$ and $k = 0$. In other words, every plan and every goal
+is always considered stable and, as a result, a failure in a plan is always
+recorded. The assumption is that misleading information, as discussed above, will
+eventually disappear as noise.
 % %
 The second one, which we refer to as \emph{bottom-up learning} (\BUL), is more
 cautious and records a failure execution experience when some stability on
 decisions is deemed, that is, $\epsilon > 0$. In our work, we have taken
-$\epsilon = 0.3$ and $k = 3$, that is, the context condition of a
-plan is considered stable (for a world state) if at least $3$ past execution experiences 
-have been recorded and the rate of success has lately been changing less than $0.3$.
+$\epsilon = 0.3$ and $k = 3$, that is, the context condition of a plan is
+considered stable (for a world state) if at least $3$ past execution experiences
+have been recorded and the rate of success has lately been changing less than
+$0.3$.
 % %
 Note that the lower $\epsilon$ is and the higher $k$ is, the more conservative
 the agent is in considering its decisions ``well informed.''

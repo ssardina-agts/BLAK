@@ -2,76 +2,7 @@
 \section{Experimental Results}\label{sec:experiments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\begin{figure*}[t]
-%\begin{center}
-%\subfigure[Structures $\T_1$ (crosses) and $\T_3$ (circles)]{\label{fig:tree01_result}
-%\begin{tikzpicture}[x=0.0075cm,y=4cm]
-%	% DRAW AXES LINES
-%    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (1050,0);
-%    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
 
-%	% DRAW AXES NUMBERS
-%    \foreach \x/\xtext in {0/0,1.5/200,3/400,4.5/600,6/800,7.5/1000}
-%        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
-%            node[anchor=north] {$\xtext$};
-%    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
-%        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
-
-%	% WRITE AXES LABELS
-%    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
-%%     \node[below=.5cm] at (x axis mid) {Iterations};
-%    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
-
-%	% PLOT bul DATA TEST 01
-%    \draw[-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
-%			file {data/previous/failtest01-bul.data};
-%	% PLOT cl DATA TEST 01
-%    \draw[dashed,-] plot[mark=x,mark size=3,smooth,mark options={color=black}] 
-%			file {data/previous/failtest01-cl.data};
-
-%	% PLOT bul DATA TEST 18
-%    \draw[-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
-%			file {data/previous/failtest18-bul.data};
-%	% PLOT cl DATA TEST 18
-%    \draw[dashed,-] plot[mark=*,mark size=1,smooth,mark options={color=black}] 
-%			file {data/previous/failtest18-cl.data};
-%\end{tikzpicture}
-%}
-%\qquad
-%\subfigure[Structure $\T_2$]{\label{fig:tree08_result}
-%\begin{tikzpicture}[x=0.00121cm,y=4cm]
-%	% DRAW AXES LINES
-%    \draw[->,xshift=0] (0,0) -- coordinate (x axis mid) (6300,0);
-%    \draw[->,xshift=0] (0,0) -- coordinate (y axis mid) (0,1.1);
-
-%	% DRAW AXES NUMBERS
-%    \foreach \x/\xtext in {0/0,1.452/1200,2.904/2400,4.356/3600,5.808/4800,7.26/6000}
-%        \draw [xshift=0cm](\x cm,1pt) -- (\x cm,-3pt)
-%            node[anchor=north] {$\xtext$};
-%    \foreach \y/\ytext in {0/,1/25,2/50,3/75,4/100}
-%        \draw (-1pt,\y cm) -- (0pt,\y cm) node[anchor=west] {$\ytext$};
-
-%	% WRITE AXES LABELS
-%    \node[above,xshift=3cm] at (x axis mid) {\# Iterations};
-%%     \node[below=.5cm] at (x axis mid) {Iterations};
-%    \node[above,shift={(0.8cm,2cm)}] at (y axis mid) {\% Success};
-%%     \node[left=0.5cm,rotate=90,xshift=1cm] at (y axis mid) {Success Income};
-
-%	% PLOT STABLE DATA
-%    \draw[-] plot[mark=*,mark size=0,smooth,mark options={color=black}] 
-%			file {data/previous/failtest08-bul.data};
-%	% PLOT STABLE DATA
-%    \draw[dashed,-] plot[mark=x,mark size=0,smooth,mark options={color=black}] 
-%			file {data/previous/failtest08-cl.data};
-%\end{tikzpicture}
-%}
-%\caption{Agent performance under \BUL\ and \CL\ schemes. Solid lines
-%represent agent performance under the \BUL\ approach; dashed lines represent agent performance under
-%the \CL\ approach. Each point stands for the average of the last $20$ executions.}
-%\end{center}
-%\end{figure*}
-
-	
 
 In order to explore the difference between \BUL\ and \CL, we set up testbed
 programs composed of several goals and plans combined in a hierarchical manner
@@ -193,8 +124,8 @@ performance.
 % %
 Eventually, both approaches will yield optimal performance. Observe that optimal
 performance amounts to a success rate of $81\%$, as the environment fails with
-probability $.1$ for every (working) action and each successful plan involves
-two actions.
+probability $.1$ for every (working) action and each successful execution
+involves the performance of two actions (leaf plans consist of single actions).
 
 
 \begin{figure}[t]
@@ -225,76 +156,87 @@ Each point represents results from $5$ experiment runs using a moving average of
 \end{figure*}
 
 
-The second structure $\T_2$ that we considered amounts to simplifying
-each plan $P_i'$ to be just a single action that always fails and
-making the goal-tree hierarchy below plan $P$ more complex, that is,
-deeper and with more goals.\footnote{For lack of space, we do not show
-this structure.}
-% \footnote{For lack of space, we do not show
-% this structure, but will be included in the final version.}
-%
-Under such hierarchy, the agent needs to make four correct plan
-choices to result in a successful execution; there are also many
-chances for the agent to fail under $P$.
-%
-Although one would expect \BUL\ to yield better agent performance than
-\CL, the difference is enormous. Figure \ref{fig:T2_result} shows
-that while the \BUL\ approach, achieves optimal performance in around
-$100$ iterations, the \CL\ scheme, requires around $5000$ execution
-experiences.  
-%
-The reason is clear: since there are more chances to fail plan $P$
-initially, \CL\ marks this plan ``bad,'' causing plans $P_i'$ (which
-are all non-working) to be selected at least once in preference to
-trying $P$ again. On the other hand, \BUL\ would not consider $P$
-``bad'' even when failing it, since it is aware that decisions made 
-below were not informed enough. Consequently $P$ will continue to be
-explored with equal likelihood to the $P_i'$.
-% *** Sentence below could be cut - its an aside...
-%
-As a matter of fact,
-provided adequate parameters are used for checking stability, \BUL\
-would only record failed execution traces in plan $P$ if the
-environment happened to fail unexpectedly: if the decisions were
-informed and the environment cooperated, then the execution is
-expected to succeed. 
-%
-Notice that optimal behavior amounts to less than a $75\%$ rate of
-success, since the agent needs to ultimately perform four actions,
-each of them having a probability of success of $90\%$ when performed
-in the real world. 
+Let us now analyse the goal-plan tree $\T_2$ shown in Figure~\ref{fig:T2}.
+% %
+Under such structure, a successful execution is encoded in a complex plan, in our
+case plan $P$. Other options that the agent may have (e.g., plans $P_i'$) are of
+less complexity, but do not lead to solutions for resolving the goal.
+% %
+Note that because the plan containing the solution, namely $P$, is fairly
+complex, the agent needs to make several correct choices in order to arrive to a
+successful execution---there are many ways the agent may fail when carrying out
+$P$.
+% %
+Although we expected \BUL\ to yield better agent performance than \CL, the
+difference was enormous in our experiments. Figure \ref{fig:T2_result} shows that
+while the \BUL\ approach achieves optimal performance, which amounts to slightly
+over $40\%$ rate of success, in around $300$ iterations, the \CL\ scheme,
+requires close to $2500$ execution experiences. The reason is clear: since there
+are more chances to fail plan $P$ initially, \CL\ marks this plan as ``bad,''
+compared with the non-working plans $P_i'$. On the other hand, \BUL\ would not
+jump to the conclusion that $P$ is a ``bad'' plan even when failing it, since it
+is aware that decisions made below $P$ were not informed enough. Consequently,
+plan $P$ will continue to be explored with \emph{equal} likelihood to plans
+$P_i'$.
+% %
+Note that this structure shows exactly the problem discussed in the previous
+section, namely, the drawbacks of assuming a plan as a bad option just because it
+happened to fail, without enough consideration of the confidence on the choices
+done below the plan in question.
 
-Let us now consider the third hierarchical structure $\T_3$, depicted
-in Figure \ref{fig:T3}. In this case, the top-level goal $G$ has
-five relevant plans, which are all ``complex,'' that is, they all have
-several levels and multiple goals and plans. However, only one
-particular path in this hierarchy will lead to a successful 
-execution for a particular world state. 
-Among other things, this means that at the top-level the agent ought
-to select the right plan, all the other four plans are bound to fail
-eventually. 
-%
-We argue that this is the typical case in most BDI agent systems, in
-that for each goal, the agent may have several strategies, but each
-one is crafted to cover uniquely a particular subset of states.
-%
-From the two learning approaches we are considering, structure $\T_3$
-provides advantages for both of them, in different parts of the
-tree. The \CL\ scheme is expected to learn faster the inadequacy 
-of the four non-working top-level programs, but the \BUL\ would better
-explore, and find a solution, within the working top-level plan.
-%
-This balance is corroborated by the fact that both agents have
-comparable performance, with \BUL\ yielding improved behavior slightly
-quicker (see Figure \ref{fig:T1_result}, circle marked). 
 
-However, we are currently considering all plans as potentially
-applicable and worth trying - even when there is a very low chance of
-success. Given that executing a plan is often not cost-free in real
-systems, it is likely that the plan selection mechanism would in fact
-not execute plans with too low a probability of success. This would
-presumably hurt \CL.
-% 
+Finally, consider the hierarchical structure $\T_3$ depicted in Figure
+\ref{fig:T3}.
+% %
+In this case, the top-level goal $G$ has four relevant plans, which are all
+``complex,'' that is, they all have several levels and multiple goals and plans.
+However, given a world state, only one particular path in this hierarchy will
+lead to a successful execution (of course, for different states, different
+top-level plans may apply). Among other things, this means that at the top-level
+the agent ought to select the right plan given the current world sate, all the
+other options plans are bound to eventually fail.
+% %
+We argue that this is a common feature found in many BDI agent applications, in
+that even though the agent has been programmed with several strategies for
+resolving a goal, each one is crafted to cover uniquely a particular subset of
+states. In other words, these are systems with low \emph{know-how} overlap.
+% %
+With respect to the two learning approaches we are considering, structure $\T_3$
+provides advantages for both of them, in different parts of the tree. The \CL\
+scheme is expected to learn faster the inadequacy of the non-working top-level
+programs, whereas the \BUL\ would better explore, and find a solution, within the
+working top-level plan. This balance was corroborated in our experiments, in
+which both type of agents experienced comparable performance; see Figure
+\ref{fig:T3_result}.
+
+
+
+
+\subsection{Plan Applicability and Optimality}
+
+So far, we have assumed that the agent, when faced to resolve a goal, considers
+all relevant plans as \emph{applicable} too, even for plans with very low chance
+of success.
+% %
+This implies that the, in contrast with standard BDI system, our extended
+learning BDI framework will \emph{always} select a plan among the relevant
+options.
+% %
+Because executing a plan is often not cost-free in real systems, it is likely
+that an adequate plan selection mechanism would in fact \emph{not} execute plans
+with too low probability of success. This, in turn, implies that the system
+may, at some point, decide to fail a goal without even trying it if it
+considers that the cost of failing at that point is preferrable to expected
+benefits of executing some available plan.
+%%
+In fact, this is exactly what standards BDI systems do when no applicable plan
+is found for a certain event goal: the event goal is failed right away.
+
+
+
+This would presumably hurt \CL.
+
+To understand the impact of such
 In order to demonstrate this we modified the probabilistic plan
 selection explained in Section \ref{sec:framework} so that the \JACK\
 agent does not consider plans whose chance of success are below 0.2.

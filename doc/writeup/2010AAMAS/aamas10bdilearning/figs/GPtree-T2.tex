@@ -14,11 +14,11 @@
 
 \node[goalbox] (T) {$G$}
    child[solid] {node[planbox] (1) {$P$}
-      child {node[goalbox] (11) {$G$}
-		child {node[planbox] {$P$}
-			child {node[goalbox] {$G$}
-				child {node[planbox] {$P$}
-					child {node[goalbox] {$G$}
+      child {node[goalbox] (11) {\phantom{$G$}}
+		child {node[planbox] {\phantom{$P$}}
+			child {node[goalbox] {\phantom{$G$}}
+				child {node[planbox] {\phantom{$P$}}
+					child {node[goalbox] {\phantom{$G$}}
 						child {node[planbox] {$\surd$}}
 						child {node[planbox] {$\times$}
 							edge from parent node[above right,near start] {$\times 2$}
@@ -38,8 +38,7 @@
                edge from parent node[left] {$\times 2$}
 	}
    }
-   child[solid] {node[planbox] (2) {$P$}
+   child[solid] {node[planbox] (2) {$P_i'$}
 	child {node[planbox] {$\times$}}
    edge from parent node[above right,near start] {$\times 2$}};
-
 \end{tikzpicture}
