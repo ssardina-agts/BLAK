@@ -8,8 +8,8 @@
 SCRIPTDIR="$(cd "${0%/*}" 2>/dev/null; echo "$PWD")"
 PLOTSH=${SCRIPTDIR}/../../../../../src/distfiles/scripts/plot.sh
 
-##### Results 146 #####
-RESULTS=${SCRIPTDIR}/../../../../results/blak146
+##### Results 152 #####
+RESULTS=${SCRIPTDIR}/../../../../results/blak152
 ${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
 
 ##### Results 137 #####
