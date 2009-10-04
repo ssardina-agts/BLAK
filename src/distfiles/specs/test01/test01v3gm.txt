@@ -70,7 +70,7 @@
 	@post c=true; 
 @action a_3
 	@pre  (!a && !b)
-	@post a=true;
+	@post c=false;
 @action a_5
 	@pre  (c || !c)
 	@post 
@@ -207,7 +207,7 @@
     @handles G1_1
     @initPre true;
  	@pre true;
-    @body a_5 a_1 
+    @body a_1 
 @plan P1_1_7
     @handles G1_1
     @initPre true;
@@ -258,7 +258,7 @@
     @handles G1_2
     @initPre true;
  	@pre true;
-    @body a_5 a_1
+    @body a_1
 @plan P1_2_7
     @handles G1_2
     @initPre true;
@@ -309,7 +309,7 @@
     @handles G2_1
     @initPre true;
  	@pre true;
-    @body a_5 a_2 
+    @body a_2 
 @plan P2_1_7
     @handles G2_1
     @initPre true;
@@ -360,7 +360,7 @@
     @handles G2_2
     @initPre true;
  	@pre true;
-    @body a_5 a_2
+    @body a_2
 @plan P2_2_7
     @handles G2_2
     @initPre true;
@@ -411,7 +411,7 @@
     @handles G3_1
     @initPre true;
  	@pre true;
-    @body a_5 a_3 
+    @body a_3 
 @plan P3_1_7
     @handles G3_1
     @initPre true;
@@ -462,7 +462,7 @@
     @handles G3_2
     @initPre true;
  	@pre true;
-    @body a_5 a_3
+    @body a_3
 @plan P3_2_7
     @handles G3_2
     @initPre true;
