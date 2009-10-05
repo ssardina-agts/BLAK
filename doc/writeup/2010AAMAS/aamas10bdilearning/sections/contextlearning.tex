@@ -8,15 +8,17 @@
 
 With the classical BDI programming framework extended with decision trees and a
 probabilistic plan selection scheme, we are now ready to develop mechanisms for
-learning context decision trees and hopefully improving over time the selection
-of plans based on experience.
+learning context decision trees
+%and hopefully improving over time the selection
+%of plans based on experience.
+based on online experiences, in order to improve plan selection over time.
 % %
 To that end, in this section, we explore two approaches for learning the context
 condition of plans.
 
 
 
-Recall that our ultimate objective is to learn which plans are best for achieving
+Recall that our objective is to learn which plans are best for achieving
 a particular goal event in the various world states that may ensue. Given that,
 in this work, we have no measure of cost for plans,\footnote{This could also be a
 useful addition, but is not part of standard BDI programming languages.} a good
@@ -67,12 +69,14 @@ hierarchy, causing goals $G_{B2}$ as well as $G_B$ and top-level goal $G$ itself
 fail.
 % %
 First of all, the failure (in world state $w_3$) must be recorded in the decision
-tree of the plan where the failure originated, namely, plan $P_{B2}'$. Such plan
-is in fact ``low-level,'' in that it has no subgoals and thus interacts with the
-external world directly. Hence, all we can expect is to learn such interaction
-over time.
+tree of the plan where the failure originated, namely, plan $P_{B2}'$. 
+%Such plan is in fact ``low-level,'' in that it has no subgoals and thus interacts with the
+%external world directly. Hence, all we can expect is to learn such interaction
+%over time.
+Such bottom-level plans have no subgoals so interact with the
+external world directly, and over time we can expect to learn such interactions.
 % %
-On the other hand, it is not so clear  whether the failure should also be
+On the other hand, as we will show below, it is not so clear  whether the failure should also be
 recorded in the decision trees for plans higher up in the hierarchy (e.g., plans
 $P_B$ and $P_i$).
 
@@ -99,7 +103,7 @@ and a failure should be recorded for the world state $w_3$ against
 the decision tree attached to plan $P_{B2}'$.  
 %%
 By recording every outcome for the lowest plans, i.e., plans with no subgoals,
-the system eventually learns how such plans performs in the environment.
+the system eventually learns how such plans perform in the environment.
 %%
 % Although it may be the case
 % that the plan usually succeeds in the situation in which it was chosen, and failure is
@@ -117,8 +121,8 @@ against plans $P_B$ and $P_i$, respectively?
 The point is that it is conceivable that the failure of subgoal $G_{B2}$ in plan
 $P_B$, for instance, could indeed have been avoided, had the alternative plan
 $P_{B2}$, been chosen instead. Therefore, recording a failure against plan $P_B$
-would not not be justified---it is not true that plan $P_{B}$ is a ``bad'' one
-when in world state $w_3$.
+would not be justified---it is not true that plan $P_{B}$ is a ``bad'' one
+when in world state $w_2$.
 % %
 Informally, one could argue that it is more appropiate to \emph{wait} before
 recording failures against a plan until one is reasonably confident that
@@ -147,9 +151,8 @@ goals as follows: a goal is considered \emph{stable} for world state $w$ if all
 its relevant plans are stable for $w$.
 % %
 When a goal is stable, we regard the plan selection for such goal as a ``well
-informed'' one. Thus, a plan failure is recorded in the plan if the subgoal that
-failed is stable for the world it was meant to be resolved in. In our example, we
-record the failure in plan $P_B$ ($P_i$) if goal $G_B$ ($G_B$) is deemed stable
+informed'' one. Thus, a failure is recorded in the plan for a given world if the subgoal that failed is stable for the respective world in which it was resolved. In our example, we
+record the failure in plan $P_B$ ($P_i$) if goal $G_{B2}$ ($G_B$) is deemed stable
 in world state $w_3$ ($w_2$), that is, if the selection of option $P_{B2}'$
 ($P_B$) was an informed one.
 
@@ -157,9 +160,23 @@ in world state $w_3$ ($w_2$), that is, if the selection of option $P_{B2}'$
 
 The $\RecordTrace$ algorithm below shows how a failed execution run $\lambda$ is
 recorded. Function
-$\StableGoal(G,w,k,\epsilon)$ returns true iff goal $G$ is considered \textit{stable} for world state $w$, under change of
-success rate thresholds $0 < \epsilon \leq 1$ and minimal number of executions $k
+$\StableGoal(G,w,k,\epsilon)$ returns true iff goal $G$ is considered \textit{stable} for world state $w$, for success rate change 
+threshold $0 < \epsilon \leq 1$ and minimal number of executions $k
 \geq 0$.
+%
+The algorithm starts by recording the failure against the last plan $P_n$ in the
+trace.
+% %
+Next, if the choice of executing plan $P_n$ to achieve goal $G_n$ was deemed an
+informed one (that is, goal $G_n$ was stable for $w_n$), then the procedure
+should be repeated for the previous goal-plan nodes, if any.
+% %
+If, on the other hand, the last goal $G_n$ in the trace is not considered stable
+enough, the procedure terminates and no more failure data is assimilated.
+% %
+Observe that, in order to update the decision tree of a certain plan that was
+chosen along the execution, it has to be the case that the (failed) decisions
+taken during execution must have all been informed ones.
  
  \renewcommand{\algorithmiccomment}[1]{\hfill \texttt{\small // #1}}
  \newcommand{\assign}{\mbox{:=\ }}
@@ -181,23 +198,10 @@ success rate thresholds $0 < \epsilon \leq 1$ and minimal number of executions $
 \end{algorithm}
 
  
-The algorithm starts by recording the failure against the last plan $P_n$ in the
-trace.
-% %
-Next, if the choice of executing plan $P_n$ to achieve goal $G_n$ was deemed an
-informed one (that is, goal $G_n$ was stable for $w_n$), then the procedure
-should be repeated for the previous goal-plan nodes, if any.
-% %
-If, on the other hand, the last goal $G_n$ in the trace is not considered stable
-enough, the procedure terminates and no more failure data is assimilated.
-% %
-Observe that, in order to update the decision tree of a certain plan that was
-chosen along the execution, it has to be the case that the (failed) decisions
-taken during execution must have all been informed ones.
 
 
 
-So, in the remaining of the paper, we shall consider two learning approaches
+So, in the remainder of the paper, we shall consider two learning approaches
 compatible with the framework developed in the previous section. The first, which
 we call \emph{aggressive concurrent learning} (\CL), corresponds to the more
 traditional approach where all data is always assimilated by the learner, that
@@ -211,8 +215,9 @@ cautious and records a failure execution experience when some stability on
 decisions is deemed, that is, $\epsilon > 0$. In our work, we have taken
 $\epsilon = 0.3$ and $k = 3$, that is, the context condition of a plan is
 considered stable (for a world state) if at least $3$ past execution experiences
-have been recorded and the rate of success has lately been changing less than
-$0.3$.
+have been recorded 
+%and the rate of success has lately been changing less than $0.3$.
+and the change in the rate of success over the last two experiences is less than $0.3$.
 % %
 Note that the lower $\epsilon$ is and the higher $k$ is, the more conservative
 the agent is in considering its decisions ``well informed.''

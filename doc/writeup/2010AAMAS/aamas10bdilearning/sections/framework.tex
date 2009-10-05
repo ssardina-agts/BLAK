@@ -4,27 +4,27 @@
 
 
 The problem that we are interested in is as follows: \emph{given past execution
-data and the the current world state, determine which plan to execute next in order to address an event}.
+data and the the current world state, determine which plan to execute next 
+in order to address an event}.
+
 
 To address this ``learnable'' plan-selection task, we start by modeling the
 context condition of plans with \emph{decision trees}, rather than with logical
-formulas.\footnote{Of course, we can combine both formulas and decisions
-tress...}
+formulas.\footnote{As is the case in the classical BDI framework. Of course, we can combine both formulas and decisions
+trees...}
 % %
 Decision trees~\cite{Mitchell97:ML}  provide a natural classification mechanism
 for our purposes, as they can deal with noise (due to non-deterministic
 environments, for example), and they are able to support disjunctive hypotheses.
 They are also readily convertible to rules, which are the standard representation
-for context conditions in BDI systems.
+for context conditions in BDI systems.
 
 
 
-In a nutshell, each plan in the agent's library is associated with a decision
-tree that will classify world states into an expectation of whether the plan will
-succeed or fail. By inducing plans' decision tress based on previous executions,
-a plan's decision tree will thus give the agent information for each relevant
-plan, in a particular world state, regarding how likely it is to succeed/fail
-based on the agent's past experiences.
+
+We associate each plan in the agent's library with a \dt
+that will classify world states into an expectation of whether the plan will
+succeed or fail. Then for each relevant plan, the plan's \dt (induced based on previous executions) will give the agent information regarding how likely it is to succeed/fail in a particular world state.
 
 
 Given this new context for BDI programming, there are two issues that ought to be
@@ -33,13 +33,14 @@ addressed.
 First, one has to decide \emph{when and what kind of execution data the agent should
 collect in order to be able to ``learn'' (useful) decision trees for plans}.
 Roughly speaking, data is collected regarding whether a plan is considered to
-have succeeded or failed in the world state it has been selected for execution.
+have succeeded or failed in the world for which it was selected.
 % %
 \textbf{For example, in Figure~\ref{fig:T3}, if plan XXX in selected in world
 $w$} %%
 % %
 Whereas successful executions are always recorded, the recording of failure runs
-of a plan may be subject to some analysis; this is the topic of the following section.
+of a plan may be subject to some analysis; this is the topic of the following section.
+
 
 
 The second issue to be addressed is how to use the plans' decision trees for plan
@@ -52,19 +53,19 @@ precedence and meta-level reasoning. However, these mechanisms are pre-programme
 and do not take into account the experience of the agent.
 % %
 In our framework for context learning, we must consider the standard dilemma of
-\emph{exploitation} vs \emph{exploration}. To that end, we use a natural plan
-selection approach in which plan are selected using a probabilistic function,
-which chooses a plan with a probability proportional to its relative expected
+\emph{exploitation} vs \emph{exploration}. To that end, we use an 
+approach in which plans are selected with a probability proportional to their relative expected
 success (in the world state of interest). Moreover, in
 Section~\ref{sec:coverage}, we discuss how to further enhance such plan selection
-account by also talking into account how much each candidate plan has been
-explored, relative to its ``complexity.''
+account by considering how much each candidate plan has been
+explored, relative to its ``complexity.''
+
 
 
 For the purpose of our analysis, in this work, we have used algorithm
 \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
-well-known \weka\ learning package \cite{weka99}. Consequently, we
-recreate decision trees, from scratch, after each new piece of data is collected.
+well-known \weka\ learning package \cite{weka99}. Currently we
+recreate decision trees from scratch after each new piece of data is collected.
 % %
 Of course, for a real-world implementation, one should appeal to algorithms for
 \emph{incremental} induction of the decision tree, such as those described in
@@ -80,31 +81,37 @@ Of course, for a real-world implementation, one should appeal to algorithms for
 %Nonetheless, together with the final success/failure classification at each leaf
 %node, the number of both correct and incorrect classifications relative to
 %the training set is also recorded. This shall provide then an
-%estimate of therate of success of the plan for the world states
-%classified under that leafnode. 
+%estimate of the
+%rate of success of the plan for the world states
+%classified under that leaf
+%node.
+ 
 %
 
-The algorithm for computing the decision tree aims to balance
-compactness of representation with accuracy. Information
-is maintained in the decision tree about the number of successes and
-failures for a given leaf node (representing a set of world states in
-our case) that have been encountered.
-We then use this information to estimate the rate of success of the
-plan to which this decision tree is attached, for the world states
-represented by the given leaf node - and in particular the world state
-currently under consideration.
+%dsingh-:
+%The algorithm for computing the decision tree aims to balance
+%compactness of representation with accuracy. Information
+%is maintained in the decision tree about the number of successes and
+%failures for a given leaf node (representing a set of world states in
+%our case) that have been encountered.
+%We then use this information to estimate the rate of success of the
+%plan to which this decision tree is attached, for the world states
+%represented by the given leaf node - and in particular the world state
+%currently under consideration.
+%dsingh+:
+The \weka\ \propername{J48} algorithm for inducing {\dt}s aims to balance compactness of representation with accuracy. Consequently, it maintains in each \dt information about the number of instances (or world states in our case) from the training data correctly and incorrectly classified by each decision leaf node. Subsequently, whenever a plan's \dt is used to classify a new instance (world state), weka returns not only the classification (i.e. success or failure), but also a classification probability (i.e. to what degree it believes that the classification is correct). We then use this probability as an estimate of the plan's chances of success for the world in question.
 
 
 Finally, we should point out a number of assumptions that were made in order to
 focus on the core issues we are concerned with.
 % %
 First, we assume that actions in the environment may fail with some probability
-($1$ if the action is not possible in a world sate).
+(if an action is not possible in a world state this probability is $1.0$).
 % %
-Second, we assume no changes happen in the environment, during execution, other
+Second, we assume no external changes in the environment during execution other
 than those made by the agent. Although this may appear too limiting, the fact
-that actions may fail with some probability mitigates against the
-over-simplification for many cases, by treating other changes as
+that actions may fail with some probability mitigates against
+over-simplification by capturing external changes as
 non-deterministic failures.
 % %
 Third, we consider the execution of a single intention; learning in the context
@@ -113,7 +120,10 @@ would complicate our study substantially (see \cite{Thangarajah02}).
 % % %
 Lastly, we assume no automated failure handling, whereby the BDI system retries
 a goal with alternative options, if the selected plan happens to fail. 
-Integrating failure handling would not alter any of our results, but it wouldcomplicate our implementation framework and the understanding of the basicmechanisms.
+Integrating failure handling would not alter any of our results, but it would
+complicate our implementation framework and the understanding of the basic
+mechanisms.
+
 
 
 % These assumptions are,

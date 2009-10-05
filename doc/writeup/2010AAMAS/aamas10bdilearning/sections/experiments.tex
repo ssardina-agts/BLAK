@@ -30,7 +30,7 @@ not).
 % %
 Finally, we assume the agent is acting in a non-deterministic environment, in
 which actions that are expected to succeed, may still fail with some (small)
-probability. In most of our experiments, we assumed a $.1$ probability of
+probability. In our experiments, we assumed a $0.1$ probability of
 uncontrolled failure for such actions.\footnote{See Discussion section on how our
 results generalize to a framework with world state built from non-binary fluents
 and with more complex accounts for stochastic actions.}
@@ -43,9 +43,10 @@ The experiments consisted in posting the top-level goal repetitively under rando
 world states, running the corresponding  BDI learning agent, and finally
 recording whether the execution terminated successfully or not.
 % %
-We calculated the average rate of success of the goal every some fixed
-number of iterations (in our case $20$), and investigated how such rate evolved
-as the agent refined the context condition of plans.
+%We calculated the average rate of success of the goal every some fixed
+%number of iterations (in our case $20$), and investigated how such rate evolved
+%as the agent refined the context condition of plans.
+We calculate the average rate of success of the goal by first averaging the results at each time step over $5$ runs of the same experiment, and then smoothing using a moving average of the previous 100 time steps to get the trends reported in the figures.
 % %%
 We ran the tests under both a \BUL-based agent and a \CL-based agent,
 ensuring the same sampling of random world states for each agent.
