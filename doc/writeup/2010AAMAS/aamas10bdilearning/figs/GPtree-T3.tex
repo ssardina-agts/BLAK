@@ -1,8 +1,7 @@
 \begin{tikzpicture}[scale=0.8,level distance=1.2cm]
-\tikzstyle{txt}=[scale=0.7]
-% \tikzstyle{planbox}=[draw,minimum height=0.8cm,minimum width=0.9cm]
-% \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.8cm,minimum
-% width=0.9cm] 
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
 
 \tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
@@ -20,36 +19,36 @@
 		child {node[goalbox] {$G_A$}
 			child {node[planbox] {$P_{A}$}
 				child {node[goalbox] {$G_{A1}$}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm]
-					{$\times$} edge from parent node[txt,right,near start] {$\times 3$}
+					child {node[planbox,succ] {$\phantom{P}$}}
+					child {node[planbox,fail] {$\phantom{P}$} 
+					edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
 				child {node[goalbox] {$G_{A2}$}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\times$}
+					child {node[planbox,succ] {$\phantom{P}$}}
+					child {node[planbox,fail] {$\phantom{P}$} 
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
 			}
-			child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\times$}
+			child {node[planbox,fail] {$\phantom{P}$} 
 				edge from parent node[txt,right,near start] {$\times 3$}
 			}
 		}
 		child {node[goalbox] {$G_{B}$}
-			child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\times$}
+			child {node[planbox,fail] {$\phantom{P}$}
 				edge from parent node[txt,left,near start] {$\times 3$}
 			}
 			child {node[planbox] {$P_B$}
 				child {node[goalbox] {$G_{B1}$}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$\phantom{P}$} node[txt,below=0.3cm] {$\times$}
+					child {node[planbox,succ] {$\phantom{P}$}}
+					child {node[planbox,fail] {$\phantom{P}$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}
 				child {node[goalbox] {$G_{B2}$}
-					child {node[planbox] {$P_{B2}$} node[txt,below=0.3cm] {$\surd$}}
-					child {node[planbox] {$P_{B2}'$} node[txt,below=0.3cm] {$\times$}
+					child {node[planbox,succ] {$P_{B2}$}}
+					child {node[planbox,fail] {$P_{B2}'$}
 						edge from parent node[txt,right,near start] {$\times 3$}
 					}
 				}

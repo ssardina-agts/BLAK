@@ -1,4 +1,7 @@
 \begin{tikzpicture}[level distance=1.2cm]
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
 
 \tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
@@ -11,20 +14,20 @@
 \node[goalbox] (T) {$G$}
    child[solid] {node[planbox] (1) {$P_i$}
       	child {node[goalbox] (11) {$G_i^A$}
-			child {node[planbox] {$\surd$}
+			child {node[planbox,succ] {\phantom{$P$}}
 			}
-			child {node[planbox] {$\surd$}
+			child {node[planbox,succ] {\phantom{$P$}}
 			}
-			child {node[planbox] {$\times$}
+			child {node[planbox,fail] {\phantom{$P$}}
 				edge from parent node[right,near start] {$\times 8$}
 			}
 	  	}
       	child {node[goalbox] (11) {$G_i^B$}
-			child {node[planbox] {$\surd$}
+			child {node[planbox,succ] {\phantom{$P$}}
 			}
-			child {node[planbox] {$\surd$}
+			child {node[planbox,succ] {\phantom{$P$}}
 			}
-			child {node[planbox] {$\times$}
+			child {node[planbox,fail] {\phantom{$P$}}
 				edge from parent node[right,near start] {$\times 8$}
 			}
 	  	}
@@ -32,9 +35,9 @@
    }
    child[solid] {node[planbox] (2) {$P_i'$}
       child {node[goalbox] (22) {$G_i'$} 
-	child {node[planbox] {$\times$}}
-	child {node[planbox] {$\times$}}
-	child {node[planbox] {$\times$}}
+	child {node[planbox,fail] {\phantom{$P$}}}
+	child {node[planbox,fail] {\phantom{$P$}}}
+	child {node[planbox,fail] {\phantom{$P$}}}
 	edge from parent node[right] {$\times 3$}
 	}
    edge from parent node[above right,near start] {$\times 17$}};
