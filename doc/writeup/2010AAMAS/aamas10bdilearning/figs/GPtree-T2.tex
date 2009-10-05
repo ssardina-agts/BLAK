@@ -8,14 +8,14 @@
 \tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
 
-\tikzstyle{level 1}=[sibling distance=2.5cm,level distance=0.5cm] 
-\tikzstyle{level 2}=[sibling distance=2.5cm,level distance=1.0cm]
-\tikzstyle{level 3}=[sibling distance=1.5cm,level distance=1cm]
-\tikzstyle{level 4}=[sibling distance=2.5cm,level distance=1.0cm]
-\tikzstyle{level 5}=[sibling distance=2.5cm,level distance=0.5cm]
-\tikzstyle{level 6}=[sibling distance=2.5cm,level distance=1.0cm]
-\tikzstyle{level 7}=[sibling distance=2.5cm,level distance=0.5cm]
-\tikzstyle{level 8}=[sibling distance=2.5cm,level distance=1.0cm]
+\tikzstyle{level 1}=[sibling distance=3.5cm,level distance=0.5cm] 
+\tikzstyle{level 2}=[sibling distance=1.5cm,level distance=1.0cm]
+\tikzstyle{level 3}=[sibling distance=1.2cm,level distance=1.0cm]
+\tikzstyle{level 4}=[sibling distance=1.2cm,level distance=1.0cm]
+\tikzstyle{level 5}=[sibling distance=2.0cm,level distance=0.5cm]
+\tikzstyle{level 6}=[sibling distance=1.2cm,level distance=1.0cm]
+\tikzstyle{level 7}=[sibling distance=2.0cm,level distance=0.5cm]
+\tikzstyle{level 8}=[sibling distance=1.2cm,level distance=1.0cm]
 
 \node[goalbox] (T) {$G$}
    child[solid] {node[planbox] (1) {$P$}
@@ -45,8 +45,15 @@
    }
    child[solid] {node[planbox] (2) {$P_i'$}
       	child {node[goalbox] (11) {\phantom{$G$}}
-			child {node[planbox,fail] {$\phantom{P}$}}
-			child {node[planbox,fail] {$\phantom{P}$} }
+			child {node[planbox,succ] {$\phantom{P}$}}
+			child {node[planbox,fail] {$\phantom{P}$} 
+		               edge from parent node[right] {$\times 2$}
+			}
+	}
+      	child {node[goalbox] {\phantom{$G$}}
+			child {node[planbox,fail] {$\phantom{P}$} 
+		               edge from parent node[right] {$\times 3$}
+			}
 	}
 };
 \end{tikzpicture}

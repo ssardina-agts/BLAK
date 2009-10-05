@@ -8,19 +8,20 @@
 SCRIPTDIR="$(cd "${0%/*}" 2>/dev/null; echo "$PWD")"
 PLOTSH=${SCRIPTDIR}/../../../../../src/distfiles/scripts/plot.sh
 
-##### Results 152 #####
-RESULTS=${SCRIPTDIR}/../../../../results/blak152
-${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
+##### Results 157 #####
+RESULTS=${SCRIPTDIR}/../../../../results/blak157
+${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 150
+${PLOTSH} -d ${RESULTS} -t test05v3gm -o ./test05v3gm -w 100 -z 260
 
 ##### Results 137 #####
 RESULTS=${SCRIPTDIR}/../../../../results/blak137
-${PLOTSH} -d ${RESULTS} -t testImpactvars2 -o ./testImpactvars2 -w 100 -z 450
+${PLOTSH} -d ${RESULTS} -t testImpactvars2 -o ./testImpactvars2 -w 100 -z 400
 #${PLOTSH} -d ${RESULTS} -t testImpactvars3 -o ./testImpactvars3 -w 100 -z 250
 
 ##### Results 130 #####
 RESULTS=${SCRIPTDIR}/../../../../results/blak130
 #${PLOTSH} -d ${RESULTS} -t test01v3gm -o ./test01v3gm -w 100 -z 250
-${PLOTSH} -d ${RESULTS} -t test05v3gm -o ./test05v3gm -w 100 -z 250
+#${PLOTSH} -d ${RESULTS} -t test05v3gm -o ./test05v3gm -w 100 -z 250
 
 ##### Results 110 #####
 RESULTS=${SCRIPTDIR}/../../../../results/blak110
