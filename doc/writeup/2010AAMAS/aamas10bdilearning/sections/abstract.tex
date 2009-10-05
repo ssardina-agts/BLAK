@@ -7,17 +7,27 @@ expansion.
 While context conditions do provide the ability for intelligent plan
 selection, they are fixed at design time and do not allow agents to
 adapt to new environments.
+% 
+We modify the usual representation of context to provide an estimate
+of the likelihood of success, given the current world state, rather
+than the usual boolean value of a formula. This estimate then changes
+based on experience. We use a probabilistic plan selection function
+that allows us to balance exploration and exploitation in selection of
+plans.
 %
-We extend the standard BDI programming framework to accommodate a more
-flexible and dynamic representation for context conditions and a
-(probabilistic) plan selection function that balances both exploration
-and exploitation of plans. 
+We develop and empirically investigate an aggressive and a
+conservative approach to learning context conditions, showing that
+both can be advantageous in certain situations. In particular the
+aggressive approach can at times be too agressive, leading to complete
+inability to learn.
 %
-We then develop and empirically investigate an aggressive and
-a conservative approach to learning context conditions. We demonstrate
-that a more conservative
-approach that takes account of failure only when it believes
-sufficiently informed decisions were taken is more robust.
-While each approach has a small advantage in some situations, an
-aggressive approach can incur high penalties.
+We then develop a more sophisticated plan selection approach which
+takes account of how much we have explored, and therefore to what
+extent we should rely on our estimate of success. We show that this
+successfully addresses the problems associated with aggressive
+learning sometimes ruling out options too readily, and thus never
+learning correct behaviour.
+% 
+We emprically evaluate the different approaches on a range of
+different rogram structures.
 
