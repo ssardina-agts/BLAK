@@ -1,17 +1,30 @@
-Belief, Desire, and Intentions (BDI) agent-oriented programming is a popular 
-paradigm for developing complex applications with (soft) real-time reasoning
-and control requirements. BDI systems rely on \emph{plan libraries} to achieve
-\emph{goals}, and on \emph{context sensitive} subgoal selection and
-expansion. 
+%Belief, Desire, and Intentions (BDI) agent-oriented programming is a popular 
+%paradigm for developing complex applications that are able to deal
+%with multiple ways of achieving goals, depending on the situation. 
+%BDI systems rely on \emph{plan libraries} to achieve
+%\emph{goals}, and on \emph{context sensitive} subgoal selection and
+%expansion. 
 %
-While context conditions do provide the ability for intelligent plan
-selection, they are fixed at design time and do not allow agents to
-adapt to new environments.
+An important drawback to the popular Belief, Desire, and Intentions
+(BDI) paradigm is that such systems include no
+element of learning from experience. Plans, and conditions under
+which they should be selected, are determined at
+design/implementation. 
+%This precludes the system adapting to a
+%changing environment that has not been foreseen.
+%
+Another limitation is that although there may be mechanisms for 
+establishing preferences, applicability of plans is generally
+regarded as a binary decision. 
+%They are either applicable to the
+%current context, or not. although there may be some mechanism for
+%recording or establishing preferences.
 % 
-We modify the usual representation of context to provide an estimate
-of the likelihood of success, given the current world state, rather
-than the usual boolean value of a formula. This estimate then changes
-based on experience. We use a probabilistic plan selection function
+In this work we replace formula based context conditions with decision
+trees, to represent world states in which
+the plan is likely to succeed or fail, with some level of probability.
+The decision tree, and associated estimates of success/failure,
+changes based on experience. We use a probabilistic plan selection function
 that allows us to balance exploration and exploitation in selection of
 plans.
 %
@@ -28,6 +41,6 @@ successfully addresses the problems associated with aggressive
 learning sometimes ruling out options too readily, and thus never
 learning correct behaviour.
 % 
-We emprically evaluate the different approaches on a range of
-different rogram structures.
+We empirically evaluate our approaches on a range of
+different program structures.
 
