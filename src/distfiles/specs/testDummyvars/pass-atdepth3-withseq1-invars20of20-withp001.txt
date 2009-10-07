@@ -26,9 +26,6 @@
 @goal G3_1
 @goal G3_2
 @goal G3_3
-@goal G3_1
-@goal G3_2
-@goal G3_3
 @goal G4_1
 @goal G4_2
 @goal G4_3

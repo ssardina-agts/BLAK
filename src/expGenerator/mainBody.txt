@@ -11,8 +11,10 @@ public static void main(String[] args)
     boolean doCompare = false;
     String compareTemplate = "";
     double noise;
+    double threshold;
 
     noise = 0.1;
+    threshold = 0.0;
     staK = 3;
     staE = 0.05;
     boolean waitST = false;
@@ -52,6 +54,10 @@ public static void main(String[] args)
                 break;
             case 'o':
                 filename = args[index];
+                index++;
+                break;
+            case 't':
+                threshold = Double.parseDouble(args[index]);
                 index++;
                 break;
             case 'n':
@@ -121,6 +127,8 @@ public static void main(String[] args)
         agent.setEnvironment(env);
         agent.minNumInstances = minNI;
         agent.waitForSubTree = waitST;
+        agent.planSelectThreshold = threshold;
+
         env.filenameOutcome = filename;
         env.learningAgent = agent;
         System.out.println("Start the simulation with " + env.numIterations +

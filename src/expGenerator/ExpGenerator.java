@@ -333,6 +333,20 @@ public class ExpGenerator {
 	        	System.out.println("added "+p);
 	        	plans.add(p);
 	        }
+            // Append the threshold fail plans (one per goal)
+            for (Goal g : goals){
+                Plan p = new Plan("Ptf_"+g.getId());
+                p.index = indexPlan++;
+                p.setHandles(g);
+                if (g.equals(topGoal)) {
+	        		p.setTopLevelPlan(true);
+                } else {
+	        		p.setTopLevelPlan(false);
+                }
+                p.setIsFailedThresholdHandler(true);
+                plans.add(p);
+	        	System.out.println("added "+p);
+            }
 		}
 		catch(IOException e){
 			System.err.println("Error opening the input file! \n"+e);
@@ -370,37 +384,43 @@ public class ExpGenerator {
 		int planIndex=0;
 		// generate all the plans of the goal-plan tree
 		for (Plan p : plans){
-			//write the import
-			String code = "package plans;\n"+"import agents.RefinerAgent;\n"
-			+"import events."+p.getHandles().getId()+";\n";
-			for (GoalPlan g: p.body){
-				if (g instanceof Goal)
-					code += "import events."+g.getId()+";\n";
-			}
-			if (p.isTopLevelPlan())
-				code += "import events.ReadyForNextIteration;\n";
-			//write the class
-			code += "\n\npublic plan "+ p.getId() + " extends Plan {\n"
-			+ " \nprivate int plan_id ="+ planIndex +";\n\n"
-			+ " \npublic String name = \""+ p.getId()+"\";\n\n";
-			code +=writeGetInstanceInfo();
-			code +=writeJackDeclarations(p);
-			code +=writeRelevant(p);
-			code +=writeContext(p);
-			code +=writeBody(p);
-			code +=writePassFail(p);
-			code+="}";
-			try{	
-				PrintWriter writer = new PrintWriter(targetDir+"/plans/"+p.getId()+".plan");
-				writer.println(code);
-				writer.close();
-			}
-			catch(IOException e){
-				System.err.println("Error creating the JACK plan for "+p.getId()+"\n"+e);
-				System.exit(9);
-			}
+            if (p.isFailedThresholdHandler()) {
+                generateThresholdFailPlan((p.getHandles()).getId(), p.getId(), planIndex, p.isTopLevelPlan()); 
+            } else {
+                //write the import
+                String code = "package plans;\n"+"import agents.RefinerAgent;\n"
+                +"import events."+p.getHandles().getId()+";\n";
+                for (GoalPlan g: p.body){
+                    if (g instanceof Goal)
+                        code += "import events."+g.getId()+";\n";
+                }
+                if (p.isTopLevelPlan())
+                    code += "import events.ReadyForNextIteration;\n";
+                //write the class
+                code += "\n\npublic plan "+ p.getId() + " extends Plan {\n"
+                + " \nprivate int plan_id ="+ planIndex +";\n\n"
+                + " \npublic String name = \""+ p.getId()+"\";\n\n";
+                code +=writeGetInstanceInfo();
+                code +=writeJackDeclarations(p);
+                code +=writeRelevant(p);
+                code +=writeContext(p);
+                code +=writeBody(p);
+                code +=writePassFail(p);
+                code+="}";
+                try{	
+                    PrintWriter writer = new PrintWriter(targetDir+"/plans/"+p.getId()+".plan");
+                    writer.println(code);
+                    writer.close();
+                }
+                catch(IOException e){
+                    System.err.println("Error creating the JACK plan for "+p.getId()+"\n"+e);
+                    System.exit(9);
+                }
+            }
 			planIndex++;
 		}
+        
+        
 		// generate the plan for updating the state of the world
 		/*
 		 String code ="package plans;\n"
@@ -441,15 +461,17 @@ public class ExpGenerator {
 		+"\tpublic int plan_id;\n"
 		+"\tpublic double pSuccess;\n"
 		+"\tpublic double coverage;\n"
-		+"\npublic PlanIdInfo(int id ,int pre, double prob){\n"
-		+"\tthis(id ,pre, prob, 0.0);\n"
-        +"}\n"
-		+"\npublic PlanIdInfo(int id ,int pre, double prob, double cov){\n"
-		+"\tsuper(pre);\n"
-		+"\tplan_id = id;\n"
-		+"\tpSuccess = prob;\n"
-		+"\tcoverage = cov;\n"
-		+"}\n}";
+		+"\tpublic boolean isFailedThresholdHandler;\n\n"
+		+"\tpublic PlanIdInfo(int id ,int pre, double prob){\n"
+		+"\t\tthis(id ,pre, prob, 0.0, false);\n"
+        +"\t}\n\n"
+		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, boolean isFTH){\n"
+		+"\t\tsuper(pre);\n"
+		+"\t\tplan_id = id;\n"
+		+"\t\tpSuccess = prob;\n"
+		+"\t\tcoverage = cov;\n"
+		+"\t\tisFailedThresholdHandler = isFTH;\n"
+		+"\t}\n}";
 		try{	
 			PrintWriter writer = new PrintWriter(targetDir+"/plans/PlanIdInfo.java");
 			writer.println(code);
@@ -498,10 +520,10 @@ public class ExpGenerator {
 		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
 		+"\tif (ag.useDT(plan_id)){\n"
 		+"\t\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, false);\n"
 		+"\t}\n"
 		+"\telse{\n" 
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage);\n\t}\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage, false);\n\t}\n"
 		+"}\n\n";
 	}
 	
@@ -928,6 +950,71 @@ public class ExpGenerator {
 		
 	}
 	
+    
+	/**
+	 * Generates the ThresholdFail plan that is used when all other applicable
+     * plans for the given goal lie below the threshold proabbility of success.
+     */
+	public void generateThresholdFailPlan(String gid, String pid, int planIndex, boolean isTopLevelPlan){
+		String code = "package plans;\n"
+		+ "import java.lang.Math;\n"
+		+ "import agents.RefinerAgent;\n"
+        + "import events."+gid+";\n";
+		if (isTopLevelPlan) {
+			code+="import events.ReadyForNextIteration;\n";
+        }
+
+		code += "\npublic plan "+pid+" extends Plan {\n"
+        + " \nprivate int plan_id = "+ planIndex +";\n\n"
+        + " \npublic String name = \""+pid+"\";\n\n";
+        
+        code +=	"\tpublic PlanInstanceInfo getInstanceInfo(){\n"
+		+"\t\tag.setLastInstance(plan_id);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, true);\n"
+		+"\t}\n\n";
+        
+		if (isTopLevelPlan) {
+			code+="\t#sends event ReadyForNextIteration ready;\n";
+        }
+		code +="\t#handles event "+gid+" trigger;\n"
+		+ "\t#uses interface RefinerAgent ag;\n\n";
+		code +="\tstatic boolean relevant("+gid+" ev){\n"
+		+ "\t\treturn true;\n"
+		+ "\t}\n\n";
+		code += "\tcontext(){\n"
+		+ "\t\ttrue;\n"
+		+ "\t}\n\n";
+		code += "\t#reasoning method\n"
+		+ "\tbody(){\n"
+        + "\t\tfalse;\n"
+        + "\t}\n\n";
+		code += "\t#reasoning method\n"
+		+ "\tpass(){\n"
+		+ "\t\tag.record(plan_id,true);\n";
+        if (isTopLevelPlan) {
+			code+="\t\t@send(\"Environment\", ready.nextIt(true,ag.env.it));\n";
+        }
+		code += "\t}\n\n"
+		+ "\t#reasoning method\n"
+		+ "\tfail(){\n"
+		+ "\t\tag.record(plan_id,false);\n";
+		if (isTopLevelPlan) {
+			code+= "\t\t@send(\"Environment\", ready.nextIt(false,ag.env.it));\n";
+        }
+		code += "\t}\n\n"
+		+ "}\n";
+        try{
+			PrintWriter writer = new PrintWriter(targetDir+"/plans/"+pid+".plan");
+			writer.println(code);
+			writer.close();
+		}
+		catch(IOException e){
+			System.err.println("Error creating the JACK plan "+pid+"\n"+e);
+			System.exit(9);
+		}
+	}
+
+    
 	/**
 	 * Code that generates the environment agent.
 	 */
@@ -1347,6 +1434,8 @@ public class ExpGenerator {
 		+"\tupdate_mode = Environment.CL;\n /* default: Concurrent */"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
+        +"\tplanSelectThreshold = 0.0;\n"
+
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
 		int index=0; 
 		
@@ -1410,6 +1499,7 @@ public class ExpGenerator {
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
+		+"\tpublic double planSelectThreshold;\n"
 
 		/*
 		+"\tpublic boolean isStableUpdates()\n"
@@ -1482,7 +1572,7 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, update_mode, stableE, stableK, (trees.Logger)env);\n";
+			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, update_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";

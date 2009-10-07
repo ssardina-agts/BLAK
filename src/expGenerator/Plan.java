@@ -25,7 +25,7 @@ public class Plan extends GoalPlan{
 	 *  about updating the decision, and a <b>new</b> instance must be
 	 *  started*/
 	boolean isTopLevelPlan;
-		
+    boolean isFailedThresholdHandler;
 	
 	/**
 	 * tells whether the plan handles a top level goal. When it is the case, 
@@ -84,6 +84,7 @@ public class Plan extends GoalPlan{
 	public Plan(String name) {
 		super(name);
 		body = new Vector<GoalPlan>();
+        isFailedThresholdHandler = false;
 	}
 	/**
 	 * set the goal that is handled by this plan
@@ -95,6 +96,16 @@ public class Plan extends GoalPlan{
 	 * @return the goal that triggers the plan
 	 */
 	public Goal getHandles(){return handles;}
+	/**
+	 * set if this plan is a handler for failed thresholds
+	 * @param val boolean
+	 */
+	public void setIsFailedThresholdHandler(boolean val){isFailedThresholdHandler = val;}
+	/**
+	 * check if this plan is a handler for failed thresholds
+	 * @return boolean
+	 */
+	public boolean isFailedThresholdHandler(){return isFailedThresholdHandler;}
 	/**
 	 * add an element to the body of the plan, the action or subgoal is added
 	 * at the end

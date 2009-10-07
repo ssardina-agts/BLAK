@@ -134,28 +134,33 @@ public class GoalNode extends Node{
             logger.indentRight();
             for(int j = 0; nChildren > j; j++) {
 				PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-                double c = 0.0;
-                if (thisNode.isDirty) {
-                    c = thisNode.calculateCoverage(state);
-                    thisNode.isDirty = false;
-                } else {
-                    c = thisNode.getCoverage(state);
-                }
-                cCoverage += c;
-                if (/*NEVER*/false & thisNode.isSuccessful(state)) {
-                    /* This plan succeeded in this state
-                     * so all subsequent subplans can be considered
-                     * covered since they will almost never be
-                     * selected in this state.
-                     */
-                    logger.writeLog("Goal "+this.getItem()+"'s child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
-                    cCoverage = nChildren;
-                    for(int k = 0; nChildren > k; k++) {
-                        PlanNode kNode = (PlanNode)this.children.elementAt(k);
-                        kNode.setCoverage(stateStr,1.0);
-                        kNode.isDirty = false;
+                if (!thisNode.isFailedThresholdHandler) {
+                    double c = 0.0;
+                    if (thisNode.isDirty) {
+                        c = thisNode.calculateCoverage(state);
+                        thisNode.isDirty = false;
+                    } else {
+                        c = thisNode.getCoverage(state);
                     }
-                    break;
+                    cCoverage += c;
+                    if (/*NEVER*/false & thisNode.isSuccessful(state)) {
+                        /* This plan succeeded in this state
+                         * so all subsequent subplans can be considered
+                         * covered since they will almost never be
+                         * selected in this state.
+                         */
+                        logger.writeLog("Goal "+this.getItem()+"'s child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
+                        cCoverage = nChildren;
+                        for(int k = 0; nChildren > k; k++) {
+                            PlanNode kNode = (PlanNode)this.children.elementAt(k);
+                            kNode.setCoverage(stateStr,1.0);
+                            kNode.isDirty = false;
+                        }
+                        break;
+                    }
+                } else {
+                    /* Don't count the failed threshold handler child in coverage calculations */
+                    nChildren--;
                 }
             }
             logger.indentLeft();

@@ -46,7 +46,8 @@ public class PlanNode extends Node{
     
     GoalNode topGoal;
     public boolean isDirty;
-
+    public boolean isFailedThresholdHandler;
+    
     /*
     public boolean isDoStable() {
         return doStable;
@@ -167,7 +168,7 @@ public class PlanNode extends Node{
     public PlanNode(int id, String pname, FastVector attributes,
                     FastVector classValue, FastVector booleanValue, 
                     boolean waitST, int minNumInst, int update_mode,
-                    double epsilion, int kStable, Logger logger){
+                    double epsilion, int kStable, boolean isFTH, Logger logger){
         super(pname, logger);
         name = pname;
         goal_id = id;
@@ -186,6 +187,7 @@ public class PlanNode extends Node{
         successfulChildren = 0;
         topGoal = null;
         isDirty = false;
+        isFailedThresholdHandler = isFTH;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         try{
@@ -238,6 +240,10 @@ public class PlanNode extends Node{
      */
     public void record(boolean res)
     {
+        if (this.isFailedThresholdHandler) {
+            logger.writeLog("Skipped recording for failed threshold handler plan "+this.getItem()+" in state "+this.stringOfLastState());
+            return;
+        }
         logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
         if(!res && (update_mode == STABLE))
         {
@@ -425,8 +431,12 @@ public class PlanNode extends Node{
     }
     
     public double getCoverage(String[] state) {
-        double coverage = 0.0;
         String memoryKey = this.stringOfState(state);
+        if (this.isFailedThresholdHandler) {
+            logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using coverage 1.0 in state "+memoryKey);
+            return 1.0;
+        }
+        double coverage = 0.0;
         /* We will use the average coverage 
          * of all previously seen worlds as a approximate measure.
          * We can do this because for the given goal/plan tree
@@ -449,8 +459,12 @@ public class PlanNode extends Node{
     }    
     
     protected double calculateCoverage(String[] state) {
-        double coverage = 0.0;
         String stateStr = this.stringOfState(state);
+        if (this.isFailedThresholdHandler) {
+            logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using coverage 1.0 in state "+stateStr);
+            return 1.0;
+        }
+        double coverage = 0.0;
         if (this.experiences.containsKey(stateStr)) {
             Experience thisMemory = (Experience)this.experiences.get(stateStr);
             if (thisMemory.coverage() == 1.0) {
@@ -668,10 +682,14 @@ public class PlanNode extends Node{
      */
     public boolean isStable(String[] state)
     {
+        String lastStateReference = this.stringOfState(state);
+        if (this.isFailedThresholdHandler) {
+            logger.writeLog("Failed threshold handler plan "+this.getItem()+" assumed stable in state "+lastStateReference);
+            return true;
+        }
         //System.out.println("Checking Stability");
         boolean stable = true;
         
-        String lastStateReference = this.stringOfState(state);
         logger.writeLog("Plan "+this.getItem()+" is checking stability for state "+lastStateReference);
         
         if (this.isSuccessful(state)) {
