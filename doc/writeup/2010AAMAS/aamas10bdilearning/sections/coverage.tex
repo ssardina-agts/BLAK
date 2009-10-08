@@ -2,11 +2,50 @@
 \section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The first part of this paper addresses the task of determining when decisions along the active execution trace may be considered \textit{informed enough} for outcomes to be included as learnable instances for each \dt in that trace. For this we contrast two schemes, \CL\ and \BUL\ - and show that the conservative \BUL\ approach delivers more robust performance than the simpler \CL\ approach for the cases considered. For both approaches, the same probabilistic function $E$ (or exploration strategy) was used to make the plan selection at each junction of the active execution trace.
+\Omit{
+The first part of this paper addresses the task of determining when
+decisions along the active execution trace may be considered
+\textit{informed enough} for outcomes to be included as learnable
+instances for each \dt in that trace. For this we contrast two
+schemes, \CL\ and \BUL\ - and show that the conservative \BUL\
+approach delivers more robust performance than the simpler \CL\
+approach for the cases considered. For both approaches, the same
+probabilistic function $E$ (or exploration strategy) was used to make
+the plan selection at each junction of the active execution trace.  
 
 In subsequent work we keep the \CL\ and \BUL\ recording methods constant, and adjust the probabilistic plan selection function $E$ to evaluate the impact on the learning outcome. Motivated by the polarity between the two approaches, we consider if an informed probabilistic selection function $E'$ may be constructed to yield a \textit{middle ground} approach that applies better in the general case. This would be valuable since if a \CL+$E'$-based approach yields comparable performance to any \BUL+$E^*$-based approach, then the former is preferred as \CL\ is much simpler than \BUL. Interestingly we find that such a formulation is possible and that an informed exploration strategy that leverages both the domain knowledge (inherent in the goal-plan tree hierarchy) as well as the ongoing learning (agent's experience so far) can combine the benefits of both \CL\ and \BUL.
+}
 
-We start by quantifying the quality of (or our \textit{confidence} in) the hypotheses of a \dt for a unknown subspace $S$ of world states $[w_1 \ldots w_n] \in W$ \footnote{Note that in general not every plan will be selected in every world state. Subspace $S$ refers to the subset of world states where the plan may be selected.}. At the beginning of a run we have no learnable instances and for a given goal-plan tree node $T$ our probability of success $p_T(w)$ in world $w \in S$ is given by the default probability $0.5$. After the first instance is recorded, the \dt will generalise the result to the full space of $S$ (i.e. $\forall w \in S$) leading to likely \textit{mis-classification}. Intuitively we know that as more and more $w \in S$ are witnessed and recorded, the \dt's classification over $S$ will improve. Our two approaches may be described in terms of confidence as follows: \CL\ always assumes full confidence in the \dt but suffers from misclassification errors (that are eventually rectified through subsequent learning from misinformed choices); \BUL\ uses the static $\epsilon$ and $k$ values to determine the boundary for our confidence in the \dt (with the trade-off that for the period of no confidence the best we can do is use $0.5$).
+In the new approach instead of using the stability measure to ensure
+that we only record results that we are confident in, we instead
+calculate a confidence measure depending on how much of the relevant
+subspace we are considering, has actually been explored.\footnote{This
+  approach can actually be combined with the stability measure if
+  desired.}
+If the decision tree probability is based on very sparse exploration,
+then we should be less confident in this information than if the space
+is thoroughly explored. This applies to both \BUL\ and \CL\ produced
+decision trees, although the unreliable bias in each will be different.
+
+We start by quantifying the quality of (or our \textit{confidence} in)
+the hypotheses of a \dt for a unknown subspace $S$ of world states
+$[w_1 \ldots w_n] \in W$ \footnote{Note that in general not every plan
+  will be selected in every world state. Subspace $S$ refers to the
+  subset of world states where the plan may be selected.}. At the
+beginning of a run we have no learnable instances and for a given
+goal-plan tree node $T$ our probability of success $p_T(w)$ in world
+$w \in S$ is given by the default probability $0.5$. After the first
+instance is recorded, the \dt will generalise the result to the full
+space of $S$ (i.e. $\forall w \in S$) leading to likely
+\textit{mis-classification}. Intuitively we know that as more and more
+$w \in S$ are witnessed and recorded, the \dt's classification over
+$S$ will improve. Our two approaches may be described in terms of
+confidence as follows: \CL\ always assumes full confidence in the \dt
+but suffers from misclassification errors (that are eventually
+rectified through subsequent learning from misinformed choices); \BUL\
+uses the static $\epsilon$ and $k$ values to determine the boundary
+for our confidence in the \dt (with the trade-off that for the period
+of no confidence the best we can do is use $0.5$). 
 
 One way to improve this situation is to instead compute a smooth transition from zero-confidence in the \dt classification to full-confidence, based on experience. We identify two orthogonal properties, \textit{choices} and \textit{subspace} that are integral to informed decision making by the learning nodes in our agent. Choices refer to the set of all statically computable execution paths \textit{below} a goal node in the goal-plan tree hierarchy. Subspace refers to the set of all worlds that are learnable for the \dt at that node. Defined in those terms, we label a \dt \textit{not informed} if no choices have been recorded in any world of the subspace, or \textit{fully informed} when all choices have been covered in every world of the subspace. In fact, we can construct a measure of our confidence in the \dt based on the degree of \textit{coverage} of all choices in all subspace associated worlds. In other words, \textit{coverage} may be defined as the fraction 
 
