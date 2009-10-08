@@ -18,19 +18,20 @@ In subsequent work we keep the \CL\ and \BUL\ recording methods constant, and ad
 
 In the new approach instead of using the stability measure to ensure
 that we only record results that we are confident in, we instead
-calculate a confidence measure depending on how much of the relevant
-subspace we are considering, has actually been explored.\footnote{This
-  approach can actually be combined with the stability measure if
-  desired.}
-If the decision tree probability is based on very sparse exploration,
+modify our plan selection procedure to take account of how confident
+we are in the current decision tree.
+If the decision tree probability is based on very sparse exploration
+of the relevant subspace
 then we should be less confident in this information than if the space
-is thoroughly explored. This applies to both \BUL\ and \CL\ produced
-decision trees, although the unreliable bias in each will be different.
+is thoroughly explored. We note that the stability measure ensures
+that failure information is not recorded in the decision tree until
+the tree is adequately explored. Our new approach instead influences how
+we use the decision trees for plan selection.
 
 We start by quantifying the quality of (or our \textit{confidence} in)
 the hypotheses of a \dt for a unknown subspace $S$ of world states
 $[w_1 \ldots w_n] \in W$ \footnote{Note that in general not every plan
-  will be selected in every world state. Subspace $S$ refers to the
+  can be selected in every world state. Subspace $S$ refers to the
   subset of world states where the plan may be selected.}. At the
 beginning of a run we have no learnable instances and for a given
 goal-plan tree node $T$ our probability of success $p_T(w)$ in world
@@ -39,22 +40,59 @@ instance is recorded, the \dt will generalise the result to the full
 space of $S$ (i.e. $\forall w \in S$) leading to likely
 \textit{mis-classification}. Intuitively we know that as more and more
 $w \in S$ are witnessed and recorded, the \dt's classification over
-$S$ will improve. Our two approaches may be described in terms of
+$S$ will improve. 
+
+\Omit{Our two approaches may be described in terms of
 confidence as follows: \CL\ always assumes full confidence in the \dt
 but suffers from misclassification errors (that are eventually
 rectified through subsequent learning from misinformed choices); \BUL\
 uses the static $\epsilon$ and $k$ values to determine the boundary
 for our confidence in the \dt (with the trade-off that for the period
 of no confidence the best we can do is use $0.5$). 
+}
 
-One way to improve this situation is to instead compute a smooth transition from zero-confidence in the \dt classification to full-confidence, based on experience. We identify two orthogonal properties, \textit{choices} and \textit{subspace} that are integral to informed decision making by the learning nodes in our agent. Choices refer to the set of all statically computable execution paths \textit{below} a goal node in the goal-plan tree hierarchy. Subspace refers to the set of all worlds that are learnable for the \dt at that node. Defined in those terms, we label a \dt \textit{not informed} if no choices have been recorded in any world of the subspace, or \textit{fully informed} when all choices have been covered in every world of the subspace. In fact, we can construct a measure of our confidence in the \dt based on the degree of \textit{coverage} of all choices in all subspace associated worlds. In other words, \textit{coverage} may be defined as the fraction 
+What we want is to compute a smooth transition
+from zero-confidence in the \dt classification to full-confidence,
+based on experience. We identify two orthogonal properties,
+\textit{choices} and \textit{subspace} that are integral to informed
+decision making by 
+%the learning nodes in 
+our agent. Choices refer to
+the set of all statically computable execution paths \textit{below} a
+goal node in the goal-plan tree hierarchy. Subspace refers to the set
+of all worlds that are learnable for the \dt at that node. Defined in
+those terms, we label a \dt \textit{not informed} if no choices have
+been recorded in any world of the subspace, or \textit{fully informed}
+when all choices have been covered in every world of the subspace. 
+
+%In fact, we can construct a measure of our confidence in the \dt based on
+%the degree of \textit{coverage} of all choices in all subspace
+%associated worlds. 
+%In other words, \textit{coverage} may be defined as the fraction  
+% *** not sure what you wanted to say in above - it was left as a
+% hanging sentence... ???
+
+We define an equation for determining plan selection probability that
+is influenced by this confidence measure based on the level of
+\textit{coverage} of all choices in all subspace associated worlds:
 
 \begin{equation}
 \label{eqn:coverage}   
 E': p'_T(w)= 0.5 + \left[  c_T(S) *  \left( p_T(w) - 0.5 \right)  \right]
 \end{equation}
 
-Equation \ref{eqn:coverage} shows how a confidence measure based on coverage may be used to modify the final plan selection probability. The idea is to bias the \dt classification (probability of success) of world $w$ in node $T$ given by $p_T(w) \in [0 \ldots 1]$ with the coverage $c_T(S) \in [0 \ldots 1]$ of subspace $S$ given $w \in S$. Initially the coverage is zero, so the revised probability $p'_T(w) = 0.5$ the default probability of success. As coverage $\rightarrow 1$, the revised probability $p'_T(w) \rightarrow p_T(w)$ the \dt classification. This gives a progressive transition to the \dt classification as more experience is acquired (Figure \ref{fig:coverage-surface}).
+%Equation \ref{eqn:coverage} shows how a confidence measure based on
+%coverage may be used to modify the final plan selection
+%probability. 
+The idea here is to bias the \dt classification (probability
+of success) of world $w$ in node $T$ given by $p_T(w) \in [0 \ldots
+1]$ with the coverage $c_T(S) \in [0 \ldots 1]$ of subspace $S$ given
+$w \in S$. Initially the coverage is zero, so the revised probability
+$p'_T(w) = 0.5$ the default probability of success. As coverage
+$\rightarrow 1$, the revised probability $p'_T(w) \rightarrow p_T(w)$
+the \dt classification. This gives a progressive transition to the \dt
+classification as more experience is acquired (Figure
+\ref{fig:coverage-surface}). 
 
 \begin{figure}[ht]
    \centering
@@ -64,17 +102,63 @@ Equation \ref{eqn:coverage} shows how a confidence measure based on coverage may
 \end{figure}
 
 
-The coverage $c_T(S)$ itself is calculated and stored each time a result is recorded for node $T$. The calculation is performed in turn for each node in the active execution trace starting at the leaf node where the failure occurred, and the coverage is updated progressively up the tree hierarchy. Full coverage at a node $T$ requires $C(T)*|S|$ unique samples where $C(T)$ is the total number of choices below $T$ and $|S|$ is the number of worlds in the subspace. Practically however, it takes significantly less since choices below $T$ are effectively AND/OR trees, and each time an AND node fails the subsequent nodes are not tried and are assumed covered for that world. The full memory cost for a subspace with $a$ boolean attributes is $2^a*C(T)$ however we only require $2^a$ for the implementation since we do not keep track of each individual path below $T$ but only how many distinct paths below $T$ have been tried in a given world. The only unknown in the coverage calculation is $S$ since we do not know upfront the subspace to be learnt. A fairly useful estimate of $c_T(S)$ for practical use can however be constructed by averaging the individual coverages $c_T(w_i)$ of all previously seen worlds at node $T$ since $w_i \in S$. 
+The coverage $c_T(S)$ itself is calculated and stored each time a
+result is recorded for node $T$. The calculation is performed in turn
+for each node in the active execution trace starting at the leaf node
+where the failure occurred, and the coverage is updated progressively
+up the tree hierarchy. Full coverage at a node $T$ requires $C(T)*|S|$
+unique samples where $C(T)$ is the total number of choices below $T$
+and $|S|$ is the number of worlds in the subspace. Practically
+however, it takes significantly less since choices below $T$ are
+effectively AND/OR trees, and each time an AND node fails the
+subsequent nodes are not tried and are assumed covered for that
+world. The full memory cost for a subspace with $a$ boolean attributes
+is $2^a*C(T)$ however we only require $2^a$ for the implementation
+since we do not keep track of each individual path below $T$ but only
+how many distinct paths below $T$ have been tried in a given
+world. The only unknown in the coverage calculation is $S$ since we do
+not know upfront the subspace to be learnt. A fairly useful estimate
+of $c_T(S)$ for practical use can however be constructed by averaging
+the individual coverages $c_T(w_i)$ of all previously seen worlds at
+node $T$ since $w_i \in S$.  
 
 \subsection{Results}
 
-Given our base approaches \CL\ and \BUL, the original probabilistic plan selection function $E$, and the new coverage-based plan selection function $E'$ (Equation \ref{eqn:coverage}), we are able to run four different learning configurations: the earlier $+E$ configurations (\CL+$E$, \BUL+$E$) and the new $+E'$ configurations (\CL+$E'$, \BUL+$E'$).
+Given our base approaches \CL\ and \BUL, the original probabilistic
+plan selection function $E$, and the new coverage-based plan selection
+function $E'$ (Equation \ref{eqn:coverage}), we are able to run four
+different learning configurations: the earlier $+E$ configurations
+(\CL+$E$, \BUL+$E$) and the new $+E'$ configurations (\CL+$E'$,
+\BUL+$E'$). 
 
-Note however, that \BUL+$E'$ always shows similar performance to \BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of \BUL\ inherently results in close to full coverage, effectively reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This means that for \BUL\, the $E$ and $E'$ selection functions are effectively the same. So for simplicity we will refer to the \BUL+$E'$ and \BUL+$E$ approaches collectively as \BUL.
+Note however, that \BUL+$E'$ always shows similar performance to
+\BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of
+\BUL\ inherently results in close to full coverage, effectively
+reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This
+means that for \BUL\, the $E$ and $E'$ selection functions are
+effectively the same. So for simplicity we will refer to the \BUL+$E'$
+and \BUL+$E$ approaches collectively as \BUL. 
 
-For the \CL-favouring structure $\T_1$ we find that the new \CL+$E'$ configuration performs equally well to the original \CL+$E$ configuration, so while there is no significant improvement there is also no loss in performance. Similarly, for the balanced structure $\T_3$ where both \CL\ and \BUL\ perform equally well, the \CL+$E'$ configuration shows no significant improvement. For $\T_1$ and $\T_3$ then, the $+E'$ results are the same as those reported for the original $+E$ configurations in Figure \ref{fig:T1_result} and Figure \ref{fig:T3_result}.
+For the \CL-favouring structure $\T_1$ we find that the new \CL+$E'$
+configuration performs equally well to the original \CL+$E$
+configuration, so while there is no significant improvement there is
+also no loss in performance. Similarly, for the balanced structure
+$\T_3$ where both \CL\ and \BUL\ perform equally well, the \CL+$E'$
+configuration shows no significant improvement. For $\T_1$ and $\T_3$
+then, the $+E'$ results are the same as those reported for the
+original $+E$ configurations in Figure \ref{fig:T1_result} and Figure
+\ref{fig:T3_result}. 
 
-The impact of $E'$ is apparent in $\T_2$ however, a structure that favours the conservative \BUL\ approach (Figure \ref{fig:T2_result}). Here \CL+$E'$ shows a dramatic improvement over \CL+$E$. Figure \ref{fig:T2_result2} shows this change with the new $+E'$ configurations (diamonds for \BUL\ and squares for \CL) superimposed over the original $+E$ results of Figure \ref{fig:T2_result} (circles for \BUL\ and triangles for \CL). So for the \BUL-favouring structure $\T_2$, the \CL+$E'$ (squares) approach is now much closer to \BUL\ performance than the previous \CL+$E$ (triangles) approach.
+The impact of $E'$ is apparent in $\T_2$ however, a structure that
+favours the conservative \BUL\ approach (Figure
+\ref{fig:T2_result}). Here \CL+$E'$ shows a dramatic improvement over
+\CL+$E$. Figure \ref{fig:T2_result2} shows this change with the new
+$+E'$ configurations (diamonds for \BUL\ and squares for \CL)
+superimposed over the original $+E$ results of Figure
+\ref{fig:T2_result} (circles for \BUL\ and triangles for \CL). So for
+the \BUL-favouring structure $\T_2$, the \CL+$E'$ (squares) approach
+is now much closer to \BUL\ performance than the previous \CL+$E$
+(triangles) approach. 
 
 \begin{figure}[ht]
 \begin{center}
@@ -99,12 +183,52 @@ Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ (squares)
 
 The above results are significant because they highlight a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Moreover, the \CL-based configuration is a simpler alternative to the \BUL-based configuration, further adding to it's appeal.
 
-
+\Omit{
 \subsection{Discussion}
 
-In Section \ref{sec:coverage} we presented a \textit{coverage}-based confidence measure that combined with the \dt classification gives an informed plan selection function (Equation \ref{eqn:coverage}) that benefits our context learning approaches \CL\ and \BUL. Now, since the coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a confidence measure, then the way it is \textit{used} will determine the weighting of the confidence towards the final plan selection probability $p'_T(w)$. For instance we could replace $c_T(S)$ in Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the weighting (and $b=1$ gives us the original Equation \ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$) we get more \BUL+$E$-like performance, while adjusting $b \rightarrow \infty (b > 1)$ will result in more \CL+$E$-like performance. In fact, an improved agent could reference the (static) goal-plan tree structure at runtime and adjust $b$ automatically based on the offline compiled knowledge of which approach works better for which tree topology. This extension is left as a future implementation exercise.
+In Section \ref{sec:coverage} we presented a \textit{coverage}-based
+confidence measure that combined with the \dt classification gives an
+informed plan selection function (Equation \ref{eqn:coverage}) that
+benefits our context learning approaches \CL\ and \BUL. Now, 
+}
+Since the
+coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a
+confidence measure, then the way it is \textit{used} will determine
+the weighting of the confidence in the final plan selection
+probability $p'_T(w)$. For instance we could replace $c_T(S)$ in
+Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the
+weighting (and $b=1$ gives us the original Equation
+\ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$)
+we get more \BUL+$E$-like performance, while adjusting $b \rightarrow
+\infty (b > 1)$ will result in more \CL+$E$-like performance. In fact,
+an improved agent could reference the (static) goal-plan tree
+structure at runtime and adjust $b$ automatically based on the offline
+compiled knowledge of which approach works better for which tree
+topology. 
+% This extension is left as a future implementation exercise. 
 
-We noted earlier in Section \ref{sec:experiments} that plan execution in real systems is often not cost-free, so presumably the agent would not execute a plan with too low a probability of success. We also show that such deliberation does not favour \CL\ but does \BUL. It is clear that choosing not to execute a plan below a threshold probability of failure would also hurt the candidate \CL+$E'$ configuration (though not as much as \CL+$E$). For such systems, we suggest that the weighting $b$ be used to get the preferred \BUL-like performance.
+We noted earlier in Section \ref{sec:experiments} that plan execution
+in real systems is often not cost-free, so presumably the agent would
+not execute a plan with too low a probability of success. We also show
+that such deliberation does not favour \CL\ but does \BUL. It is clear
+that choosing not to execute a plan below a threshold probability of
+failure would also hurt the \CL+$E'$ configuration (though
+not as much as \CL+$E$). For such systems, we suggest that the
+weighting $b$ be used to get the preferred \BUL-like performance. 
 
-One critique of the coverage-based confidence measure is that it has a defined start ($c_T(S)=0$) and end state ($c_T(S)=1$). For a real system however, learning and re-learning will occur in an endless loop as the agent continually tries to adapt to a changing environment. This implies that our confidence in a \dt's classification would also require calibration based on a changing environment. If the change in the environment is deliberate (for instance the agent was moved into a new environment) then the coverage $c_T(S)$ could be reset and confidence \textit{re-built}. Without such a signal the agent must rely of measuring per-goal performance in order to pick up failures that could be attributed to environmental changes. The problem of identifying changes that warrant new learning as compared to adapting previous learning, however, is generally considered to be a much harder one.
+One critique of the coverage-based confidence measure is that it has a
+defined start ($c_T(S)=0$) and end state ($c_T(S)=1$). For a real
+system however, learning and re-learning will occur in an endless loop
+as the agent continually tries to adapt to a changing
+environment. This implies that our confidence in a \dt's
+classification would also require calibration based on a changing
+environment. If the change in the environment is deliberate (for
+instance the agent was moved into a new environment) then the coverage
+$c_T(S)$ could be reset and confidence \textit{re-built}. Without such
+a signal the agent must rely on measuring per-goal performance in
+order to pick up failures that could be attributed to environmental
+changes. The problem of identifying changes that warrant new learning
+as compared to adapting previous learning, however, is generally
+considered to be very difficult.
+%a much harder one. 
 
