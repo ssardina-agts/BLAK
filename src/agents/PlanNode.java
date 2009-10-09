@@ -245,7 +245,7 @@ public class PlanNode extends Node{
             return;
         }
         logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
-        if(!res && (update_mode == STABLE))
+        if(!res && (update_mode == STABLE) && (this.getNumberOfChildren() > 0))
         {
             //we failed...
             if(this.childrenStable())
