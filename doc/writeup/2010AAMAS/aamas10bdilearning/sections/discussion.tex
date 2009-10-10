@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}\label{sec:discussion}
+\section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 In this paper, we proposed a technique to enhance the typical plan selection mechanism
@@ -9,38 +9,52 @@ in the agent's plan library.
 As defining adequate context conditions for plans may be a difficult, and
 sometimes 
 impossible, task, a framework that allows the \emph{refinement} of (initial) context
-conditions would allow BDI agents to achieve better performance over time.
+conditions would allow BDI agents to achieve better performance over
+time. It also allows them to adapt gradually to an environment which
+may have changed since the system was initially deployed.
 %
-The contributions of this paper are twofold. First, we develop an extended BDI framework in which
-learning mechanisms can be used. This is done using decision trees as (part of) context
-conditions, and developing a \textit{probabilistic} plan selection function that caters for both
-exploration and exploitation of plans. Second, we propose and empirically evaluate two approaches
-for learning such decision trees based on agent executions. We found that, in general, the more
-conservative approach \BUL, which learns from failed execution traces only when decisions were
-``substantially'' informed, yields more robust agent performance than the simpler aggressive
-approach \CL which records every execution experience.
 
+This paper makes several contributions. Firstly we develop an extended
+BDI framework using decision trees as (part of) context conditions,
+and a \textit{probabilistic} plan selection function that caters for
+both exploration and exploitation of plans. This provides a basis for
+learning of context condition decision trees.  We propose and
+empirically evaluate two approaches to this task, an aggressive
+approach that records information from every execution, and a
+conservative approach that records failure information only when it is
+considered to be well-informed. Although each approach performs better
+in some circumstances, the aggressive approach can, in some
+situations, lead to total failure to learn. We then explore an
+approach based on accounting for our confidence in the decision tree
+during plan selection, rather than monitoring information recorded for
+the decision tree. We show that this overcomes the issues associated
+with the more aggressive approach when using the simpler plan
+selection. Furthermore the new plan selection mechanism can be tuned to
+different circumstances. We conclude that the preferred approach is to
+use the aggressive approach to building the decision trees, together
+with the confidence measure affecting plan selection.
 
-Our evaluation results were based on some important simplifying assumptions. In particular,
-we have not considered the effects of using failure recovery, under which alternative plans are
-tried upon the failure of a plan for a achieving a goal. Clearly, failure recovery would induce much
-less ``pure'' execution traces, as execution of partial plans would be represented in them. Also,
-we have focused on plan executability as the only objective. In some context, though, agents 
-should also consider the \textit{utility} of plans and expect to learn how to achieve better utility
-overall.
+Our experimentation did not consider the effects of using failure
+recovery, under which alternative plans are tried upon the failure of
+a plan for achieving a goal. Clearly, failure recovery would induce
+much less ``pure'' execution traces, as execution of partial plans
+would be represented in them. 
 %
-One limitation of our learning framework is that the learning is \emph{local} to plans, in the
-sense that it is not possible to learn interactions between sub-goals for a higher-level plan (e.g.,
-learn that goal $G_b$ may \textit{only} succeed if goal $G_a$ is achieved in a certain manner).
+One limitation of our learning framework is that the learning is
+\emph{local} to plans, in the sense that it is not possible to learn
+interactions between sub-goals for a higher-level plan (e.g., learn
+that goal $G_b$ may \textit{only} succeed if goal $G_a$ is achieved in
+a certain manner). We are currently working on an approach to deal
+with this issue.
 %
-Finally, we are planning to do further experimentation, in particular with some more realistic
+We are also planning to do further experimentation, in particular with some more realistic
 programs from existing applications. 
 
 
 
-\bigskip\bigskip\bigskip
+%\bigskip\bigskip\bigskip
 
-Since decision trees can handle variables with more two values and
-even continous ones, our results generalize directly to such cases. In addition
-the results generalize trivially to scenarios where different actions can fail
-or succeed with different probabilities.
+%Since decision trees can handle variables with more two values and
+%even continous ones, our results generalize directly to such cases. In addition
+%the results generalize trivially to scenarios where different actions can fail
+%or succeed with different probabilities.
