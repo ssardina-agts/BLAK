@@ -44,6 +44,8 @@ Put differently, the coverage degree provides a confidence test on the decision
 tree.
 
 
+
+
 Next, one can define an equation for determining the final plan selection weight
 for a plan that is influenced by the above coverage-based confidence measure.
 % %
@@ -55,8 +57,6 @@ coverage degree:
 \Omega_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
 \end{equation*}
 	
-\noindent
-
 	
 Initially, the weight of the plan for a world where it has never been executed is
 assigned a default value ($0.5$ in our case).
@@ -67,6 +67,16 @@ the plan's decision tree.
 
 
 \textbf{sebastian: up to here so far...}
+
+
+Regarding how the coverage degree $c_T(w)$ for a world $w$ is calculated at
+every point, we should make the following observations.
+% %
+First,
+
+
+\textbf{sebastian: up to here so far...}
+
 
 The coverage $c_T(S)$ itself is calculated and stored each time a
 result is recorded for node $T$. The calculation is performed in turn
