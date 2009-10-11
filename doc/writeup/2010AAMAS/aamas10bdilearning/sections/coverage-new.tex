@@ -2,103 +2,71 @@
 \section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Omit{
-The first part of this paper addresses the task of determining when
-decisions along the active execution trace may be considered
-\textit{informed enough} for outcomes to be included as learnable
-instances for each \dt in that trace. For this we contrast two
-schemes, \CL\ and \BUL\ - and show that the conservative \BUL\
-approach delivers more robust performance than the simpler \CL\
-approach for the cases considered. For both approaches, the same
-probabilistic function $E$ (or exploration strategy) was used to make
-the plan selection at each junction of the active execution trace.  
+In this section, we extend our BDI learning so as to include a confidence test
+within the plan selection mechanism itself. More concretely, in the new approach,
+instead of using the stability measure to ensure that we only record results that
+we are confident in, we instead modify our plan selection procedure to take into
+account of how confident we are in the current decision tree.
+% %
+The idea is simple: the confidence on a plan's decision tree increases as the
+different possible choices below the plan (in the goal-plan structure) are better
+explored.
+% %
+Note that while the stability mechanism ensures that failure information is
+\emph{not recorded} against a decision tree until the corresponding goal-plan
+structure is adequately explored; the new approach instead influences how the
+decision tree is \emph{use} at plan selection time.
 
-In subsequent work we keep the \CL\ and \BUL\ recording methods constant, and adjust the probabilistic plan selection function $E$ to evaluate the impact on the learning outcome. Motivated by the polarity between the two approaches, we consider if an informed probabilistic selection function $E'$ may be constructed to yield a \textit{middle ground} approach that applies better in the general case. This would be valuable since if a \CL+$E'$-based approach yields comparable performance to any \BUL+$E^*$-based approach, then the former is preferred as \CL\ is much simpler than \BUL. Interestingly we find that such a formulation is possible and that an informed exploration strategy that leverages both the domain knowledge (inherent in the goal-plan tree hierarchy) as well as the ongoing learning (agent's experience so far) can combine the benefits of both \CL\ and \BUL.
-}
 
-In the new approach instead of using the stability measure to ensure that we only
-record results that we are confident in, we instead modify our plan selection
-procedure to take account of how confident we are in the current decision tree.
-If the decision tree probability is based on very sparse exploration of the
-relevant subspace then we should be less confident in this information than if
-the space is thoroughly explored. We note that the stability measure ensures that
-failure information is not recorded in the decision tree until the tree is
-adequately explored. Our new approach instead influences how we use the decision
-trees for plan selection.
+So, with each plan in the goal-plan tree hierarchy, we identify its set of
+potential \textit{choices} as the set of all potential execution paths
+\textit{below} the plan in the hierarchy. Observe this can easily be computed
+offline beforehand.
+% %
+Roughly speaking, a plan's decision tree is more \textit{informed} for a world
+state, if it accounts for a larger number of plan's choices in that state.
+% %
+Next, we say that a plan has a higher degree of \emph{coverage} when more of its
+underlying choices have been explored in the past and accounted in the
+corresponding decision tree.
+% %
+Technically, given a decision tree $T$, we define its converage $c_T(w) \in
+[0,\ldots,1]$ as the coverage degree of $T$ for world state $w$.
+% %
+Initially, when the plan has not yet been executed in a world $w$, its coverage
+on the state, namely $c_T(w)$, is zero and the agent may not be that confident on
+the probability of plan success estimated by the decision tree at $w$. As the
+different ways of execution the plan in the world are explored, the value of
+$c_T(w)$ approaches $1$. When all choices have been tried, $c_T(w)=1$ and the
+agent may rely on the decision tree estimation of success fully.
+%%
+Put differently, the coverage degree provides a confidence test on the decision
+tree.
 
-We start by quantifying the quality of (or our \textit{confidence} in)
-the hypotheses of a \dt for a unknown subspace $S$ of world states
-$[w_1 \ldots w_n] \in W$ \footnote{Note that in general not every plan
-  can be selected in every world state. Subspace $S$ refers to the
-  subset of world states where the plan may be selected.}. At the
-beginning of a run we have no learnable instances and for a given
-goal-plan tree node $T$ our probability of success $p_T(w)$ in world
-$w \in S$ is given by the default probability $0.5$. After the first
-instance is recorded, the \dt will generalise the result to the full
-space of $S$ (i.e. $\forall w \in S$) leading to likely
-\textit{mis-classification}. Intuitively we know that as more and more
-$w \in S$ are witnessed and recorded, the \dt's classification over
-$S$ will improve. 
 
-\Omit{Our two approaches may be described in terms of
-confidence as follows: \CL\ always assumes full confidence in the \dt
-but suffers from misclassification errors (that are eventually
-rectified through subsequent learning from misinformed choices); \BUL\
-uses the static $\epsilon$ and $k$ values to determine the boundary
-for our confidence in the \dt (with the trade-off that for the period
-of no confidence the best we can do is use $0.5$). 
-}
+Next, one can define an equation for determining the final plan selection weight
+for a plan that is influenced by the above coverage-based confidence measure.
+% %
+Formally, we define the plan's weight for plan selection, namely $\Omega'(w)$, based
+on the plan success expectation returned by the decision tree and the current
+coverage degree:
 
-What we want is to compute a smooth transition
-from zero-confidence in the \dt classification to full-confidence,
-based on experience. We identify two orthogonal properties,
-\textit{choices} and \textit{subspace} that are integral to informed
-decision making by 
-%the learning nodes in 
-our agent. Choices refer to
-the set of all statically computable execution paths \textit{below} a
-goal node in the goal-plan tree hierarchy. Subspace refers to the set
-of all worlds that are learnable for the \dt at that node. Defined in
-those terms, we label a \dt \textit{not informed} if no choices have
-been recorded in any world of the subspace, or \textit{fully informed}
-when all choices have been covered in every world of the subspace. 
+\begin{equation*}\label{eqn:coverage}   
+\Omega_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
+\end{equation*}
+	
+\noindent
 
-%In fact, we can construct a measure of our confidence in the \dt based on
-%the degree of \textit{coverage} of all choices in all subspace
-%associated worlds. 
-%In other words, \textit{coverage} may be defined as the fraction  
-% *** not sure what you wanted to say in above - it was left as a
-% hanging sentence... ???
+	
+Initially, the weight of the plan for a world where it has never been executed is
+assigned a default value ($0.5$ in our case).
+% %
+As the coverage degree increases with time, by trying the various ways the plan
+could be executed, the weight of the plan approaches the true value estimated by
+the plan's decision tree.
 
-We define an equation for determining plan selection probability that
-is influenced by this confidence measure based on the level of
-\textit{coverage} of all choices in all subspace associated worlds:
 
-\begin{equation}
-\label{eqn:coverage}   
-E': p'_T(w)= 0.5 + \left[  c_T(S) *  \left( p_T(w) - 0.5 \right)  \right]
-\end{equation}
-
-%Equation \ref{eqn:coverage} shows how a confidence measure based on
-%coverage may be used to modify the final plan selection
-%probability. 
-The idea here is to bias the \dt classification (probability
-of success) of world $w$ in node $T$ given by $p_T(w) \in [0 \ldots
-1]$ with the coverage $c_T(S) \in [0 \ldots 1]$ of subspace $S$ given
-$w \in S$. Initially the coverage is zero, so the revised probability
-$p'_T(w) = 0.5$ the default probability of success. As coverage
-$\rightarrow 1$, the revised probability $p'_T(w) \rightarrow p_T(w)$
-the \dt classification. This gives a progressive transition to the \dt
-classification as more experience is acquired (Figure
-\ref{fig:coverage-surface}). 
-
-\begin{figure}[ht]
-   \centering
-   \includegraphics[width=\columnwidth]{figs/coverage-surface}
-   \caption{How confidence (coverage) is used to adjust \dt classification for plan selection.}
-   \label{fig:coverage-surface}
-\end{figure}
-
+\textbf{sebastian: up to here so far...}
 
 The coverage $c_T(S)$ itself is calculated and stored each time a
 result is recorded for node $T$. The calculation is performed in turn
@@ -158,25 +126,44 @@ the \BUL-favouring structure $\T_2$, the \CL+$E'$ (squares) approach
 is now much closer to \BUL\ performance than the previous \CL+$E$
 (triangles) approach. 
 
-\begin{figure}[ht]
+
+\begin{figure*}[t]
 \begin{center}
+\subfigure[Structure $\T_2$]{\label{fig:T2_result2}
 \input{figs/T2-result2}
-\end{center}
-\caption{Comparison of the new configurations \BUL+$E'$ (diamonds) and \CL+$E'$ (squares) against the earlier \BUL+$E$ (circles) and \CL+$E$ (triangles) for the \BUL-favouring structure $\T_2$.}
-\label{fig:T2_result2}
-\end{figure}
-
-We now consider a new structure $\T_4$ that is based on the typical setting (so is not intentionally biased towards one approach), and that has the property that a world $W$ may have two solutions, each in a different sub-tree. Furthermore one solution is always \textit{better} than the other because it has a higher chance of success (in our environment we model this by varying the number of actions required in the solution where each action has a $10\%$ chance of failure). Finally, the structure is crafted so that the likelihood of finding the sub-optimal solution is higher. The purpose is to understand how our approaches behave when optimality is important. Here we expect that the coverage-based exploration of $E'$ should benefit over $E$ in finding the optimal solutions first. 
-
-\begin{figure}[ht]
-\begin{center}
+}
+\qquad
+\subfigure[Structure $\T_4$]{\label{fig:T4_result}
 \input{figs/T4-result}
-\end{center}
-\caption{Comparison of all configurations (\BUL+$E'$ (diamonds), \CL+$E'$ (squares), \BUL+$E$ (circles), \CL+$E$ (triangles)) for new structure $\T_4$ with local solutions.}
-\label{fig:T4_result}
-\end{figure}
+}
 
-Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ (squares) easily outperforms \CL+$E$ (triangles) and \BUL (diamonds and circles). The reason why the other configurations are sub-optimal is because they do not take into account the structure of the tree and therefore tend to focus exploration in the sub-tree where the first solution was found (which likely is the sub-optimal one in our case) \footnote{Note that \BUL+$E'$ does consider the tree structure but as explained earlier it's behaviour is effectively the same as \BUL+$E$}.
+\caption{Comparison of the new configurations \BUL+$E'$ (diamonds) and \CL+$E'$
+(squares) against the earlier \BUL+$E$ (circles) and \CL+$E$ (triangles) for the
+\BUL-favouring structure $\T_2$.}
+\end{center}
+\end{figure*}
+
+
+We now consider a new structure $\T_4$ that is based on the typical setting (so
+is not intentionally biased towards one approach), and that has the property that
+a world $W$ may have two solutions, each in a different sub-tree. Furthermore one
+solution is always \textit{better} than the other because it has a higher chance
+of success (in our environment we model this by varying the number of actions
+required in the solution where each action has a $10\%$ chance of failure).
+Finally, the structure is crafted so that the likelihood of finding the
+sub-optimal solution is higher. The purpose is to understand how our approaches
+behave when optimality is important. Here we expect that the coverage-based
+exploration of $E'$ should benefit over $E$ in finding the optimal solutions
+first.
+
+
+Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ (squares)
+easily outperforms \CL+$E$ (triangles) and \BUL (diamonds and circles). The
+reason why the other configurations are sub-optimal is because they do not take
+into account the structure of the tree and therefore tend to focus exploration in
+the sub-tree where the first solution was found (which likely is the sub-optimal
+one in our case) \footnote{Note that \BUL+$E'$ does consider the tree structure
+but as explained earlier it's behaviour is effectively the same as \BUL+$E$}.
 
 
 The above results are significant because they highlight a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Moreover, the \CL-based configuration is a simpler alternative to the \BUL-based configuration, further adding to it's appeal.

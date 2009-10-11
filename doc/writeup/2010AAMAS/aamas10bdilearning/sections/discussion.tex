@@ -2,17 +2,14 @@
 \section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this paper, we proposed a technique to enhance the typical plan selection mechanism
-in BDI agent systems by allowing agents to learn and adapt the context condition of existing plans
-in the agent's plan library.
-%
+In this paper, we proposed a technique to enhance the typical plan selection
+mechanism in BDI agent systems by allowing agents to learn and adapt the context
+condition of existing plans in the agent's plan library.
 As defining adequate context conditions for plans may be a difficult, and
-sometimes 
-impossible, task, a framework that allows the \emph{refinement} of (initial) context
-conditions would allow BDI agents to achieve better performance over
-time. It also allows them to adapt gradually to an environment which
-may have changed since the system was initially deployed.
-%
+sometimes impossible, task, a framework that allows the \emph{refinement} of
+(initial) context conditions would allow BDI agents to achieve better performance
+over time. It also allows them to adapt gradually to an environment which may
+have changed since the system was initially deployed.
 
 This paper makes several contributions. Firstly we develop an extended
 BDI framework using decision trees as (part of) context conditions,
@@ -51,6 +48,15 @@ We are also planning to do further experimentation, in particular with some more
 programs from existing applications. 
 
 
+\bigskip
+\textbf{Things to be discussed:}
+\begin{enumerate}
+  \item handling of continous variables (e.g., temperature)
+  \item more realistic stochastic actions (easy)
+  \item a way of relating worlds and learning their correlations, maybe
+  could help realize when we have changed environment. can we use learning of
+  bayesian networks for this? 
+\end{enumerate}
 
 %\bigskip\bigskip\bigskip
 

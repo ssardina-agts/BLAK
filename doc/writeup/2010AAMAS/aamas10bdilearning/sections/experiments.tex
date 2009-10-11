@@ -46,10 +46,13 @@ recording whether the execution terminated successfully or not.
 %We calculated the average rate of success of the goal every some fixed
 %number of iterations (in our case $20$), and investigated how such rate evolved
 %as the agent refined the context condition of plans.
-We calculate the average rate of success of the goal by first averaging the results at each time step over $5$ runs of the same experiment, and then smoothing using a moving average of the previous 100 time steps to get the trends reported in the figures.
+We calculate the average rate of success of the goal by first averaging the
+results at each time step over $5$ runs of the same experiment, and then
+smoothing using a moving average of the previous 100 time steps to get the trends
+reported in the figures.
 % %%
-We ran the tests with both a \BUL-based agent and a \CL-based agent,
-ensuring the same sampling of random world states for each.
+We ran the tests with both a \BUL-based agent and a \CL-based agent, ensuring the
+same sampling of random world states for each.
 
 \begin{figure}[t]
 \begin{center}
@@ -295,3 +298,9 @@ here.
 
 
 
+\begin{figure}[t]
+   \centering
+   \input{figs/T3-result.tex}
+   \caption{Agent performance with applicability threashold.}
+   \label{fig:performance-applicability}
+\end{figure}
