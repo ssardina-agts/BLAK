@@ -30,8 +30,8 @@ Next, we say that a plan has a higher degree of \emph{coverage} when more of its
 underlying choices have been explored in the past and accounted in the
 corresponding decision tree.
 % %
-Technically, given a decision tree $T$, we define its converage $c_T(w) \in
-[0,\ldots,1]$ as the coverage degree of $T$ for world state $w$.
+Technically, given a decision tree $T$ for given plan, we define its converge
+$c_T(w) \in [0,\ldots,1]$ as the coverage degree of $T$ for world state $w$.
 % %
 Initially, when the plan has not yet been executed in a world $w$, its coverage
 on the state, namely $c_T(w)$, is zero and the agent may not be that confident on
@@ -39,20 +39,20 @@ the probability of plan success estimated by the decision tree at $w$. As the
 different ways of execution the plan in the world are explored, the value of
 $c_T(w)$ approaches $1$. When all choices have been tried, $c_T(w)=1$ and the
 agent may rely on the decision tree estimation of success fully.
-%%
+% %
 Put differently, the coverage degree provides a confidence test on the decision
 tree.
 
 
 
 
-Next, one can define an equation for determining the final plan selection weight
-for a plan that is influenced by the above coverage-based confidence measure.
+Next,	 one can define an equation for determining the final plan selection
+weight for a plan that is influenced by the above coverage-based confidence measure.
 % %
 Formally, we define the plan's weight for plan selection, namely $\Omega'(w)$, based
 on the plan success expectation returned by the decision tree and the current
 coverage degree:
-
+%
 \begin{equation*}\label{eqn:coverage}   
 \Omega_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
 \end{equation*}
@@ -66,54 +66,54 @@ could be executed, the weight of the plan approaches the true value estimated by
 the plan's decision tree.
 
 
-\textbf{sebastian: up to here so far...}
 
-
-Regarding how the coverage degree $c_T(w)$ for a world $w$ is calculated at
-every point, we should make the following observations.
+Regarding how the coverage degree is calculated at every point, we should make
+the following two observations.
 % %
-First,
+First, the coverage $c_T(w)$ for a world $w$ is calculated and stored each time a
+result is recorded against a plan's decision tree $T$.
+% %
+Second, it requires, in principle, $\tau \times |S|$ \emph{unique} executions of
+a plan for it to reach \emph{full} coverage, where $\chi$ is the total number of
+choices below the plan and $|S|$ is the number of possible worlds. Practically,
+however, it takes significantly less since choices below a plan are effectively
+represented by an AND/OR tree, and each time an AND node fails, the subsequent
+nodes are not tried and are accounted covered for the world in question.
+% %
+Moreover, since plans are typically executed in the context of other plans
+(e.g., the plan to check-in is always executed after a plan to go to the
+aiport), it would not be necessary to account for the whole world space, but
+only for its subset that is relevant for the plan.
+
+\newcommand{\CLSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
+\newcommand{\CLSELB}{\mbox{$\CL\!\!+\!\!\Omega'$}}
+\newcommand{\BULSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
+\newcommand{\BULSELB}{\mbox{$\CL\!\!+\!\!\Omega'$}}
+
+\medskip With the new account for plans' weight, we (re)considered the two
+learning approaches \CL\ and \BUL\ from the previous section with a plan
+selection based on such weights. We shall refer to such new agents as \CLSELB\
+and \BULSELB, respectively.
+% %
+Similarly, let us call $\CLSELA$ and $\BULSELA$ the corresponding agents using
+the \emph{original} probabilistic selection where the weight of a plan depends
+only on its decision tree success expectation $\Omega_T(w) = p_T(w)$.
 
 
-\textbf{sebastian: up to here so far...}
 
+In Figure~\ref{fig:performance-applicability}, we show the performance of all
+four BDI learning agents in structures $\T_2$ and $\T_4$.
+% %
+First of all, when it comes to the \BUL\ stabibility-based learning scheme, the
+two variations, namely $\BULSELA$ and $\BULSELB$, always show similar
+performance.
+% %
+This is not surprising, as the stability test performed by these agents at each
+plan node inherently results in close to full coverage of the plan, thus
+effectively reducing $\Omega'_T(w)$ to $\Omega_T(w)$.
 
-The coverage $c_T(S)$ itself is calculated and stored each time a
-result is recorded for node $T$. The calculation is performed in turn
-for each node in the active execution trace starting at the leaf node
-where the failure occurred, and the coverage is updated progressively
-up the tree hierarchy. Full coverage at a node $T$ requires $C(T)*|S|$
-unique samples where $C(T)$ is the total number of choices below $T$
-and $|S|$ is the number of worlds in the subspace. Practically
-however, it takes significantly less since choices below $T$ are
-effectively AND/OR trees, and each time an AND node fails the
-subsequent nodes are not tried and are assumed covered for that
-world. The full memory cost for a subspace with $a$ boolean attributes
-is $2^a*C(T)$ however we only require $2^a$ for the implementation
-since we do not keep track of each individual path below $T$ but only
-how many distinct paths below $T$ have been tried in a given
-world. The only unknown in the coverage calculation is $S$ since we do
-not know upfront the subspace to be learnt. A fairly useful estimate
-of $c_T(S)$ for practical use can however be constructed by averaging
-the individual coverages $c_T(w_i)$ of all previously seen worlds at
-node $T$ since $w_i \in S$.  
+\textbf{********* Sebastian: I am at this point ***********}
 
-\subsection{Results}
-
-Given our base approaches \CL\ and \BUL, the original probabilistic
-plan selection function $E$, and the new coverage-based plan selection
-function $E'$ (Equation \ref{eqn:coverage}), we are able to run four
-different learning configurations: the earlier $+E$ configurations
-(\CL+$E$, \BUL+$E$) and the new $+E'$ configurations (\CL+$E'$,
-\BUL+$E'$). 
-
-Note however, that \BUL+$E'$ always shows similar performance to
-\BUL+$E$. This is because the $\StableGoal(G,w,k,\epsilon)$ check of
-\BUL\ inherently results in close to full coverage, effectively
-reducing $p'_T(W)$ to $p_T(W)$ in Equation \ref{eqn:coverage}. This
-means that for \BUL\, the $E$ and $E'$ selection functions are
-effectively the same. So for simplicity we will refer to the \BUL+$E'$
-and \BUL+$E$ approaches collectively as \BUL. 
 
 For the \CL-favouring structure $\T_1$ we find that the new \CL+$E'$
 configuration performs equally well to the original \CL+$E$
