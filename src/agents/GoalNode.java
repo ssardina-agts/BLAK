@@ -124,40 +124,60 @@ public class GoalNode extends Node{
 		return false;
 	}
 
+    public int getPaths() {
+        if (this.pathsKnown) {
+            return this.paths;
+        }
+        int p = 0;
+        int nChildren = this.children.size();
+        if(nChildren > 0) {
+            for(int j = 0; nChildren > j; j++) {
+                PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+                if (!thisNode.isFailedThresholdHandler) {
+                    p += thisNode.getPaths();
+                }
+            }    
+        }
+        this.pathsKnown = true;
+        this.paths = p;
+        return p;
+    }
+    
+    
     public double calculateCoverage(String[] state) {
         double coverage = 0.0;
         int nChildren = this.children.size();
         String stateStr = this.stringOfState(state);
         if(nChildren > 0) {
+            logger.writeLog("Goal "+this.getItem()+" has paths="+this.getPaths());
+            String[] checkState = null;
+    		//find the children which has a non null last state..
+    		for(int j =0; this.children.size()>j;j++) {
+    			PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+    			if(thisNode.lastState!=null) {
+                    checkState = thisNode.lastState;
+                    logger.writeLog("Goal "+name+" will check coverage for state "+this.stringOfState(checkState));
+                    break;
+    			}
+    		}
+    		if(checkState==null) {
+    			logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume coverage=0.0");
+                coverage = 0.0;
+                return coverage;
+    		}
             double cCoverage = 0.0;
-            logger.writeLog("Goal "+this.getItem()+" is checking children for coverage in state "+stateStr);
             logger.indentRight();
             for(int j = 0; nChildren > j; j++) {
 				PlanNode thisNode = (PlanNode)this.children.elementAt(j);
                 if (!thisNode.isFailedThresholdHandler) {
                     double c = 0.0;
                     if (thisNode.isDirty) {
-                        c = thisNode.calculateCoverage(state);
+                        c = thisNode.calculateCoverage(checkState);
                         thisNode.isDirty = false;
                     } else {
-                        c = thisNode.getCoverage(state);
+                        c = thisNode.getCoverage(checkState,false);
                     }
                     cCoverage += c;
-                    if (/*NEVER*/false & thisNode.isSuccessful(state)) {
-                        /* This plan succeeded in this state
-                         * so all subsequent subplans can be considered
-                         * covered since they will almost never be
-                         * selected in this state.
-                         */
-                        logger.writeLog("Goal "+this.getItem()+"'s child plan "+thisNode.getItem()+" previously succeeded in state "+stateStr+" so will consider all other subplans covered");
-                        cCoverage = nChildren;
-                        for(int k = 0; nChildren > k; k++) {
-                            PlanNode kNode = (PlanNode)this.children.elementAt(k);
-                            kNode.setCoverage(stateStr,1.0);
-                            kNode.isDirty = false;
-                        }
-                        break;
-                    }
                 } else {
                     /* Don't count the failed threshold handler child in coverage calculations */
                     nChildren--;

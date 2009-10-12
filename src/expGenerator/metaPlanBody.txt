@@ -140,12 +140,13 @@
 		} else {
 		    double p = info.pSuccess;
 		    if (ag.env.plan_selection == ag.env.COVERAGE_PS) {
-			p = 0.5 + (info.coverage * (p - 0.5));
+			p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
 			String str =
 			"Plan " + ag.planNodes[info.plan_id].getItem() +
 			" REVISED the probability in state " + ag.planNodes[info.plan_id].stringOfLastState() +
 			" to p=" + ((double) ((int) (p * 10000))) / 10000 +
-			" based on coverage c=" + ((double) ((int) (info.coverage * 10000))) / 10000;
+			" based on coverage c=" + ((double) ((int) (info.coverage * 10000))) / 10000 +
+			"^" + ((double) ((int) ((1/info.coverageWeight) * 10000))) / 10000;
 			ag.env.writeLog(str);
 		    }
 		    if (p < 0.0001) {
@@ -182,7 +183,7 @@
 		    if (!info.isFailedThresholdHandler) {
 			double p = info.pSuccess;
 			if (ag.env.plan_selection == ag.env.COVERAGE_PS) {
-			    p = 0.5 + (info.coverage * (p - 0.5));
+			    p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
 			}
 			str += "(" + ag.planNodes[info.plan_id].getItem() + ") for state " +
 			    ag.planNodes[info.plan_id].stringOfLastState() + " is ";

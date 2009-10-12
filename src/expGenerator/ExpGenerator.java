@@ -461,15 +461,17 @@ public class ExpGenerator {
 		+"\tpublic int plan_id;\n"
 		+"\tpublic double pSuccess;\n"
 		+"\tpublic double coverage;\n"
+		+"\tpublic double coverageWeight;\n"
 		+"\tpublic boolean isFailedThresholdHandler;\n\n"
 		+"\tpublic PlanIdInfo(int id ,int pre, double prob){\n"
-		+"\t\tthis(id ,pre, prob, 0.0, false);\n"
+		+"\t\tthis(id ,pre, prob, 0.0, 1.0, false);\n"
         +"\t}\n\n"
-		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, boolean isFTH){\n"
+		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, double weight, boolean isFTH){\n"
 		+"\t\tsuper(pre);\n"
 		+"\t\tplan_id = id;\n"
 		+"\t\tpSuccess = prob;\n"
 		+"\t\tcoverage = cov;\n"
+		+"\t\tcoverageWeight = weight;\n"
 		+"\t\tisFailedThresholdHandler = isFTH;\n"
 		+"\t}\n}";
 		try{	
@@ -520,10 +522,10 @@ public class ExpGenerator {
 		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
 		+"\tif (ag.useDT(plan_id)){\n"
 		+"\t\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, false);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, false);\n"
 		+"\t}\n"
 		+"\telse{\n" 
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage, false);\n\t}\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage, ag.coverageWeight, false);\n\t}\n"
 		+"}\n\n";
 	}
 	
@@ -970,7 +972,7 @@ public class ExpGenerator {
         
         code +=	"\tpublic PlanInstanceInfo getInstanceInfo(){\n"
 		+"\t\tag.setLastInstance(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, true);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, 1.0, true);\n"
 		+"\t}\n\n";
         
 		if (isTopLevelPlan) {
@@ -1152,7 +1154,7 @@ public class ExpGenerator {
 		+"\tlearningAgent.clearAllNodeSuccesses();\n"
 		
 		
-		+"\tif(update_mode== STABLE_U)\n"
+		+"\tif(true || update_mode== STABLE_U)\n"
 		+"\t{\n"
 		+"\t\tlearningAgent.resetLastStates();\n"
 		//+"\t\tlearningAgent.clearAllLastStates();\n"
@@ -1435,6 +1437,7 @@ public class ExpGenerator {
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
         +"\tplanSelectThreshold = 0.0;\n"
+        +"\tcoverageWeight = 1.0;\n"
 
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
 		int index=0; 
@@ -1500,6 +1503,7 @@ public class ExpGenerator {
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
 		+"\tpublic double planSelectThreshold;\n"
+		+"\tpublic double coverageWeight;\n"
 
 		/*
 		+"\tpublic boolean isStableUpdates()\n"

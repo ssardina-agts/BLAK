@@ -12,9 +12,11 @@ public static void main(String[] args)
     String compareTemplate = "";
     double noise;
     double threshold;
+    double coverageWeightB;
 
     noise = 0.1;
     threshold = 0.0;
+    coverageWeightB = 1.0;
     staK = 3;
     staE = 0.05;
     boolean waitST = false;
@@ -54,6 +56,10 @@ public static void main(String[] args)
                 break;
             case 'o':
                 filename = args[index];
+                index++;
+                break;
+            case 'b':
+                coverageWeightB = Double.parseDouble(args[index]);
                 index++;
                 break;
             case 't':
@@ -128,6 +134,7 @@ public static void main(String[] args)
         agent.minNumInstances = minNI;
         agent.waitForSubTree = waitST;
         agent.planSelectThreshold = threshold;
+	agent.coverageWeight = coverageWeightB;
 
         env.filenameOutcome = filename;
         env.learningAgent = agent;

@@ -10,7 +10,8 @@ public class Node{
     public Vector children;
     public boolean successful;
     public Logger logger;
-    
+    public boolean pathsKnown;
+    public int paths;
     
     public Node(Object val, Logger logger)
     {
@@ -18,6 +19,8 @@ public class Node{
     	children = new Vector();
     	successful = true;
         this.logger = logger;
+        pathsKnown = false;
+        paths = 0;
     }
 
     public boolean isSuccessful()
@@ -253,5 +256,9 @@ public class Node{
     		}
     	}
     	return returnMe;	
+    }
+    
+    public int getPaths() {
+        return paths;
     }
 }

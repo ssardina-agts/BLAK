@@ -47,6 +47,7 @@ public class PlanNode extends Node{
     GoalNode topGoal;
     public boolean isDirty;
     public boolean isFailedThresholdHandler;
+    private Random rand;
     
     /*
     public boolean isDoStable() {
@@ -190,6 +191,7 @@ public class PlanNode extends Node{
         isFailedThresholdHandler = isFTH;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
+        rand = new Random();
         try{
             decisionTree = new J48();
             options = new String[1];
@@ -296,11 +298,15 @@ public class PlanNode extends Node{
                 else
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
-            if (res)
+            if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-            else
+                instance.setWeight(1000);
+                data.add(instance);
+                //data.resampleWithWeights(rand);
+            } else {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-            data.add(instance);
+                data.add(instance);
+            }
         }
         else if((update_mode == STABLE) && res)
         {
@@ -338,13 +344,15 @@ public class PlanNode extends Node{
                 else
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
-            if (res)
+            if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-            else
+                instance.setWeight(1000);
+                data.add(instance);
+                //data.resampleWithWeights(rand);
+            } else {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-            data.add(instance);
-            
-            
+                data.add(instance);
+            }
         }
         else if((update_mode == STABLE) && this.childrenStable())
         {
@@ -382,11 +390,15 @@ public class PlanNode extends Node{
                 else
                     instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
             }
-            if (res)
+            if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-            else
+                instance.setWeight(1000);
+                data.add(instance);
+                //data.resampleWithWeights(rand);
+            } else {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-            data.add(instance);
+                data.add(instance);
+            }
         }
         
         /* Now record the experience */
@@ -429,28 +441,53 @@ public class PlanNode extends Node{
         logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
         this.isDirty = true;
     }
+
+    public int getPaths() {
+        if (this.pathsKnown) {
+            return this.paths;
+        }
+        int p = 1;
+        int nChildren = this.children.size();
+        if(nChildren > 0) {
+            for(int j = 0; nChildren > j; j++) {
+                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
+                p *= thisNode.getPaths();
+            }    
+        }
+        this.pathsKnown = true;
+        this.paths = p;
+        return p;
+    }
     
     public double getCoverage(String[] state) {
+        return this.getCoverage(state,false);
+    }    
+
+    public double getCoverage(String[] state, boolean allowEstimate) {
         String memoryKey = this.stringOfState(state);
         if (this.isFailedThresholdHandler) {
             logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using coverage 1.0 in state "+memoryKey);
             return 1.0;
         }
         double coverage = 0.0;
-        /* We will use the average coverage 
-         * of all previously seen worlds as a approximate measure.
-         * We can do this because for the given goal/plan tree
-         * the coverage of all previously seen worlds is likely to be
-         * similar.
-         */
         if (this.experiences.size() > 0) {
-            Object[] earr = this.experiences.values().toArray();
-            for (int i = 0; i < earr.length; i ++) {
-                Experience m = (Experience)earr[i];
-                coverage += m.coverage();
+            if (allowEstimate && (this.getNumberOfChildren() > 0)) {
+                Object[] earr = this.experiences.values().toArray();
+                for (int i = 0; i < earr.length; i ++) {
+                    Experience m = (Experience)earr[i];
+                    coverage += m.coverage();
+                }
+                coverage /= earr.length;
+                logger.writeLog("Plan "+this.getItem()+" in state "+memoryKey+" is averaging previous worlds coverage="+((double)((int)(coverage*10000)))/10000);
+            } else {
+                if (this.experiences.containsKey(memoryKey)) {
+                    Experience thisMemory = (Experience)this.experiences.get(memoryKey);
+                    coverage = thisMemory.coverage();
+                } else {
+                    coverage = 0.0;
+                    logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before, so will use coverage c="+coverage);
+                }
             }
-            coverage /= earr.length;
-            logger.writeLog("Plan "+this.getItem()+" in state "+memoryKey+" is averaging previous worlds coverage="+((double)((int)(coverage*10000)))/10000);
         } else {
             coverage = 0.0;
             logger.writeLog("Plan "+this.getItem()+" has not seen state "+memoryKey+" before and has no previous state to leverage, so will use coverage c="+coverage);
@@ -465,8 +502,10 @@ public class PlanNode extends Node{
             return 1.0;
         }
         double coverage = 0.0;
+        double weight = 1.0;
         if (this.experiences.containsKey(stateStr)) {
             Experience thisMemory = (Experience)this.experiences.get(stateStr);
+            weight = Math.min(2.0*thisMemory.getNumberOfAttempts()/this.getPaths(), 1.0);
             if (thisMemory.coverage() == 1.0) {
                 coverage = 1.0;
                 logger.writeLog("Plan "+this.getItem()+" has maximum coverage="+coverage+" for state "+stateStr);
@@ -481,7 +520,12 @@ public class PlanNode extends Node{
             for(int j = 0; nChildren > j; j++) {
                 GoalNode thisNode = (GoalNode)this.children.elementAt(j);
                 double c = thisNode.calculateCoverage(state);
-                cCoverage += c;
+                logger.writeLog("Child goal "+thisNode.getItem()+" will use coverage weight="+((double)((int)(weight*10000)))/10000);
+                /* The weight allows us to underestimate the coverage, thereby
+                 * forcing more exploration of the node. This becuase the simplified 
+                 * coverage update algorithm generally overestiamtes slightly.
+                 */
+                cCoverage += c * weight;
                 logger.writeLog("Child goal "+thisNode.getItem()+" has coverage="+((double)((int)(c*10000)))/10000+" in state "+stateStr);
                 if (c==1.0 && !thisNode.isSuccessful(state)) {
                     /* This subgoal did not succeed in this state
