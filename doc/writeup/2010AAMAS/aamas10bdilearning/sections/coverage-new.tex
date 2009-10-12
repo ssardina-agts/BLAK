@@ -2,51 +2,50 @@
 \section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we extend our BDI learning so as to include a confidence test
-within the plan selection mechanism itself. More concretely, in the new approach,
-instead of using the stability measure to ensure that we only record results that
-we are confident in, we instead modify our plan selection procedure to take into
-account of how confident we are in the current decision tree.
+%In this section, we extend our BDI learning so as to include a confidence test
+%within the plan selection mechanism itself. More concretely, in the new approach,
+%instead of using the stability measure to ensure that we only record results that
+%we are confident in, we instead modify our plan selection procedure to take into
+%account of how confident we are in the current decision tree.
 % %
-The idea is simple: the confidence on a plan's decision tree increases as the
-different possible choices below the plan (in the goal-plan structure) are better
-explored.
+Our new approach relies on the idea that confidence in a plan's
+decision tree increases as more of the possible choices below the plan
+(in the goal-plan structure) are explored.
 % %
-Note that while the stability mechanism ensures that failure information is
-\emph{not recorded} against a decision tree until the corresponding goal-plan
-structure is adequately explored; the new approach instead influences how the
-decision tree is \emph{used} at plan selection time.
+%Note that while the stability mechanism ensures that failure information is
+%\emph{not recorded} against a decision tree until the corresponding goal-plan
+%structure is adequately explored; the new approach instead influences how the
+%decision tree is \emph{used} at plan selection time.
 
-
-So, with each plan in the goal-plan tree hierarchy, we identify its set of
+With each plan in the goal-plan tree hierarchy, we identify its set of
 potential \textit{choices} as the set of all potential execution paths
-\textit{below} the plan in the hierarchy. Observe this can easily be computed
-offline beforehand.
+\textit{below} the plan in the hierarchy. This can easily be computed
+offline.
 % %
-Roughly speaking, a plan's decision tree is more \textit{informed} for a world
-state, if it accounts for a larger number of plan's choices in that state.
+Intuitively, a plan's decision tree is more \textit{informed} for a world
+state, if it is based on a larger number of choices having been
+explored in that state.
+%accounts for a larger number of the plan's choices in that state.
 % %
-Next, we say that a plan has a higher degree of \emph{coverage} when more of its
-underlying choices have been explored in the past and accounted in the
+We say that a plan has a higher degree of \emph{coverage} when more of its
+underlying choices have been explored in the past and accounted for in the
 corresponding decision tree.
 % %
-Technically, given a decision tree $T$ for given plan, we define its converge
+Technically, given a decision tree $T$ for given plan, we define its coverage
 $c_T(w) \in [0,\ldots,1]$ as the coverage degree of $T$ for world state $w$.
 % %
 Initially, when the plan has not yet been executed in a world $w$, its coverage
-on the state, namely $c_T(w)$, is zero and the agent may not be that confident on
+in the state, namely $c_T(w)$, is zero and the agent has no basis for
+confidence in
 the probability of plan success estimated by the decision tree at $w$. As the
 different ways of executing the plan in the world are explored, the value of
 $c_T(w)$ approaches $1$. When all choices have been tried, $c_T(w)=1$ and the
-agent may rely on the decision tree estimation of success fully.
+agent may rely fully on the decision tree estimation of success.
 % %
 Put differently, the coverage degree provides a confidence test on the decision
 tree.
 
-
-
-
-Next,	 one can define an equation for determining the final plan selection
+We define an equation for determining the final plan selection
 weight for a plan that is influenced by the above coverage-based confidence measure.
 % %
 Formally, we define the plan's weight for plan selection, namely $\Omega'(w)$, based
@@ -66,24 +65,27 @@ could be executed, the weight of the plan approaches the true value estimated by
 the plan's decision tree.
 
 
-
-Regarding how the coverage degree is calculated at every point, we should make
-the following two observations.
+%Regarding how the coverage degree is calculated at every point, we should make
+%the following two observations.
 % %
-First, the coverage $c_T(w)$ for a world $w$ is calculated and stored each time a
-result is recorded against a plan's decision tree $T$.
+Each time a result is recorded in a decision tree, $T$, the coverage
+$c_T(w)$ for a world $w$ is calculated and stored for the decision tree.
 % %
-Second, it requires, in principle, $\tau \times |S|$ \emph{unique} executions of
+It requires, in principle, $\tau \times |S|$ \emph{unique} executions of
 a plan for it to reach \emph{full} coverage, where $\chi$ is the total number of
 choices below the plan and $|S|$ is the number of possible worlds. Practically,
 however, it takes significantly less since choices below a plan are effectively
 represented by an AND/OR tree, and each time an AND node fails, the subsequent
-nodes are not tried and are accounted covered for the world in question.
+nodes are not tried and are counted as covered for the world in question.
 % %
-Moreover, since plans are typically executed in the context of other plans
-(e.g., the plan to check-in is always executed after a plan to go to the
-airport), it would not be necessary to account for the whole world space, but
-only for its subset that is relevant for the plan.
+Also, a plan may not be accessible from all world states, so in
+practice it will only need to be assessed in the subset of the world
+states that are relevant for it.
+%Moreover, since plans are typically executed in the context of other plans
+%(e.g., the plan to check-in is always executed after a plan to go to the
+%airport), it would not be necessary to account for the whole world space, but
+%only for its subset that is relevant for the plan.
+
 
 \newcommand{\CLSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
 \newcommand{\CLSELB}{\mbox{$\CL\!\!+\!\!\Omega'$}}
@@ -161,11 +163,11 @@ expect the agent to have discovered the success execution encoded in $P_i$.
 
 Even more interesting is the the impact of the new plan selection mechanism on
 agents that work with an applicability threshold, that is, agents that may not
-select a plan if they are deemed not worth it. For this cases, the coverage-based
+select a plan if it is deemed not worth it. For this cases, the coverage-based
 avoids the \CL\ approach judging a plan not worth it based on false negative
 experiences. Even if a plan is deemed with very low probability of success, if it
-has not been substantially ``covered,'' its weight would still be bias towards the
-default value of $.5$. Of course, a consistent agent system should always have
+has not been substantially ``covered,'' its weight would still be biased towards the
+default value of $.5$. The system should always have
 the applicability threshold substantially below the default plan selection
 weight.
 %%
@@ -173,8 +175,15 @@ Figure~\ref{fig:performance-applicability} shows how the new agent systems
 using the $\Omega'$ selection weight perform, and in particular, how \CLSELB\
 does not suffer from the limitations of its previous \CLSELA\ version.
 
+Using coverage to bias plan selection weights encourages the agent to
+explore all the possible options available. 
+This will also ensure that
+an agent using this approach can be assured of which is the optimal
+solution, faster than an agent using the original approach. In some
+applications this may be important.
 
-Finally, we point out that agents based on the new converge-based plan selection
+\omitable{
+Finally, we point out that agents based on the new coverage-based plan selection
 scheme will be able to realize when the optimal solution for a goal has been
 reached before the agents based on the original scheme.
 % %
@@ -186,11 +195,31 @@ So, for example, since $P$ is more ``complex'' than $P_i'$ in in structure $\T_2
 (Figure~\ref{fig:T2}), an agent based on the $\Omega'$ weighting function, will
 tend to give more execution chances to the former in order to achieve a more
 uniform exploration of the options for goal $G$.
+}
+
+The above results show that the coverage based confidence weighting
+can improve the performance of the \CL\ approach in those
+cases where it performed poorly due to false negative experiences,
+i.e., failure runs for a plan that includes successful executions.
+%
+Importantly this approach also gives us a flexible mechanism to bias the 
+behaviour depending on application characteristics. Observe the formula:
+\begin{equation*}\label{eqn:coverage*}
+\Omega'_T(w) = 0.5 + \left[  c_T(w)^{1/\alpha} *  \left( p_T(w) - 0.5 \right)
+\right].
+\end{equation*}
+\noindent When $\alpha \approx 0$, the \CLSELB\ scheme will behave more
+like a \BULSELA-based system: $c_T(w)^{1/\alpha}$ transitions directly from $0$
+to $1$ when $c_T(w)$ reaches $1$ (and it remains zero otherwise).
+% %           
+On other hand, when $\alpha \approx \infty$, the \CLSELB\ scheme will behave more
+like the \CLSELA: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and
+$\Omega'(w) \approx p_T(w)$.
+%
+When $\alpha=1$ this is the same as our initial equation.
 
 
-
- 
-
+\omitable{
 The above results are significant in that they suggest that the alternative plan
 selection mechanism, which includes a confidence test based on the notion of plan
 coverage, can substantially improve the performance of the \CL\ approach in those
@@ -219,7 +248,7 @@ $\Omega'(w) \approx p_T(w)$.
 Putting it altogether, all the above suggests that the \CLSELB\ learning
 approach is most adequate to address the problem we are concerned on, since it
 is simpler and more flexible than the alternative ones.
-
+}
 
 
 
