@@ -15,7 +15,7 @@ explored.
 Note that while the stability mechanism ensures that failure information is
 \emph{not recorded} against a decision tree until the corresponding goal-plan
 structure is adequately explored; the new approach instead influences how the
-decision tree is \emph{use} at plan selection time.
+decision tree is \emph{used} at plan selection time.
 
 
 So, with each plan in the goal-plan tree hierarchy, we identify its set of
@@ -36,7 +36,7 @@ $c_T(w) \in [0,\ldots,1]$ as the coverage degree of $T$ for world state $w$.
 Initially, when the plan has not yet been executed in a world $w$, its coverage
 on the state, namely $c_T(w)$, is zero and the agent may not be that confident on
 the probability of plan success estimated by the decision tree at $w$. As the
-different ways of execution the plan in the world are explored, the value of
+different ways of executing the plan in the world are explored, the value of
 $c_T(w)$ approaches $1$. When all choices have been tried, $c_T(w)=1$ and the
 agent may rely on the decision tree estimation of success fully.
 % %
