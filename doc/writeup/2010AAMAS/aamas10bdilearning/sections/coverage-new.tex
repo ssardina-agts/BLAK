@@ -100,13 +100,8 @@ the \emph{original} probabilistic selection where the weight of a plan depends
 only on its decision tree success expectation $\Omega_T(w) = p_T(w)$.
 
 
-
-In Figure~\ref{fig:performance-applicability}, we show the performance of all
-four BDI learning agents in structures $\T_2$ and $\T_4$.
-% %
 First of all, when it comes to the \BUL\ stability-based learning scheme, the
-two variations, namely $\BULSELA$ and $\BULSELB$, always show similar
-performance.
+ $\BULSELA$ and $\BULSELB$ approaches show similar performance.
 % %
 This is not surprising, as the stability test performed by these agents at each
 plan node implicitly implies a test of coverage. Indeed, for a plan to become
@@ -117,7 +112,7 @@ $\Omega'_T(w)$ to $\Omega_T(w)$.
 
 
 
-Second, let us focus on the \CL\ approach.
+Now, let us focus on the \CL\ approach.
 % %
 For the \CL-favouring structure $\T_1$, the performance of \CLSELB matched that
 of \CLSELA\ reported in the previous section (cf. Figure~\ref{fig:T1_result}).
@@ -133,13 +128,13 @@ when using the new plan selection mechanism.
 
 
 The situation is completely different, though, when one considers the goal-plan
-structure $\T_2$, under which the conservative \BULSELA\ approach used to display
-better performance than \CLSELA\ (cf. Figure \ref{fig:T2_result}).
+structure $\T_2$ in which the \CLSELA\ used to performance poorly (cf. Figure
+\ref{fig:T2_result}).
 % %
 When ran in $\T_2$, the \CLSELB\ approach showed a dramatic improvement over the
 \CLSELA-based one. Figure \ref{fig:T2_result2} shows this change with the results
 for the new approach to plan selection $\BULSELB$ and $\CLSELB$ superimposed over
-the original results from Figure \ref{fig:T2_result} (in grey).
+the original results from Figure \ref{fig:T2_result}.
 % %
 The reason why the new plan selection mechanism improves the \CL\ learning scheme
 is that even though the success estimation for plan $P_i$ would still be low
@@ -147,10 +142,9 @@ initially (remember that \CL, in contrast with \BUL, would record all initial
 failure runs against $P_i$), the agent would not be so confident on such
 estimation until the plan's coverage degree increases and it will therefore boost
 such estimation towards the default weight of $0.5$. In other words, the false
-negative executions collected by the agent for plan $P_i$ would not be
-considered so seriously due to low plan coverage. As full coverage is
-approached, one would expect the agent to have discovered the success execution
-encoded in $P_i$.
+negative executions collected by the agent for plan $P_i$ would not be considered
+so seriously due to low plan coverage. As full coverage is approached, one would
+expect the agent to have discovered the success execution encoded in $P_i$.
 
 
 
@@ -195,6 +189,7 @@ tend to give more execution chances to the former in order to achieve a more
 uniform exploration of the options for goal $G$.
 
 
+
  
 
 Summarizing, the above results are significant in that they suggest that the
@@ -205,15 +200,21 @@ false negative experiences, i.e., failure runs for a plan that includes
 successful executions.  Being the \CL\  simpler than the \BUL\ one (as no account
 of ``stability'' is used), this suggests that the \CLSELB\ combination as the
 overall best one.
-% %
-Nonetheless, it should be noted that there is indeed an intrinsic trade-off
-between coverage and uniform exploration and decision tree estimation of success
-and bias execution towards success. This is, in fact, the standard trade-off
-between exploration and exploitation when it comes to learning and acting at the
-same time.
+
+
 % %
 The new learning framework proposed in this section allows to obtain different
 classes of agents depending on the trade-off required.
+
+
+\begin{equation*}\label{eqn:coverage}   
+\Omega''_T(w) = 0.5 + \left[  c_T(w)^{1/\alpha} *  \left( p_T(w) - 0.5 \right) 
+\right].
+\end{equation*}
+
+Nonetheless, it should be noted that in our problem there is indeed the usual a
+intrinsic trade-off between exploration and execution success.
+
 
 
 
