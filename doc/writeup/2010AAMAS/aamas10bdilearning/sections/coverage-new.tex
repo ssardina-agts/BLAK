@@ -87,8 +87,8 @@ only for its subset that is relevant for the plan.
 
 \newcommand{\CLSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
 \newcommand{\CLSELB}{\mbox{$\CL\!\!+\!\!\Omega'$}}
-\newcommand{\BULSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
-\newcommand{\BULSELB}{\mbox{$\CL\!\!+\!\!\Omega'$}}
+\newcommand{\BULSELA}{\mbox{$\BUL\!\!+\!\!\Omega$}}
+\newcommand{\BULSELB}{\mbox{$\BUL\!\!+\!\!\Omega'$}}
 
 \medskip With the new account for plans' weight, we (re)considered the two
 learning approaches \CL\ and \BUL\ from the previous section with a plan
@@ -118,30 +118,40 @@ $\Omega'_T(w)$ to $\Omega_T(w)$.
 
 
 Second, let us focus on the \CL\ approach.
+% %
+For the \CL-favouring structure $\T_1$, the performance of \CLSELB matched that
+of \CLSELA\ reported in the previous section (cf. Figure~\ref{fig:T1_result}).
+% %
+This was also the case with the balanced structure $\T_3$ where both \CL\ and
+\BUL\ performed equally well under the original plan selection mechanism---the
+performance of \CLSELB\ was the same as that reported in
+Firgure~\ref{fig:T3_result} for \CLSELA.
+% %
+Thus, for the cases where \CL\ was performing reasonably well, nothing is lost
+when using the new plan selection mechanism.
 
-\textbf{********* Sebastian: I am at this point ***********}
 
 
-For the \CL-favouring structure $\T_1$ we find that the new \CL+$E'$
-configuration performs equally well to the original \CL+$E$
-configuration, so while there is no significant improvement there is
-also no loss in performance. Similarly, for the balanced structure
-$\T_3$ where both \CL\ and \BUL\ perform equally well, the \CL+$E'$
-configuration shows no significant improvement. For $\T_1$ and $\T_3$
-then, the $+E'$ results are the same as those reported for the
-original $+E$ configurations in Figure \ref{fig:T1_result} and Figure
-\ref{fig:T3_result}. 
+The situation is completely different, though, when one considers the goal-plan
+structure $\T_2$, under which the conservative \BULSELA\ approach used to display
+better performance than \CLSELA\ (cf. Figure \ref{fig:T2_result}).
+% %
+When ran in $\T_2$, the \CLSELB\ approach showed a dramatic improvement over the
+\CLSELA-based one. Figure \ref{fig:T2_result2} shows this change with the results
+for the new approach to plan selection $\BULSELB$ and $\CLSELB$ superimposed over
+the original results from Figure \ref{fig:T2_result} (in grey).
+% %
+The reason why the new plan selection mechanism improves the \CL\ learning scheme
+is that even though the success estimation for plan $P_i$ would still be low
+initially (remember that \CL, in contrast with \BUL, would record all initial
+failure runs against $P_i$), the agent would not be so confident on such
+estimation until the plan's coverage degree increases and it will therefore boost
+such estimation towards the default weight of $0.5$. In other words, the false
+negative executions collected by the agent for plan $P_i$ would not be
+considered so seriously due to low plan coverage. As full coverage is
+approached, one would expect the agent to have discovered the success execution
+encoded in $P_i$.
 
-The impact of $E'$ is apparent in $\T_2$ however, a structure that
-favours the conservative \BUL\ approach (Figure
-\ref{fig:T2_result}). Here \CL+$E'$ shows a dramatic improvement over
-\CL+$E$. Figure \ref{fig:T2_result2} shows this change with the new
-$+E'$ configurations (diamonds for \BUL\ and squares for \CL)
-superimposed over the original $+E$ results of Figure
-\ref{fig:T2_result} (circles for \BUL\ and triangles for \CL). So for
-the \BUL-favouring structure $\T_2$, the \CL+$E'$ (squares) approach
-is now much closer to \BUL\ performance than the previous \CL+$E$
-(triangles) approach. 
 
 
 \begin{figure*}[t]
@@ -161,38 +171,30 @@ is now much closer to \BUL\ performance than the previous \CL+$E$
 \end{figure*}
 
 
-We now consider a new structure $\T_4$ that is based on the typical setting (so
-is not intentionally biased towards one approach), and that has the property that
-a world $W$ may have two solutions, each in a different sub-tree. Furthermore one
-solution is always \textit{better} than the other because it has a higher chance
-of success (in our environment we model this by varying the number of actions
-required in the solution where each action has a $10\%$ chance of failure).
-Finally, the structure is crafted so that the likelihood of finding the
-sub-optimal solution is higher. The purpose is to understand how our approaches
-behave when optimality is important. Here we expect that the coverage-based
-exploration of $E'$ should benefit over $E$ in finding the optimal solutions
-first.
+
+Even more interesting is the the impact of the new plan selection mechanism on
+agents that work with an applicability threashold, that is, agents that may not
+select a plan if they are deemed not worth it. \textbf{explain more here......}
 
 
-Figure \ref{fig:T4_result} shows the results for $\T_4$ where \CL+$E'$ (squares)
-easily outperforms \CL+$E$ (triangles) and \BUL (diamonds and circles). The
-reason why the other configurations are sub-optimal is because they do not take
-into account the structure of the tree and therefore tend to focus exploration in
-the sub-tree where the first solution was found (which likely is the sub-optimal
-one in our case) \footnote{Note that \BUL+$E'$ does consider the tree structure
-but as explained earlier it's behaviour is effectively the same as \BUL+$E$}.
+Finally, we point out that agents based on the new plan selection scheme will
+be able to realize when the optimal solution for a goal has been reached before
+the agents based on the previous scheme.
+%%
+This is because \textbf{.......... explain analytically..........}
 
 
-The above results are significant because they highlight a configuration \CL+$E'$ that performs well in \textit{all} proposed structures: the \CL-favouring $\T_1$, the \BUL-favouring $\T_2$, the typical setting $\T_3$, and the typical setting with optimal solutions $\T_4$, making it a good candidate for the general setting. Moreover, the \CL-based configuration is a simpler alternative to the \BUL-based configuration, further adding to it's appeal.
+Summarizing, the above results are significant in that they suggest that
+the alternative plan selection mechanism, which uses the coverage notion as a
+confidence test, does provide substantial benefits. Specifically, being \CL\ a
+simpler approach, it suggests that the \CLSELB\ combination as the
+overall best one.
 
-\Omit{
-\subsection{Discussion}
 
-In Section \ref{sec:coverage} we presented a \textit{coverage}-based
-confidence measure that combined with the \dt classification gives an
-informed plan selection function (Equation \ref{eqn:coverage}) that
-benefits our context learning approaches \CL\ and \BUL. Now, 
-}
+
+
+\bigskip\bigskip\bigskip
+\textbf{move to discussion??}
 Since the
 coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a
 confidence measure, then the way it is \textit{used} will determine
@@ -218,19 +220,4 @@ failure would also hurt the \CL+$E'$ configuration (though
 not as much as \CL+$E$). For such systems, we suggest that the
 weighting $b$ be used to get the preferred \BUL-like performance. 
 
-One critique of the coverage-based confidence measure is that it has a
-defined start ($c_T(S)=0$) and end state ($c_T(S)=1$). For a real
-system however, learning and re-learning will occur in an endless loop
-as the agent continually tries to adapt to a changing
-environment. This implies that our confidence in a \dt's
-classification would also require calibration based on a changing
-environment. If the change in the environment is deliberate (for
-instance the agent was moved into a new environment) then the coverage
-$c_T(S)$ could be reset and confidence \textit{re-built}. Without such
-a signal the agent must rely on measuring per-goal performance in
-order to pick up failures that could be attributed to environmental
-changes. The problem of identifying changes that warrant new learning
-as compared to adapting previous learning, however, is generally
-considered to be very difficult.
-%a much harder one. 
 

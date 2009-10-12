@@ -55,7 +55,24 @@ programs from existing applications.
   \item more realistic stochastic actions (easy)
   \item a way of relating worlds and learning their correlations, maybe
   could help realize when we have changed environment. can we use learning of
-  bayesian networks for this? 
+  bayesian networks for this?
+  
+\item One critique of the coverage-based confidence measure is that it has a
+defined start ($c_T(S)=0$) and end state ($c_T(S)=1$). For a real
+system however, learning and re-learning will occur in an endless loop
+as the agent continually tries to adapt to a changing
+environment. This implies that our confidence in a \dt's
+classification would also require calibration based on a changing
+environment. If the change in the environment is deliberate (for
+instance the agent was moved into a new environment) then the coverage
+$c_T(S)$ could be reset and confidence \textit{re-built}. Without such
+a signal the agent must rely on measuring per-goal performance in
+order to pick up failures that could be attributed to environmental
+changes. The problem of identifying changes that warrant new learning
+as compared to adapting previous learning, however, is generally
+considered to be very difficult.
+%a much harder one. 
+   \item  
 \end{enumerate}
 
 %\bigskip\bigskip\bigskip
