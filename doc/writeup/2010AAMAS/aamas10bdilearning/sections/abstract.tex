@@ -1,46 +1,21 @@
-%Belief, Desire, and Intentions (BDI) agent-oriented programming is a popular 
-%paradigm for developing complex applications that are able to deal
-%with multiple ways of achieving goals, depending on the situation. 
-%BDI systems rely on \emph{plan libraries} to achieve
-%\emph{goals}, and on \emph{context sensitive} subgoal selection and
-%expansion. 
-%
-An important drawback to the popular Belief, Desire, and Intentions
-(BDI) paradigm is that such systems include no
-element of learning from experience. Plans, and conditions under
-which they should be selected, are determined at
-design/implementation. 
-%This precludes the system adapting to a
-%changing environment that has not been foreseen.
-%
-Another limitation is that although there may be mechanisms for 
-establishing preferences, applicability of plans is generally
-regarded as a binary decision. 
-%They are either applicable to the
-%current context, or not. although there may be some mechanism for
-%recording or establishing preferences.
-% 
-In this work we replace formula based context conditions with decision
-trees, to represent world states in which
-the plan is likely to succeed or fail, with some level of probability.
-The decision tree, and associated estimates of success/failure,
-changes based on experience. We use a probabilistic plan selection function
-that allows us to balance exploration and exploitation in selection of
-plans.
-%
-We develop and empirically investigate an aggressive and a
-conservative approach to learning context conditions, showing that
-both can be advantageous in certain situations. In particular the
-aggressive approach can at times be too agressive, leading to complete
-inability to learn.
-%
-We then develop a more sophisticated plan selection approach which
-takes account of how much we have explored, and therefore to what
-extent we should rely on our estimate of success. We show that this
-successfully addresses the problems associated with aggressive
-learning sometimes ruling out options too readily, and thus never
-learning correct behaviour.
-% 
-We empirically evaluate our approaches on a range of
-different program structures.
+An important drawback to the popular Belief, Desire, and Intentions (BDI)
+paradigm is that such systems include no element of learning from experience.
+% %
+In particular, the so-called \emph{context conditions} of plans, in which the
+whole model relies for plan selection, are restricted to be boolean formulas that
+are to be specified at design/implementation time.
+% %
+To address these limitations, we propose a novel BDI programming framework that,
+by suitably modeling context conditions as \emph{decision trees}, it allows
+agents to \emph{learn} the probability of success for plans based on previous
+execution experiences. By using a probabilistic plan selection function, the
+agents can balance exploration and exploitation of their plans.
+% %
+We develop and empirically investigate two extreme approaches to learning the new
+context conditions and showed that both can be advantageous in certain
+situations.
+% %
+Finally, we propose a generalization of the probabilistic plan selection function
+that will yield a middle-ground between the two extreme approaches, and which we
+thus argue is the most flexible and simple one.
 
