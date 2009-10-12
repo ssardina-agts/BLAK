@@ -54,7 +54,7 @@ on the plan success expectation returned by the decision tree and the current
 coverage degree:
 %
 \begin{equation*}\label{eqn:coverage}   
-\Omega_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
+\Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
 \end{equation*}
 	
 	
@@ -173,51 +173,81 @@ encoded in $P_i$.
 
 
 Even more interesting is the the impact of the new plan selection mechanism on
-agents that work with an applicability threashold, that is, agents that may not
-select a plan if they are deemed not worth it. \textbf{explain more here......}
-
-
-Finally, we point out that agents based on the new plan selection scheme will
-be able to realize when the optimal solution for a goal has been reached before
-the agents based on the previous scheme.
+agents that work with an applicability threshold, that is, agents that may not
+select a plan if they are deemed not worth it. For this cases, the coverage-based
+avoids the \CL\ approach judging a plan not worth it based on false negative
+experiences. Even if a plan is deemed with very low probability of success, if it
+has not been substatially ``covered,'' its weight would still be bias towards the
+default value of $.5$. Of course, a consistent agent system should always have
+the applicability threashold substantially below the default plan selection
+weight.
 %%
-This is because \textbf{.......... explain analytically..........}
+Figure~\ref{fig:performance-applicability} shows how the new agent systems
+using the $\Omega'$ selection weight perform, and in particular, how \CLSELB\
+does not suffer from the limitations of its previous \CLSELA\ version.
 
 
-Summarizing, the above results are significant in that they suggest that
-the alternative plan selection mechanism, which uses the coverage notion as a
-confidence test, does provide substantial benefits. Specifically, being \CL\ a
-simpler approach, it suggests that the \CLSELB\ combination as the
+Finally, we point out that agents based on the new converge-based plan selection
+scheme will be able to realize when the optimal solution for a goal has been
+reached before the agents based on the original scheme.
+% %
+This happens because, by using the coverage degree to calculate the final weight
+of a plan for a goal, the system is both looking for successful paths while
+maximizing    the uniform exploration of the agent's plan library.
+% %
+So, for example, since $P$ is more ``complex'' than $P_i'$ in in structure $\T_2$
+(Figure~\ref{fig:T2}), an agent based on the $\Omega'$ weighting function, will
+tend to give more execution chances to the former in order to achieve a more
+uniform exploration of the options for goal $G$.
+
+
+ 
+
+Summarizing, the above results are significant in that they suggest that the
+alternative plan selection mechanism, which uses the coverage notion as a
+confidence test, does provide substantial benefits. In particular, it improves
+the \CL\ approach substantially in those cases where it performed poorly due to
+false negative experiences, i.e., failure runs for a plan that includes
+successful executions.  Being the \CL\  simpler than the \BUL\ one (as no account
+of ``stability'' is used), this suggests that the \CLSELB\ combination as the
 overall best one.
+% %
+Nonetheless, it should be noted that there is indeed an instrisic trade-off
+between coverage and uniform exploration and decision tree estimation of success
+and bias execution towards success. This is, in fact, the standard trade-off
+between exploration and explotation when it comes to learning and acting at the
+same time.
+%%
 
 
 
 
-\bigskip\bigskip\bigskip
-\textbf{move to discussion??}
-Since the
-coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a
-confidence measure, then the way it is \textit{used} will determine
-the weighting of the confidence in the final plan selection
-probability $p'_T(w)$. For instance we could replace $c_T(S)$ in
-Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the
-weighting (and $b=1$ gives us the original Equation
-\ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$)
-we get more \BUL+$E$-like performance, while adjusting $b \rightarrow
-\infty (b > 1)$ will result in more \CL+$E$-like performance. In fact,
-an improved agent could reference the (static) goal-plan tree
-structure at runtime and adjust $b$ automatically based on the offline
-compiled knowledge of which approach works better for which tree
-topology. 
-% This extension is left as a future implementation exercise. 
 
-We noted earlier in Section \ref{sec:experiments} that plan execution
-in real systems is often not cost-free, so presumably the agent would
-not execute a plan with too low a probability of success. We also show
-that such deliberation does not favour \CL\ but does \BUL. It is clear
-that choosing not to execute a plan below a threshold probability of
-failure would also hurt the \CL+$E'$ configuration (though
-not as much as \CL+$E$). For such systems, we suggest that the
-weighting $b$ be used to get the preferred \BUL-like performance. 
+% \bigskip\bigskip\bigskip
+% \textbf{move to discussion??}
+% Since the
+% coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a
+% confidence measure, then the way it is \textit{used} will determine
+% the weighting of the confidence in the final plan selection
+% probability $p'_T(w)$. For instance we could replace $c_T(S)$ in
+% Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the
+% weighting (and $b=1$ gives us the original Equation
+% \ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$)
+% we get more \BUL+$E$-like performance, while adjusting $b \rightarrow
+% \infty (b > 1)$ will result in more \CL+$E$-like performance. In fact,
+% an improved agent could reference the (static) goal-plan tree
+% structure at runtime and adjust $b$ automatically based on the offline
+% compiled knowledge of which approach works better for which tree
+% topology. 
+% % This extension is left as a future implementation exercise. 
+% 
+% We noted earlier in Section \ref{sec:experiments} that plan execution
+% in real systems is often not cost-free, so presumably the agent would
+% not execute a plan with too low a probability of success. We also show
+% that such deliberation does not favour \CL\ but does \BUL. It is clear
+% that choosing not to execute a plan below a threshold probability of
+% failure would also hurt the \CL+$E'$ configuration (though
+% not as much as \CL+$E$). For such systems, we suggest that the
+% weighting $b$ be used to get the preferred \BUL-like performance. 
 
 
