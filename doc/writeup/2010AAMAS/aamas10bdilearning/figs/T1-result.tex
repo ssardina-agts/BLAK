@@ -7,10 +7,10 @@
     \foreach \x/\xtext in {500/500, 1000/1000, 1500/1500} \node at (\x,0) [below] {$\xtext$};
     \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
     \node at (0,1.1) {Success};
-    \node at (1500,0.15) {Iterations};
-    \draw[-] plot[mark=triangle,gray,mark size=3,mark options={color=gray}] 
+    \node at (1600,0.15) {Iterations};
+    \draw[-] plot[mark=x,mark size=4,mark options={color=black}] 
 			file {data/test01v3gm.CP.tikzdata};
-    \draw[-] plot[mark=o,gray,mark size=2,mark options={color=gray}] 
+    \draw[-] plot[mark=o,mark size=2,mark options={color=black}] 
 			file {data/test01v3gm.SP.tikzdata};
     % Also draw the expected convergence: 0.9^4 actions=0.6561
     \draw[dashed,-,yshift=0](0,0.81) -- (2000,0.81);
