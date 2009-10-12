@@ -82,7 +82,7 @@ nodes are not tried and are accounted covered for the world in question.
 % %
 Moreover, since plans are typically executed in the context of other plans
 (e.g., the plan to check-in is always executed after a plan to go to the
-aiport), it would not be necessary to account for the whole world space, but
+airport), it would not be necessary to account for the whole world space, but
 only for its subset that is relevant for the plan.
 
 \newcommand{\CLSELA}{\mbox{$\CL\!\!+\!\!\Omega$}}
@@ -104,7 +104,7 @@ only on its decision tree success expectation $\Omega_T(w) = p_T(w)$.
 In Figure~\ref{fig:performance-applicability}, we show the performance of all
 four BDI learning agents in structures $\T_2$ and $\T_4$.
 % %
-First of all, when it comes to the \BUL\ stabibility-based learning scheme, the
+First of all, when it comes to the \BUL\ stability-based learning scheme, the
 two variations, namely $\BULSELA$ and $\BULSELB$, always show similar
 performance.
 % %
@@ -125,7 +125,7 @@ of \CLSELA\ reported in the previous section (cf. Figure~\ref{fig:T1_result}).
 This was also the case with the balanced structure $\T_3$ where both \CL\ and
 \BUL\ performed equally well under the original plan selection mechanism---the
 performance of \CLSELB\ was the same as that reported in
-Firgure~\ref{fig:T3_result} for \CLSELA.
+Figure~\ref{fig:T3_result} for \CLSELA.
 % %
 Thus, for the cases where \CL\ was performing reasonably well, nothing is lost
 when using the new plan selection mechanism.
@@ -177,9 +177,9 @@ agents that work with an applicability threshold, that is, agents that may not
 select a plan if they are deemed not worth it. For this cases, the coverage-based
 avoids the \CL\ approach judging a plan not worth it based on false negative
 experiences. Even if a plan is deemed with very low probability of success, if it
-has not been substatially ``covered,'' its weight would still be bias towards the
+has not been substantially ``covered,'' its weight would still be bias towards the
 default value of $.5$. Of course, a consistent agent system should always have
-the applicability threashold substantially below the default plan selection
+the applicability threshold substantially below the default plan selection
 weight.
 %%
 Figure~\ref{fig:performance-applicability} shows how the new agent systems
@@ -212,13 +212,14 @@ successful executions.  Being the \CL\  simpler than the \BUL\ one (as no accoun
 of ``stability'' is used), this suggests that the \CLSELB\ combination as the
 overall best one.
 % %
-Nonetheless, it should be noted that there is indeed an instrisic trade-off
+Nonetheless, it should be noted that there is indeed an intrinsic trade-off
 between coverage and uniform exploration and decision tree estimation of success
 and bias execution towards success. This is, in fact, the standard trade-off
-between exploration and explotation when it comes to learning and acting at the
+between exploration and exploitation when it comes to learning and acting at the
 same time.
-%%
-
+% %
+The new learning framework proposed in this section allows to obtain different
+classes of agents depending on the trade-off required.
 
 
 
