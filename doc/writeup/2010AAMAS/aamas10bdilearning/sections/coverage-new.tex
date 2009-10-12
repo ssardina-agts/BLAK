@@ -151,9 +151,8 @@ expect the agent to have discovered the success execution encoded in $P_i$.
 \begin{figure}[t]
 \begin{center}
 \input{figs/T2-result2}
-\caption{Performance comparison of \CLSELB\ (solid rectangles) and \BULSELB\
-(solid circles) against \CLSELA\ and \BULSELA\ (both in dotted grey) for
-goal-plan structure $\T_2$.}
+\caption{Performance comparison of \CLSELB\ (solid crosses) over
+\CLSELA\ and \BULSELA\ (both in dotted grey) for structure $\T_2$.}
 \label{fig:T2_result2}
 \end{center}
 \end{figure}
@@ -192,28 +191,40 @@ uniform exploration of the options for goal $G$.
 
  
 
-Summarizing, the above results are significant in that they suggest that the
-alternative plan selection mechanism, which uses the coverage notion as a
-confidence test, does provide substantial benefits. In particular, it improves
-the \CL\ approach substantially in those cases where it performed poorly due to
-false negative experiences, i.e., failure runs for a plan that includes
-successful executions.  Being the \CL\  simpler than the \BUL\ one (as no account
-of ``stability'' is used), this suggests that the \CLSELB\ combination as the
-overall best one.
-
-
+The above results are significant in that they suggest that the alternative plan
+selection mechanism, which includes a confidence test based on the notion of plan
+coverage, can substantially improve the performance of the \CL\ approach in those
+cases where it performed poorly due to false negative experiences, i.e., failure
+runs for a plan that includes successful executions.
 % %
-The new learning framework proposed in this section allows to obtain different
-classes of agents depending on the trade-off required.
-
-
-\begin{equation*}\label{eqn:coverage}   
-\Omega''_T(w) = 0.5 + \left[  c_T(w)^{1/\alpha} *  \left( p_T(w) - 0.5 \right) 
+The main point here is that \CLSELB\ provides a \emph{middle ground} between
+\CLSELA\ and \BULSELA. In fact, one can easily extend the plan weight formula to
+bias the architecture towards one of the two extremes, namely: (The
+original formula is obtained when $\alpha=1$.)
+% %
+\begin{equation*}\label{eqn:coverage*}   
+\Omega'_T(w) = 0.5 + \left[  c_T(w)^{1/\alpha} *  \left( p_T(w) - 0.5 \right) 
 \right].
 \end{equation*}
 
-Nonetheless, it should be noted that in our problem there is indeed the usual a
-intrinsic trade-off between exploration and execution success.
+\noindent Hence, when $\alpha \approx 0$, the \CLSELB\ scheme will behave more
+like a \BULSELA-based system: $c_T(w)^{1/\alpha}$ transitions directly from $0$
+to $1$ when $c_T(w)$ reaches $1$ (and it remains zero otherwise).
+% %
+On other hand, when $\alpha \approx \infty$, the \CLSELB\ scheme will behave more
+like the \CLSELA: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and
+$\Omega'(w) \approx p_T(w)$.
+% %
+
+Putting it altogether, all the above suggests that the \CLSELB\ learning
+approach is most adequate to address the problem we are concerned on, since it
+is simpler and more flexible than the alternative ones.
+
+
+
+
+% Nonetheless, it should be noted that in our problem there is indeed the usual a
+% intrinsic trade-off between exploration and execution success.
 
 
 
