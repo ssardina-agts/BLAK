@@ -2,10 +2,19 @@
 \section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this paper we propose a technique to enhance the typical plan selection mechanism in BDI systems by allowing agents to learn and adapt the context conditions of existing plans in the agent's plan library.
-%
-As designing adequate context conditions that take full account of the agent's environment for its complete life-cycle is often non-trivial, a framework that allows for the \emph{refinement} of (initial) context conditions of plans \textit{based on experience} is desirable. To this end we extend the BDI framework to use \dt\s as (part of) context conditions and provide a probabilistic plan selection mechanism that caters for both exploration and exploitation of plans.
-%
+In this paper we propose a technique to enhance the typical plan selection
+mechanism in BDI systems by allowing agents to learn and adapt the context
+conditions of existing plans in the agent's plan library.
+%%
+As designing adequate context conditions that take full account of the agent's
+environment for its complete life-cycle is often non-trivial, a framework that
+allows for the \emph{refinement} of (initial) context conditions of plans
+\textit{based on experience} is desirable. To this end we extend the BDI
+framework to use \dt{}s as (part of) context conditions and provide a
+probabilistic plan selection mechanism that caters for both exploration and
+exploitation of plans.
+
+
 We empirically evaluate two approaches to learning context conditions from experience, an aggressive approach that records and uses every outcome for learning, and a more conservative approach that records failure outcomes only when it considers the preceding choices that led to failure to be well-informed.
 We confirm results from \cite{APSS08} that each approach has advantages in certain situations, but highlight an important shortcoming of the aggressive approach --- its complete inability to learn when applicability thresholds are used i.e. when the agent abandons plans with low chances of success. We then show that a new plan selection mechanism that also accounts for our confidence in the \dt\ classification can overcome the earlier issues with the aggressive approach. We conclude that the aggressive approach (that is also simpler), combined with the confidence measure (that also provides flexibility for tuning to different situations) is a better candidate for the general setting.
 
