@@ -2,48 +2,37 @@
 \section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%In this section, we extend our BDI learning so as to include a confidence test
-%within the plan selection mechanism itself. More concretely, in the new approach,
-%instead of using the stability measure to ensure that we only record results that
-%we are confident in, we instead modify our plan selection procedure to take into
-%account of how confident we are in the current \dt.
-% %
 Our new approach relies on the idea that confidence in a plan's
-\dt increases as more of the possible choices below the plan
+\dt\ increases as more of the possible choices below the plan
 in the goal-plan structure are explored.
-% %
-%Note that while the stability mechanism ensures that failure information is
-%\emph{not recorded} against a \dt until the corresponding goal-plan
-%structure is adequately explored; the new approach instead influences how the
-%\dt is \emph{used} at plan selection time.
-This set of all potential execution paths
-below the plan in the hierarchy is easily computed offline from the static goal-plan structure.
-% %
-Intuitively, a plan's \dt is more \textit{informed} for a world
-state if it is based on a larger number of choices having been
-explored in that state.
-%accounts for a larger number of the plan's choices in that state.
-% %
-We say that a plan has a higher degree of \emph{coverage} as more of its
-underlying choices are explored and accounted for in the
-corresponding \dt.
-% %
 
-Technically, given a \dt $T$ for a plan, we define its coverage for the world state $w$ as 
-$c_T(w) \in [0,\ldots,1]$.
+So, with each plan in the goal-plan tree hierarchy, we identify its set of
+potential \textit{choices} as the set of all potential execution paths
+\textit{below} the plan in the hierarchy. This can easily be computed offline.
 % %
-Initially, prior to world state $w$ being first observed, the plan's coverage is 
-$c_T(w)=0$ i.e. the agent has no confidence in the likelihood of success estimated by $T$ for $w$. As the
-different ways of executing the plan in the world state $w$ are explored, the value of
-$c_T(w)$ approaches $1$. When all choices have been tried, $c_T(w)=1$ and the
-agent may rely fully on the \dt estimation of success.
+Intuitively, a plan's \dt\ is more \textit{informed} for a world state if it is
+based on a larger number of choices having been explored in that state. We say
+that a plan has a higher degree of \emph{coverage} as more of its underlying
+choices are explored and accounted for in the corresponding \dt. Technically,
+given a \dt\ $T$ for a certain plan, we define its coverage for the world state
+$w$ as $c_T(w) \in [0,\ldots,1]$.
 % %
-In this way, coverage provides a confidence measure for the \dt classification.
+Initially, when the plan has not yet been executed in a world $w$, its coverage
+in such state is $c_T(w) = 0$ and the agent has no basis for confidence in the
+likelihood of success estimated by $T$ for $w$.
+% %
+As the different ways of executing the plan in the world state $w$ are explored,
+the value of $c_T(w)$ approaches $1$. When all choices have been tried,
+$c_T(w)=1$ and the agent may rely fully on the \dt\ estimation of success.
+% %
+In this way, coverage provides a confidence measure for the \dt\ classification.
 
-We now construct a probabilistic plan selection function that includes the coverage-based confidence measure.
+
+We then construct a probabilistic plan selection function that includes the
+coverage-based confidence measure.
 % %
-Formally, we define the plan selection weight $\Omega'(w)$ as a function of the \dt determined success expectation $p_T(w)$ and the degree of coverage $c_T(w)$:
-%
+Formally, we define the plan selection weight $\Omega'(w)$ as a function of the
+\dt\ determined success expectation $p_T(w)$ and the degree of coverage $c_T(w)$:
 \begin{equation*}\label{eqn:coverage}   
 \Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right]
 \end{equation*}
@@ -51,7 +40,7 @@ Formally, we define the plan selection weight $\Omega'(w)$ as a function of the 
 	
 Initially the selection weight of the plan for a previously unseen world state $w$ takes the default value of $0.5$.
 % %
-Over time, as the various execution paths below the plan are tried in $w$, it's coverage increases 
+Over time, as the various execution paths below the plan are tried in $w$, its coverage increases 
 and the selection weight approaches the true value estimated by the plan's \dt.
 
 
@@ -71,29 +60,34 @@ nodes are not tried and are counted as covered for the world in question.
 Also, a plan is generally not executed in every world state, so in
 practice it will only need to be assessed in the subset of the world
 states that is relevant to it.
-%Moreover, since plans are typically executed in the context of other plans
-%(e.g., the plan to check-in is always executed after a plan to go to the
-%airport), it would not be necessary to account for the whole world space, but
-%only for its subset that is relevant for the plan.
 
-\medskip We are now ready to revisit the two
-learning approaches \CL\ and \BUL\ from the previous section but using the modified
-selection weighting based on coverage. We will refer to the new agents as \CLSELB\
-and \BULSELB, respectively.
+
+
+
+
+
+\medskip We are now ready to revisit the two learning approaches \CL\ and \BUL\
+from the previous section, but this time using the modified selection weighting
+based on coverage.
 % %
-Similarly, $\CLSELA$ and $\BULSELA$ correspond to the agents using
-the \emph{original} selection weighting that only uses 
-its \dt success expectation $\Omega_T(w) = p_T(w)$.
+We will refer to the new agents as \CLSELB\ and \BULSELB, respectively.
+% %
+Similarly, $\CLSELA$ and $\BULSELA$ correspond to the agents using the
+\emph{original} selection weighting that only uses its \dt\ success
+expectation, that is, $\Omega_T(w) = p_T(w)$.
 
 
-Our first observation is that the $\BULSELA$ and $\BULSELB$ approaches show similar performance.
+Our first observation is that the $\BULSELA$ and $\BULSELB$ approaches show
+similar performance.
 % %
 This is not surprising, as the stability test performed by these agents at each
-plan node inherently results in close to full coverage. Indeed, for a plan to become
-``stable,'' the agent needs to (substantially) explore all possible  ways of
-executing it. The stability check, then, effectively reduces
-$\Omega'_T(w)$ to $\Omega_T(w)$. 
-So for simplicity we will not give a further account of the $\BULSELB$ approach in this section.
+plan node inherently results in close to full coverage. Indeed, for a plan to
+become ``stable,'' the agent needs to (substantially) explore all possible  ways
+of executing it. The stability check, then, effectively reduces $\Omega'_T(w)$ to
+$\Omega_T(w)$.
+% %
+So, for simplicity, we shall not give a further account of the $\BULSELB$
+approach in this section.
 
 
 
@@ -117,36 +111,42 @@ the earlier results for $\CLSELA$ and $\BULSELA$ (both in dotted grey).}
 \end{center}
 \end{figure}
 
-The benefit of the coverage-based approach is apparent, though, when one considers the goal-plan
-structure $\T_2$ in which the $\CLSELA$ used to perform poorly (cf. Figure
-\ref{fig:T2_result}).
+The benefit of the coverage-based approach is apparent, though, when one
+considers the goal-plan structure $\T_2$ in which the $\CLSELA$ used to perform
+poorly (cf. Figure \ref{fig:T2_result}).
 % %
-Here the $\CLSELB$ approach showed a dramatic improvement over
-$\CLSELA$. Figure \ref{fig:T2_result2} shows this change with the results
-for the new approach to plan selection $\BULSELB$ and $\CLSELB$ superimposed over
-the original results from Figure \ref{fig:T2_result}.
+Here, the $\CLSELB$ scheme showed a dramatic improvement over $\CLSELA$. Figure
+\ref{fig:T2_result2} shows this change with the results for the new approach to
+plan selection $\BULSELB$ and $\CLSELB$ superimposed over the original results
+from Figure \ref{fig:T2_result}.
 % %
 The reason why the new plan selection mechanism improves the \CL\ learning scheme
-is that even though the success estimation $p_T(w)$ for a given plan $P_i$ would still be low
-initially (remember that \CL, in contrast with \BUL, would record all initial
-failure outcomes for $P_i$), the agent would not be very confident in such
-estimation until the plan's coverage increases and therefore the selection weight 
-$\Omega'_T(w)$ will initially bias more towards the default weight of $0.5$.
-In other words, the false negative outcomes collected by the agent for plan $P_i$ would not be considered
-so seriously due to low plan coverage. As full coverage is approached, one would
-expect the agent to have discovered the success execution encoded in $P_i$.
+is that even though the success estimation $p_T(w)$ for a given plan $P_i$ would
+still be low initially (remember that \CL, in contrast with \BUL, would record
+all initial failure outcomes for $P_i$), the agent would not be very confident in
+such estimation until the plan's coverage increases; therefore the
+selection weight $\Omega'_T(w)$ will initially bias towards the default weight of
+$0.5$. In other words, the false negative outcomes collected by the agent for
+plan $P_i$ would not be considered so seriously due to low plan coverage. As full
+coverage is approached, one would expect the agent to have discovered the success
+execution encoded in $P_i$.
 
 
 Even more interesting is the the impact of the new plan selection mechanism on
-agents that work with an applicability threshold i.e. agents that may not
-select a plan if it is deemed unlikely to succeed. 
-%
-Here, the original $\CLSELA$ approach fails as it collects many negative experiences early on, causing it to fall below the selection threshold quickly. 
-For $\CLSELB$, even if a plan is deemed with very low expectation of success, if it
-has not been substantially ``covered'' then its selection weight would be biased towards the
-default value of $0.5$. So provided that the applicability threshold is always set lower that the default plan selection weight (also the case for \BUL), then $\CLSELB$ is able to find the solution.
-%%
-Figure~\ref{fig:performance-applicability} shows the $\CLSELB$ performance in goal-plan structure $\T_2$ for an applicability threshold of $0.2$.
+agents that work with an applicability threshold, i.e., agents that may not
+select plans that are deemed unlikely to succeed.
+% %%%
+Here, the original $\CLSELA$ approach completely fails, as it collects many
+negative experiences early on, quickly causing plans' success expectation to fall
+below the selection threshold. For $\CLSELB$, even if a plan is deemed with very
+low expectation of success, its selection weight would be biased towards the
+default value of $0.5$ if it has not been substantially ``covered.''
+% %
+Hence, provided that the applicability threshold is lower than the default plan
+selection weight, then $\CLSELB$ is indeed able to find the solution(s).
+% %
+Figure~\ref{fig:performance-applicability} shows the $\CLSELB$ performance in
+goal-plan structure $\T_2$ for an applicability threshold of $0.2$.
 
 
 \begin{figure}[t]
@@ -171,95 +171,30 @@ tend to give more execution chances to the former in order to achieve a more
 uniform exploration of the options for goal $G$.
 }
 
-The above results show that the coverage-based confidence weighting
-can improve the performance of the \CL\ approach in those
-cases where it performed poorly due to false negative experiences,
-i.e., failure runs for a plan that includes successful executions.
-%
+The above results show that the coverage-based confidence weighting can improve
+the performance of the \CL\ approach in those cases where it performed poorly due
+to false negative experiences, i.e., failure runs for a plan that includes
+successful executions.
+% %
+Furthermore, coverage provides a flexible mechanism for tuning agent behaviour
+depending on application characteristics. Consider equation $\Omega'_T(w)$ with
+the coverage term modified to $c_T(w)^{1/\alpha}$, with parameter $\alpha \in
+[0,\ldots,\infty)$.
+% %
+Interestingly, as $\alpha \approx 0$, $\CLSELB$ will behave more like $\BULSELA$:
+$c_T(w)^{1/\alpha}$ transitions directly from $0$ to $1$ when $c_T(w)$ reaches
+$1$ (and remains zero otherwise).
+% %
+On other hand, when $\alpha \approx \infty$, $\CLSELB$ will behave more like the
+$\CLSELA$: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and $\Omega'(w)
+\approx p_T(w)$. With $\alpha=1$ we get our initial equation.
+% %
+It follows then that \CLSELB\ provides a \emph{middle ground} between
+the \CLSELA\ and \BULSELA\ schemes.
 
-Furthermore coverage provides a flexible mechanism for tuning agent 
-behaviour depending on application characteristics. Consider equation $\Omega'_T(w)$ with the coverage term modified to $c_T(w)^{1/\alpha}$ where $\alpha$ determines the agent behaviour. Then, as $\alpha \approx 0$, $\CLSELB$ will behave more
-like $\BULSELA$: $c_T(w)^{1/\alpha}$ transitions directly from $0$
-to $1$ when $c_T(w)$ reaches $1$ (and remains zero otherwise).
-% %           
-On other hand, when $\alpha \approx \infty$, $\CLSELB$ will behave more
-like the $\CLSELA$: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and
-$\Omega'(w) \approx p_T(w)$.
-%
-With $\alpha=1$ we get our initial equation.
 
 Finally, we note that coverage-based selection weights encourage the agent to
-explore all available options. This further ensures that all solutions are systematically 
-found, allowing the agent to decide which solution is optimal. For some domains
-this may be an important consideration.
-
-
-
-\Omit{
-The above results are significant in that they suggest that the alternative plan
-selection mechanism, which includes a confidence test based on the notion of plan
-coverage, can substantially improve the performance of the \CL\ approach in those
-cases where it performed poorly due to false negative experiences, i.e., failure
-runs for a plan that includes successful executions.
-% %
-The main point here is that \CLSELB\ provides a \emph{middle ground} between
-\CLSELA\ and \BULSELA. In fact, one can easily extend the plan weight formula to
-bias the architecture towards one of the two extremes, namely: (The
-original formula is obtained when $\alpha=1$.)
-% %
-\begin{equation*}\label{eqn:coverage*}   
-\Omega'_T(w) = 0.5 + \left[  c_T(w)^{1/\alpha} *  \left( p_T(w) - 0.5 \right) 
-\right].
-\end{equation*}
-
-\noindent Hence, when $\alpha \approx 0$, the \CLSELB\ scheme will behave more
-like a \BULSELA-based system: $c_T(w)^{1/\alpha}$ transitions directly from $0$
-to $1$ when $c_T(w)$ reaches $1$ (and it remains zero otherwise).
-% %
-On other hand, when $\alpha \approx \infty$, the \CLSELB\ scheme will behave more
-like the \CLSELA: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and
-$\Omega'(w) \approx p_T(w)$.
-% %
-
-Putting it altogether, all the above suggests that the \CLSELB\ learning
-approach is most adequate to address the problem we are concerned on, since it
-is simpler and more flexible than the alternative ones.
-}
-
-
-
-% Nonetheless, it should be noted that in our problem there is indeed the usual a
-% intrinsic trade-off between exploration and execution success.
-
-
-
-
-
-% \bigskip\bigskip\bigskip
-% \textbf{move to discussion??}
-% Since the
-% coverage $c_T(S)$ in Equation \ref{eqn:coverage} is simply a
-% confidence measure, then the way it is \textit{used} will determine
-% the weighting of the confidence in the final plan selection
-% probability $p'_T(w)$. For instance we could replace $c_T(S)$ in
-% Equation \ref{eqn:coverage} with $c_T(S)^{1/b}$ where $b$ is the
-% weighting (and $b=1$ gives us the original Equation
-% \ref{eqn:coverage}). Then adjusting $b \rightarrow 0, (0 \ne b < 1$)
-% we get more \BUL+$E$-like performance, while adjusting $b \rightarrow
-% \infty (b > 1)$ will result in more \CL+$E$-like performance. In fact,
-% an improved agent could reference the (static) goal-plan tree
-% structure at runtime and adjust $b$ automatically based on the offline
-% compiled knowledge of which approach works better for which tree
-% topology. 
-% % This extension is left as a future implementation exercise. 
-% 
-% We noted earlier in Section \ref{sec:experiments} that plan execution
-% in real systems is often not cost-free, so presumably the agent would
-% not execute a plan with too low a probability of success. We also show
-% that such deliberation does not favour \CL\ but does \BUL. It is clear
-% that choosing not to execute a plan below a threshold probability of
-% failure would also hurt the \CL+$E'$ configuration (though
-% not as much as \CL+$E$). For such systems, we suggest that the
-% weighting $b$ be used to get the preferred \BUL-like performance. 
-
+explore all available options. This further ensures that all solutions are
+systematically found, allowing the agent to decide which solution is optimal
+faster. For some domains this may be an important feature.
 

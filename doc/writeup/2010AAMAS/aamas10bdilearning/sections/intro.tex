@@ -31,8 +31,8 @@ choices} at each level of abstraction wrt the current situation.
 
 
 The fact that both the actual behaviours (the plans) and the situations for which
-they are appropriate (their context conditions) are fixed at deployment time
-yields important limitations to the whole programming approach.
+they are appropriate (their context conditions) are fixed at design time yields
+important limitations to the whole programming approach.
 % %
 First, it is often difficult or impossible for the programmer to craft the
 \emph{exact} conditions under which a plan would succeed. Second, once deployed,
@@ -44,54 +44,54 @@ observable} external world, it is unreasonable to have a binary judgement on the
 plan chances of success.
 
 In order to address these issues, in this work, we propose a BDI programming
-framework where plan's context conditions can be learnt over time, by exploring
-the available know-how knowledge at disposal and suitably incorporating their
-outcomes into plans' context conditions.
+framework where plans' context conditions can be learnt over time, by exploring
+the plan library and suitably incorporating the outcomes into plans' context
+conditions.
 % %
 To that end, we first extend the standard BDI programming architecture by
-modeling plan's context conditions with \emph{decision trees}
+modeling context conditions of plans with \emph{decision trees}
 \cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
 compatible with the new representation (Section~\ref{sec:framework}). %%
 % %
 We then  develop and empirically investigate an aggressive (called \CL) and a
 conservative (called \BUL) approach to learning such context decision trees, and
-showed that they provide different type of advantages depending on the implicit
-structure of the plan library (Sections~\ref{sec:context_learning} and
+showed that they provide different advantages depending on the implicit structure
+of the plan library (Sections~\ref{sec:context_learning} and
 \ref{sec:experiments}). In particular, and compatible with the findings reported
-in \cite{APSS08}, we show that the aggressive scheme, though simpler, can at time
-lead to complete inability to learn, thus yielding a much less robust performance
-than the conservative alternative.
+in \cite{APSS08}, we show that the aggressive scheme, though simpler, can at
+times lead to a complete inability to learn, thus yielding a much less robust
+performance than the conservative alternative.
 % %
 Informally, the difference between the two approaches is that whereas the
 aggressive approach accounts for every execution failure, the conservative
-approach instead does so provided decision made during the execution were deemed
-sufficiently ``informed.''
+approach instead considers failures only when decisions made during the execution
+are deemed sufficiently ``informed.''
 
 
-In order to obtain a flexible middle-ground between the above two types of
-learning agent systems, we devise an extended probabilistic plan selection that
-includes a \emph{confidence test} based on how much the agent has explored the
-space of possible ways of executing a given plan (Section~\ref{sec:coverage}).
-The more this space has been ``covered'' by previous executions, the more the
-agent ``trusts'' the estimation of success provided by the plan's decision tree.
+In order to obtain a flexible middle-ground between the above two approaches, we
+devise an extended probabilistic plan selection that includes a \emph{confidence}
+meassure based on how much the agent has explored the space of possible
+executions of a given plan (Section~\ref{sec:coverage}). The more this space has
+been ``covered'' by previous executions, the more the agent ``trusts'' the
+estimation of success provided by the plan's decision tree.
 % %
 It turns out that an agent based on the \CL\ aggressive learning scheme together
 with the enhanced plan selection mechanism provides a flexible and simple
 compromise between the two extreme approaches.
-% %
-Thus, we conclude that uner no specialised information about the structure of the
-domain, this type of BDI learning agent is likely to be the most adequateoverall.
 
 
-We point out that our new account of plan's context conditions is \emph{not}
-incompatible with the standard formula-based one.
+
+We point out that our new account of plans' context conditions is
+\emph{compatible} with the standard formula-based one.
 % %
-Indeed, our approach can be trivially combined with the standard plan selection
+Indeed, our approach can be easily combined with the standard plan selection
 mechanism, by allowing the agent programmer to provide initial context conditions
-that could be later automatically ``refined'' by the agent system.
+that could be later automatically ``refined'' by the agent system. By doing so,
+one can effectively take a BDI program and ``tune it'' using our learning
+framework.
 % %
-For simplicity, though, we have assumed context conditions are learn from scratch
-in our experimental work.
+For simplicity, though, context conditions are learnt from scratch in our
+experimental work.
 
 
 
