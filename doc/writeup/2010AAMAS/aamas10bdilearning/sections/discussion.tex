@@ -66,3 +66,42 @@ An appealing measure for the identification of environmental changes is through 
 %even continous ones, our results generalize directly to such cases. In addition
 %the results generalize trivially to scenarios where different actions can fail
 %or succeed with different probabilities.
+
+
+
+
+\bigskip\bigskip\bigskip\bigskip
+\textbf{from intro...}
+In \cite{APSS08} the authors detail why it may be problematic for
+learning if the BDI hierarchical structure is not taken into account.
+They showed why it can be problematic to assume a mistake at a
+higher level in the hierarchy, when a poor outcome may have been
+related to a mistake in selection further down.  Their
+empirical work suggested that perhaps the advantages of an aggressive
+approach, where all failures were considered meaningful, outweighed
+the advantages of careful consideration.
+
+
+The issue of combining learning and deliberative approaches for decision
+making of autonomous systems has not been widely addressed. Learning
+has been used to learn independent low level skills (for example learn
+how to pass a ball for robots in RoboCup soccer (e.g., \cite{Riedmiller01}), which are
+then used by the deliberative decision making center of the agent.  In
+our work, what is learnt from experience is actually used by the
+deliberative component of the BDI agents. Initially, instead of having
+a blind exploration strategy 
+(as is the case when agents are learning with no initial knowledge), 
+% (as is the case when agents are learning from experience and have no initial knowledge), 
+our agent has an optimistic strategy: it trusts the existing BDI hierarchy, in other
+words, our agent uses existing domain knowledge and keeps on improving
+it.
+
+We believe this approach, which takes a BDI program and 
+''tune it'' using learning, can be very powerful. While substantial
+knowledge is encoded at design and implementation of the system, there
+are often additional \textit{nuances} which can be learnt over
+time. Particularly in some environments, it may be very difficult to
+predict in advance, exactly how certain aspects of the world affect
+goal achievability. Our approach allows for encoding what we know,
+and learning the rest.
+
