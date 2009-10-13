@@ -10,21 +10,21 @@ in order to address an event}.
 
 To address this ``learnable'' plan-selection task, we start by modeling the
 context condition of plans with \emph{decision trees}, rather than with logical
-formulas.\footnote{As is the case in the classical BDI framework. Of course, we can combine both formulas and decisions
-trees...}
+formulas.\footnote{As is the case in the classical BDI framework. Of course, we
+can combine both formulas and decisions trees...}
 % %
 Decision trees~\cite{Mitchell97:ML}  provide a natural classification mechanism
-for our purposes, as they can deal with noise (due to non-deterministic
-environments, for example), and they are able to support disjunctive hypotheses.
-They are also readily convertible to rules, which are the standard representation
-for context conditions in BDI systems.
+for our purposes, as they can deal well with noise (generally due to partial
+observable and predictable environments), and they are able to support
+disjunctive hypotheses. They are also readily convertible to rules, which are the
+standard representation for context conditions in BDI systems.
 
 
-
-
-We associate each plan in the agent's library with a \dt
-that will classify world states into an expectation of whether the plan will
-succeed or fail. Then for each relevant plan, the plan's \dt (induced based on previous executions) will give the agent information regarding how likely it is to succeed/fail in a particular world state.
+We associate each plan in the agent's library with a \dt\ that will classify world
+states into an expectation of whether the plan will succeed or fail. Then for
+each relevant plan, the plan's \dt\ (induced based on previous executions) will
+give the agent information regarding how likely it is to succeed/fail in a
+particular world state.
 
 
 Given this new context for BDI programming, there are two issues that ought to be
@@ -35,11 +35,8 @@ collect in order to be able to ``learn'' (useful) decision trees for plans}.
 Roughly speaking, data is collected regarding whether a plan is considered to
 have succeeded or failed in the world for which it was selected.
 % %
-\textbf{For example, in Figure~\ref{fig:T3}, if plan XXX in selected in world
-$w$} %%
-% %
-Whereas successful executions are always recorded, the recording of failure runs
-of a plan may be subject to some analysis; this is the topic of the following section.
+  Whereas successful executions are always recorded, the recording of failure
+runs of a plan may be subject to some analysis; this is the topic of the following section.
 
 
 
@@ -99,7 +96,16 @@ Of course, for a real-world implementation, one should appeal to algorithms for
 %represented by the given leaf node - and in particular the world state
 %currently under consideration.
 %dsingh+:
-The \weka\ \propername{J48} algorithm for inducing {\dt}s aims to balance compactness of representation with accuracy. Consequently, it maintains in each \dt information about the number of instances (or world states in our case) from the training data correctly and incorrectly classified by each decision leaf node. Subsequently, whenever a plan's \dt is used to classify a new instance (world state), weka returns not only the classification (i.e. success or failure), but also a classification probability (i.e. to what degree it believes that the classification is correct). We then use this probability as an estimate of the plan's chances of success for the world in question.
+
+The \weka\ \propername{J48} algorithm for inducing \dt{}s aims to balance
+compactness of representation with accuracy. Consequently, it maintains in each
+\dt\ information about the number of instances (or world states in our case) from
+the training data correctly and incorrectly classified by each decision leaf
+node. Subsequently, whenever a plan's \dt\ is used to classify a new instance
+(world state), weka returns not only the classification (i.e. success or
+failure), but also a classification probability (i.e. to what degree it believes
+that the classification is correct). We then use this probability as an estimate
+of the plan's chances of success for the world in question.
 
 
 Finally, we should point out a number of assumptions that were made in order to
