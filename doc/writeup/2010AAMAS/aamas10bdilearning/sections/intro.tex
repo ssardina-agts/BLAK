@@ -43,15 +43,14 @@ Moreover, since plan execution often involves interaction with a \emph{partially
 observable} external world, it is unreasonable to have a binary judgement on the
 plan chances of success.
 
-In order to address these issues, in this work, we propose a BDI programming
-framework where plans' context conditions can be learnt over time, by exploring
-the plan library and suitably incorporating the outcomes into plans' context
-conditions.
+Following~\cite{APSS08}, we propose a BDI programming framework where plans'
+context conditions can be learnt over time, by exploring the plan library and
+suitably incorporating the outcomes into plans' context conditions.
 % %
 To that end, we first extend the standard BDI programming architecture by
 modeling context conditions of plans with \emph{decision trees}
 \cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
-compatible with the new representation (Section~\ref{sec:framework}). %%
+compatible with the new representation (Section~\ref{sec:framework}). 
 % %
 We then  develop and empirically investigate an aggressive (called \CL) and a
 conservative (called \BUL) approach to learning such context decision trees, and
@@ -65,7 +64,7 @@ performance than the conservative alternative.
 Informally, the difference between the two approaches is that whereas the
 aggressive approach accounts for every execution failure, the conservative
 approach instead considers failures only when decisions made during the execution
-are deemed sufficiently ``informed.''
+are deemed sufficiently ``informed.''
 
 
 In order to obtain a flexible middle-ground between the above two approaches, we

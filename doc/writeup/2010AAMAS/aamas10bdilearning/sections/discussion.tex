@@ -26,6 +26,28 @@ community, in that it provides a solid foundations for going beyond the standard
 static kind of BDI agents.
 
 
+Our work is similar to that in \cite{APSS08} and in fact borrows from there the
+strategy of using decision trees for modeling plan's context conditions.
+% %
+Nonetheless, there are major differences between that work and ours.
+% %
+First, our conservative learning approach, based on the notion of plan
+``stability,'' is substantially more grounded than the one used in \cite{APSS08},
+where a plan is just required to be executed a \emph{fixed} number of times for
+failure executions to be recorded.
+% %
+Second, only one goal-plan hierarchical structure was used for experimentation
+in the mentioned work; we instead considered different structures identifying
+various types of plan libraries.
+% %
+More importantly, in our work, we explored the realistic case of agents with
+plan applicability thresholds. Contrary to what was implied in \cite{APSS08}, our
+results do suggest that some sort of \emph{confidence} test is indeed
+worthwhile---this was the motivation behind our coverage-based system 
+proposal.
+
+
+
 The framework presented here made a number of simplifying assumptions.
 % %
 Our experiments did not consider the effects of conflicting interactions between
