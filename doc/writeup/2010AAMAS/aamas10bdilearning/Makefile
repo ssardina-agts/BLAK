@@ -6,8 +6,8 @@ DATA := $(wildcard data**/*.*data)
 all: ${PAPER}.pdf test
 
 ${PAPER}.pdf: ${PAPER}.tex ${PAPER}.bib ${SECTIONS} ${FIGS} ${DATA}
-	pdflatex ${PAPER}
-	bibtex ${PAPER}
+#	pdflatex ${PAPER}
+#	bibtex ${PAPER}
 	pdflatex ${PAPER}
 	pdflatex ${PAPER}
 #	dvips -Ppdf -G0 -tletter ${PAPER}.dvi
