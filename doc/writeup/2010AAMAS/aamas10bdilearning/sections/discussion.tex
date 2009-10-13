@@ -50,15 +50,14 @@ proposal.
 
 The framework presented here made a number of simplifying assumptions.
 % %
-Our experiments did not consider the effects of conflicting interactions between
-sub-goals of a plan. In fact, the way a sub-goal is resolved may affect how the
-next sub-goal can be addressed or even if it can be resolved at all.
+We did not consider the effects of conflicting interactions between sub-goals of
+a plan. In fact, the way a sub-goal is resolved may affect how the next sub-goal
+can be addressed or even if it can be resolved at all.
 % %
-Our current implementation is not possible to detect and learn such interactions;
-each subgoal is treated ``locally.'' To handle such interactions, the selection
-of a plan for a resolving sub-goal should also be predicated the goals higher
-than the sub-goal, that is, it should take into account the ``reasons'' for the
-sub-goal.
+Our current approach will not detect and learn such interactions; each subgoal
+is treated ``locally.'' To handle such interactions, the selection of a plan for
+a resolving sub-goal should also be predicated the goals higher than the
+sub-goal, that is, it should take into account the ``reasons'' for the sub-goal.
 % %
 Similarly, we did not consider the effects of using goal failure recovery, under
 which alternative plans for a goal are tried upon the failure of a plan.
@@ -68,8 +67,7 @@ handle continuous attributes (e.g., discretize \emph{temperature}), our approach
 requires that either these attributes are discretized or additional discrete
 attributes be used to test the continuous ones (e.g., \emph{cold}, \emph{warm},
 and \emph{hot}).
-% %
-% Lastly, we point out that even though we have used environments with a simple
+% % Lastly, we point out that even though we have used environments with a simple
 % stochastic model, our results apply trivially to agents acting in environments
 % based on more complex models.
 
