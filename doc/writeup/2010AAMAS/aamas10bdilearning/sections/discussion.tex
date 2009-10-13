@@ -2,26 +2,107 @@
 \section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this paper we propose a technique to enhance the typical plan selection
+In this paper, we proposed a technique to enhance the typical plan selection
 mechanism in BDI systems by allowing agents to learn and adapt the context
-conditions of existing plans in the agent's plan library.
-%%
+conditions of plans in the agent's plan library.
+% %
 As designing adequate context conditions that take full account of the agent's
-environment for its complete life-cycle is often non-trivial, a framework that
+environment for its complete life-cycle is an non-trivial task, a framework that
 allows for the \emph{refinement} of (initial) context conditions of plans
-\textit{based on experience} is desirable. To this end we extend the BDI
-framework to use \dt{}s as (part of) context conditions and provide a
-probabilistic plan selection mechanism that caters for both exploration and
-exploitation of plans.
+\textit{based on online experience} is highly desirable.
+% %
+To this end, we extended the typical BDI programming framework to use \dt{}s as
+(part of) plan's context conditions and provided a probabilistic plan selection
+mechanism that caters for both exploration and exploitation of plans.
+% %
+After empirically evaluating different learning strategies suitable for BDI
+agents against various kind of plan libraries, we concluded that an aggressive
+learning approach combined with plan selection scheme that uses a confidence
+measure based on the notion of plan coverage is the best candidate for the
+general setting.
+% %
+The work carried out here is significant for the BDI agent-oriented programming
+community, in that it provides a solid foundations for going beyond the standard
+static kind of BDI agents.
 
 
-We empirically evaluate two approaches to learning context conditions from experience, an aggressive approach that records and uses every outcome for learning, and a more conservative approach that records failure outcomes only when it considers the preceding choices that led to failure to be well-informed.
-We confirm results from \cite{APSS08} that each approach has advantages in certain situations, but highlight an important shortcoming of the aggressive approach --- its complete inability to learn when applicability thresholds are used i.e. when the agent abandons plans with low chances of success. We then show that a new plan selection mechanism that also accounts for our confidence in the \dt\ classification can overcome the earlier issues with the aggressive approach. We conclude that the aggressive approach (that is also simpler), combined with the confidence measure (that also provides flexibility for tuning to different situations) is a better candidate for the general setting.
+The framework presented here made a number of simplifying assumptions.
+% %
+Our experiments did not consider the effects of conflicting interactions between
+sub-goals of a plan. In fact, the way a sub-goal is resolved may affect how the
+next sub-goal can be addressed or even if it can be resolved at all.
+% %
+Our current implementation is not possible to detect and learn such interactions;
+each subgoal is treated ``locally.'' To handle such interactions, the selection
+of a plan for a resolving sub-goal should also be predicated the goals higher
+than the sub-goal, that is, it should take into account the ``reasons'' for the
+sub-goal.
+% %
+Similarly, we did not consider the effects of using goal failure recovery, under
+which alternative plans for a goal are tried upon the failure of a plan.
+% %
+Also, we have only dealt with domains described via boolean propositions. To
+handle continuous attributes (e.g., discretize \emph{temperature}), our approach
+requires that either these attributes are discretized or additional discrete
+attributes be used to test the continuous ones (e.g., \emph{cold}, \emph{warm},
+and \emph{hot}).
+% %
+% Lastly, we point out that even though we have used environments with a simple
+% stochastic model, our results apply trivially to agents acting in environments
+% based on more complex models.
 
-Our experiments do not consider the effects of conflicting interactions between sub-goals of a plan. For instance, if a sub-goal could succeed in more than one way causing different changes in the environment, one of which may in fact cause a subsequent sub-goal to fail, then in our current implementation it is not possible to detect and learn such interactions. Similarly we do not currently consider the effects of using failure recovery, under which alternative plans are tried upon the failure of a plan for achieving a goal. We note that both these features should be resolved for the real system. Moreover, we plan to do further experimentation with more realistic programs from existing applications. For continuous attributes, our approach requires that either the attributes be discretized or additional discrete attributes be used to test the continuous ones (for instance, check if temperature is $<20.5\textcelsius$).
 
-One critique of the coverage-based confidence measure used is that it has a defined end state ($c_T(S)=1$) whereas for a real system, learning and re-learning will occur indefinitely as the agent continually tries to adapt to a changing environment. This implies that our confidence in a \dt's classification would also require calibration based on a changing environment. If the change in the environment was deliberate, then our confidence could be reset and subsequently \textit{re-built}. Without such an explicit signal the agent must rely on other methods for determining when the environment has changed significantly.
+One critique of the coverage-based confidence measure used is that it has a
+defined end state, namely $c_T(w)=1$. In a real system, however, learning and
+re-learning will occur indefinitely, as the agent continually tries to
+\emph{adapt} to a changing environment. This implies that an agent's confidence
+in a \dt's classification would also require calibration when the environment has
+changed. If the change was deliberate, then our confidence could be reset and
+subsequently \textit{re-built}. Without such an explicit signal, the agent must
+rely on other methods for determining when the environment has changed
+significantly.
+% %
+An appealing measure for recognising environmental changes is through the
+relatedness of its features. For instance, an observation that the grass is
+\textit{wet} may have a high correlation to the fact that it is \textit{raining}.
+If at some point, the agent were to witness a world where it is not raining but
+the grass is indeed wet (for some other new reasons), then this world would be
+``atypical,''  and as a result, the agent may have reason to reduce its
+confidence in a plan's \dt\ classification of this new world.
+% %
+It turns out that efficient algorithms exist---some already included in the
+\weka\ library---that perform inference in and learning of Bayesian networks
+\cite{Mitchell97:ML}, which the agent can appeal to build a model of the
+environment for the purposes just described.
 
-An appealing measure for recognising environmental changes is through the relatedness of its features. For instance, an observation that the grass is \textit{wet} presumably has a high correlation to the fact that it is \textit{raining}, and a \dt\ may (based on prior observations) very well use these factors in determining the likelihood of success of a plan to navigate the field. If then, we were to witness a world where it is not raining but the grass is wet (could be morning dew), then this world would be very different from the typical worlds we have seen so far and so we may have strong reason to reduce our confidence in the \dt\ classification of this new world.
 
-The issue of combining learning and deliberative approaches for decision making in autonomous systems has not been widely addressed. In \cite{Riedmiller01} learning is used prior to deployment for acquiring low level robot soccer skills that are then treated as fixed methods in the deliberative decision making process once deployed. Hern\'andez et al. \cite{Hernandez04:Learning} give a preliminary account of how decision trees may be induced on plan failures in order to find an alternative logical context conditions in a deterministic paint-world example. More recently, in work related to BDI systems, \cite{Zhuo09:Learning} propose a method for learning hierarchical task network (HTN) method preconditions with partial observations in more complex domains. For this they first construct constraints from observed decomposition trees that are then solved offline using a constraint solver. In our work, learning and deliberation is integrated (as in \cite{APSS08}) such that one impacts the other and the classical exploration/exploitation dilemma applies. Initially, instead of following a random exploration policy (as is the case for agents with no initial knowledge), our agents are guided by the existing domain knowledge inherent in the BDI hierarchy.
+
+The issue of combining learning and deliberative approaches for decision making
+in autonomous systems has not been widely addressed.
+% %
+In~\cite{Riedmiller01}, learning is used \emph{prior to deployment} for acquiring
+low level robot soccer skills that are then treated as fixed methods in the
+deliberative decision making process once deployed.
+% %
+Hern\'andez et al. \cite{Hernandez04:Learning} give a preliminary account of how
+decision trees may be induced on plan failures in order to find an alternative
+logical context conditions in a deterministic paint-world example.
+% %
+More recently, \cite{Zhuo09:Learning} proposes a method for learning hierarchical
+task network (HTN) method preconditions under partial observations. There, a set
+of  constraints are constructed from observed decomposition trees that are then
+solved \emph{offline} using a constraint solver. Despite HTN systems being
+automated planning frameworks, rather than execution frameworks, these are highly
+related to BDI agent systems when it comes to the \emph{know-how} information
+used---learning methods' preconditions amounts to learning plan's context
+conditions.
+% %
+In constrast, in our work, learning and deliberation are fully integrated in a
+way that one impacts the other and the classical exploration/exploitation dilemma
+applies.
+% Initially, instead of following a random exploration policy (as is the case for
+% agents with no initial knowledge), our agents are guided by the existing domain
+% knowledge inherent in the BDI hierarchy.
+
+
+
