@@ -31,7 +31,7 @@ responding to events, the inputs to the system, by committing to handle one
 pending event-goal, \textit{selecting a plan} from the library, and placing its
 program body  into the intention base.
 % %%
-A plan may be selected if it is \textit{relevant} and applicable, that is, if it
+A plan may be selected if it is \textit{relevant} and \textit{applicable}, that is, if it
 is a plan designed for the event in question and its context condition is
 believed true, respectively.
 % %
@@ -59,7 +59,7 @@ Consider, for instance, the goal-plan tree structure depicted in
 Figure~\ref{fig:T3}.
 % %%
 A link from a goal to a plan means that this plan is relevant (i.e., potentially
-suitable) for achieving the goal (e.g., $P_1,P_2,P_3$ $P_4$ are the relevant
+suitable) for achieving the goal (e.g., $P_1$, $P_2$, $P_3$, $P_4$ are the relevant
 plans for event goal $G$); whereas a link from a plan to a goal means that the
 plan needs to achieve that goal as part of its (sequential) execution (e.g., plan
 $P_A$ needs to achieve goal $G_{A1}$ first and then $G_{A2}$).
@@ -74,7 +74,7 @@ may behave differently).
 % %
 In some world, for our example, the agent may achieve goal $G_B$ by selecting and
 executing $P_B$, followed by selecting and executing $2$ leaf working plans to
-resolve goals $G_{B1}$ and $G_{B2}b$. If the agent succeeds with goals $G_{B1}$
+resolve goals $G_{B1}$ and $G_{B2}$. If the agent succeeds with goals $G_{B1}$
 and $G_{B2}$, then it succeeds for plan $P_B$, achieving thus goal $G_B$ and the
 top-level goal $G$ itself. There is no possible successful execution, though, if
 the agent decides to carry on any of the three plans labelled $P_{B2}'$ for
