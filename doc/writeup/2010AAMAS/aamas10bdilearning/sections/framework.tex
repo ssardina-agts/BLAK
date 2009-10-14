@@ -58,7 +58,7 @@ explored, relative to its ``complexity.''
 
 
 
-For the purpose of our analysis, in this work, we have used algorithm
+For the purpose of our analysis, we have used algorithm
 \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
 well-known \weka\ learning package \cite{weka99}. Currently we
 recreate decision trees from scratch after each new piece of data is collected.
@@ -67,34 +67,6 @@ Of course, for a real-world implementation, one should appeal to algorithms for
 \emph{incremental} induction of the decision tree, such as those described in
 \cite{Swere06:Fast,Utgoff97Decision}.
 % %
-%Observe that any algorithm for inducing a decision tree from a training set (in
-%our case, the set of outcomes for different world states), would struggle for
-%both classification accuracy as well as a compact representation (i.e., a smaller
-%tree). Thus, algorithms like \textsf{J48}  may trade miss-classification of some
-% past execution data (i.e., world states together with their final
-%success/failure outcomes) for the sake of yielding a more compact decision tree.
-%% %
-%Nonetheless, together with the final success/failure classification at each leaf
-%node, the number of both correct and incorrect classifications relative to
-%the training set is also recorded. This shall provide then an
-%estimate of the
-%rate of success of the plan for the world states
-%classified under that leaf
-%node.
- 
-%
-
-%dsingh-:
-%The algorithm for computing the decision tree aims to balance
-%compactness of representation with accuracy. Information
-%is maintained in the decision tree about the number of successes and
-%failures for a given leaf node (representing a set of world states in
-%our case) that have been encountered.
-%We then use this information to estimate the rate of success of the
-%plan to which this decision tree is attached, for the world states
-%represented by the given leaf node - and in particular the world state
-%currently under consideration.
-%dsingh+:
 
 The \weka\ \propername{J48} algorithm for inducing \dt{}s aims to balance
 compactness of representation with accuracy. Consequently, it maintains in each
@@ -128,42 +100,6 @@ a goal with alternative options, if the selected plan happens to fail.
 Integrating failure handling would not alter any of our results, but it would
 complicate our implementation framework and the understanding of the basic
 mechanisms.
-
-
-
-% These assumptions are,
-% namely:
-% \begin{enumerate}
-% \item
-% Actions in the environment may fail with some probability, even in
-% world states where they ''should'' succeed. 
-% This captures the non-deterministic nature of most real
-% world environments. 
-% \item
-% No changes happen in the environment, during execution, other than
-% those made by the agent. (Although this may appear too
-% limiting, the previous assumption of non-determinism mitigates against
-% the over-simplification for many cases, by treating other changes as
-% non-deterministic failures.)
-% \item
-% The agent is only executing a single intention (i.e., pursuing a single
-% goal). 
-% %
-% Without this assumption it would be necessary for the agent to
-% reason about potentially negative interactions between concurrent goals. While such reasoning is
-% possible
-% \cite{Thangarajah02}, it complicates the situation for this work.
-% 
-% 
-% 
-% \item
-% There is no automated failure handling, whereby the BDI system retries
-% a goal with an alternative plan, if the selected plan fails. This will
-% certainly be integrated into the system for real use, but again
-% complicates the understanding of the basic mechanisms. In fact,
-% its integration may help achieve faster learning.
-% %  for real applications. 
-% \end{enumerate}
 
 
 
