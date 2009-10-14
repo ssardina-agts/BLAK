@@ -195,9 +195,9 @@ plan $P$ will continue to be explored with \emph{equal} likelihood to plans
 $P_i'$.
 % %
 This structure shows exactly the problem discussed in the previous
-section, namely, the drawbacks of assuming a plan is a bad option just because it
-happened to fail, without consideration of the confidence in the choices
-made below the plan in question.
+section, namely, the drawbacks of assuming that a plan is a bad option just
+because it happened to fail, without consideration of the confidence in the choices
+made below it.	
 
 
 Finally, consider the hierarchical structure $\T_3$ depicted in Figure
@@ -251,12 +251,12 @@ is found for a certain event goal, that event goal is failed right away.
 
 
 To understand the impact of applicability in our BDI learning framework, we
-modified the probabilistic plan selection so that the agent does not consider
+modified the probabilistic plan selection so that the agent does \emph{not} consider
 plans whose chances of success are deemed below a threshold; in our case we set
 this threshold to $0.2$.
 % %
 For simplicity, we  removed the non-determinism in the model of the
-environment so that actions either fail or succeed in each world state.
+environment: actions either fail or succeed in each world state.
 
 %The difference between \CL-based and \BUL-based agents performance when run with
 %an applicability threshold could be striking
@@ -285,8 +285,8 @@ associated with such a path would then start ``recovering.''
 
 
 The reason why \BUL\ exhibits more robust behaviour here is that false negative
-execution runs (i.e., failing executions of a plan that do encode a successful
-execution) will \emph{not} be recorded.
+executions (i.e., failing executions of plans that do encode successful
+runs) will \emph{not} be recorded.
 % %
 The \BUL\ approach relies on a \emph{confidence} test---stability---that checks
 whether we are sufficiently well informed to trust that the current failure is
