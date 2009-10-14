@@ -14,22 +14,20 @@ have been used.}
 % %
 In particular, we crafted goal-plan tree structures representing different
 cases of BDI programs with one main top-level goal, i.e., the event to
-be resolved. In addition, each structure enjoys the, generally desirable,
-\emph{coverage} property, under which for every possible situation, (i.e., world
-state), there is always a way of addressing the main goal, i.e., there is at
-least one successful execution of the top-level event, provided the right plan
+be resolved. In addition, for each structure there is always a way of addressing the main goal, i.e. there is at
+least one successful execution of the top-level event provided the right plan
 choices are made. Observe that such successful (plan) choices are different
 for different world states.
 % , as know-how information is generally predicated on the situation it is
 % applied in. %
 When it comes to describing the possible (observable) world states, we have used
-a set of logical (binary) propositions, representing the so-called fluent or
+a set of logical (binary) propositions, representing the so-called fluents or
 features of the environment that are observable to the agent (e.g., fluent
 proposition $\mathit{DoorLocked}$ states whether the door is believed open or
 not).
 % %
 Finally, we assume the agent is acting in a non-deterministic environment, in
-which actions that are expected to succeed, may still fail with some (small)
+which actions that are expected to succeed may still fail with some (small)
 probability. In our experiments, we assumed a $0.1$ probability of
 uncontrolled failure for all actions.\footnote{See Discussion section on how our
 results generalize to a framework with world state built from non-binary fluents
@@ -130,7 +128,7 @@ The \CL\ agent did indeed perform better in our experiments, in that it
 achieved better success rate earlier as shown in Figure~\ref{fig:T1_result}.
 % %
 The \CL\ approach reaches $50\%$ success after $1000$ iterations,
-whereas it takes more than double that for \BUL\.
+whereas it takes more than double that for \BUL.
 % %
 Eventually, both approaches will yield optimal performance.\footnote{Optimal
 performance amounts to a success rate of $81\%$, as the environment fails with
@@ -160,8 +158,8 @@ involves the performance of two actions (leaf plans consist of single actions).}
 \subfigure[Structure $\T_3$]{\label{fig:T3_result}
 \input{figs/T3-result}
 }
-\caption{Agent performance under \BUL\ (circles) and \CL\ (triangles) schemes.
-Each point represents results from $5$ experiment runs using a moving average of $100$ samples.}
+\caption{Agent performance under \BUL\ (circles) and \CL\ (crosses) schemes.
+Each point represents results from $5$ experiment runs using an averaging window of $100$ samples. The dashed line represents optimal performance (Note that outcomes are always $0$ or $1$ so more than expected consecutive successes may seems like ``above'' optimal performance when averaged).}
 \end{center}
 \end{figure*}
 
@@ -183,7 +181,7 @@ decomposition of $P$. The agent needs to make several correct choices to
 obtain a successful execution.
 % %
 Although we expected \BUL\ to yield better agent performance than \CL, the
-difference was enormous in our experiments. Figure \ref{fig:T2_result} shows that
+difference was enormous in our experiments. Figure~\ref{fig:T2_result} shows that
 while the \BUL\ approach achieves optimal performance, which amounts to slightly
 over $40\%$ rate of success, in around $300$ iterations, the \CL\ scheme,
 requires close to $2500$ execution experiences. The reason is clear: since there
@@ -229,7 +227,7 @@ which both type of agents experienced comparable performance; see Figure
 
 \subsection{Plan Applicability and Optimality}
 
-So far, we have assumed that the agent, considers all relevant plans
+So far, we have assumed that the agent considers all relevant plans
 for a goal as also \emph{applicable}, even though some may have a very
 low chance of success.
 % %
@@ -265,7 +263,7 @@ Using the structure $\T_3$ we found that whereas the \BUL\ scheme maintains its
 performance (and in fact may slightly improve due to truly failing leaf plans
 being ruled out earlier), the \CL\ approach may not able to learn at all and
 could end up eventually failing the top-level goal \emph{always}. This is
-reported in Figure \ref{fig:T3_result} (dotted lines).
+reported in Figure~\ref{fig:performance-applicability} (dotted lines).
 
 The explanation for this undesirable behavior under \CL\ is as follows.
 % %
@@ -284,7 +282,7 @@ would be eventually be found, and the context decision trees of the plans
 associated with such a path would then start ``recovering.''
 
 
-The reason why \BUL\ exhibits more robust behaviour here is that false negative
+The reason \BUL\ exhibits more robust behaviour here is that false negative
 executions (i.e., failing executions of plans that do encode successful
 runs) will \emph{not} be recorded.
 % %
@@ -294,7 +292,6 @@ indicative of future attempts.
 % %
 In the next section, we explore an alternative approach to confidence 
 that takes account of how sure we are of the decision tree when we use
-it, rather than attempting, via stability, to ensure that we only
-record results that we are confident in.
+it, rather than using stability as a confidence measure for deciding when to record.
 %that can be combined with \CL\ (or \BUL) and is able to overcome the
 %weaknesses shown here.

@@ -59,7 +59,7 @@ Consider, for instance, the goal-plan tree structure depicted in
 Figure~\ref{fig:T3}.
 % %%
 A link from a goal to a plan means that this plan is relevant (i.e., potentially
-suitable) for achieving the goal (e.g., $P_1$, $P_2$, $P_3$, $P_4$ are the relevant
+suitable) for achieving the goal (e.g., $P_1 \ldots P4$ are the relevant
 plans for event goal $G$); whereas a link from a plan to a goal means that the
 plan needs to achieve that goal as part of its (sequential) execution (e.g., plan
 $P_A$ needs to achieve goal $G_{A1}$ first and then $G_{A2}$).
@@ -72,7 +72,7 @@ they can either succeed or fail when executed; this is marked accordingly in the
 figure \emph{for some particular world} (of course, in other states, such plans
 may behave differently).
 % %
-In some world, for our example, the agent may achieve goal $G_B$ by selecting and
+In some world, given successful completion of $G_A$ first, the agent may achieve goal $G_B$ by selecting and
 executing $P_B$, followed by selecting and executing $2$ leaf working plans to
 resolve goals $G_{B1}$ and $G_{B2}$. If the agent succeeds with goals $G_{B1}$
 and $G_{B2}$, then it succeeds for plan $P_B$, achieving thus goal $G_B$ and the
@@ -93,7 +93,7 @@ To tackle the plan-selection task, state-of-the-art BDI systems leverage domain
 expertise by means of the context conditions of plans. However, crafting fully
 correct context conditions at design-time can, in some applications, be a
 demanding and error-prone task. In addition, fixed context conditions do not
-allow agents to adapt to new environments.
+allow agents to adapt to changing environments.
 % %%
 In the rest of the paper, we shall provide an extended framework for BDI agent
 systems that allows agents to learn/adapt plans' context conditions, and discuss

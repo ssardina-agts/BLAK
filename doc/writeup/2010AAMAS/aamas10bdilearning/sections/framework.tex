@@ -4,17 +4,16 @@
 
 
 The problem that we are interested in is as follows: \emph{given past execution
-data and the the current world state, determine which plan to execute next 
+data and the current world state, determine which plan to execute next 
 in order to address an event}.
 
 
 To address this ``learnable'' plan-selection task, we start by modeling the
 context condition of plans with \emph{decision trees}, rather than with logical
-formulas.\footnote{As is the case in the classical BDI framework. Of course, we
-can combine both formulas and decisions trees...}
+formulas.\footnote{The logical formulae of the classical BDI framework can of course be combined with \dt s.}
 % %
 Decision trees~\cite{Mitchell97:ML}  provide a natural classification mechanism
-for our purposes, as they can deal well with noise (generally due to partial
+for our purposes, as they can deal well with noise (generally due to partially
 observable and predictable environments), and they are able to support
 disjunctive hypotheses. They are also readily convertible to rules, which are the
 standard representation for context conditions in BDI systems.
@@ -100,7 +99,7 @@ Of course, for a real-world implementation, one should appeal to algorithms for
 The \weka\ \propername{J48} algorithm for inducing \dt{}s aims to balance
 compactness of representation with accuracy. Consequently, it maintains in each
 \dt\ information about the number of instances (or world states in our case) from
-the training data correctly and incorrectly classified by each decision leaf
+the training data correctly and incorrectly classified by each decision tree leaf
 node. Subsequently, whenever a plan's \dt\ is used to classify a new instance
 (world state), weka returns not only the classification (i.e. success or
 failure), but also a classification probability (i.e. to what degree it believes

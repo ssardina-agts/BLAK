@@ -7,7 +7,8 @@ agent-oriented programming paradigm, namely, that of \emph{intelligent plan
 selection} \cite{Pollack92-IRMA,Georgeff89-PRS}.
 % %
 Specifically, we explore the details of how effective plan selection can be
-learnt based on ongoing experience.
+learnt based on ongoing experience.
+
 
 There are a plethora of agent programming languages and development platforms in
 the BDI tradition, such as  \PRS\ \cite{Georgeff89-PRS}, \JACK~\cite{Busetta99jack},
@@ -27,49 +28,46 @@ conditions under which the plan is a sensible strategy to address the
 corresponding goal in a given situation (e.g., it is not raining). The execution
 of a BDI system relies then entirely on \textit{context sensitive subgoal
 expansion}, allowing agents to ``act as they go'' by making \emph{plan
-choices} at each level of abstraction wrt the current situation.
+choices} at each level of abstraction with respect to the current situation.
+
 
 
 The fact that both the actual behaviours (the plans) and the situations for which
-they are appropriate (their context conditions) are fixed at design time yields
-important limitations to the whole programming approach.
+they are appropriate (their context conditions) are fixed at design time has
+important implications for the whole programming approach.
 % %
 First, it is often difficult or impossible for the programmer to craft the
 \emph{exact} conditions under which a plan would succeed. Second, once deployed,
-the plan selection mechanism is fixed and may not adapt to potential different
-environments' variations.
+the plan selection mechanism is fixed and may not adapt to potential variations of different environments.
 % %
-Moreover, since plan execution often involves interaction with a \emph{partially
-observable} external world, it is unreasonable to have a binary judgement on the
-plan chances of success.
+Finally, since plan execution often involves interaction with a \emph{partially
+observable} external world, it is desirable to measure success in terms of probabilities rather than boolean values.
 
-Following~\cite{APSS08}, we propose a BDI programming framework where plans'
+
+Following~\cite{Airiau:IJAT09}, we propose a BDI programming framework where plans'
 context conditions can be learnt over time, by exploring the plan library and
 suitably incorporating the outcomes into plans' context conditions.
 % %
 To that end, we first extend the standard BDI programming architecture by
 modeling context conditions of plans with \emph{decision trees}
 \cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
-compatible with the new representation (Section~\ref{sec:framework}). 
+compatible with the new representation (Section~\ref{sec:framework}). %%
 % %
-We then  develop and empirically investigate an aggressive (called \CL) and a
-conservative (called \BUL) approach to learning such context decision trees, and
+We then  develop and empirically investigate an aggressive approach (called \CL) and a
+conservative one (called \BUL) to learning such context decision trees, and
 showed that they provide different advantages depending on the implicit structure
 of the plan library (Sections~\ref{sec:context_learning} and
-\ref{sec:experiments}). In particular, and compatible with the findings reported
-in \cite{APSS08}, we show that the aggressive scheme, though simpler, can at
-times lead to a complete inability to learn, thus yielding a much less robust
-performance than the conservative alternative.
+\ref{sec:experiments}). In particular, we show that the aggressive scheme, though simpler, can at times lead to a complete inability to learn, thus yielding a much less robust performance than the conservative alternative, which is compatible with the findings reported in \cite{Airiau:IJAT09}.
 % %
 Informally, the difference between the two approaches is that whereas the
 aggressive approach accounts for every execution failure, the conservative
 approach instead considers failures only when decisions made during the execution
-are deemed sufficiently ``informed.''
+are deemed sufficiently ``informed.''
 
 
 In order to obtain a flexible middle-ground between the above two approaches, we
 devise an extended probabilistic plan selection that includes a \emph{confidence}
-meassure based on how much the agent has explored the space of possible
+measure based on how much the agent has explored the space of possible
 executions of a given plan (Section~\ref{sec:coverage}). The more this space has
 been ``covered'' by previous executions, the more the agent ``trusts'' the
 estimation of success provided by the plan's decision tree.
@@ -90,7 +88,8 @@ one can effectively take a BDI program and ``tune it'' using our learning
 framework.
 % %
 For simplicity, though, context conditions are learnt from scratch in our
-experimental work.
+experimental work.
+
 
 
 

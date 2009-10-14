@@ -26,13 +26,13 @@ community, in that it provides a solid foundations for going beyond the standard
 static kind of BDI agents.
 
 
-Our work is similar to that in \cite{APSS08} and in fact borrows from there the
+Our work is similar to that in \cite{Airiau:IJAT09} and in fact borrows from there the
 strategy of using decision trees for modeling plan's context conditions.
 % %
 Nonetheless, there are major differences between that work and ours.
 % %
 First, our conservative learning approach, based on the notion of plan
-``stability,'' is substantially more grounded than the one used in \cite{APSS08},
+``stability,'' is substantially more grounded than the one used in \cite{Airiau:IJAT09},
 where a plan is just required to be executed a \emph{fixed} number of times for
 failure executions to be recorded.
 % %
@@ -41,7 +41,7 @@ in the mentioned work; we instead considered different structures identifying
 various types of plan libraries.
 % %
 More importantly, in our work, we explored the realistic case of agents with
-plan applicability thresholds. Contrary to what was implied in \cite{APSS08}, our
+plan applicability thresholds. Contrary to what was implied in \cite{Airiau:IJAT09}, our
 results do suggest that some sort of \emph{confidence} test is indeed
 worthwhile---this was the motivation behind our coverage-based system 
 proposal.
@@ -64,9 +64,9 @@ which alternative plans for a goal are tried upon the failure of a plan.
 % %
 Also, we have only dealt with domains described via boolean propositions. To
 handle continuous attributes (e.g., discretize \emph{temperature}), our approach
-requires that either these attributes are discretized or additional discrete
-attributes be used to test the continuous ones (e.g., \emph{cold}, \emph{warm},
-and \emph{hot}).
+requires that either these attributes are discretized (e.g., \emph{cold}, \emph{warm},
+and \emph{hot}) or additional discrete
+attributes be used to test the continuous ones (e.g. $\emph{temperature} < 25.2$).
 % % Lastly, we point out that even though we have used environments with a simple
 % stochastic model, our results apply trivially to agents acting in environments
 % based on more complex models.

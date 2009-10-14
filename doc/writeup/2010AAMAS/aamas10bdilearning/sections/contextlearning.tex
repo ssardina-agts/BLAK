@@ -52,7 +52,7 @@ perform equally well in this structure.}
 
 Consider the example in Figure \ref{fig:T3}.
 % %
-Suppose that in some execution, plan $P_i$, for some $i \in \{1,\ldots,4\}$ is
+Suppose that in some execution, plan $P_i$, for some $i \in \{1,\ldots,4\}$, is
 selected in order to resolve top-goal $G$ in some world state $w_1$. The plan
 involves, in turn, the successful resolution of sequential goals $G_A$ and $G_B$.
 Suppose further that subgoal $G_A$ has been resolved successfully, yielding new
@@ -66,14 +66,14 @@ $P_{B2}'$ for subgoal $G_{B2}$ is selected in $w_3$ and execution thus
 % %
 As there is no failure recovery, this failure will be propagated upwards in the
 hierarchy, causing goals $G_{B2}$ as well as $G_B$ and top-level goal $G$ itself
-fail.
+to fail.
 % %
 First of all, the failure (in world state $w_3$) must be recorded in the decision
 tree of the plan where the failure originated, namely, plan $P_{B2}'$. 
 %Such plan is in fact ``low-level,'' in that it has no subgoals and thus interacts with the
 %external world directly. Hence, all we can expect is to learn such interaction
 %over time.
-Such bottom-level plans have no subgoals so interact with the
+Such bottom-level plans have no subgoals, so they interact with the
 external world directly, and over time we can expect to learn such interactions.
 % %
 On the other hand, as we will show below, it is not so clear  whether the failure should also be
@@ -122,7 +122,7 @@ The point is that it is conceivable that the failure of subgoal $G_{B2}$ in plan
 $P_B$, for instance, could indeed have been avoided, had the alternative plan
 $P_{B2}$, been chosen instead. Therefore, recording a failure against plan $P_B$
 would not be justified---it is not true that plan $P_{B}$ is a ``bad'' one
-when in world state $w_2$.
+in world state $w_2$.
 % %
 Informally, one could argue that it is more appropiate to \emph{wait} before
 recording failures against a plan until one is reasonably confident that
@@ -211,8 +211,8 @@ recorded. The assumption is that misleading information, as discussed above, wil
 eventually disappear as noise.
 % %
 The second one, which we refer to as \emph{bottom-up learning} (\BUL), is more
-cautious and records a failure execution experience when some stability on
-decisions is deemed, that is, $\epsilon > 0$. In our work, we have taken
+cautious and records a failure execution experience when the success rate has stabilised i.e. is not changing by more than $\epsilon$.
+In our work, we have taken
 $\epsilon = 0.3$ and $k = 3$, that is, the context condition of a plan is
 considered stable (for a world state) if at least $3$ past execution experiences
 have been recorded 

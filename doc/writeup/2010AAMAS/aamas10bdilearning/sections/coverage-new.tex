@@ -34,7 +34,7 @@ coverage-based confidence measure.
 Formally, we define the plan selection weight $\Omega'(w)$ as a function of the
 \dt\ determined success expectation $p_T(w)$ and the degree of coverage $c_T(w)$:
 \begin{equation*}\label{eqn:coverage}   
-\Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right]
+\Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
 \end{equation*}
 	
 	
@@ -70,9 +70,9 @@ states that is relevant to it.
 from the previous section, but this time using the modified selection weighting
 based on coverage.
 % %
-We will refer to the new agents as \CLSELB\ and \BULSELB, respectively.
+We will refer to the new approaches as \CLSELB\ and \BULSELB, respectively.
 % %
-Similarly, $\CLSELA$ and $\BULSELA$ correspond to the agents using the
+Similarly, $\CLSELA$ and $\BULSELA$ correspond to the approaches using the
 \emph{original} selection weighting that only uses its \dt\ success
 expectation, that is, $\Omega_T(w) = p_T(w)$.
 
@@ -112,12 +112,12 @@ the earlier results for $\CLSELA$ and $\BULSELA$ (both in dotted grey).}
 \end{figure}
 
 The benefit of the coverage-based approach is apparent, though, when one
-considers the goal-plan structure $\T_2$ in which the $\CLSELA$ used to perform
+considers the goal-plan structure $\T_2$ in which the $\CLSELA$ performed
 poorly (cf. Figure \ref{fig:T2_result}).
 % %
 Here, the $\CLSELB$ scheme showed a dramatic improvement over $\CLSELA$. Figure
 \ref{fig:T2_result2} shows this change with the results for the new approach to
-plan selection $\BULSELB$ and $\CLSELB$ superimposed over the original results
+plan selection $\CLSELB$ superimposed over the original results
 from Figure \ref{fig:T2_result}.
 % %
 The reason why the new plan selection mechanism improves the \CL\ learning scheme
