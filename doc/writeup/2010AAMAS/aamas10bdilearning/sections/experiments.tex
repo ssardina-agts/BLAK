@@ -70,7 +70,11 @@ best illustrate the results that we have obtained, namely:
 \begin{description}
 \item[(Tree $\T_1$; Figure~\ref{fig:T1})] For each world state, the
 goal has a few plans that can succeed (plans $P_i$), but many other options of comparable
-complexity that are bound to fail (plans $P_i'$). 
+complexity that are bound to fail (plans $P_i'$).\footnote{Here, plan
+complexity refers to the size of the fully expanded plan, as represented
+by the number of levels of abstraction and the numbers of goals at each level.
+The key factor is the number of abstraction levels---abstract plans are not in
+themselves complex.}
 %%
 Under this type of structure, an \CL-based agent will generally perform better 
 than an agent using the learning \BUL\ approach.
@@ -78,10 +82,7 @@ than an agent using the learning \BUL\ approach.
 \item[(Tree $\T_2$; Figure~\ref{fig:T2})] For each world state, the goal has
 one plan that can succeed (plan $P$), and a few others that would fail.
 However, the plan containing the solution is of substantially
-higher-complexity\footnote{When we refer to plan complexity, we mean
-the size of the expanded plan, as represented by the number of levels
-of abstraction, and the numbers of goals at each level. The key issue
-is number of abstraction levels. Abstract plans are not in themselves complex.}
+higher-complexity.
 %%
 In this structure, a \BUL-based agent will outperform an \CL-based one.
 % A structure in which \BUL\ is
@@ -127,13 +128,14 @@ be stable before that $P_i'$ is updated.
 The \CL\ agent did indeed perform better in our experiments, in that it
 achieved better success rate earlier as shown in Figure~\ref{fig:T1_result}.
 % %
-The \CL\ approach reaches $50\%$ success after $1000$ iterations,
-whereas it takes more than double that for \BUL.
-% %
-Eventually, both approaches will yield optimal performance.\footnote{Optimal
-performance amounts to a success rate of $81\%$, as the environment fails with
-probability $.1$ for every (working) action and each successful execution
-involves the performance of two actions (leaf plans consist of single actions).}
+% The \CL\ approach reaches $50\%$ success after $600$ iterations,
+% whereas it takes more than double that for \BUL.
+%%
+Observe that, eventually, both approaches will yield optimal
+performance.\footnote{Optimal performance in this case amounts to a success rate
+of $81\%$, as the environment fails with probability $.1$ for every (working) action and each
+successful execution involves the performance of two actions (leaf plans consist
+of single actions).}
 
 
 \begin{figure}[t]
@@ -159,43 +161,44 @@ involves the performance of two actions (leaf plans consist of single actions).}
 \input{figs/T3-result}
 }
 \caption{Agent performance under \BUL\ (circles) and \CL\ (crosses) schemes.
-Each point represents results from $5$ experiment runs using an averaging window of $100$ samples. The dashed line represents optimal performance (Note that outcomes are always $0$ or $1$ so more than expected consecutive successes may seems like ``above'' optimal performance when averaged).}
+Each point represents results from $5$ experiment runs using an averaging window
+of $100$ samples. The dashed line represents optimal performance (Note that
+outcomes are always $0$ or $1$ so more than expected consecutive successes may
+seems like ``above'' optimal performance when averaged).}
 \end{center}
 \end{figure*}
 
 
 Let us now analyse the goal-plan tree $\T_2$ shown in Figure~\ref{fig:T2}.
 % %
-Under such a structure, all successful executions are encoded in a complex plan, in our
-case plan $P$. Other options that the agent may have (e.g., plans $P_i'$) are of
-less complexity, but do not lead to solutions for resolving the
-goal.\footnote{This is an extreme case for illustrative purposes. Of
-course the simpler plans $P_i'$ would, in a real program, lead to a
-solution in some world states or it would not make sense to include
-them. The same effect would however arise if most world states had
-solutions only in a complex plan branch.}
+Under such a structure, all successful executions are encoded in a complex plan,
+in our case plan $P$. Other options that the agent may have (e.g., plans $P_i'$)
+are of less complexity, but do not lead to solutions for resolving the
+goal.\footnote{This is an extreme case for illustrative purposes. Of course the
+simpler plans $P_i'$ would, in a real program, lead to a solution in some world
+states or it would not make sense to include them. The same effect would however
+arise if most world states had solutions only in a complex plan branch.}
 % %
-Because the plan containing the solution, namely $P$, is fairly
-complex, there are many ways the agent may fail when exploring the
-decomposition of $P$. The agent needs to make several correct choices to
-obtain a successful execution.
+Because the plan containing the solution, namely $P$, is fairly complex, there
+are many ways the agent may fail when exploring the decomposition of $P$. The
+agent needs to make several correct choices to obtain a successful execution.
 % %
 Although we expected \BUL\ to yield better agent performance than \CL, the
 difference was enormous in our experiments. Figure~\ref{fig:T2_result} shows that
 while the \BUL\ approach achieves optimal performance, which amounts to slightly
-over $40\%$ rate of success, in around $300$ iterations, the \CL\ scheme,
-requires close to $2500$ execution experiences. The reason is clear: since there
-are more chances to fail plan $P$ initially, \CL\ marks this plan as ``bad,''
-compared with the non-working plans $P_i'$. On the other hand, \BUL\ would not
-jump to the conclusion that $P$ is a ``bad'' plan even when failing it, since it
-is aware that decisions made below $P$ were not sufficiently informed. Consequently,
-plan $P$ will continue to be explored with \emph{equal} likelihood to plans
-$P_i'$.
+over $40\%$ rate of success, in slightly more than $500$ iterations, the \CL\
+scheme, requires more than $3000$ execution experiences. The reason is clear:
+since there are more chances to fail plan $P$ initially, \CL\ marks this plan as
+``bad,'' compared with the non-working plans $P_i'$. On the other hand, \BUL\
+would not jump to the conclusion that $P$ is a ``bad'' plan even when failing it,
+since it is aware that decisions made below $P$ were not sufficiently informed.
+Consequently, plan $P$ will continue to be explored with \emph{equal} likelihood
+to plans $P_i'$.
 % %
-This structure shows exactly the problem discussed in the previous
-section, namely, the drawbacks of assuming that a plan is a bad option just
-because it happened to fail, without consideration of the confidence in the choices
-made below it.	
+This structure shows exactly the problem discussed in the previous section,
+namely, the drawbacks of assuming that a plan is a bad option just because it
+happened to fail, without consideration of the confidence in the choices made
+below it.
 
 
 Finally, consider the hierarchical structure $\T_3$ depicted in Figure
