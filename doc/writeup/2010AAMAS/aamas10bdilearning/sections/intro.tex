@@ -44,20 +44,30 @@ Finally, since plan execution often involves interaction with a \emph{partially
 observable} external world, it is desirable to measure success in terms of probabilities rather than boolean values.
 
 
-Following~\cite{Airiau:IJAT09}, we propose a BDI programming framework where plans'
-context conditions can be learnt over time, by exploring the plan library and
-suitably incorporating the outcomes into plans' context conditions.
-% %
-To that end, we first extend the standard BDI programming architecture by
-modeling context conditions of plans with \emph{decision trees}
-\cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
-compatible with the new representation (Section~\ref{sec:framework}). %%
-% %
-We then  develop and empirically investigate an aggressive approach (called \CL) and a
-conservative one (called \BUL) to learning such context decision trees, and
-showed that they provide different advantages depending on the implicit structure
-of the plan library (Sections~\ref{sec:context_learning} and
-\ref{sec:experiments}). In particular, we show that the aggressive scheme, though simpler, can at times lead to a complete inability to learn, thus yielding a much less robust performance than the conservative alternative, which is compatible with the findings reported in \cite{Airiau:IJAT09}.
+%Following~\cite{Airiau:IJAT09}, we propose a BDI programming framework where plans'
+%context conditions can be learnt over time, by exploring the plan library and
+%suitably incorporating the outcomes into plans' context conditions.
+%% %
+%To that end, we first extend the standard BDI programming architecture by
+%modeling context conditions of plans with \emph{decision trees}
+%\cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
+%compatible with the new representation (Section~\ref{sec:framework}). %%
+%% %
+%We then  develop and empirically investigate an aggressive approach (called \CL) and a
+%conservative one (called \BUL) to learning such context decision trees, and
+%showed that they provide different advantages depending on the implicit structure
+%of the plan library (Sections~\ref{sec:context_learning} and
+%\ref{sec:experiments}). 
+In \cite{Airiau:IJAT09} the authors detail why it may be problematic for
+learning if the BDI hierarchical structure is not taken into account.
+They showed why it can be problematic to assume a mistake at a
+higher level in the hierarchy, when a poor outcome may have been
+related to a mistake in selection further down.  Their
+empirical work suggested that perhaps the advantages of an aggressive
+approach, where all failures were considered meaningful, outweighed
+the advantages of careful consideration.
+%
+In this work, we show that the aggressive scheme, though simpler, can at times lead to a complete inability to learn, thus yielding a much less robust performance than the conservative alternative.
 % %
 Informally, the difference between the two approaches is that whereas the
 aggressive approach accounts for every execution failure, the conservative
@@ -72,7 +82,7 @@ executions of a given plan (Section~\ref{sec:coverage}). The more this space has
 been ``covered'' by previous executions, the more the agent ``trusts'' the
 estimation of success provided by the plan's decision tree.
 % %
-It turns out that an agent based on the \CL\ aggressive learning scheme together
+It turns out that an agent based on the aggressive learning scheme together
 with the enhanced plan selection mechanism provides a flexible and simple
 compromise between the two extreme approaches.
 
