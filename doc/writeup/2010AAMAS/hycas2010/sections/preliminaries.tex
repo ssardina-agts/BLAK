@@ -1,0 +1,124 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{BDI Programming}\label{sec:preliminaries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+BDI agent-oriented programming is a popular, well-studied, and practical paradigm
+for building intelligent agents situated in complex and dynamic environments with
+(soft) real-time reasoning and control requirements
+\cite{Georgeff89-PRS,Benfield:AAMAS06}.
+
+In a BDI-style system, an agent consists, basically, of a belief base (akin to a
+database), a set of recorded pending goal events, a plan library, and an
+intention base. While the belief base encodes the agent's knowledge about the
+world, the pending events stand for the \emph{goals} the agent wants to
+achieve/resolve.
+% %
+The \textit{plan library}, in turn, contains \emph{plan rules}, or simply
+\emph{plans}, of the general form $e: \psi \leftarrow \delta$ encoding the
+standard domain operational procedure $\delta$ (that is, a program) for achieving
+the event-goal $e$ when the so-called \textit{context condition} $\psi$ is
+believed true---program $\delta$ is a reasonable strategy to resolve event $e$
+whenever $\psi$ holds. Among other operations, the plan-body program $\delta$
+will typically include the execution of actions ($act$) in the environment and
+subgoal events ($!e$) that ought to be in turn resolved by selecting suitable
+plans for that subgoal event. Lastly, the intention base accounts for the
+current, partially instantiated, plans that the agent has already committed to in
+order to handle or achieve some event-goal.
+
+
+The basic reactive goal-oriented behavior of BDI systems involves the system
+responding to events, the inputs to the system, by committing to handle one
+pending event-goal, \textit{selecting a plan} from the library, and placing its
+program body  into the intention base.
+% %%
+A plan may be selected if it is \textit{relevant} and \textit{applicable}, that is, if it
+is a plan designed for the event in question and its context condition is
+believed true, respectively.
+% %
+In contrast with traditional planning, execution happens at each step. The
+assumption is that the use of plans' context-preconditions to make choices as
+late as possible, together with the built-in goal-failure mechanisms, ensures
+that a successful execution will eventually be obtained while the system is
+sufficiently responsive to changes in the environment.
+
+
+For the purposes of this paper, we shall mostly focus on the plan library, as we
+investigate ways of learning how agents can make a better use of it over time.
+% %
+It is not hard to see that, by grouping together plans responding to the same
+event type, the plan library can be seen as a set of \emph{goal-plan tree}
+templates: a goal (or event) node has children representing the alternative
+relevant plans for achieving it; and a plan node, in turn, has children nodes
+representing the subgoals (including primitive actions) of the plan.
+% %%
+These structures, can be seen as AND/OR trees: for a plan to succeed all the
+subgoals and actions of the plan must be successful (AND); for a subgoal to
+succeed one of the plans to achieve it must succeed (OR).
+
+Consider, for instance, the structure depicted in
+Figure~\ref{fig:T3}.
+% %%
+A link from a goal to a plan means that this plan is relevant (i.e., potentially
+suitable) for achieving the goal (e.g., $P_1 \ldots P4$ are the relevant
+plans for event goal $G$); whereas a link from a plan to a goal means that the
+plan needs to achieve that goal as part of its (sequential) execution (e.g., plan
+$P_A$ needs to achieve goal $G_{A1}$ first and then $G_{A2}$).
+% %
+For compactness, an edge with a label $\times n$ states that there are $n$ edges
+of such type.
+% %
+Leaf plans directly interact with the environment and so, in a given world state,
+they can either succeed or fail when executed; this is marked accordingly in the
+figure \emph{for some particular world} (of course, in other states, such plans
+may behave differently).
+% %
+In some world, given successful completion of $G_A$ first, the agent may achieve goal $G_B$ by selecting and
+executing $P_B$, followed by selecting and executing $2$ leaf working plans to
+resolve goals $G_{B1}$ and $G_{B2}$. If the agent succeeds with goals $G_{B1}$
+and $G_{B2}$, then it succeeds for plan $P_B$, achieving thus goal $G_B$ and the
+top-level goal $G$ itself. There is no possible successful execution, though, if
+the agent decides to carry on any of the three plans labelled $P_{B2}'$ for
+achieving the low-level goal $G_{B2}$.
+
+As one can easily observe, the problem of \textit{plan-selection} is at the core
+of the whole BDI approach:
+\emph{which plan should the agent commit to in order to achieve a certain goal?}
+% %
+This problem amounts, at least partly, to what has been referred to as
+\emph{means-end analysis} in the agent foundational literature
+\cite{Pollack92-IRMA,Bratman88}, that is, the decision of \textit{how} goals are
+achieved.
+% %%
+To tackle the plan-selection task, state-of-the-art BDI systems leverage domain
+expertise by means of the context conditions of plans. However, crafting fully
+correct context conditions at design-time can, in some applications, be a
+demanding and error-prone task. In addition, fixed context conditions do not
+allow agents to adapt to changing environments.
+% %%
+In the rest of the paper, we shall provide an extended framework for BDI agent
+systems that allows agents to learn/adapt plans' context conditions, and discuss
+and empirically evaluate different approaches for such learning task.
+
+
+% 
+% Interestingly, the structured information contained in the goal plan tree can
+% also be used to provide guidance to the learning module. In particular, consider
+% the context condition of plans, which are critical for guiding the execution of
+% the agent program. A plan will not be used in the current state if its context
+% condition is not satisfied.  Incorrect or inadequate context conditions can lead
+% to two types of problems.  If the context condition of a plan is
+% \textit{over-constrained} and evaluates to false in some situations where the
+% plan could succeed then this plan will simply never be tried in those
+% situations, resulting in possible utility loss to the agent.  On the other hand,
+% if the context condition is \textit{under-specified}, it may evaluate to true in
+% some situations where the plan will be ineffective.  Such ``false triggers''
+% will result in unnecessary failures, and although the agent may recover by
+% choosing alternative plans, it may lose valuable time or waste resources
+% unnecessarily, thereby losing utility.  Hence, it would be preferable to learn
+% from experience to avoid using plans that are unlikely to succeed at particular
+% environmental states.
+% 
+% The rest of this paper explores the issue of learning to improve the
+% context conditions specified by the programmer.
+
+
