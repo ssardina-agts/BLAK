@@ -1,13 +1,13 @@
 #TeXlipse project settings
-#Mon Sep 21 15:01:59 EST 2009
+#Mon Oct 19 09:29:35 EST 2009
 builderNum=2
 outputDir=
 makeIndSty=
 bibrefDir=
 outputFormat=pdf
 tempDir=tmp/
-mainTexFile=aamas10bdilearning.tex
-outputFile=aamas10bdilearning.pdf
+mainTexFile=hycas2010.tex
+outputFile=hycas2010.pdf
 langSpell=
 markDer=true
-srcDir=aamas10bdilearning/
+srcDir=hycas2010
