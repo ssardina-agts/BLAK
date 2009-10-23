@@ -1,0 +1,13 @@
+/**
+    Contains the number of the disc at the top of a given pin.
+    (Remember that, the higher the disc number, the smaller the disc is).
+*/
+
+public beliefset Top extends ClosedWorld {
+    #key field int pin;
+    #value field int disc;
+    #indexed query get(int pin, logical int disc);
+    #indexed query get(logical int pin, int disc);
+    #indexed query get(logical int pin, logical int disc);
+}
+

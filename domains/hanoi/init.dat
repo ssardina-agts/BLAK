@@ -1,0 +1,13 @@
+<TupleTable
+    :tuples (
+	<Order__Tuple :disc1 7 :disc2 4 >
+	<Order__Tuple :disc1 4 :disc2 1 >
+	<Order__Tuple :disc1 1 :disc2 0 >
+	<Order__Tuple :disc1 8 :disc2 5 >
+	<Order__Tuple :disc1 5 :disc2 2 >
+	<Order__Tuple :disc1 2 :disc2 0 >
+	<Order__Tuple :disc1 9 :disc2 6 >
+	<Order__Tuple :disc1 6 :disc2 3 >
+	<Order__Tuple :disc1 3 :disc2 0 >
+    )
+>

@@ -1,0 +1,102 @@
+/**
+   Main plan of the agent: initialize the beliefsets, solve the problem
+   and print out the result.
+*/
+
+import gui.Towers;
+
+public plan StackingStarter extends Plan {
+
+    #handles event StackingStart ev;
+
+    static boolean
+    relevant(StackingStart ev)
+    {
+        return true;
+    }
+
+    #posts event StackDisc sd;
+    #reads data Order order;
+    #modifies data Top top;
+    #modifies data Place place;
+    #modifies data Towers window;
+
+    context()
+    {
+        true;
+    }
+
+    #reasoning method
+    body()
+    {
+        initializeTop();
+        printStack();
+        @subtask(sd.stack());
+    }
+    
+    #reasoning method
+    pass()
+    {
+        System.out.println();
+        System.out.println();
+        System.out.println("** Stacking was successful **");
+        printStack();
+        System.exit(0);
+    }
+
+    #reasoning method
+    fail()
+    {
+        System.out.println();
+        System.out.println();
+        System.out.println("** Stacking failed **");
+        printStack();
+        System.exit(1);
+    }
+
+    #reasoning method
+    initializeTop()
+    {
+        for (int i = 0;(i < 3);i++ )top.add(i,0);int pin = 0;
+        logical int d1;
+        logical int d2;
+        for (Cursor c = order.get(d1,d2);c.next();){
+            logical int d3;
+            if (!order.get(d3,d1))
+              top.add(pin++ ,d1.getValue());
+        }
+        for (Cursor c = top.get(d1,d2);c.next();){
+            initPlace(d1.getValue(),d2.getValue());
+        }
+    }
+
+    #reasoning method
+    initPlace(int pin,int disc)
+    {
+        logical int d;
+        place.add(pin,disc);
+        if (order.get(disc,d)) {
+            initPlace(pin,d.getValue());
+        }
+        window.addDisc(disc,pin);
+    }
+
+    #reasoning method
+    printStack()
+    {
+        System.out.println("---- Stacking state ----");
+        for (int pin = 0;(pin < 3);pin++ ){
+            logical int disc;
+            System.out.print((("    Pin " + pin) + " - top to bottom: "));
+            top.get(pin,disc);
+            for (int i = disc.getValue();(i > 0);){
+                logical int j;
+                System.out.print((" " + i));
+                order.get(i,j);
+                i = j.getValue();
+            }
+            System.out.println("");
+        }
+    }
+
+}

@@ -1,0 +1,13 @@
+/**
+   The Place beliefset is used for keeping track of *where* discs
+   are. Its fields are (pin,disc), with disc in the key.
+*/
+
+public beliefset Place extends ClosedWorld {
+    #value field int pin;
+    #key field int disc;
+    #indexed query get(int pin, logical int disc);
+    #indexed query get(logical int pin, int disc);
+    #indexed query get(logical int pin, logical int disc);
+}
+

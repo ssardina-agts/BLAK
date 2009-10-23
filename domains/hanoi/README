@@ -1,0 +1,20 @@
+This example is the well known Towers of Hanoi puzzle.
+
+The puzzle consists of 9 different size discs with holes
+sitting on 3 pins. The discs are numbered from 1 to 9
+from largest to smallest. The initial ordering is
+established in the "init.dat" file; disc 0 is an imaginary
+disc representing the table (or an empty pin).
+
+          |                     |                     |
+7      ===|===        8       ==|==         9        =|=
+4   ======|======     5    =====|=====      6     ====|====
+1=========|=========  2 ========|========   3  =======|=======
+--------------------- --------------------- ---------------------
+
+The objective is to move all the discs across to the rightmost
+pin using the other pins as needed. The discs must end up on
+the rightmost pin in order with the largest disc on the bottom.
+The player must move only one disc at a time and it can only
+be moved on to an empty pin or on to a larger disc. Thus, a
+larger disc can never be placed on a smaller disc.

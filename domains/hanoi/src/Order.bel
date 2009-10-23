@@ -1,0 +1,28 @@
+/**
+   The Order relation keeps the information about the stacking order
+   of discs. "order.get(x,y)" means that x is on top of y.
+   Note that the relation is keyed on the first field. This means that
+   a disc can only be on top of one other disc.
+   Remember that, the higher the disc number, the smaller the disc is,
+   so disc1 should always be > disc2.
+*/
+
+public beliefset Order extends ClosedWorld {
+    #key field int disc1;
+    #value field int disc2;
+    #indexed query get(int disc1, logical int disc2);
+    #indexed query get(logical int disc1, int disc2);
+    #indexed query get(logical int disc1, logical int disc2);
+
+    ///
+    ///	Callback that checks that the beliefset constraint
+    ///	is preserved.
+    ///
+    public void addfact(Tuple t, BeliefState is)
+    {
+        Order__Tuple os = (Order__Tuple)t;
+        if (os.disc1 <= os.disc2)
+          System.err.println("*** Violated Order constraint: " + os.disc1 + " on top of " + os.disc2 + " ***");
+    }
+
+}

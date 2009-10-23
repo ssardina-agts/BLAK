@@ -1,0 +1,77 @@
+import gui.Towers;
+
+/**
+   The DiscMover plan actually moves a disc by updating the belief
+   structures.
+*/
+
+public plan DiscMover extends Plan {
+
+    logical int pin1;
+    // The pin to move away from
+    
+    logical int disc2;
+    #handles event MoveDisc ev;
+
+    static boolean
+    relevant(MoveDisc ev)
+    {
+        return true;
+    }
+
+    #modifies data Order order;
+    #modifies data Top top;
+    #modifies data Place place;
+    #reads data Towers window;
+
+    context()
+    {
+        true;
+    }
+
+    #reasoning method
+    body()
+    {
+        if ((top.get(pin1,ev.disc) && top.get(ev.pin,disc2)) && (ev.disc.getValue() > disc2.getValue())) {
+            System.out.println("    Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
+            logical int disc3;
+
+            // disc3 is the new top disc on the source pin after the move,
+            // or 0 (=the table) when last disc is moved.
+            (order.get(ev.disc.getValue(),disc3) || disc3.unify(0));
+
+            // The disc below the moved disc is to be at the top of its
+            // pin.
+            // Note that 'top' is keyed on the pin attribute, so this
+            // assertion will knock out previous top for pin p1.
+            top.add(pin1.getValue(),disc3.getValue());
+
+            // The moved disc is to be on top of the current top of the
+            // target pin.
+            // Note that 'order' is keyed on the first disc, so this
+            // assertion will knock out previous order for it.
+            order.add(ev.disc.getValue(),disc2.getValue());
+
+            // The moved disc is to be at the top of the target pin.
+        
+            top.add(ev.pin.getValue(),ev.disc.getValue());
+
+            // The moved disc is to be on the target pin.
+            place.add(ev.pin.getValue(),ev.disc.getValue());
+
+            if (window.isVisible()) {
+                @waitFor(window.moveDisc(ev.disc.getValue(),ev.pin.getValue()));
+            }
+        } else {
+            false;
+        }
+    }
+    
+    fail() {
+        place.get(pin1,ev.disc);
+        System.out.println("    FAILED: Move disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
+    }
+    
+    
+}
+
