@@ -1,0 +1,29 @@
+public plan MetaPlan extends Plan {
+    #chooses for event SolveDisc;
+	#handles event PlanChoice pc;
+	#uses interface Player ag;
+
+	static boolean relevant(PlanChoice pc){
+		return true;
+	}
+
+	context(){
+		true;
+	}
+
+	#reasoning method
+	body(){
+		int num = pc.applicable.size();
+		if (num > 0) {
+            int choice = ag.generator.nextInt(num);
+		    Signature s = pc.applicable.first();
+		    for (int i = 0; i < choice; i++) {
+                s = pc.applicable.next(s);
+		    }
+		    pc.chosen = s;
+            if (ag.learningMode) {
+                ag.log("Metaplan chose index "+choice+ " from "+num+" applicable plans");
+            }
+		}
+	}
+}

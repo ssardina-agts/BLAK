@@ -8,6 +8,8 @@ import gui.Towers;
 public plan StackingStarter extends Plan {
 
     #handles event StackingStart ev;
+    #posts event StackingStart evt;
+    #uses interface Player ag;
 
     static boolean
     relevant(StackingStart ev)
@@ -29,31 +31,41 @@ public plan StackingStarter extends Plan {
     #reasoning method
     body()
     {
+        newInitialOrder();
         initializeTop();
-        printStack();
         @subtask(sd.stack());
     }
     
     #reasoning method
     pass()
     {
-        System.out.println();
-        System.out.println();
-        System.out.println("** Stacking was successful **");
-        printStack();
-        System.exit(0);
+        if (!ag.learningMode) {
+            System.exit(0);
+        } else {
+            ag.log("PASSED: Starting again");
+            ag.logIndentReset();
+            @post(evt.start());
+        }
     }
 
     #reasoning method
     fail()
     {
-        System.out.println();
-        System.out.println();
-        System.out.println("** Stacking failed **");
-        printStack();
-        System.exit(1);
+        if (!ag.learningMode) {
+            System.exit(1);
+        } else {
+            ag.log("FAILED: Starting again");
+            ag.logIndentReset();
+            @post(evt.start());
+        }
     }
 
+    #reasoning method
+    newInitialOrder()
+    {
+    }
+    
+    
     #reasoning method
     initializeTop()
     {
@@ -80,23 +92,4 @@ public plan StackingStarter extends Plan {
         }
         window.addDisc(disc,pin);
     }
-
-    #reasoning method
-    printStack()
-    {
-        System.out.println("---- Stacking state ----");
-        for (int pin = 0;(pin < 3);pin++ ){
-            logical int disc;
-            System.out.print((("    Pin " + pin) + " - top to bottom: "));
-            top.get(pin,disc);
-            for (int i = disc.getValue();(i > 0);){
-                logical int j;
-                System.out.print((" " + i));
-                order.get(i,j);
-                i = j.getValue();
-            }
-            System.out.println("");
-        }
-    }
-
 }

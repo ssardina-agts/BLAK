@@ -14,14 +14,22 @@
 */
 
 public plan SolveTopMove extends Plan {
+
+    public int pid = 2;
+
     logical int pin;
     logical int disc;
     #handles event SolveDisc ev;
+    #uses interface Player ag;
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return new PlanIdInfo(pid, 0.5);
+    }
 
     static boolean
     relevant(SolveDisc ev)
     {
-        return ev.movable;
+        return (ev.alwaysApplies || ev.movable);
     }    
     
     #posts event MoveDisc md;
@@ -29,13 +37,31 @@ public plan SolveTopMove extends Plan {
 
     context()
     {
-        true && (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue()));
+        ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue()));
     }
     
     #reasoning method
     body()
     {
-        @subtask(md.move(ev.disc,ev.pin));
+        if (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue())) {
+            @subtask(md.move(ev.disc,ev.pin));
+        } else {
+            false;
+        }
     }
+
+    #reasoning method
+    pass() {
+        if (ag.learningMode) {
+            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
+    #reasoning method
+    fail() {
+        if (ag.learningMode) {
+            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
+
 }
 

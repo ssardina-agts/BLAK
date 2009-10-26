@@ -23,6 +23,7 @@ public plan DiscMover extends Plan {
     #modifies data Top top;
     #modifies data Place place;
     #reads data Towers window;
+    #uses interface Player ag;
 
     context()
     {
@@ -33,7 +34,7 @@ public plan DiscMover extends Plan {
     body()
     {
         if ((top.get(pin1,ev.disc) && top.get(ev.pin,disc2)) && (ev.disc.getValue() > disc2.getValue())) {
-            System.out.println("    Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
+            ag.log("Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
             logical int disc3;
 
             // disc3 is the new top disc on the source pin after the move,
@@ -59,19 +60,12 @@ public plan DiscMover extends Plan {
             // The moved disc is to be on the target pin.
             place.add(ev.pin.getValue(),ev.disc.getValue());
 
-            if (window.isVisible()) {
+            if (ag.isVisible) {
                 @waitFor(window.moveDisc(ev.disc.getValue(),ev.pin.getValue()));
             }
         } else {
             false;
         }
     }
-    
-    fail() {
-        place.get(pin1,ev.disc);
-        System.out.println("    FAILED: Move disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
-    }
-    
-    
 }
 

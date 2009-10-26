@@ -13,16 +13,24 @@
 */
 
 public plan SolveTop extends Plan {
+
+    public int pid = 3;
+
     logical int pin;
     logical int disc;
     logical int deep;
     
     #handles event SolveDisc ev;
+    #uses interface Player ag;
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return new PlanIdInfo(pid, 0.5);
+    }
 
     static boolean
     relevant(SolveDisc ev)
     {
-        return ev.movable;
+        return (ev.alwaysApplies || ev.movable);
     }    
     
     #posts event SolveDisc sd;
@@ -32,17 +40,27 @@ public plan SolveTop extends Plan {
 
     context()
     {
-        true && (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() > ev.disc.getValue()));
+        ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() > ev.disc.getValue()));
     }
 
     #reasoning method
     body()
     {
-        logical int pin3;
-        pin3.unify(env.thirdPin(pin.getValue(),ev.pin.getValue()));
-        deepest(disc,deep);
-        @subtask(sd.solve(deep,pin3));
-        @subtask(sd.solve(ev.disc,ev.pin));
+        if (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() > ev.disc.getValue())) {
+            logical int pin3;
+            pin3.unify(env.thirdPin(pin.getValue(),ev.pin.getValue()));
+            deepest(disc,deep);
+            ag.log("Plan "+pid+" will first solve disc "+deep+" to pin "+pin3);
+            ag.logIndentRight();
+            @subtask(sd.solve(deep,pin3));
+            ag.logIndentLeft();
+            ag.log("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
+            ag.logIndentRight();
+            @subtask(sd.solve(ev.disc,ev.pin));
+            ag.logIndentLeft();
+        } else {
+            false;
+        }
     }
     
 
@@ -55,6 +73,19 @@ public plan SolveTop extends Plan {
             deep.unify(d);
         } else {
             deepest(x,deep);
+        }
+    }
+
+    #reasoning method
+    pass() {
+        if (ag.learningMode) {
+            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
+    #reasoning method
+    fail() {
+        if (ag.learningMode) {
+            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
         }
     }
 }

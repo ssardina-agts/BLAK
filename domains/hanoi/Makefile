@@ -1,7 +1,11 @@
-all: lib/jack.jar clean lib/hanoi.jar
+all: lib/jack.jar lib/blak.jar clean lib/hanoi.jar
 
 lib/jack.jar:
 	@echo "JACK bundle not found in ./lib/jack.jar. Please copy it here before continuing."
+	@exit 1
+
+lib/blak.jar:
+	@echo "BDI-Learning bundle not found in ./lib/blak.jar. Please copy it here before continuing."
 	@exit 1
 
 lib/hanoi.jar:

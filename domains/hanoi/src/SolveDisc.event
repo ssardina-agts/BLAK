@@ -13,7 +13,12 @@
    non-movable; this is in support of plan relevance computation.
 */
 
-public event SolveDisc extends Event {
+public event SolveDisc extends BDIGoalEvent {
+
+	#set behavior PostPlanChoice one_applicable;
+	#set behavior PostPlanChoice multiple_applicable;
+	#set behavior ApplicableChoice random;
+	#set behavior Recover never;
 
     #posted as
     solve(logical int d,logical int p)
@@ -22,6 +27,7 @@ public event SolveDisc extends Event {
         disc = d;
         pin = p;
         movable = (disc.getValue() != 0);
+        alwaysApplies = ((Player)getAgent()).learningMode;
       }
       catch (LogicException e) {
         throw new Error(("Strange variable: " + d));
@@ -31,6 +37,7 @@ public event SolveDisc extends Event {
     logical int disc;
     logical int pin;
     boolean movable;
+    boolean alwaysApplies;
 
 }
 

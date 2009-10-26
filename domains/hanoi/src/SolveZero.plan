@@ -12,12 +12,20 @@
 */
 
 public plan SolveZero extends Plan {
+
+    public int pid = 0;
+
     #handles event SolveDisc ev;
+    #uses interface Player ag;
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return new PlanIdInfo(pid, 0.5);
+    }
 
     static boolean
     relevant(SolveDisc ev)
     {
-        return !ev.movable;
+        return (ev.alwaysApplies || !ev.movable);
     }
     
     #uses interface Solving env;
@@ -34,8 +42,16 @@ public plan SolveZero extends Plan {
     }
 
     #reasoning method
+    pass() {
+        if (ag.learningMode) {
+            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
+    #reasoning method
     fail() {
-        System.out.println("FAILED: Attempt to move table");
+        if (ag.learningMode) {
+            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
+        }
     }
 }
 

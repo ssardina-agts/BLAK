@@ -18,6 +18,7 @@ import gui.Towers;
 public plan DiscStacker extends Plan {
 
     #handles event StackDisc ev;
+	#uses interface Player ag;
 
     static boolean
     relevant(StackDisc ev)
@@ -43,27 +44,27 @@ public plan DiscStacker extends Plan {
       for (int i = 1;(i < 10);i++ ){
         logical int disc;
         disc.unify(i);
-        @subtask(sd.solve(disc,pin));
-        System.out.println(((("Stacked disc " + disc) + " onto pin ") + pin));
         printStack();
+        @subtask(sd.solve(disc,pin));
+        ag.log(((("Stacked disc " + disc) + " onto pin ") + pin));
       }
     }
 
     #reasoning method
     printStack()
     {
-        System.out.println("---- Stacking state ----");
+        ag.log("Stacking state ------");
         for (int pin = 0;(pin < 3);pin++ ){
             logical int disc;
-            System.out.print((("    Pin " + pin) + " - top to bottom: "));
+            String s = "Pin " + pin + " - top to bottom: ";
             top.get(pin,disc);
             for (int i = disc.getValue();(i > 0);){
                 logical int j;
-                System.out.print((" " + i));
+                s += " " + i;
                 order.get(i,j);
                 i = j.getValue();
             }
-            System.out.println("");
+            ag.log(s);
         }
     }
 }

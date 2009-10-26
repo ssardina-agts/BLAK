@@ -12,25 +12,34 @@
 */
 
 public plan SolveRight extends Plan {
+
+    public int pid = 1;
+
     #handles event SolveDisc ev;
+    #uses interface Player ag;
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return new PlanIdInfo(pid, 0.5);
+    }
 
     static boolean
     relevant(SolveDisc ev)
     {
-        return ev.movable;
+        return (ev.alwaysApplies || ev.movable);
     }
     
     #reads data Place place;
+    #reads data Top top;
 
     context()
     {
-        true && place.get(ev.pin,ev.disc);
+        ev.alwaysApplies || place.get(ev.pin,ev.disc);
     }
     
     #reasoning method
     body()
     {
-        if (place.get(ev.pin,ev.disc)) {
+        if (place.get(ev.pin,ev.disc) && top.get(ev.pin,ev.disc)) {
             true;
         } else {
             false;
@@ -38,9 +47,16 @@ public plan SolveRight extends Plan {
     }
     
     #reasoning method
-    fail()
-    {
-        System.out.println("FAILED: Assert disc "+ev.disc+" is on pin "+ev.pin);
-    }    
+    pass() {
+        if (ag.learningMode) {
+            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
+    #reasoning method
+    fail() {
+        if (ag.learningMode) {
+            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
+        }
+    }
 }
 
