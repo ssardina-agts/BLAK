@@ -10,6 +10,17 @@ import java.util.Random;
 import java.io.PrintWriter;
 import java.io.IOException;
 
+import trees.Logger;
+import trees.Tree;
+import trees.Node;
+import agents.PlanNode;
+import agents.GoalNode;
+import agents.Config.PlanSelectMode;
+import agents.Config.UpdateMode;
+
+import weka.core.FastVector;
+import weka.core.Attribute;
+
 /* Documentation */
 
 /**
@@ -22,7 +33,7 @@ import java.io.IOException;
    - DiscMoving, which deals with actually moving discs.
 **/
 
-public agent Player extends Agent {
+public agent Player extends Agent implements Logger{
     #private data Order order(initfile);
     #private data Top top();
     #private data Place place();
@@ -34,28 +45,49 @@ public agent Player extends Agent {
 	#uses plan MetaPlan;
 	#handles event PlanChoice;
     
-    public static int PROBABILISTIC_PS = 1;
-    public static int COVERAGE_PS = 2;
-
     public boolean isVisible;
     public boolean learningMode;
-    public int pselect;
+    
+    public int episode = 0;
+    public int maxEpisodes = 0;
+    
+    public PlanSelectMode pselect;
+    
+    
     public Random generator;
     public PrintWriter writer;
     
     private int indent = 0;
+    
+	Tree gpTree;
+    public PlanNode[] planNodes;
+
+    public boolean alreadyOnTargetPin = false;
+    public boolean isSourcePinBlocked = false;
+    public boolean isTargetPinBlocked = false;
+
+    // This names the initialisation file for the Order relation.
+    static String initfile = "init.dat";
+    
 
     // Constructor
-    Player() {
+    Player(boolean visible, boolean learning, int episodes, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
         super("player");
-        isVisible = false;
-        learningMode = false;
+        this.setVisible(visible);
+        this.pselect = pselect;
         generator = new Random();
         try{
             writer = new PrintWriter("./player.out");
         }catch(IOException e){
             System.err.println("error opening the file for writing the outcome \n"+e);
             System.exit(9);
+        }
+        
+        learningMode = learning;
+        if (learningMode) {
+            episode = 0;
+            maxEpisodes = episodes;
+            initLearning((trees.Logger)this, pselect, uselect, minInstances, stableK, stableE);
         }
     }
     
@@ -68,45 +100,110 @@ public agent Player extends Agent {
         postEvent(ss.start());
     }
 
-    // This names the initialisation file for the Order relation.
-    static String initfile = "init.dat";
-
-    public void record(int pid, boolean res, int disc, int pin) {
-    
-        // Record the result in the decision tree
-        String rstr = (res) ? "(+)" : "(-)";
-        this.log("Recording "+rstr+" in plan "+pid+" for move disc "+disc+" to pin "+pin);        
+    public String[] learningState(){
+        // Construct the state string
+        String[] state = new String[3];
+        state[0]=Boolean.toString(alreadyOnTargetPin);
+        state[1]=Boolean.toString(isSourcePinBlocked);
+        state[2]=Boolean.toString(isTargetPinBlocked);
+        return state;
     }
 
     public void finish() {
         writer.close();
     }
     
-    public void logIndentRight() {
+    public void indentRight() {
         indent++;
     }
 
-    public void logIndentLeft() {
+    public void indentLeft() {
         indent--;
     }
     
-    public void logIndentReset() {
+    public void indentReset() {
         indent=0;
     }
 
-    public void log(String str) {
+    public void writeLog(String str) {
         String s = "";
         for (int i = 0;(i < indent);i++ ) s+= " ";
         writer.println(s + str);
         writer.flush();
     }
     
+    public void initLearning(Logger logger, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+        FastVector classVal = new FastVector();
+        classVal.addElement("+");
+        classVal.addElement("-");
+
+        FastVector boolVal = new FastVector();
+        boolVal.addElement("T");
+        boolVal.addElement("F");
+
+        /*
+        FastVector discVal = new FastVector();
+        discVal.addElement("0");
+        discVal.addElement("1");
+        discVal.addElement("2");
+        discVal.addElement("3");
+        discVal.addElement("4");
+        discVal.addElement("5");
+        discVal.addElement("6");
+        discVal.addElement("7");
+        discVal.addElement("8");
+        discVal.addElement("9");
+
+        FastVector pinVal = new FastVector();
+        pinVal.addElement("0");
+        pinVal.addElement("1");
+        pinVal.addElement("2");
+        */
+        
+        FastVector atts = new FastVector();
+        //atts.addElement(new Attribute("disc",discVal));
+        //atts.addElement(new Attribute("pin",pinVal));
+        atts.addElement(new Attribute("alreadyOnTargetPin",boolVal));
+        atts.addElement(new Attribute("isSourcePinBlocked",boolVal));
+        atts.addElement(new Attribute("isTargetPinBlocked",boolVal));
+        atts.addElement(new Attribute("outcome",classVal));
+    
+
+        planNodes = new PlanNode[5];
+        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+
+        Node[] goalNodes = new Node[1];
+        goalNodes[0] = new GoalNode(0,"SolveDisc", logger);
+        goalNodes[0].addChild(planNodes[0]);
+        goalNodes[0].addChild(planNodes[1]);
+        goalNodes[0].addChild(planNodes[2]);
+        goalNodes[0].addChild(planNodes[3]);
+        goalNodes[0].addChild(planNodes[4]);
+
+        planNodes[0].setTopGoal((GoalNode)goalNodes[0]);
+        planNodes[1].setTopGoal((GoalNode)goalNodes[0]);
+        planNodes[2].setTopGoal((GoalNode)goalNodes[0]);
+        planNodes[3].setTopGoal((GoalNode)goalNodes[0]);
+        planNodes[4].setTopGoal((GoalNode)goalNodes[0]);
+    }
     
     // Application entry point.
     public static void main(String[] args) {
+
+        // Default Config
         boolean visible = false;
         boolean learningMode = false;
-        int pselect = 1;
+        PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
+        UpdateMode uselect = UpdateMode.CONCURRENT;
+        int minInstances = 1;
+        int stableK = 1;
+        double stableE = 0.5;
+        int episodes=1;
+        
         args = Jak.initialize(args);
         if (args.length > 0) {
             int index = 0;
@@ -131,17 +228,38 @@ public agent Player extends Agent {
                     String psmode = args[index];
                     index++;
                     if (psmode.equals("probabilistic"))
-                        pselect = PROBABILISTIC_PS;
+                        pselect = PlanSelectMode.PROBABILISTIC;
                     if (psmode.equals("coverage"))
-                        pselect = COVERAGE_PS;
+                        pselect = PlanSelectMode.COVERAGE;
+                    break;
+                case 'u':
+                    String umode = args[index];
+                    index++;
+                    if (umode.equals("stable"))
+                        uselect = UpdateMode.STABLE;
+                    if (umode.equals("concurrent"))
+                        uselect = UpdateMode.CONCURRENT;
                 break;
+                case 'm':
+                    minInstances = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'k':
+                    stableK = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'e':
+                    stableE = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'i':
+                    episodes = Integer.parseInt(args[index]);
+                    index++;
+                    break;
                 }
             }
         }
-        Player p = new Player();
-        p.setVisible(visible);
-        p.learningMode = learningMode;
-        p.pselect = pselect;
+        Player p = new Player(visible, learningMode, episodes, pselect, uselect, minInstances, stableK, stableE);
         p.go();
     }
 }

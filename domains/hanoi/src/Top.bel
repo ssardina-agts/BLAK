@@ -9,5 +9,12 @@ public beliefset Top extends ClosedWorld {
     #indexed query get(int pin, logical int disc);
     #indexed query get(logical int pin, int disc);
     #indexed query get(logical int pin, logical int disc);
+
+    #function query int get(int pin) {
+        logical int disc;
+        get(pin,disc).next();
+        return disc.as_int();
+    }
+
 }
 

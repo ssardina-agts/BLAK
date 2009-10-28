@@ -8,7 +8,6 @@ import gui.Towers;
 public plan StackingStarter extends Plan {
 
     #handles event StackingStart ev;
-    #posts event StackingStart evt;
     #uses interface Player ag;
 
     static boolean
@@ -18,6 +17,7 @@ public plan StackingStarter extends Plan {
     }
 
     #posts event StackDisc sd;
+    #posts event StackingStart evt;
     #reads data Order order;
     #modifies data Top top;
     #modifies data Place place;
@@ -39,11 +39,11 @@ public plan StackingStarter extends Plan {
     #reasoning method
     pass()
     {
-        if (!ag.learningMode) {
+        if (!ag.learningMode || (ag.episode > ag.maxEpisodes)) {
             System.exit(0);
         } else {
-            ag.log("PASSED: Starting again");
-            ag.logIndentReset();
+            ag.indentReset();
+            ag.episode++;
             @post(evt.start());
         }
     }
@@ -51,11 +51,11 @@ public plan StackingStarter extends Plan {
     #reasoning method
     fail()
     {
-        if (!ag.learningMode) {
+        if (!ag.learningMode || (ag.episode > ag.maxEpisodes)) {
             System.exit(1);
         } else {
-            ag.log("FAILED: Starting again");
-            ag.logIndentReset();
+            ag.indentReset();
+            ag.episode++;
             @post(evt.start());
         }
     }

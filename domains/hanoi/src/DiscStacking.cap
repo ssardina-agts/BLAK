@@ -21,6 +21,7 @@ public capability DiscStacking extends Capability {
     #imports data Place place();
     #imports data Towers window();
     #handles external event StackingStart;
+    #posts event StackingStart;
     #handles event StackDisc;
     #uses plan StackingStarter;
     #uses plan DiscStacker;

@@ -11,6 +11,9 @@
    This plan solves moving a disc from the middle of a stack.
 */
 
+import agents.PlanNode;
+import PlanIdInfo;
+
 public plan SolveMiddle extends Plan {
 
     public int pid = 4;
@@ -20,7 +23,18 @@ public plan SolveMiddle extends Plan {
     #uses interface Player ag;
     
     public PlanInstanceInfo getInstanceInfo(){
-        return new PlanIdInfo(pid, 0.5);
+        if (ag.learningMode) {
+            PlanNode thisNode = ag.planNodes[pid];
+            double coverage = thisNode.getCoverage(ev.state());
+            if (thisNode.useDT(1/*Iteration: not used*/)){
+                double[] ps = thisNode.getProbability(ev.state());
+                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
+            } else{
+                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
+            }
+        } else {
+            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
+        }
     }
 
     static boolean
@@ -46,14 +60,21 @@ public plan SolveMiddle extends Plan {
             logical int pin;
             logical int p3;
             thirdPin(p3);
-            ag.log("Plan "+pid+" will first achieve disc "+disc+" to pin "+p3);
-            ag.logIndentRight();
-            @achieve(top.get(ev.pin,ev.disc),sd.solve(disc,p3));
-            ag.logIndentLeft();
-            ag.log("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
-            ag.logIndentRight();
-            @subtask(sd.solve(ev.disc,ev.pin));
-            ag.logIndentLeft();
+            ag.writeLog("Plan "+pid+" will first achieve disc "+disc+" to pin "+p3);
+            ag.indentRight();
+            @achieve(top.get(ev.pin,ev.disc),
+                sd.solve(disc,p3,
+                    place.get(disc.as_int())==p3.as_int(),
+                    !order.isClear(disc.as_int()),
+                    top.get(p3.as_int())>disc.as_int()));
+            ag.indentLeft();
+            ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
+            ag.indentRight();
+            @subtask(sd.solve(ev.disc,ev.pin,
+                place.get(ev.disc.as_int())==ev.pin.as_int(),
+                !order.isClear(ev.disc.as_int()),
+                top.get(ev.pin.as_int())>ev.disc.as_int()));
+            ag.indentLeft();
         } else {
             false;
         }
@@ -71,13 +92,15 @@ public plan SolveMiddle extends Plan {
     #reasoning method
     pass() {
         if (ag.learningMode) {
-            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+            ag.planNodes[pid].setLastInstance(ev.state());
+            ag.planNodes[pid].record(true);
         }
     }
     #reasoning method
     fail() {
         if (ag.learningMode) {
-            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
+            ag.planNodes[pid].setLastInstance(ev.state());
+            ag.planNodes[pid].record(false);
         }
     }
 }

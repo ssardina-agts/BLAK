@@ -13,6 +13,9 @@
    admits the disc.
 */
 
+import agents.PlanNode;
+import PlanIdInfo;
+
 public plan SolveTopMove extends Plan {
 
     public int pid = 2;
@@ -23,7 +26,18 @@ public plan SolveTopMove extends Plan {
     #uses interface Player ag;
 
     public PlanInstanceInfo getInstanceInfo(){
-        return new PlanIdInfo(pid, 0.5);
+        if (ag.learningMode) {
+            PlanNode thisNode = ag.planNodes[pid];
+            double coverage = thisNode.getCoverage(ev.state());
+            if (thisNode.useDT(1/*Iteration: not used*/)){
+                double[] ps = thisNode.getProbability(ev.state());
+                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
+            } else{
+                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
+            }
+        } else {
+            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
+        }
     }
 
     static boolean
@@ -53,13 +67,15 @@ public plan SolveTopMove extends Plan {
     #reasoning method
     pass() {
         if (ag.learningMode) {
-            ag.record(pid,true,ev.disc.as_int(),ev.pin.as_int());
+            ag.planNodes[pid].setLastInstance(ev.state());
+            ag.planNodes[pid].record(true);
         }
     }
     #reasoning method
     fail() {
         if (ag.learningMode) {
-            ag.record(pid,false,ev.disc.as_int(),ev.pin.as_int());
+            ag.planNodes[pid].setLastInstance(ev.state());
+            ag.planNodes[pid].record(false);
         }
     }
 

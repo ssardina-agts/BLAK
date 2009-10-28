@@ -34,7 +34,7 @@ public plan DiscMover extends Plan {
     body()
     {
         if ((top.get(pin1,ev.disc) && top.get(ev.pin,disc2)) && (ev.disc.getValue() > disc2.getValue())) {
-            ag.log("Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
+            ag.writeLog("Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
             logical int disc3;
 
             // disc3 is the new top disc on the source pin after the move,
@@ -60,11 +60,31 @@ public plan DiscMover extends Plan {
             // The moved disc is to be on the target pin.
             place.add(ev.pin.getValue(),ev.disc.getValue());
 
+            printStack();
+
             if (ag.isVisible) {
                 @waitFor(window.moveDisc(ev.disc.getValue(),ev.pin.getValue()));
             }
         } else {
             false;
+        }
+    }
+    
+    #reasoning method
+    printStack()
+    {
+        ag.writeLog("Stacking state ------");
+        for (int pin = 0;(pin < 3);pin++ ){
+            logical int disc;
+            String s = "Pin " + pin + " - top to bottom: ";
+            top.get(pin,disc);
+            for (int i = disc.getValue();(i > 0);){
+                logical int j;
+                s += " " + i;
+                order.get(i,j);
+                i = j.getValue();
+            }
+            ag.writeLog(s);
         }
     }
 }

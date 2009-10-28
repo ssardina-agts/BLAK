@@ -9,5 +9,11 @@ public beliefset Place extends ClosedWorld {
     #indexed query get(int pin, logical int disc);
     #indexed query get(logical int pin, int disc);
     #indexed query get(logical int pin, logical int disc);
+    
+    #function query int get(int disc) {
+        logical int pin;
+        get(pin,disc).next();
+        return pin.as_int();
+    }
 }
 

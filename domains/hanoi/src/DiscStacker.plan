@@ -30,6 +30,7 @@ public plan DiscStacker extends Plan {
     #reads data Towers window;
     #reads data Order order;
     #reads data Top top;
+    #reads data Place place;
 
     context()
     {
@@ -39,21 +40,41 @@ public plan DiscStacker extends Plan {
     #reasoning method
     body()
     {
-      logical int pin;
-      pin.unify(2);
-      for (int i = 1;(i < 10);i++ ){
-        logical int disc;
-        disc.unify(i);
-        printStack();
-        @subtask(sd.solve(disc,pin));
-        ag.log(((("Stacked disc " + disc) + " onto pin ") + pin));
-      }
+        if (!ag.learningMode || (ag.episode == ag.maxEpisodes)) {
+            logical int pin;
+            pin.unify(2);
+            for (int i = 1;(i < 10);i++ ){
+                logical int disc;
+                disc.unify(i);
+                printStack();
+                ag.writeLog("Solving for disc "+disc+" onto pin "+ pin);
+                @subtask(sd.solve(disc,pin,
+                    place.get(disc.as_int())==pin.as_int(),
+                    !order.isClear(disc.as_int()),
+                    top.get(pin.as_int())>disc.as_int()));
+                ag.writeLog(((("Stacked disc " + disc) + " onto pin ") + pin));
+            }
+        } else {
+            logical int pin;
+            logical int pL;
+            int pI;
+            logical int disc;
+            disc.unify(1+ag.generator.nextInt(9));
+            place.get(pL,disc);
+            while ((pI = ag.generator.nextInt(3)) == pL.as_int());
+            pin.unify(pI);
+            ag.writeLog("EPISODE "+ag.episode+"--------------------");
+            printStack();
+            @subtask(sd.solve(disc,pin,
+                place.get(disc.as_int())==pin.as_int(),
+                !order.isClear(disc.as_int()),
+                top.get(pin.as_int())>disc.as_int()));
+        }
     }
 
     #reasoning method
     printStack()
     {
-        ag.log("Stacking state ------");
         for (int pin = 0;(pin < 3);pin++ ){
             logical int disc;
             String s = "Pin " + pin + " - top to bottom: ";
@@ -64,8 +85,9 @@ public plan DiscStacker extends Plan {
                 order.get(i,j);
                 i = j.getValue();
             }
-            ag.log(s);
+            ag.writeLog(s);
         }
     }
+
 }
 
