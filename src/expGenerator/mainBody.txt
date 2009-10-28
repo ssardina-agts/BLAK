@@ -19,7 +19,6 @@ public static void main(String[] args)
     coverageWeightB = 1.0;
     staK = 3;
     staE = 0.05;
-    boolean waitST = false;
     int minNI = 10;
 
     if (args.length > 0) {
@@ -32,14 +31,12 @@ public static void main(String[] args)
             case 'u':
                 String umode = args[index];
                 index++;
-                if (umode.equals("bottomUp")) {
-                    update_mode = BU;
-                    waitST = true;
-                } else if (umode.equals("concurrent")) {
-                    update_mode = CL;
-                    waitST = false;
+                if (umode.equals("concurrent")) {
+                    update_mode = UpdateMode.CONCURRENT;
+	            System.out.println("ACL Learning");
                 } else if (umode.equals("stable")) {
-                    update_mode = STABLE_U;
+                    update_mode = UpdateMode.STABLE;
+	            System.out.println("BUL Learning");
                 }
                 break;
             case 'i':
@@ -73,16 +70,13 @@ public static void main(String[] args)
             case 's':
                 String psmode = args[index];
                 index++;
-                if (psmode.equals("probabilistic"))
-                    plan_selection = PROBABILISTIC_PS;
-                if (psmode.equals("random"))
-                    plan_selection = NO_DT_PS;
-                if (psmode.equals("uniform"))
-                    plan_selection = RND_PS;
-                if (psmode.equals("max"))
-                    plan_selection = MAX_PS;
-                if (psmode.equals("coverage"))
-                    plan_selection = COVERAGE_PS;
+                if (psmode.equals("probabilistic")) {
+                    plan_selection = PlanSelectMode.PROBABILISTIC;
+	            System.out.println("Probabilistic Plan Selection");
+                } else if (psmode.equals("coverage")) {
+                    plan_selection = PlanSelectMode.COVERAGE;
+	            System.out.println("Coverage-based Plan Selection");
+		}
                 break;
             case 'k':
                 staK = Integer.parseInt(args[index]);
@@ -113,7 +107,7 @@ public static void main(String[] args)
 
         RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
         agent.setUpdateMode(update_mode);
-        if (update_mode == STABLE_U) {
+        if (update_mode == UpdateMode.STABLE) {
             agent.setStableK(staK);
             agent.setStableE(staE);
             System.out.println("K: " + staK + ", e: " + staE);
@@ -132,7 +126,6 @@ public static void main(String[] args)
         }
         agent.setEnvironment(env);
         agent.minNumInstances = minNI;
-        agent.waitForSubTree = waitST;
         agent.planSelectThreshold = threshold;
 	agent.coverageWeight = coverageWeightB;
 
@@ -140,31 +133,6 @@ public static void main(String[] args)
         env.learningAgent = agent;
         System.out.println("Start the simulation with " + env.numIterations +
                            " iterations \n min num instances to build a tree is set to " + agent.minNumInstances);
-        switch (plan_selection) {
-        case PROBABILISTIC_PS:
-            System.out.println("Probabilistic Plan Selection");
-            break;
-        case RND_PS:
-            System.out.println("Random Plan Selection (pick an applicable plan at random)");
-            break;
-        case MAX_PS:
-            System.out.println("Optimistic Plan Selection (pick the plan with the highest frequency of success)");
-            break;
-        case NO_DT_PS:
-            System.out.println("No decision trees used for plan selection");
-            break;
-        }
-        switch (update_mode) {
-        case CL:
-            System.out.println("Concurrent Learning");
-            break;
-        case BU:
-            System.out.println("Bottom Up Learning");
-            break;
-        case STABLE_U:
-            System.out.println("Stability Updated Learning");
-            break;
-        }
 
         agent.generateTree();
         env.runOneIteration();
@@ -176,6 +144,11 @@ public static void main(String[] args)
 
 
 /** Logger Interface **/
+
+public void indentReset()
+{
+    logindent = "";
+}
 
 public void indentRight()
 {

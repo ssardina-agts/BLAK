@@ -655,7 +655,6 @@ public class ExpGenerator {
 		+"private FastVector classVal;\n"
 		+"private FastVector boolVal;\n"
 		+"int numAttributes;\n"
-		+"public boolean waitForSubTree = true;\n"
 		+"int startToUseDT;\n"
 		+"int minNumInstances=100;\n\n";
 		
@@ -918,6 +917,7 @@ public class ExpGenerator {
 	public void generateMetaPlan(){
 		String code = "package plans;\n"
 		+ "import java.lang.Math;\n"
+		+ "import agents.Config.PlanSelectMode;\n"
 		+ "import agents.RefinerAgent;\n";
 		for (Goal g: goals)
 			code +="import events."+g.getId()+";\n";
@@ -1027,6 +1027,8 @@ public class ExpGenerator {
 		// write the imports
 		code +="import events.ReadyForNextIteration;\n"
 		+"import plans.StartNewIteration;\n"
+		+"import agents.Config.UpdateMode;\n"
+		+"import agents.Config.PlanSelectMode;\n"
 		//+"import events.Update_Event;\n"
 		+"import events."+topGoal.getId()+";\n"
 		+"import trees.Logger;\n"
@@ -1075,17 +1077,8 @@ public class ExpGenerator {
 		+ "private String logindent = \"\";\n"		
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
 		+ "public double noise = 0.1;\n"
-		+ "public static final int CL = 1;\n"
-		+ "public static final int STABLE_U = 2;\n"
-		+ "public static final int BU = 4;\n"
-		+ "public static final int RND_PS = 1;\n"
-		+ "public static final int MAX_PS= 2;\n"
-		+ "public static final int COVERAGE_PS = 3;\n"
-		+ "public static final int PROBABILISTIC_PS = 4;\n"
-		+ "public static final int NO_DT_PS = 5;\n"
-		+ "public static final int STABLE_PS = 6;\n"
-		+ "public static int plan_selection = RND_PS;\n"
-		+ "public static int update_mode = CL;\n"
+		+ "public static PlanSelectMode plan_selection = PlanSelectMode.PROBABILISTIC;\n"
+		+ "public static UpdateMode update_mode = UpdateMode.CONCURRENT;\n"
 		+ "public boolean worldFed;\n"
 		+ "public String fedFileName;\n"
 		+ "public boolean recordWorldFeed;\n"
@@ -1154,7 +1147,7 @@ public class ExpGenerator {
 		+"\tlearningAgent.clearAllNodeSuccesses();\n"
 		
 		
-		+"\tif(true || update_mode== STABLE_U)\n"
+		+"\tif(true || update_mode == UpdateMode.STABLE)\n"
 		+"\t{\n"
 		+"\t\tlearningAgent.resetLastStates();\n"
 		//+"\t\tlearningAgent.clearAllLastStates();\n"
@@ -1389,6 +1382,9 @@ public class ExpGenerator {
 	public void generateRefinerAgent(){
 		System.out.println("Building Refiner Agent");
 		String code = "package agents;\n";
+
+        code += "import agents.Config.UpdateMode;\n";
+
 		//java imports
 		code += "import java.util.Hashtable;\n"
 		+"import java.util.Random;\n"
@@ -1433,7 +1429,7 @@ public class ExpGenerator {
 		//Constructor
 		code +="\n\npublic RefinerAgent(String name){\n"
 		+"\tsuper(name);\n"
-		+"\tupdate_mode = Environment.CL;\n /* default: Concurrent */"
+		+"\tupdate_mode = UpdateMode.CONCURRENT;\n /* default: Concurrent */"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
         +"\tplanSelectThreshold = 0.0;\n"
@@ -1489,14 +1485,13 @@ public class ExpGenerator {
 			if (obs)
 				numObs++;
 		code+="\tint numAttributes = "+numObs+";\n"
-		+"\tpublic boolean waitForSubTree = false;\n"
 		+"\tpublic int minNumInstances = 10;\n"
 		+"\tpublic PlanNode[] planNodes;\n"
 		+"\tprivate FastVector atts;\n"
 		+"\tprivate FastVector classVal;\n"
 		+"\tprivate FastVector boolVal;\n"
 		+"\tpublic Random generator;\n"
-		+"\tpublic int update_mode;\n"
+		+"\tpublic UpdateMode update_mode;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
 		+"\tint[] startToUseDT;\n"	
@@ -1512,7 +1507,7 @@ public class ExpGenerator {
 		+"\t}\n\n"
 		*/
 
-		+"\tpublic void setUpdateMode(int state)\n"
+		+"\tpublic void setUpdateMode(UpdateMode state)\n"
 		+"\t{\n"
 		+"\t\tthis.update_mode = state;\n"
 		+"\t}\n\n"
@@ -1576,7 +1571,7 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, waitForSubTree, minNumInstances, update_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
+			+", atts, classVal, boolVal, minNumInstances, update_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
@@ -1726,7 +1721,7 @@ public class ExpGenerator {
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
 		+"\t\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
 		
-		+"\tif(res && (update_mode == Environment.STABLE_U))\n"
+		+"\tif(res && (update_mode == UpdateMode.STABLE))\n"
 		+"\t{\n"
 		+"\t\tplanNodes[plan_id].setSuccessful(true);\n"
         +"\t\tenv.indentRight();\n"
@@ -1809,10 +1804,7 @@ public class ExpGenerator {
 		
 		// useDT method ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code += "public boolean useDT(int plan_id){\n"
-		+"\tif (env.plan_selection == env.NO_DT_PS)\n"
-		+"\t\treturn false;\n"
-		+"\telse\n"
-		+"\t\treturn planNodes[plan_id].useDT(env.it);\n"
+		+"\treturn planNodes[plan_id].useDT(env.it);\n"
 		+"}\n\n";
 		
 		// printDT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

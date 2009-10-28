@@ -1,4 +1,6 @@
 package agents;
+
+import agents.Config.UpdateMode;
 import trees.*;
 
 import java.util.Hashtable;
@@ -19,22 +21,18 @@ import java.lang.Math;
 
 public class PlanNode extends Node{
     
-    private static final int CONCURRENT = 1;
-    private static final int STABLE = 2;
-
     public int goal_id;
     public String name;
     Hashtable memory;
     public J48 decisionTree;
     String[] options;
     String[] lastState;
-    int update_mode;
+    UpdateMode update_mode;
     public int successfulChildren;
     private FastVector atts;
     private FastVector classVal;
     private FastVector boolVal;
     int numAttributes;
-    private boolean waitForSubTree = true;
     int startToUseDT;
     int minNumInstances=100;
     Hashtable experiences;
@@ -168,7 +166,7 @@ public class PlanNode extends Node{
      */
     public PlanNode(int id, String pname, FastVector attributes,
                     FastVector classValue, FastVector booleanValue, 
-                    boolean waitST, int minNumInst, int update_mode,
+                    int minNumInst, UpdateMode update_mode,
                     double epsilion, int kStable, boolean isFTH, Logger logger){
         super(pname, logger);
         name = pname;
@@ -177,9 +175,8 @@ public class PlanNode extends Node{
         classVal = classValue;
         boolVal = booleanValue;
         numAttributes = atts.size()-1;
-        waitForSubTree = waitST;
         minNumInstances = minNumInst;
-        lastState = new String[numAttributes];
+        lastState = null;
         memory = new Hashtable();
         experiences = new Hashtable();
         this.update_mode = update_mode;
@@ -202,14 +199,6 @@ public class PlanNode extends Node{
             System.err.println("error with weka when creating the decision tree \n" + e);
             System.exit(9);
         }
-    }
-    
-    public boolean isWaitForSubTree() {
-        return waitForSubTree;
-    }
-    
-    public void setWaitForSubTree(boolean waitForSubTree) {
-        this.waitForSubTree = waitForSubTree;
     }
     
     public void resetLastState()
@@ -247,7 +236,7 @@ public class PlanNode extends Node{
             return;
         }
         logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
-        if(!res && (update_mode == STABLE) && (this.getNumberOfChildren() > 0))
+        if(!res && (update_mode == UpdateMode.STABLE) && (this.getNumberOfChildren() > 0))
         {
             //we failed...
             if(this.childrenStable())
@@ -263,7 +252,7 @@ public class PlanNode extends Node{
             }
         }
         
-        if(!(update_mode == STABLE))
+        if(!(update_mode == UpdateMode.STABLE))
         {
             //Stephane's code to record the instance for use with a  Decision Tree.
             //we aren't doing stable selection so record.....
@@ -308,7 +297,7 @@ public class PlanNode extends Node{
                 data.add(instance);
             }
         }
-        else if((update_mode == STABLE) && res)
+        else if((update_mode == UpdateMode.STABLE) && res)
         {
             //Stephane's code to record the instance for use with a  Decision Tree.     
             //We are doing stable selection, and had a success, so record
@@ -354,7 +343,7 @@ public class PlanNode extends Node{
                 data.add(instance);
             }
         }
-        else if((update_mode == STABLE) && this.childrenStable())
+        else if((update_mode == UpdateMode.STABLE) && this.childrenStable())
         {
             //Stephane's code to record the instance for use with a  Decision Tree.     
             //We are doing stable and our children are stable. So record.....
@@ -459,6 +448,10 @@ public class PlanNode extends Node{
         return p;
     }
     
+    public double getCoverage() {
+        return this.getCoverage(this.lastState,false);
+    }    
+
     public double getCoverage(String[] state) {
         return this.getCoverage(state,false);
     }    
@@ -603,23 +596,23 @@ public class PlanNode extends Node{
      * leaf node in the decision tree
      * 
      */
-    public double[] getProbability()
+    public double[] getProbability(String [] state)
     {
         double[] val = null;
         if (useDT(goal_id)){
             Instance instance = new Instance(numAttributes);
             instance.setDataset(data);
-            for (int i=0;i<lastState.length;i++){
-                if (lastState[i].equals("true"))
+            for (int i=0;i<state.length;i++){
+                if (state[i].equals("true"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (lastState[i].equals("false"))
+                else if (state[i].equals("false"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"F");
                 else
-                    instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
+                    instance.setValue(((Attribute) atts.elementAt(i)),state[i]);
             }
             try{
                 val = decisionTree.distributionForInstance(instance);
-                logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfLastState()+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
+                logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfState(state)+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
 
             }
             catch(Exception e){
@@ -630,7 +623,10 @@ public class PlanNode extends Node{
         }
         return val;
     }
-    
+    public double[] getProbability()
+    {
+        return this.getProbability(this.lastState);
+    }    
     /** 
      * print the decision tree and info about it.
      */
@@ -1004,7 +1000,7 @@ public class PlanNode extends Node{
                 }
                 try
                 {
-                    val = (update_mode == STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
+                    val = (update_mode == UpdateMode.STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
                     writeCsv(j+","+val[0]+","+val[1], "dt."+this.getItem());
                 }
                 catch(Exception e)

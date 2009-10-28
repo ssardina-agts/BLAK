@@ -39,9 +39,11 @@
 <property name="build.sources.agents.dir" value="${build.sources.dir}/agents"/>
 
 <!-- Default targets -->
-<target name="all" description="Build, run and plot all tests" depends="testMultiSolutionsR,testMultiSolutions,testEcai,testImpactvars,testDummyvars,test01v3gm,test02v10gm,test03v5gm,test04v5gm,test05v3gm,test01v1,test02v1,test03v1,test04v1,test05v1"/>
+<target name="all" description="Build, run and plot all tests" depends="aamas2010,misc"/>
 
 <target name="aamas2010" description="Build, run and plot all tests used for the AAMAS2010 submission" depends="test01v3gm,test01v3gmt,test05v3gm,test05v3gmt,testImpactvars2,testMultiSolutionsR"/>
+
+<target name="misc" description="Build, run and plot all miscellaneous tests" depends="testMultiSolutions,testEcai,testImpactvars,testImpactvars3,testDummyvars,test02v10gm,test03v5gm,test04v5gm,test01v1,test02v1,test03v1,test04v1,test05v1"/>
 
 <target name="testMultiSolutionsR" description="Build, run and plot testMultiSolutionsR (Multiple Solutions with Goal Reuse)" depends="buildtestMultiSolutionsR,graphtestMultiSolutionsR,runtestMultiSolutionsR,plottestMultiSolutionsR"/>
 <target name="testMultiSolutions" description="Build, run and plot testMultiSolutions (Multiple Solutions)" depends="buildtestMultiSolutions,graphtestMultiSolutions,runtestMultiSolutions,plottestMultiSolutions"/>
