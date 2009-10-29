@@ -47,13 +47,13 @@ public plan SolveZero extends Plan {
 
     context()
     {
-        true;
+        (ev.level < ag.maxRecursion) && (ev.alwaysApplies || true);
     }
 
     #reasoning method
     body()
     {
-        false;
+        @test(!ev.movable,null);
     }
 
     #reasoning method

@@ -50,6 +50,7 @@ public agent Player extends Agent implements Logger{
     
     public int episode = 0;
     public int maxEpisodes = 0;
+    public int maxRecursion = 0;
     
     public PlanSelectMode pselect;
     
@@ -71,10 +72,11 @@ public agent Player extends Agent implements Logger{
     
 
     // Constructor
-    Player(boolean visible, boolean learning, int episodes, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+    Player(boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
         super("player");
         this.setVisible(visible);
         this.pselect = pselect;
+        this.maxRecursion = recursion;
         generator = new Random();
         try{
             writer = new PrintWriter("./player.out");
@@ -203,6 +205,7 @@ public agent Player extends Agent implements Logger{
         int stableK = 1;
         double stableE = 0.5;
         int episodes=1;
+        int recursion = 20;
         
         args = Jak.initialize(args);
         if (args.length > 0) {
@@ -256,10 +259,14 @@ public agent Player extends Agent implements Logger{
                     episodes = Integer.parseInt(args[index]);
                     index++;
                     break;
+                case 'r':
+                    recursion = Integer.parseInt(args[index]);
+                    index++;
+                    break;
                 }
             }
         }
-        Player p = new Player(visible, learningMode, episodes, pselect, uselect, minInstances, stableK, stableE);
+        Player p = new Player(visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE);
         p.go();
     }
 }

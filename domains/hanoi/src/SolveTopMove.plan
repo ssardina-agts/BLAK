@@ -51,17 +51,15 @@ public plan SolveTopMove extends Plan {
 
     context()
     {
-        ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue()));
+        (ev.level < ag.maxRecursion) && (ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue())));
     }
     
     #reasoning method
     body()
     {
-        if (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() < ev.disc.getValue())) {
-            @subtask(md.move(ev.disc,ev.pin));
-        } else {
-            false;
-        }
+        top.get(pin,ev.disc);
+        @subtask(md.move(pin,ev.pin));
+        @test(top.get(ev.pin,ev.disc),null);
     }
 
     #reasoning method

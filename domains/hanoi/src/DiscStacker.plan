@@ -41,6 +41,9 @@ public plan DiscStacker extends Plan {
     body()
     {
         if (!ag.learningMode || (ag.episode == ag.maxEpisodes)) {
+            if (ag.learningMode) {
+                ag.writeLog("EPISODE "+ag.episode+" : TESTING --------------------");
+            }
             logical int pin;
             pin.unify(2);
             for (int i = 1;(i < 10);i++ ){
@@ -51,7 +54,8 @@ public plan DiscStacker extends Plan {
                 @subtask(sd.solve(disc,pin,
                     place.get(disc.as_int())==pin.as_int(),
                     !order.isClear(disc.as_int()),
-                    top.get(pin.as_int())>disc.as_int()));
+                    top.get(pin.as_int())>disc.as_int(),
+                    0));
                 ag.writeLog(((("Stacked disc " + disc) + " onto pin ") + pin));
             }
         } else {
@@ -68,7 +72,24 @@ public plan DiscStacker extends Plan {
             @subtask(sd.solve(disc,pin,
                 place.get(disc.as_int())==pin.as_int(),
                 !order.isClear(disc.as_int()),
-                top.get(pin.as_int())>disc.as_int()));
+                top.get(pin.as_int())>disc.as_int(),
+                0));
+        }
+    }
+
+    #reasoning method
+    pass()
+    {
+        if (ag.learningMode) {
+            ag.writeLog("PASSED");
+        }
+    }
+
+    #reasoning method
+    fail()
+    {
+        if (ag.learningMode) {
+            ag.writeLog("FAILED");
         }
     }
 

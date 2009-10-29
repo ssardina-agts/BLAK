@@ -7,10 +7,6 @@ import gui.Towers;
 
 public plan DiscMover extends Plan {
 
-    logical int pin1;
-    // The pin to move away from
-    
-    logical int disc2;
     #handles event MoveDisc ev;
 
     static boolean
@@ -33,40 +29,32 @@ public plan DiscMover extends Plan {
     #reasoning method
     body()
     {
-        if ((top.get(pin1,ev.disc) && top.get(ev.pin,disc2)) && (ev.disc.getValue() > disc2.getValue())) {
-            ag.writeLog("Moving disc " + ev.disc + " from pin " + pin1 + " to pin " + ev.pin);
-            logical int disc3;
+        logical int disc;       // The disc to move
+        logical int discOldTop; // The existing top disc on the target pin
+        logical int discNewTop; // The top disc on the source after the move
 
-            // disc3 is the new top disc on the source pin after the move,
-            // or 0 (=the table) when last disc is moved.
-            (order.get(ev.disc.getValue(),disc3) || disc3.unify(0));
+        if (!ev.pinFrom.unify(ev.pinTo) && top.get(ev.pinFrom,disc) && !disc.unify(0) && top.get(ev.pinTo,discOldTop) && (disc.getValue() > discOldTop.getValue())) {
 
-            // The disc below the moved disc is to be at the top of its
-            // pin.
-            // Note that 'top' is keyed on the pin attribute, so this
-            // assertion will knock out previous top for pin p1.
-            top.add(pin1.getValue(),disc3.getValue());
+            ag.writeLog("Moving disc " + disc + " from pin " + ev.pinFrom + " to pin " + ev.pinTo);
 
-            // The moved disc is to be on top of the current top of the
-            // target pin.
-            // Note that 'order' is keyed on the first disc, so this
-            // assertion will knock out previous order for it.
-            order.add(ev.disc.getValue(),disc2.getValue());
+            // The disk below the source disc becomes the new top disc on 
+            // the source pin after the move,
+            // or 0 (=the table) when the last disc is moved.
+            (order.get(disc.getValue(),discNewTop) || discNewTop.unify(0));
+            top.add(ev.pinFrom.getValue(),discNewTop.getValue());
 
-            // The moved disc is to be at the top of the target pin.
-        
-            top.add(ev.pin.getValue(),ev.disc.getValue());
+            // The moved disc becomes the top disc on the target pin.
+            order.add(disc.getValue(),discOldTop.getValue());
+            top.add(ev.pinTo.getValue(),disc.getValue());
 
-            // The moved disc is to be on the target pin.
-            place.add(ev.pin.getValue(),ev.disc.getValue());
+            // The new place of the moved disc is the target pin.
+            place.add(ev.pinTo.getValue(),disc.getValue());
 
             printStack();
 
             if (ag.isVisible) {
-                @waitFor(window.moveDisc(ev.disc.getValue(),ev.pin.getValue()));
+                @waitFor(window.moveDisc(disc.getValue(),ev.pinTo.getValue()));
             }
-        } else {
-            false;
         }
     }
     

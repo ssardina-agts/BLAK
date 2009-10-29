@@ -39,7 +39,7 @@ public plan StackingStarter extends Plan {
     #reasoning method
     pass()
     {
-        if (!ag.learningMode || (ag.episode > ag.maxEpisodes)) {
+        if (!ag.learningMode || (ag.episode >= ag.maxEpisodes)) {
             System.exit(0);
         } else {
             ag.indentReset();
@@ -51,7 +51,7 @@ public plan StackingStarter extends Plan {
     #reasoning method
     fail()
     {
-        if (!ag.learningMode || (ag.episode > ag.maxEpisodes)) {
+        if (!ag.learningMode || (ag.episode >= ag.maxEpisodes)) {
             System.exit(1);
         } else {
             ag.indentReset();

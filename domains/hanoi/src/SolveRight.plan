@@ -47,17 +47,13 @@ public plan SolveRight extends Plan {
 
     context()
     {
-        ev.alwaysApplies || place.get(ev.pin,ev.disc);
+        (ev.level < ag.maxRecursion) && (ev.alwaysApplies || place.get(ev.pin,ev.disc));
     }
     
     #reasoning method
     body()
     {
-        if (place.get(ev.pin,ev.disc) && top.get(ev.pin,ev.disc)) {
-            true;
-        } else {
-            false;
-        }
+        @test(place.get(ev.pin,ev.disc), null);
     }
     
     #reasoning method

@@ -21,9 +21,10 @@ public event SolveDisc extends BDIGoalEvent {
 	#set behavior Recover never;
 
     #posted as
-    solve(logical int d,logical int p, boolean a, boolean b, boolean c)
+    solve(logical int d,logical int p, boolean a, boolean b, boolean c, int lvl)
     {
       try {
+        level = lvl;
         disc = d;
         pin = p;
         movable = (disc.getValue() != 0);
@@ -31,7 +32,9 @@ public event SolveDisc extends BDIGoalEvent {
         alreadyOnTargetPin = a;
         isSourcePinBlocked = b;
         isTargetPinBlocked = c;
-        ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" alreadyOnTargetPin="+alreadyOnTargetPin+" isSourcePinBlocked="+isSourcePinBlocked+" isTargetPinBlocked="+isTargetPinBlocked+")");
+        if (alwaysApplies) {
+            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" alreadyOnTargetPin="+alreadyOnTargetPin+" isSourcePinBlocked="+isSourcePinBlocked+" isTargetPinBlocked="+isTargetPinBlocked+" level="+level+")");
+        }
       }
       catch (LogicException e) {
         throw new Error(("Strange variable: " + d));
@@ -45,6 +48,7 @@ public event SolveDisc extends BDIGoalEvent {
     boolean alreadyOnTargetPin;
     boolean isSourcePinBlocked;
     boolean isTargetPinBlocked;
+    int level;
 
     public String[] state() {
         String[] state = new String[3];

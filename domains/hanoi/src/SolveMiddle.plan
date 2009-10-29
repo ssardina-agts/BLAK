@@ -51,12 +51,12 @@ public plan SolveMiddle extends Plan {
 
     context()
         {
-          ev.alwaysApplies || order.get(disc,ev.disc);
+          (ev.level < ag.maxRecursion) && (ev.alwaysApplies || order.get(disc,ev.disc));
         }
     #reasoning method
     body()
       {
-        if (order.get(disc,ev.disc)) {
+        if(order.get(disc,ev.disc) && place.get(ev.disc.as_int()) != ev.pin.as_int()) {
             logical int pin;
             logical int p3;
             thirdPin(p3);
@@ -66,18 +66,18 @@ public plan SolveMiddle extends Plan {
                 sd.solve(disc,p3,
                     place.get(disc.as_int())==p3.as_int(),
                     !order.isClear(disc.as_int()),
-                    top.get(p3.as_int())>disc.as_int()));
+                    top.get(p3.as_int())>disc.as_int(),
+                    ev.level+1));
             ag.indentLeft();
-            ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
-            ag.indentRight();
-            @subtask(sd.solve(ev.disc,ev.pin,
-                place.get(ev.disc.as_int())==ev.pin.as_int(),
-                !order.isClear(ev.disc.as_int()),
-                top.get(ev.pin.as_int())>ev.disc.as_int()));
-            ag.indentLeft();
-        } else {
-            false;
         }
+        ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
+        ag.indentRight();
+        @subtask(sd.solve(ev.disc,ev.pin,
+            place.get(ev.disc.as_int())==ev.pin.as_int(),
+            !order.isClear(ev.disc.as_int()),
+            top.get(ev.pin.as_int())>ev.disc.as_int(),
+            ev.level+1));
+        ag.indentLeft();
       }
     
 

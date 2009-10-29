@@ -15,14 +15,14 @@
 public event MoveDisc extends BDIGoalEvent {
 
     #posted as
-    move(logical int d,logical int p)
+    move(logical int from,logical int to)
     {
-      disc = d;
-      pin = p;
+      pinFrom = from;
+      pinTo = to;
     }
 
-    logical int disc;
-    logical int pin;
+    logical int pinFrom;
+    logical int pinTo;
 
 }
 
