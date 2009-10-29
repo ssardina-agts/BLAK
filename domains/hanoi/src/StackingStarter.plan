@@ -52,7 +52,7 @@ public plan StackingStarter extends Plan {
     fail()
     {
         if (!ag.learningMode || (ag.episode >= ag.maxEpisodes)) {
-            System.exit(1);
+            System.exit(0);
         } else {
             ag.indentReset();
             ag.episode++;

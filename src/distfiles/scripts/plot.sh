@@ -232,7 +232,7 @@ makeTikZ $concurrentP $tikz > $outfile.CP.tikzdata
 fi
 fi
 if [ "$set2c" == "" ]; then 
-concurrentP=nil
+concurrentC=nil
 else 
 concurrentC=$tmpdir/.concurrent.cdata
 avg $set2c > $concurrentC

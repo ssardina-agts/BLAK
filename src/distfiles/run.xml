@@ -23,6 +23,10 @@
 <property name="results.dir" value="${root.dir}/results"/>
 <property name="results.all.dir" value="${results.dir}/all"/>
 
+<property name="domains.dir" value="${basedir}/domains"/>
+<property name="hanoi.dir" value="${domains.dir}/hanoi"/>
+
+
 <!-- External dependencies. See README for installation instructions for JACK and WEKA -->
 <property name="jack.dep" value="${root.dir}/lib/jack.jar"/>
 <property name="weka.dep" value="${root.dir}/lib/weka.jar"/>
@@ -74,6 +78,8 @@
 <target name="test05v3gm"  description="Build, run and plot test05v3gm"  depends="buildtest05v3gm, graphtest05v3gm, runtest05v3gm, plottest05v3gm"/>
 <target name="test05v3gmt" description="Build, run and plot test05v3gmt" depends="buildtest05v3gmt,graphtest05v3gmt,runtest05v3gmt,plottest05v3gmt"/>
 <target name="test05v5gm"  description="Build, run and plot test05v5gm"  depends="buildtest05v5gm, graphtest05v5gm, runtest05v5gm, plottest05v5gm"/>
+
+<target name="hanoi"       description="Build, run and plot hanoi"  depends="buildHanoi, runHanoi, plotHanoi"/>
 
 
 <!-- Clean -->
@@ -186,9 +192,11 @@
 <!-- Marco to compile JACK sources -->
 <macrodef name="compileJACK">
   <attribute name="make.dir"/>
+  <attribute name="in.dir" default="@{make.dir}/${build.sources.dir}"/>
+  <attribute name="opts" default=""/>
   <sequential>
 	<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
-		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep} -wd @{make.dir}/${build.sources.dir} -r -DJAVACARGS=-g"/>
+		<arg line="-cp ${jack.dep}:${weka.dep}:${blak.dep}:@{make.dir}/${build.sources.dir} -wd @{in.dir} -r -d @{make.dir}/${build.sources.dir} @{opts} -DJAVACARGS=-g"/>
 		<classpath>
 			<pathelement location="${blak.dep}"/>
 			<pathelement location="${jack.dep}"/>
@@ -254,6 +262,7 @@
 <macrodef name="runTest">
   <attribute name="test.name"/>
   <attribute name="run.mode"/>
+  <attribute name="run.class" default="agents.Environment"/>
   <attribute name="run.select" default="X"/>
   <attribute name="run.id" default="1"/>
   <attribute name="run.params"/>
@@ -261,7 +270,7 @@
 	<mkdir dir="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}"/>
 	<tstamp prefix="start.@{test.name}-@{run.mode}-@{run.select}-@{run.id}"/>
 	<echo level="info" message="${start.@{test.name}-@{run.mode}-@{run.select}-@{run.id}.DSTAMP}.${start.@{test.name}-@{run.mode}-@{run.select}-@{run.id}.TSTAMP}: Started @{test.name}/@{run.mode}-@{run.select}-@{run.id}"/>
-	<java fork="yes"  maxmemory="1g" classname="agents.Environment" failonerror="true" output="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/stdout.log">
+	<java fork="yes"  maxmemory="1g" classname="@{run.class}" failonerror="true" output="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/stdout.log">
 		<arg line="-d ${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id} -o @{test.name}-@{run.mode}-@{run.select}-@{run.id}.csv -u @{run.mode} -s @{run.select} @{run.params}"/>
 		<classpath>
 			<pathelement location="${jack.dep}"/>
@@ -279,14 +288,15 @@
 <macrodef name="runTestRepeats">
   <attribute name="test.name"/>
   <attribute name="run.mode"/>
+  <attribute name="run.class" default="agents.Environment"/>
   <attribute name="run.select"/>
   <attribute name="run.params"/>
   <sequential>
-	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.select="@{run.select}" run.id="1" run.params="@{run.params}"/>
-	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.select="@{run.select}" run.id="2" run.params="@{run.params}"/>
-	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.select="@{run.select}" run.id="3" run.params="@{run.params}"/>
-	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.select="@{run.select}" run.id="4" run.params="@{run.params}"/>
-	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.select="@{run.select}" run.id="5" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.class="@{run.class}" run.select="@{run.select}" run.id="1" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.class="@{run.class}" run.select="@{run.select}" run.id="2" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.class="@{run.class}" run.select="@{run.select}" run.id="3" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.class="@{run.class}" run.select="@{run.select}" run.id="4" run.params="@{run.params}"/>
+	<runTest test.name="@{test.name}" run.mode="@{run.mode}" run.class="@{run.class}" run.select="@{run.select}" run.id="5" run.params="@{run.params}"/>
   </sequential>
 </macrodef>
 
@@ -827,6 +837,31 @@
 <target name="plottestMultiSolutionsR" description="Plot testMultiSolutionsR" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testMultiSolutionsR"/>
 	<plotResult test.name="testMultiSolutionsR" every="1000" label="testMultiSolutionsR:n=0.1,m=1,k=3,e=0.3:testMultiSolutionsR.txt"/>
+</target>
+
+
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoi ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildHanoi" description="Build hanoi" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoi/build"/>
+	<mkdir dir="${results.dir}/hanoi/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoi/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoi"/>
+	<makeJAR test.name="hanoi" make.dir="${results.dir}/hanoi"/>
+	<jar destfile="${results.dir}/hanoi/build/hanoi.jar" basedir="${results.dir}/hanoi/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runHanoi" description="Run hanoi">
+    <failIfBuildNotFound test.name="hanoi"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -r 15 -i 100 -m 1"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="coverage"      run.params="-x -r 15 -i 100 -m 1"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="probabilistic" run.params="-x -r 15 -i 100 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="coverage"      run.params="-x -r 15 -i 100 -m 1 -k 3 -e 0.3"/>
+</target>
+<target name="plotHanoi" description="Plot hanoi" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoi"/>
+	<plotResult test.name="hanoi" every="10" window="10" label="hanoi"/>
 </target>
 
 
