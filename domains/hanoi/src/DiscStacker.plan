@@ -40,10 +40,7 @@ public plan DiscStacker extends Plan {
     #reasoning method
     body()
     {
-        if (!ag.learningMode || (ag.episode == ag.maxEpisodes)) {
-            if (ag.learningMode) {
-                ag.writeLog("EPISODE "+ag.episode+" : TESTING --------------------");
-            }
+        if (!ag.learningMode) {
             logical int pin;
             pin.unify(2);
             for (int i = 1;(i < 10);i++ ){
@@ -82,6 +79,7 @@ public plan DiscStacker extends Plan {
     {
         if (ag.learningMode) {
             ag.writeLog("PASSED");
+            ag.writeResult(ag.episode,true);
         }
     }
 
@@ -90,6 +88,7 @@ public plan DiscStacker extends Plan {
     {
         if (ag.learningMode) {
             ag.writeLog("FAILED");
+            ag.writeResult(ag.episode,false);
         }
     }
 

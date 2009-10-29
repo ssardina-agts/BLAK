@@ -5,6 +5,7 @@
  *************************************************************/
 
 import aos.util.Properties;
+import aos.jack.jak.beliefset.BeliefSetException;
 import gui.Towers;
 import java.util.Random;
 import java.io.PrintWriter;
@@ -34,7 +35,7 @@ import weka.core.Attribute;
 **/
 
 public agent Player extends Agent implements Logger{
-    #private data Order order(initfile);
+    #private data Order order();
     #private data Top top();
     #private data Place place();
     #private data Towers window("Towers of Hanoi");
@@ -54,9 +55,12 @@ public agent Player extends Agent implements Logger{
     
     public PlanSelectMode pselect;
     
+    public String targetDir;
+    public String filename;
     
     public Random generator;
-    public PrintWriter writer;
+    public PrintWriter writerOut;
+    public PrintWriter writerRes;
     
     private int indent = 0;
     
@@ -67,21 +71,24 @@ public agent Player extends Agent implements Logger{
     public boolean isSourcePinBlocked = false;
     public boolean isTargetPinBlocked = false;
 
-    // This names the initialisation file for the Order relation.
-    static String initfile = "init.dat";
-    
-
     // Constructor
-    Player(boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+    Player(boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename) {
         super("player");
         this.setVisible(visible);
         this.pselect = pselect;
         this.maxRecursion = recursion;
         generator = new Random();
+        
+        this.targetDir = targetDir;
+        this.filename = filename;
+        
         try{
-            writer = new PrintWriter("./player.out");
+            writerOut = new PrintWriter(targetDir + "/player.out");
+            if (learning) {
+                writerRes = new PrintWriter(targetDir + "/" + filename);
+            }
         }catch(IOException e){
-            System.err.println("error opening the file for writing the outcome \n"+e);
+            System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
         }
         
@@ -91,6 +98,23 @@ public agent Player extends Agent implements Logger{
             maxEpisodes = episodes;
             initLearning((trees.Logger)this, pselect, uselect, minInstances, stableK, stableE);
         }
+        
+        // Initial order
+        try {
+            order.add(7,4);
+            order.add(4,1);
+            order.add(1,0);
+            order.add(8,5);
+            order.add(5,2);
+            order.add(2,0);
+            order.add(9,6);
+            order.add(6,3);
+            order.add(3,0);
+        } catch (BeliefSetException e) {
+            System.err.println("Error initialising the order of discs on the pins\n"+e);
+            System.exit(9);
+        }
+
     }
     
     public void setVisible(boolean show) {
@@ -112,7 +136,10 @@ public agent Player extends Agent implements Logger{
     }
 
     public void finish() {
-        writer.close();
+        writerOut.close();
+        if (learningMode) {
+            writerRes.close();
+        }
     }
     
     public void indentRight() {
@@ -130,8 +157,15 @@ public agent Player extends Agent implements Logger{
     public void writeLog(String str) {
         String s = "";
         for (int i = 0;(i < indent);i++ ) s+= " ";
-        writer.println(s + str);
-        writer.flush();
+        writerOut.println(s + str);
+        writerOut.flush();
+    }
+    public void writeResult(int episode, boolean result) {
+        if (learningMode) {
+            String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0");
+            writerRes.println(str);
+            writerRes.flush();
+        }
     }
     
     public void initLearning(Logger logger, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
@@ -206,6 +240,8 @@ public agent Player extends Agent implements Logger{
         double stableE = 0.5;
         int episodes=1;
         int recursion = 20;
+        String targetDir = ".";
+        String filename = "player.csv";
         
         args = Jak.initialize(args);
         if (args.length > 0) {
@@ -263,10 +299,18 @@ public agent Player extends Agent implements Logger{
                     recursion = Integer.parseInt(args[index]);
                     index++;
                     break;
+                case 'd':
+                    targetDir = args[index];
+                    index++;
+                    break;
+                case 'o':
+                    filename = args[index];
+                    index++;
+                    break;
                 }
             }
         }
-        Player p = new Player(visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE);
+        Player p = new Player(visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename);
         p.go();
     }
 }
