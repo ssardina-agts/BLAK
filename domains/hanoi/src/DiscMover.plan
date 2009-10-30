@@ -52,7 +52,7 @@ public plan DiscMover extends Plan {
 
             printStack();
 
-            if (ag.isVisible) {
+            if (window.visibleMode()) {
                 @waitFor(window.moveDisc(disc.getValue(),ev.pinTo.getValue()));
             }
         }

@@ -10,9 +10,11 @@
 public event StackingStart extends Event {
 
     #posted as
-    start()
+    start(boolean init)
     {
+        doInit = init;
     }
+    boolean doInit;
 
 
 }

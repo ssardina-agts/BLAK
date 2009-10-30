@@ -6,7 +6,7 @@
 import gui.Towers;
 
 public plan StackingStarter extends Plan {
-
+    
     #handles event StackingStart ev;
     #uses interface Player ag;
 
@@ -31,8 +31,9 @@ public plan StackingStarter extends Plan {
     #reasoning method
     body()
     {
-        newInitialOrder();
-        initializeTop();
+        if (ev.doInit) {
+            initializeTop();
+        }
         @subtask(sd.stack());
     }
     
@@ -44,7 +45,7 @@ public plan StackingStarter extends Plan {
         } else {
             ag.indentReset();
             ag.episode++;
-            @post(evt.start());
+            @post(evt.start(false));
         }
     }
 
@@ -56,16 +57,10 @@ public plan StackingStarter extends Plan {
         } else {
             ag.indentReset();
             ag.episode++;
-            @post(evt.start());
+            @post(evt.start(false));
         }
     }
 
-    #reasoning method
-    newInitialOrder()
-    {
-    }
-    
-    
     #reasoning method
     initializeTop()
     {
@@ -90,6 +85,8 @@ public plan StackingStarter extends Plan {
         if (order.get(disc,d)) {
             initPlace(pin,d.getValue());
         }
-        window.addDisc(disc,pin);
+        if (window.visibleMode()) {
+            window.addDisc(disc,pin);
+        }
     }
 }

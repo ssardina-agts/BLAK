@@ -46,7 +46,6 @@ public agent Player extends Agent implements Logger{
 	#uses plan MetaPlan;
 	#handles event PlanChoice;
     
-    public boolean isVisible;
     public boolean learningMode;
     
     public int episode = 0;
@@ -74,7 +73,6 @@ public agent Player extends Agent implements Logger{
     // Constructor
     Player(boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename) {
         super("player");
-        this.setVisible(visible);
         this.pselect = pselect;
         this.maxRecursion = recursion;
         generator = new Random();
@@ -114,16 +112,14 @@ public agent Player extends Agent implements Logger{
             System.err.println("Error initialising the order of discs on the pins\n"+e);
             System.exit(9);
         }
-
+    
+        if (visible) {
+            window.initFrame();
+        }
     }
     
-    public void setVisible(boolean show) {
-        isVisible = show;
-        window.setVisible(isVisible);
-    }
-
     public void go() {
-        postEvent(ss.start());
+        postEvent(ss.start(true));
     }
 
     public String[] learningState(){
