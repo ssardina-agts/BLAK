@@ -671,47 +671,24 @@ public class PlanNode extends Node{
         }
     }
     
-    public String stringOfLastState()
-    {
-        String returnMe = "";
-        for(int i = 0; lastState!=null && lastState.length>i;i++)
-        {
-            if(lastState[i]==null)
-            {
-                return null;
-            }
-            else if(lastState[i].equals("true"))
-            {
-                returnMe = returnMe+"1";
-            }
-            else if(lastState[i].equals("false"))
-            {
-                returnMe = returnMe+"0";
-            }
-        }
-        return returnMe;    
+    public String stringOfLastState() {
+        return (lastState == null) ? "" : stringOfState(lastState);
     }
     
-    public String stringOfState(String[] state)
-    {
-        String returnMe = "";
-        
-        for(int i = 0; state.length>i;i++)
-        {
-            if(state[i]==null)
-            {
+    public String stringOfState(String[] state) {
+        String s = "";
+        for(int i = 0; state.length>i;i++) {
+            if(state[i]==null) {
                 return null;
-            }
-            if(state[i].equals("true"))
-            {
-                returnMe = returnMe+"1";
-            }
-            else if(state[i].equals("false"))
-            {
-                returnMe = returnMe+"0";
+            } else if(state[i].equals("true")) {
+                s += "1";
+            } else if(state[i].equals("false")) {
+                s += "0";
+            } else {
+                s += state[i];
             }
         }
-        return returnMe;    
+        return s;    
     }
     
     
