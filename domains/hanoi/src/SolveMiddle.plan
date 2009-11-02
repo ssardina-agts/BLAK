@@ -56,28 +56,19 @@ public plan SolveMiddle extends Plan {
     #reasoning method
     body()
       {
-        if(order.get(disc,ev.disc) && place.get(ev.disc.as_int()) != ev.pin.as_int()) {
-            logical int pin;
-            logical int p3;
-            thirdPin(p3);
-            ag.writeLog("Plan "+pid+" will first achieve disc "+disc+" to pin "+p3);
-            ag.indentRight();
-            @achieve(top.get(ev.pin,ev.disc),
-                sd.solve(disc,p3,
-                    place.get(disc.as_int())==p3.as_int(),
-                    !order.isClear(disc.as_int()),
-                    top.get(p3.as_int())>disc.as_int(),
-                    ev.level+1));
-            ag.indentLeft();
-        }
+        @test(order.get(disc,ev.disc) && place.get(ev.disc.as_int()) != ev.pin.as_int(),null);
+        logical int pin;
+        logical int p3;
+        thirdPin(p3);
+        ag.writeLog("Plan "+pid+" will first achieve disc "+disc+" to pin "+p3);
+        ag.indentRight();
+        @achieve(top.get(ev.pin,ev.disc), sd.solve(disc,p3,ev.level+1,top.get(0),top.get(1),top.get(2)));
+        ag.indentLeft();
         ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
         ag.indentRight();
-        @subtask(sd.solve(ev.disc,ev.pin,
-            place.get(ev.disc.as_int())==ev.pin.as_int(),
-            !order.isClear(ev.disc.as_int()),
-            top.get(ev.pin.as_int())>ev.disc.as_int(),
-            ev.level+1));
+        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,top.get(0),top.get(1),top.get(2)));
         ag.indentLeft();
+        @test(place.get(ev.pin,ev.disc), null);
       }
     
 

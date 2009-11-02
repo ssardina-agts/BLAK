@@ -43,7 +43,7 @@ public plan DiscStacker extends Plan {
         if (!ag.learningMode) {
             logical int pin;
             pin.unify(2);
-            for (int i = 1;(i < 10);i++ ){
+            for (int i = 1;(i < ag.numDiscs+1);i++ ){
                 logical int disc;
                 disc.unify(i);
                 printStack();
@@ -51,11 +51,7 @@ public plan DiscStacker extends Plan {
                 if (window.visibleMode()) {
                     window.setCaption("Solving disc"+disc+" to pin"+ pin);
                 }
-                @subtask(sd.solve(disc,pin,
-                    place.get(disc.as_int())==pin.as_int(),
-                    !order.isClear(disc.as_int()),
-                    top.get(pin.as_int())>disc.as_int(),
-                    0));
+                @subtask(sd.solve(disc,pin,0,top.get(0),top.get(1),top.get(2)));
                 ag.writeLog(((("Stacked disc " + disc) + " onto pin ") + pin));
             }
             if (window.visibleMode()) {
@@ -66,7 +62,7 @@ public plan DiscStacker extends Plan {
             logical int pL;
             int pI;
             logical int disc;
-            disc.unify(1+ag.generator.nextInt(9));
+            disc.unify(1+ag.generator.nextInt(ag.numDiscs));
             place.get(pL,disc);
             while ((pI = ag.generator.nextInt(3)) == pL.as_int());
             pin.unify(pI);
@@ -75,11 +71,7 @@ public plan DiscStacker extends Plan {
                 window.setCaption("Episode "+ag.episode+": Solving disc"+disc+" to pin"+ pin);
             }
             printStack();
-            @subtask(sd.solve(disc,pin,
-                place.get(disc.as_int())==pin.as_int(),
-                !order.isClear(disc.as_int()),
-                top.get(pin.as_int())>disc.as_int(),
-                0));
+            @subtask(sd.solve(disc,pin,0,top.get(0),top.get(1),top.get(2)));
         }
     }
 

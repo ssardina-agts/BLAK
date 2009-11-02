@@ -23,5 +23,5 @@ run: lib/hanoi.jar
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -w
 
 run-learning: lib/hanoi.jar
-	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -x -u concurrent -s probabilistic -d . -o player.csv -r 15 -i 100
+	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -x -u concurrent -s probabilistic -d . -o player.csv -r 15 -i 3000 -j 4
 

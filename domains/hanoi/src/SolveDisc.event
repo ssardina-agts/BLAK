@@ -21,40 +21,49 @@ public event SolveDisc extends BDIGoalEvent {
 	#set behavior Recover never;
 
     #posted as
-    solve(logical int d,logical int p, boolean a, boolean b, boolean c, int lvl)
+    solve(logical int d, logical int p, int lvl, int a, int b, int c)
     {
       try {
-        level = lvl;
+        movable = (d.getValue() != 0);
+        alwaysApplies = ((Player)getAgent()).learningMode;
         disc = d;
         pin = p;
-        movable = (disc.getValue() != 0);
-        alwaysApplies = ((Player)getAgent()).learningMode;
-        alreadyOnTargetPin = a;
-        isSourcePinBlocked = b;
-        isTargetPinBlocked = c;
+        level = lvl;
+        topDiscOnPin0 = a;
+        topDiscOnPin1 = b;
+        topDiscOnPin2 = c;
         if (alwaysApplies) {
-            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" alreadyOnTargetPin="+alreadyOnTargetPin+" isSourcePinBlocked="+isSourcePinBlocked+" isTargetPinBlocked="+isTargetPinBlocked+" level="+level+")");
+            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+level+" top0="+topDiscOnPin0+" top1="+topDiscOnPin1+" top2="+topDiscOnPin2+")");
         }
       }
-      catch (LogicException e) {
+      catch (Exception e) {
         throw new Error(("Strange variable: " + d));
       }
     }
 
-    logical int disc;
-    logical int pin;
     boolean movable;
     boolean alwaysApplies;
-    boolean alreadyOnTargetPin;
-    boolean isSourcePinBlocked;
-    boolean isTargetPinBlocked;
+    logical int disc;
+    logical int pin;
     int level;
+    int topDiscOnPin0;
+    int topDiscOnPin1;
+    int topDiscOnPin2;
 
     public String[] state() {
-        String[] state = new String[3];
-        state[0]=Boolean.toString(alreadyOnTargetPin);
-        state[1]=Boolean.toString(isSourcePinBlocked);
-        state[2]=Boolean.toString(isTargetPinBlocked);
+        int i = 0;
+        String[] state = new String[5];
+        try {
+            state[i++] = Integer.toString(disc.getValue());
+            state[i++] = Integer.toString(pin.getValue());
+        } catch (LogicException e) {
+            System.err.println("Error parsing logical variables\n"+e);
+            System.exit(9);
+        }
+        //state[i++] = Integer.toString(level);
+        state[i++] = Integer.toString(topDiscOnPin0);
+        state[i++] = Integer.toString(topDiscOnPin1);
+        state[i++] = Integer.toString(topDiscOnPin2);
         return state;
     }
 

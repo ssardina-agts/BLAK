@@ -46,6 +46,7 @@ public agent Player extends Agent implements Logger{
 	#uses plan MetaPlan;
 	#handles event PlanChoice;
     
+    public int numDiscs;
     public boolean learningMode;
     
     public int episode = 0;
@@ -66,13 +67,12 @@ public agent Player extends Agent implements Logger{
 	Tree gpTree;
     public PlanNode[] planNodes;
 
-    public boolean alreadyOnTargetPin = false;
-    public boolean isSourcePinBlocked = false;
-    public boolean isTargetPinBlocked = false;
-
     // Constructor
-    Player(boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename) {
+    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename) {
         super("player");
+        
+        this.numDiscs = nDiscs;
+        
         this.pselect = pselect;
         this.maxRecursion = recursion;
         generator = new Random();
@@ -94,20 +94,20 @@ public agent Player extends Agent implements Logger{
         if (learningMode) {
             episode = 0;
             maxEpisodes = episodes;
-            initLearning((trees.Logger)this, pselect, uselect, minInstances, stableK, stableE);
+            initLearning((trees.Logger)this, numDiscs, recursion, pselect, uselect, minInstances, stableK, stableE);
         }
         
         // Initial order
         try {
-            order.add(7,4);
-            order.add(4,1);
-            order.add(1,0);
-            order.add(8,5);
-            order.add(5,2);
-            order.add(2,0);
-            order.add(9,6);
-            order.add(6,3);
-            order.add(3,0);
+            if (numDiscs >= 7) order.add(7,4);
+            if (numDiscs >= 4) order.add(4,1);
+            if (numDiscs >= 1) order.add(1,0);
+            if (numDiscs >= 8) order.add(8,5);
+            if (numDiscs >= 5) order.add(5,2);
+            if (numDiscs >= 2) order.add(2,0);
+            if (numDiscs >= 9) order.add(9,6);
+            if (numDiscs >= 6) order.add(6,3);
+            if (numDiscs >= 3) order.add(3,0);
         } catch (BeliefSetException e) {
             System.err.println("Error initialising the order of discs on the pins\n"+e);
             System.exit(9);
@@ -120,15 +120,6 @@ public agent Player extends Agent implements Logger{
     
     public void go() {
         postEvent(ss.start(true));
-    }
-
-    public String[] learningState(){
-        // Construct the state string
-        String[] state = new String[3];
-        state[0]=Boolean.toString(alreadyOnTargetPin);
-        state[1]=Boolean.toString(isSourcePinBlocked);
-        state[2]=Boolean.toString(isTargetPinBlocked);
-        return state;
     }
 
     public void finish() {
@@ -164,49 +155,46 @@ public agent Player extends Agent implements Logger{
         }
     }
     
-    public void initLearning(Logger logger, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+    public void initLearning(Logger logger, int nDiscs, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
         FastVector classVal = new FastVector();
         classVal.addElement("+");
         classVal.addElement("-");
 
-        FastVector boolVal = new FastVector();
-        boolVal.addElement("T");
-        boolVal.addElement("F");
+        FastVector bval = new FastVector();
+        bval.addElement("T");
+        bval.addElement("F");
 
-        /*
-        FastVector discVal = new FastVector();
-        discVal.addElement("0");
-        discVal.addElement("1");
-        discVal.addElement("2");
-        discVal.addElement("3");
-        discVal.addElement("4");
-        discVal.addElement("5");
-        discVal.addElement("6");
-        discVal.addElement("7");
-        discVal.addElement("8");
-        discVal.addElement("9");
+        FastVector dval = new FastVector();
+        for (int i = 0; i < nDiscs+1; i++) {
+            dval.addElement(Integer.toString(i));
+        }
 
-        FastVector pinVal = new FastVector();
-        pinVal.addElement("0");
-        pinVal.addElement("1");
-        pinVal.addElement("2");
-        */
+        FastVector pval = new FastVector();
+        for (int i = 0; i < 3; i++) {
+            pval.addElement(Integer.toString(i));
+        }
+
+        FastVector rval = new FastVector();
+        for (int i = 0; i < recursion; i++) {
+            rval.addElement(Integer.toString(i));
+        }
         
         FastVector atts = new FastVector();
-        //atts.addElement(new Attribute("disc",discVal));
-        //atts.addElement(new Attribute("pin",pinVal));
-        atts.addElement(new Attribute("alreadyOnTargetPin",boolVal));
-        atts.addElement(new Attribute("isSourcePinBlocked",boolVal));
-        atts.addElement(new Attribute("isTargetPinBlocked",boolVal));
+        atts.addElement(new Attribute("disc",dval));
+        atts.addElement(new Attribute("pin",pval));
+        //atts.addElement(new Attribute("recursionLevel",rval));
+        atts.addElement(new Attribute("topDiscOnPin0",dval));
+        atts.addElement(new Attribute("topDiscOnPin1",dval));
+        atts.addElement(new Attribute("topDiscOnPin2",dval));
         atts.addElement(new Attribute("outcome",classVal));
     
 
         planNodes = new PlanNode[5];
-        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, boolVal, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
 
         Node[] goalNodes = new Node[1];
         goalNodes[0] = new GoalNode(0,"SolveDisc", logger);
@@ -227,6 +215,7 @@ public agent Player extends Agent implements Logger{
     public static void main(String[] args) {
 
         // Default Config
+        int numDiscs = 9;
         boolean visible = false;
         boolean learningMode = false;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
@@ -303,10 +292,14 @@ public agent Player extends Agent implements Logger{
                     filename = args[index];
                     index++;
                     break;
+                case 'j':
+                    numDiscs = Integer.parseInt(args[index]);
+                    index++;
+                    break;
                 }
             }
         }
-        Player p = new Player(visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename);
+        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename);
         p.go();
     }
 }
