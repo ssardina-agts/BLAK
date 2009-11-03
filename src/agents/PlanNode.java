@@ -284,8 +284,14 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),"T");
                 else if (lastState[i].equals("false"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else
-                    instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(lastState[i]));
+                    } else {
+                        instance.setValue(att,lastState[i]);
+                    }
+                }
             }
             if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
@@ -330,8 +336,14 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),"T");
                 else if (lastState[i].equals("false"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else
-                    instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(lastState[i]));
+                    } else {
+                        instance.setValue(att,lastState[i]);
+                    }
+                }
             }
             if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
@@ -376,8 +388,14 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),"T");
                 else if (lastState[i].equals("false"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else
-                    instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(lastState[i]));
+                    } else {
+                        instance.setValue(att,lastState[i]);
+                    }
+                }
             }
             if (res) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
@@ -572,8 +590,14 @@ public class PlanNode extends Node{
                 instance.setValue(((Attribute) atts.elementAt(i)),"T");
             else if (lastState[i].equals("false"))
                 instance.setValue(((Attribute) atts.elementAt(i)),"F");
-            else
-                instance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);
+            else {
+                Attribute att = (Attribute) atts.elementAt(i);
+                if (att.isNumeric()) {
+                    instance.setValue(att,Double.parseDouble(lastState[i]));
+                } else {
+                    instance.setValue(att,lastState[i]);
+                }
+            }
         }
         double val = 0;
         try{
@@ -607,8 +631,14 @@ public class PlanNode extends Node{
                     instance.setValue(((Attribute) atts.elementAt(i)),"T");
                 else if (state[i].equals("false"))
                     instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else
-                    instance.setValue(((Attribute) atts.elementAt(i)),state[i]);
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(state[i]));
+                    } else {
+                        instance.setValue(att,state[i]);
+                    }
+                }
             }
             try{
                 val = decisionTree.distributionForInstance(instance);
