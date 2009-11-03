@@ -21,7 +21,7 @@ public event SolveDisc extends BDIGoalEvent {
 	#set behavior Recover never;
 
     #posted as
-    solve(logical int d, logical int p, int lvl, int a, int b, int c)
+    solve(logical int d, logical int p, int lvl, Integer[] t, Integer[] pl)
     {
       try {
         movable = (d.getValue() != 0);
@@ -29,11 +29,18 @@ public event SolveDisc extends BDIGoalEvent {
         disc = d;
         pin = p;
         level = lvl;
-        topDiscOnPin0 = a;
-        topDiscOnPin1 = b;
-        topDiscOnPin2 = c;
+        tops = t;
+        places = pl;
         if (alwaysApplies) {
-            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+level+" top0="+topDiscOnPin0+" top1="+topDiscOnPin1+" top2="+topDiscOnPin2+")");
+            String tstr = "";
+            for (int i = 0; i < tops.length; i++) {
+                tstr += tops[i].toString();
+            }
+            String pstr = "";
+            for (int i = 0; i < places.length; i++) {
+                pstr += places[i].toString();
+            }
+            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" tops="+tstr+" places="+pstr+")");
         }
       }
       catch (Exception e) {
@@ -46,13 +53,12 @@ public event SolveDisc extends BDIGoalEvent {
     logical int disc;
     logical int pin;
     int level;
-    int topDiscOnPin0;
-    int topDiscOnPin1;
-    int topDiscOnPin2;
+    Integer[] tops;
+    Integer[] places;
 
     public String[] state() {
         int i = 0;
-        String[] state = new String[5];
+        String[] state = new String[2+tops.length+places.length];
         try {
             state[i++] = Integer.toString(disc.getValue());
             state[i++] = Integer.toString(pin.getValue());
@@ -60,10 +66,12 @@ public event SolveDisc extends BDIGoalEvent {
             System.err.println("Error parsing logical variables\n"+e);
             System.exit(9);
         }
-        //state[i++] = Integer.toString(level);
-        state[i++] = Integer.toString(topDiscOnPin0);
-        state[i++] = Integer.toString(topDiscOnPin1);
-        state[i++] = Integer.toString(topDiscOnPin2);
+        for (int j = 0; j < tops.length; j++) {
+            state[i++] = tops[j].toString();
+        }
+        for (int j = 0; j < places.length; j++) {
+            state[i++] = places[j].toString();
+        }
         return state;
     }
 

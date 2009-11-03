@@ -61,7 +61,7 @@ public plan SolveTop extends Plan {
     #reasoning method
     body()
     {
-        @test(top.get(pin,ev.disc) && !pin.unify(ev.pin),null);
+        @test(top.get(pin,ev.disc),null);
         top.get(pin,ev.disc);
         top.get(ev.pin,disc);
         logical int pin3;
@@ -69,11 +69,11 @@ public plan SolveTop extends Plan {
         deepest(disc,deep);
         ag.writeLog("Plan "+pid+" will first solve disc "+deep+" to pin "+pin3);
         ag.indentRight();
-        @subtask(sd.solve(deep,pin3,ev.level+1,top.get(0),top.get(1),top.get(2)));
+        @subtask(sd.solve(deep,pin3,ev.level+1,ag.tops(),ag.places()));
         ag.indentLeft();
         ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
         ag.indentRight();
-        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,top.get(0),top.get(1),top.get(2)));
+        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,ag.tops(),ag.places()));
         ag.indentLeft();
         @test(place.get(ev.pin,ev.disc), null);
     }

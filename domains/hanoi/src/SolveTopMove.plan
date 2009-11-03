@@ -48,6 +48,7 @@ public plan SolveTopMove extends Plan {
     
     #posts event MoveDisc md;
     #reads data Top top;
+    #reads data Place place;
 
     context()
     {
@@ -59,7 +60,7 @@ public plan SolveTopMove extends Plan {
     {
         top.get(pin,ev.disc);
         @subtask(md.move(pin,ev.pin));
-        @test(top.get(ev.pin,ev.disc),null);
+        @test(place.get(ev.pin,ev.disc),null);
     }
 
     #reasoning method

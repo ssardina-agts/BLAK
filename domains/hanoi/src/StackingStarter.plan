@@ -41,6 +41,7 @@ public plan StackingStarter extends Plan {
     pass()
     {
         if (!ag.learningMode || (ag.episode >= ag.maxEpisodes)) {
+            ag.finish();
             System.exit(0);
         } else {
             ag.indentReset();
@@ -53,6 +54,7 @@ public plan StackingStarter extends Plan {
     fail()
     {
         if (!ag.learningMode || (ag.episode >= ag.maxEpisodes)) {
+            ag.finish();
             System.exit(0);
         } else {
             ag.indentReset();

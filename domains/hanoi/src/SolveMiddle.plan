@@ -56,17 +56,17 @@ public plan SolveMiddle extends Plan {
     #reasoning method
     body()
       {
-        @test(order.get(disc,ev.disc) && place.get(ev.disc.as_int()) != ev.pin.as_int(),null);
+        @test(order.get(disc,ev.disc),null);
         logical int pin;
         logical int p3;
         thirdPin(p3);
         ag.writeLog("Plan "+pid+" will first achieve disc "+disc+" to pin "+p3);
         ag.indentRight();
-        @achieve(top.get(ev.pin,ev.disc), sd.solve(disc,p3,ev.level+1,top.get(0),top.get(1),top.get(2)));
+        @achieve(top.get(ev.pin,ev.disc), sd.solve(disc,p3,ev.level+1,ag.tops(),ag.places()));
         ag.indentLeft();
         ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
         ag.indentRight();
-        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,top.get(0),top.get(1),top.get(2)));
+        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,ag.tops(),ag.places()));
         ag.indentLeft();
         @test(place.get(ev.pin,ev.disc), null);
       }

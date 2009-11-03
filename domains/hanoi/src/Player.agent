@@ -47,6 +47,8 @@ public agent Player extends Agent implements Logger{
 	#handles event PlanChoice;
     
     public int numDiscs;
+    public int numPins;
+
     public boolean learningMode;
     
     public int episode = 0;
@@ -72,6 +74,7 @@ public agent Player extends Agent implements Logger{
         super("player");
         
         this.numDiscs = nDiscs;
+        this.numPins = 3;
         
         this.pselect = pselect;
         this.maxRecursion = recursion;
@@ -94,7 +97,7 @@ public agent Player extends Agent implements Logger{
         if (learningMode) {
             episode = 0;
             maxEpisodes = episodes;
-            initLearning((trees.Logger)this, numDiscs, recursion, pselect, uselect, minInstances, stableK, stableE);
+            initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE);
         }
         
         // Initial order
@@ -118,11 +121,42 @@ public agent Player extends Agent implements Logger{
         }
     }
     
+    Integer[] tops() {
+        Integer[] t = new Integer[numPins];
+        for (int i = 0; i < t.length; i++) {
+            try{
+                t[i] = new Integer(top.get(i));
+            } catch (BeliefSetException e) {
+                System.err.println("Error accessing belief top.get("+i+")\n"+e);
+                System.exit(9);
+            }
+        }
+        return t;
+    }
+
+    Integer[] places() {
+        Integer[] p = new Integer[numDiscs];
+        for (int i = 1; i <= p.length; i++) {
+            try{
+                p[i-1] = new Integer(place.get(i));
+            } catch (BeliefSetException e) {
+                System.err.println("Error accessing belief place.get("+i+")\n"+e);
+                System.exit(9);
+            }
+        }
+        return p;
+    }
+
     public void go() {
         postEvent(ss.start(true));
     }
 
     public void finish() {
+        if (learningMode) {
+            for (int i = 0; i < planNodes.length; i++) {
+                writeLog(planNodes[i].getDT());
+            }
+        }
         writerOut.close();
         if (learningMode) {
             writerRes.close();
@@ -155,7 +189,7 @@ public agent Player extends Agent implements Logger{
         }
     }
     
-    public void initLearning(Logger logger, int nDiscs, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+    public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
         FastVector classVal = new FastVector();
         classVal.addElement("+");
         classVal.addElement("-");
@@ -180,12 +214,17 @@ public agent Player extends Agent implements Logger{
         }
         
         FastVector atts = new FastVector();
-        atts.addElement(new Attribute("disc",dval));
+        atts.addElement(new Attribute("disc"));
         atts.addElement(new Attribute("pin",pval));
         //atts.addElement(new Attribute("recursionLevel",rval));
-        atts.addElement(new Attribute("topDiscOnPin0",dval));
-        atts.addElement(new Attribute("topDiscOnPin1",dval));
-        atts.addElement(new Attribute("topDiscOnPin2",dval));
+        
+        for (int i = 0; i < nPins; i++) {
+            atts.addElement(new Attribute("topDiscOnPin"+i));
+        }
+        for (int i = 1; i <= nDiscs; i++) {
+            atts.addElement(new Attribute("disc"+i+"IsOnPin",pval));
+        }
+
         atts.addElement(new Attribute("outcome",classVal));
     
 
