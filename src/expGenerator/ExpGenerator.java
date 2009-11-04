@@ -1821,7 +1821,7 @@ public class ExpGenerator {
 		
 		// getCoverage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code+="public double getCoverage(int plan_id){\n"
-		+"\treturn planNodes[plan_id].getCoverage(planNodes[plan_id].lastState);\n"
+		+"\treturn (double)(planNodes[plan_id].getCoverage(planNodes[plan_id].lastState))/planNodes[plan_id].getPaths();\n"
 		+"}\n\n";
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		

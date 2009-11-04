@@ -50,10 +50,10 @@
 	    String str = "";
 	    for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s), i++) {
 		if (s.getInfo() instanceof PlanIdInfo) {
-		    str = "MetaPlan: At iteration " + ag.env.it +
-			", the probability for plan at index " + i + " ";
 		    PlanIdInfo info = (PlanIdInfo) s.getInfo();
 		    if (!info.isFailedThresholdHandler) {
+		    	str = "MetaPlan: At iteration " + ag.env.it +
+			    ", the probability for plan at index " + i + " ";
 			double p = info.pSuccess;
 			if (ag.env.plan_selection == PlanSelectMode.COVERAGE) {
 			    p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));

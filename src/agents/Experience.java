@@ -3,6 +3,7 @@ package agents;
 import trees.*;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.Hashtable;
 
 import weka.core.*;
 
@@ -13,7 +14,7 @@ public class Experience
 	private double deltaProbability;
 	private int numberOfSuccesses;
 	private int numberOfAttempts;
-    private double coverage;
+    private Hashtable coverage;
     private Logger logger;
 	
 	
@@ -25,19 +26,33 @@ public class Experience
 		deltaProbability = 0.0;//Double.MAX_VALUE;
 		numberOfSuccesses = 0;
 		numberOfAttempts = 0;
-        coverage = 0.0;
+        coverage = new Hashtable();
 		
 	}
 
 	
 
-	public void setCoverage(double coverage) 
+	public int addCoverage(String[] paths) 
 	{
-		this.coverage = coverage;
+        int added = 0;
+        for (int i = 0; paths != null && i < paths.length; i++, added++) {
+            addCoverage(paths[i]);
+        }
+        return added;
 	}
-	public double coverage() 
+    
+	public boolean addCoverage(String path) 
 	{
-		return coverage;
+        if (path != null) {
+            coverage.put(path,true);
+            return true;
+        }
+        return false;
+	}
+    
+	public int coverage() 
+	{
+		return coverage.size();
 	}
 
 
@@ -119,7 +134,7 @@ public class Experience
 	public String toString()
 	{
 		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
-		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+((double)((int)(coverage*10000)))/10000;
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+coverage.size();
 		
 		return returnString;
 	}
@@ -127,7 +142,7 @@ public class Experience
 	public String toString(int k, double e)
 	{
 		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
-		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+((double)((int)(coverage*10000)))/10000;
+		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+coverage.size();
 		if(this.isStateStable(k, e))
 		{
 			returnString = returnString + ", stable: yes";

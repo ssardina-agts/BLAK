@@ -11,7 +11,9 @@ public class Node{
     public boolean successful;
     public Logger logger;
     public boolean pathsKnown;
+    public boolean pathStringsKnown;
     public int paths;
+    public Vector pathStrings;
     
     public Node(Object val, Logger logger)
     {
@@ -20,7 +22,9 @@ public class Node{
     	successful = true;
         this.logger = logger;
         pathsKnown = false;
+        pathStringsKnown = false;
         paths = 0;
+        pathStrings = new Vector();
     }
 
     public boolean isSuccessful()

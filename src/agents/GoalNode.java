@@ -1,6 +1,6 @@
 package agents;
 import trees.*;
-
+import java.util.*;
 
 public class GoalNode extends Node{
 
@@ -142,10 +142,89 @@ public class GoalNode extends Node{
         this.paths = p;
         return p;
     }
+
+    public Vector getPathStrings() {
+        Vector v = new Vector();
+        int nChildren = this.children.size();
+        if(nChildren > 0) {
+            for(int j = 0; nChildren > j; j++) {
+                PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+                if (!thisNode.isFailedThresholdHandler) {
+                    Vector pv = thisNode.getPathStrings();
+                    for (int k = 0; k < pv.size(); k++) {
+                        v.add(pv.elementAt(k));
+                    }
+                }
+            }
+        }
+        return v;
+    }
+    
+    public String getDirtyPath() {
+        String path = null;
+        int nChildren = this.children.size();
+        for(int j = 0; nChildren > j; j++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+            path = thisNode.getDirtyPath();
+            if (path != null) {
+                break;
+            }
+        }
+        return path;
+    }
+
+    public void clearDirtyPath() {
+        int nChildren = this.children.size();
+        for(int j = 0; nChildren > j; j++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+            thisNode.clearDirtyPath();
+        }
+    }
+    
+    public int getCoverage(String[] state) {
+        int coverage = 0;
+        int nChildren = this.children.size();
+        logger.indentRight();
+        for(int j = 0; nChildren > j; j++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+            if (!thisNode.isFailedThresholdHandler) {
+                coverage += thisNode.getCoverage(state);
+            }
+        }
+        logger.indentLeft();
+        return coverage;
+    }
+    
+    public String[] resultingState(String[] thisState) {
+        /* Find the state (resultingState) that eventuated from a 
+         * series of subgoal executions starting in state thisState. 
+         */
+        String[] resultingState = null;
+        String stateStr = this.stringOfState(thisState);
+        int nChildren = this.children.size();
+        if(nChildren == 0) {
+            /* Goal has no children, should never happen */
+            logger.writeLog("ERROR: Goal "+this.getItem()+" has no children, so assume resulting state is same as "+stateStr);
+            resultingState = thisState;
+        }
+        for(int j =0; nChildren>j;j++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+            if(thisNode.lastState!=null) {
+                resultingState = thisNode.lastState;
+                logger.writeLog("Goal "+name+" found resulting state "+this.stringOfState(resultingState));
+                break;
+            }
+        }
+        if(resultingState==null) {
+            logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume resulting state is same as "+stateStr);
+            resultingState = thisState;
+        }
+        return resultingState;
+    }
     
     
-    public double calculateCoverage(String[] state) {
-        double coverage = 0.0;
+    public int calculateCoverage(String[] state) {
+        int coverage = 0;
         int nChildren = this.children.size();
         String stateStr = this.stringOfState(state);
         if(nChildren > 0) {
@@ -161,21 +240,21 @@ public class GoalNode extends Node{
     			}
     		}
     		if(checkState==null) {
-    			logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume coverage=0.0");
-                coverage = 0.0;
+    			logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume coverage=0");
+                coverage = 0;
                 return coverage;
     		}
-            double cCoverage = 0.0;
+            int cCoverage = 0;
             logger.indentRight();
             for(int j = 0; nChildren > j; j++) {
 				PlanNode thisNode = (PlanNode)this.children.elementAt(j);
                 if (!thisNode.isFailedThresholdHandler) {
-                    double c = 0.0;
+                    int c = 0;
                     if (thisNode.isDirty) {
                         c = thisNode.calculateCoverage(checkState);
                         thisNode.isDirty = false;
                     } else {
-                        c = thisNode.getCoverage(checkState,false);
+                        c = thisNode.getCoverage(checkState);
                     }
                     cCoverage += c;
                 } else {
@@ -184,11 +263,11 @@ public class GoalNode extends Node{
                 }
             }
             logger.indentLeft();
-            coverage = cCoverage/nChildren;
+            coverage = cCoverage;
         } else {
             /* Goal has no children, should never happen */
-            logger.writeLog("ERROR: Goal "+this.getItem()+" has no children, so will consider full coverage for state "+stateStr);
-            coverage = 1;
+            coverage = getPaths(); 
+            logger.writeLog("ERROR: Goal "+this.getItem()+" has no children, so will assume full coverage="+coverage+" in state "+stateStr);
         }
         return coverage;
     }
