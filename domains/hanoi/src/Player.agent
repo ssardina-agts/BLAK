@@ -102,15 +102,15 @@ public agent Player extends Agent implements Logger{
         
         // Initial order
         try {
+            if (numDiscs >= 9) order.add(9,7);
             if (numDiscs >= 7) order.add(7,4);
-            if (numDiscs >= 4) order.add(4,1);
-            if (numDiscs >= 1) order.add(1,0);
+            if (numDiscs >= 4) order.add(4,0);
             if (numDiscs >= 8) order.add(8,5);
             if (numDiscs >= 5) order.add(5,2);
             if (numDiscs >= 2) order.add(2,0);
-            if (numDiscs >= 9) order.add(9,6);
             if (numDiscs >= 6) order.add(6,3);
-            if (numDiscs >= 3) order.add(3,0);
+            if (numDiscs >= 3) order.add(3,1);
+            if (numDiscs >= 1) order.add(1,0);
         } catch (BeliefSetException e) {
             System.err.println("Error initialising the order of discs on the pins\n"+e);
             System.exit(9);

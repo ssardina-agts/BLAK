@@ -44,7 +44,7 @@ public capability Solving extends Capability {
     
     int thirdPin(int p1, int p2)
       {
-        return ((3 - p1) - p2);
+        return (p1 != p2) ? ((3 - p1) - p2) : (2 - p1);
       }
     
     void indent(String s)
