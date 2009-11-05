@@ -1,0 +1,13 @@
+#TeXlipse project settings
+#Thu Nov 05 18:32:11 EST 2009
+builderNum=2
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp/
+mainTexFile=hycas2010.tex
+outputFile=hycas2010.pdf
+langSpell=
+markDer=true
+srcDir=
