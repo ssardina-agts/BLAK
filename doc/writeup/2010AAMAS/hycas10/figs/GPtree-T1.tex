@@ -1,0 +1,57 @@
+\begin{tikzpicture}[level distance=1.2cm]
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+
+\tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+
+\tikzstyle{level 1}=[sibling distance=4cm,level distance=0.5cm] 
+\tikzstyle{level 2}=[sibling distance=2.7cm,level distance=0.9cm]
+\tikzstyle{level 3}=[sibling distance=0.9cm]
+\tikzstyle{level 4}=[sibling distance=0.9cm]
+
+\node[goalbox] (T) {$G$}
+   child[solid] {node[planbox] (1) {$P_i$}
+      	child {node[goalbox] (11) {$G_i^A$}
+			child {node[planbox,succ] {\phantom{$P$}}
+			}
+			child {node[planbox,succ] {\phantom{$P$}}
+			}
+			child {node[planbox,fail] {\phantom{$P$}}
+				edge from parent node[right,near start] {$\times 8$}
+			}
+	  	}
+      	child {node[goalbox] (11) {$G_i^B$}
+			child {node[planbox,succ] {\phantom{$P$}}
+			}
+			child {node[planbox,succ] {\phantom{$P$}}
+			}
+			child {node[planbox,fail] {\phantom{$P$}}
+				edge from parent node[right,near start] {$\times 8$}
+			}
+	  	}
+	edge from parent node[above left, near start] {$\times 3$}
+   }
+   child[solid] {node[planbox] (2) {$P_i'$}
+      child {node[goalbox] (22) {$G_i'$} 
+	child {node[planbox,fail] {\phantom{$P$}}}
+	child {node[planbox,fail] {\phantom{$P$}}}
+	child {node[planbox,fail] {\phantom{$P$}}}
+	edge from parent node[right] {$\times 3$}
+	}
+   edge from parent node[above right,near start] {$\times 17$}};
+
+% \draw (T) -- (1) node (aux1) [coordinate,midway]{};
+% \draw (T) -- (2) node (aux2) [coordinate,midway]{};
+% \draw (aux1) .. controls +(0.3,-0.3) and +(-0.3,-0.3).. (aux2)
+% 			node[midway,above] {OR};
+
+% \draw (1) -- (11) node (aux21) [coordinate,midway]{};
+% \draw (1) -- (12) node (aux23) [coordinate,midway]{};
+% \draw (aux21) .. controls +(0.25,-0.25) and +(-0.25,-0.25).. (aux23)
+% 			node[midway,above] {AND};
+
+% \node[below left of=T,text width=2cm,xshift=-3cm] (label)
+% 		{$P_i$: plan \\ $G_i$: goals \\ $SG_i$: sub-goals};
+\end{tikzpicture}

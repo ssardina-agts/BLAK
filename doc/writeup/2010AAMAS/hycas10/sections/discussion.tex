@@ -1,0 +1,121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion and Conclusion}\label{sec:discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this paper, we proposed a technique to enhance the typical plan selection
+mechanism in BDI systems by allowing agents to learn and adapt the context
+conditions of plans in the agent's plan library.
+% %
+As designing adequate context conditions that take full account of the agent's
+environment for its complete life-cycle is an non-trivial task, a framework that
+allows for the \emph{refinement} of (initial) context conditions of plans
+\textit{based on online experience} is highly desirable.
+% %
+To this end, we extended the typical BDI programming framework to use \dt{}s as
+(part of) plan's context conditions and provided a probabilistic plan selection
+mechanism that caters for both exploration and exploitation of plans.
+% %
+After empirically evaluating different learning strategies suitable for BDI
+agents against various kinds of plan libraries, we concluded that an aggressive
+learning approach combined with a plan selection scheme that uses a confidence
+measure based on the notion of plan coverage is the best candidate for the
+general setting.
+% %
+The work carried out here is significant for the BDI agent-oriented programming
+community, in that it provides a solid foundation for going beyond the standard
+static kind of BDI agents.
+
+The framework presented here made a number of simplifying assumptions.
+% %
+We did not consider the effects of conflicting interactions between sub-goals of
+a plan. In fact, the way a sub-goal is resolved may affect how the next sub-goal
+can be addressed or even if it can be resolved at all.
+% %
+Our current approach will not detect and learn such interactions; each subgoal
+is treated ``locally.'' To handle such interactions, the selection of a plan for 
+resolving a sub-goal should also be predicated on the goals higher than the
+sub-goal, that is, it should take into account the ``reasons'' for the sub-goal.
+% %
+Similarly, we did not consider the effects of using goal failure recovery, under
+which alternative plans for a goal are tried upon the failure of a plan.
+% %
+Also, we have only dealt with domains described via boolean propositions. To
+handle continuous attributes (e.g., discretize \emph{temperature}), our approach
+requires that either these attributes are discretized (e.g., \emph{cold}, \emph{warm},
+and \emph{hot}) or additional discrete
+attributes be used to test the continuous ones (e.g. $\emph{temperature} < 25.2$).
+% % Lastly, we point out that even though we have used environments with a simple
+% stochastic model, our results apply trivially to agents acting in environments
+% based on more complex models.
+
+
+One critique of the coverage-based confidence measure used is that it has a
+defined end state, namely $c_T(w)=1$. In a real system, however, learning and
+re-learning will occur indefinitely, as the agent continually tries to
+\emph{adapt} to a changing environment. This implies that an agent's confidence
+in a \dt's classification would also require calibration when the environment has
+changed. If the change was deliberate, then our confidence could be reset and
+subsequently \textit{re-built}. Without such an explicit signal, the agent must
+rely on other methods for determining when the environment has changed
+significantly.
+% %
+An appealing measure for recognising environmental changes is through the
+relatedness of its features. For instance, an observation that the grass is
+\textit{wet} may have a high correlation to the fact that it is \textit{raining}.
+If at some point, the agent were to witness a world where it is not raining but
+the grass is indeed wet (for some other new reasons), then this world would be
+``atypical,''  and as a result, the agent may have reason to reduce its
+confidence in a plan's \dt\ classification of this new world.
+% %
+It turns out that efficient algorithms exist---some already included in the
+\weka\ library---that perform inference in and learning of Bayesian networks
+\cite{Mitchell97:ML}, which the agent can appeal to in building a model of the
+environment for the purposes just described.
+
+
+
+The issue of combining learning and deliberative approaches for decision making
+in autonomous systems has not been widely addressed.
+% %
+In~\cite{Riedmiller01}, learning is used \emph{prior to deployment} for acquiring
+low level robot soccer skills that are then treated as fixed methods in the
+deliberative decision making process once deployed.
+% %
+Hern\'andez et al. \cite{Hernandez04:Learning} give a preliminary account of how
+decision trees may be induced on plan failures in order to find an alternative
+logical context conditions in a deterministic paint-world example.
+% %
+More recently, \cite{Zhuo09:Learning} proposes a method for learning hierarchical
+task network (HTN) method preconditions under partial observations. There, a set
+of  constraints are constructed from observed decomposition trees that are then
+solved \emph{offline} using a constraint solver. Despite HTN systems being
+automated planning frameworks, rather than execution frameworks, these are highly
+related to BDI agent systems when it comes to the \emph{know-how} information
+used---learning methods' preconditions amounts to learning plan's context
+conditions.
+% %
+In constrast, in our work, learning and deliberation are fully integrated in a
+way that one impacts the other and the classical exploration/exploitation dilemma
+applies.
+% Initially, instead of following a random exploration policy (as is the case for
+% agents with no initial knowledge), our agents are guided by the existing domain
+% knowledge inherent in the BDI hierarchy.
+
+Our work is similar to that of \cite{Airiau:IJAT09} and in fact borrows from there the
+strategy of using decision trees for modeling plan's context conditions.
+% %
+Nonetheless, there are major differences between that work and ours.
+% %
+First, our conservative learning approach, based on the notion of plan
+``stability,'' is substantially more grounded than the one used in \cite{Airiau:IJAT09},
+where a plan is just required to be executed a \emph{fixed} number of times for
+failure executions to be recorded.
+% %
+Second, only one goal-plan hierarchical structure was used for experimentation
+in the mentioned work; we instead considered different structures identifying
+various types of plan libraries.
+% %
+More importantly, in our work, we explored the realistic case of agents with
+plan applicability thresholds. Contrary to what was implied in \cite{Airiau:IJAT09}, our
+results do suggest that some sort of \emph{confidence} test is indeed
+worthwhile---this was the motivation behind our coverage-based approach.
