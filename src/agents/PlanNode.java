@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import weka.core.Instances;
 import java.util.*;
+import java.util.regex.*;
 import java.lang.Math;
 
 /**
@@ -228,7 +229,11 @@ public class PlanNode extends Node{
      * by weka
      * @param res
      */
-    public void record(boolean res)
+    public void record(boolean res) {   
+        record(res, -1 /*depth*/, (topGoal!=null) /*isRoot*/);
+    }
+    
+    public void record(boolean res, int depth, boolean isRoot)
     {
         if (this.isFailedThresholdHandler) {
             logger.writeLog("Skipped recording for failed threshold handler plan "+this.getItem()+" in state "+this.stringOfLastState());
@@ -423,21 +428,13 @@ public class PlanNode extends Node{
         this.experiences.put(memoryKey, thisMemory);
         /* Now calculate the coverage and store back */
         isDirty = true;
-        String dpath;
-        if (thisMemory.addCoverage(dpath = getDirtyPath())) {
-            logger.writeLog("Plan "+this.getItem()+" added covered path ["+dpath+"] in state "+memoryKey+". Coverage is now "+thisMemory.coverage()+"/"+getPaths());
-        }
+        /* TODO: Add non-determinism check here i.e. remove paths only if confident of failure */
         int pathsAdded;
-        if ((pathsAdded = thisMemory.addCoverage(deadPaths(lastState))) > 0) {
-            logger.writeLog("Plan "+this.getItem()+" added "+pathsAdded+" dead paths in state "+memoryKey+". Coverage is now "+thisMemory.coverage()+"/"+getPaths());
+        if ((pathsAdded = thisMemory.addCoverage(deadPaths(getDirtyPath(depth),depth))) > 0) {
+            logger.writeLog("Plan "+this.getItem()+" added "+pathsAdded+" dead paths in state "+memoryKey+". Coverage is now "+thisMemory.coverage()+"/"+getPaths(depth));
         }
-        if (this.topGoal != null) {
-            this.clearDirtyPath();
-        }
-        if (false && this.topGoal != null) {
-            /* This is a root level plan so manually update siblings */
-            logger.writeLog("Plan "+this.getItem()+" is a top level goal so will initialise coverage calculation for siblings");
-            topGoal.calculateCoverage(lastState);
+        if (isRoot) {
+            this.clearDirtyPath(depth);
         }
         logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
         this.experiences.put(memoryKey, thisMemory);
@@ -447,31 +444,46 @@ public class PlanNode extends Node{
         topGoal = val;
     }
 
-    public Vector getPathStringsMatching(String str) {
-        Object[] allPaths = getPathStrings().toArray();
+    public Vector getPathStringsMatching(String str, int depth) {
+        Object[] allPaths = getPathStrings(depth).toArray();
         Vector matches = new Vector();
+        String[] splits = str.split("\\*");
         for (int i = 0; i < allPaths.length; i++) {
-            String path = (String)(allPaths[i]);
-            if (path.indexOf(str) != -1) {
-                //logger.writeLog("Plan "+this.getItem()+" matched path ["+path+"]");
-                matches.add(path);
+            String fullPath = (String)(allPaths[i]);
+            String path = fullPath;
+            int sindex = -1;
+            for (int j = 0; j < splits.length; j++) {
+                sindex = path.indexOf(splits[j]);
+                if (sindex != 0 /* must match the start of string */) {
+                    break;
+                } else {
+                    path = path.substring(sindex+splits[j].length());
+                }
+            }
+            if (sindex != -1) {
+                matches.add(fullPath);
+                //logger.writeLog("Plan "+this.getItem()+" matched ["+fullPath+"]");
             }
         }
+        logger.writeLog("Plan "+this.getItem()+" found "+matches.size()+" matches for ["+str+"]");
         return matches;
     }
 
-    public Vector getPathStrings() {
+    public String pathID() {
+        return (String)(getItem())+":";
+    }
+        
+    public Vector getPathStrings(int depth) {
         if (pathStringsKnown) {
             return pathStrings;
         }
-        int nChildren = this.children.size();
+        int nChildren = (depth == 0) ? 0 : this.children.size();
         if(nChildren == 0) {
-            pathStrings.add(getItem()+":");
-            return pathStrings;
+            pathStrings.add(pathID());
         }
         for(int j = 0; nChildren > j; j++) {
             GoalNode thisNode = (GoalNode)children.elementAt(j);
-            Vector goalPathStrings = thisNode.getPathStrings();
+            Vector goalPathStrings = thisNode.getPathStrings(depth-1);
             if (pathStrings.size() == 0) {
                 pathStrings = goalPathStrings; 
             } else {
@@ -479,26 +491,35 @@ public class PlanNode extends Node{
                 pathStrings = new Vector();
                 for (int k = 0; k < oldPathStrings.size(); k++) {
                     for (int m = 0; m < goalPathStrings.size(); m++) {
-                        String str = (String)(oldPathStrings.elementAt(k))+(String)(goalPathStrings.elementAt(m));
+                        String str = pathID()+(String)(oldPathStrings.elementAt(k))+(String)(goalPathStrings.elementAt(m));
                         pathStrings.add(str);
                     }
                 }
             }
         }
+        /*
+        for (int k = 0; k < pathStrings.size(); k++) {
+            logger.writeLog("Plan "+this.getItem()+" has path ["+pathStrings.elementAt(k)+"]");
+        }
+        */
         pathStringsKnown = true;
         return pathStrings;
     }
-    
+
     public int getPaths() {
+        return getPaths(-1);
+    }
+    
+    public int getPaths(int depth) {
         if (this.pathsKnown) {
             return this.paths;
         }
         int p = 1;
-        int nChildren = this.children.size();
+        int nChildren = (depth == 0) ? 0 : this.children.size();
         if(nChildren > 0) {
             for(int j = 0; nChildren > j; j++) {
                 GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-                p *= thisNode.getPaths();
+                p *= thisNode.getPaths(depth-1);
             }    
         }
         this.pathsKnown = true;
@@ -506,86 +527,31 @@ public class PlanNode extends Node{
         return p;
     }
 
-    public String getDirtyPath() {
-        String path = "";
-        int append = 0;
-        int nChildren = this.children.size();
-        if(nChildren > 0) {
-            for(int j = 0; nChildren > j; j++) {
-                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-                String dpath = thisNode.getDirtyPath();
-                if (dpath != null) {
-                    path += dpath;
-                    append = j;
-                }
-            }
+    public String getDirtyPath(int depth) {
+        if (!isDirty) {
+            return "";
         }
-        if (nChildren == 0 && isDirty) {
-            path += this.getItem() + ":";
-        } else if (append == nChildren-1) {
-            /* do nothing */
-        } else {
-            path = null;
+        String path = pathID();
+        int nChildren = (depth == 0) ? 0 : this.children.size();
+        for(int j = 0; nChildren > j; j++) {
+            GoalNode thisNode = (GoalNode)this.children.elementAt(j);
+            path += thisNode.getDirtyPath(depth-1);
         }
         return path;
     }
 
-    public void clearDirtyPath() {
-        int nChildren = this.children.size();
+    public void clearDirtyPath(int depth ) {
+        int nChildren = (depth == 0) ? 0 : this.children.size();
         for(int j = 0; nChildren > j; j++) {
             GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-            thisNode.clearDirtyPath();
+            thisNode.clearDirtyPath(depth-1);
         }
         isDirty = false;
     }
-    
-    public String[] deadPaths(String[] state) {
-        if (this.isFailedThresholdHandler) {
-            return new String[0];
-        }
-        Vector paths = new Vector();
-        int nChildren = this.children.size();
-        String stateStr = stringOfState(state);
-        if (this.experiences.size() > 0 && this.experiences.containsKey(stateStr) && nChildren>0) {
-            Experience thisMemory = (Experience)this.experiences.get(stateStr);
-            for(int j = 0; j < nChildren; j++) {
-                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-                state = thisNode.resultingState(state);
-                stateStr = stringOfState(state);
-                if (j < nChildren-1) {
-                    for (int k = 0; k < thisNode.children.size(); k++) {
-                        PlanNode thisPlan = (PlanNode)thisNode.children.elementAt(k);
-                        if (!thisPlan.isFailedThresholdHandler) {
-                            if (thisPlan.children.size() == 0) {
-                                double cRatio = (double)(thisPlan.getCoverage(state))/thisPlan.getPaths();
-                                if (cRatio==1.0 && !thisPlan.isSuccessful(state)) {
-                                    /* This subplan did not succeed in the given state
-                                     * AND it has full coverage. So
-                                     * all subsequent subgoals (i.e paths with thisPlan in it) 
-                                     * can be considered dead
-                                     * since they will never execute in this state.
-                                     */
-                                    logger.writeLog("Child sub-plan "+thisPlan.getItem()+" is fully covered but has never succeeded in state "+stateStr+", so will consider all paths associated with this plan fully covered");
-                                    Vector matches = getPathStringsMatching((String)(thisPlan.getItem())+":");
-                                    for (int m = 0; m < matches.size(); m++) {
-                                        paths.add((String)(matches.elementAt(m)));
-                                    }
-                                }
-                            } else {
-                                String[] dpaths = thisPlan.deadPaths(state);
-                                for (int n = 0; n < dpaths.length; n++) {
-                                    Vector matches = getPathStringsMatching(dpaths[n]);
-                                    for (int m = 0; m < matches.size(); m++) {
-                                        paths.add((String)(matches.elementAt(m)));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return (String[])paths.toArray(new String[0]);
+
+    public String[] deadPaths(String prefix, int depth) {
+        Vector matches = getPathStringsMatching(prefix,depth);
+        return (String[])matches.toArray(new String[0]);
     }
     
     public double getAverageCoverageInAllStates() {
@@ -607,15 +573,15 @@ public class PlanNode extends Node{
         return coverage;
     }
 
-    public int getCoverage() {
-        return this.getCoverage(this.lastState);
-    }    
-
     public int getCoverage(String[] state) {
+        return this.getCoverage(state, -1/*depth*/);
+    }    
+    
+    public int getCoverage(String[] state, int depth) {
         String memoryKey = this.stringOfState(state);
         int coverage = 0;
         if (this.isFailedThresholdHandler) {
-            coverage = getPaths(); 
+            coverage = getPaths(depth); 
             logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using full coverage="+coverage+" in state "+memoryKey);
             return coverage;
         }
@@ -634,52 +600,6 @@ public class PlanNode extends Node{
         return coverage;
     }    
     
-    protected int calculateCoverage(String[] state) {
-        String stateStr = this.stringOfState(state);
-        int coverage = 0;        
-        if (this.isFailedThresholdHandler) {
-            coverage = getPaths(); 
-            logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using full coverage="+coverage+" in state "+stateStr);
-            return coverage;
-        }
-        int nChildren = this.children.size();
-        if(nChildren > 0) {
-            int cCoverage = 0;
-            logger.writeLog("Plan "+this.getItem()+" is checking children for coverage in state "+stateStr);
-            logger.indentRight();
-            for(int j = 0; nChildren > j; j++) {
-                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-                int c = thisNode.calculateCoverage(state);
-                double cRatio = (double)c/thisNode.getPaths();
-                cCoverage += c;
-                logger.writeLog("Child goal "+thisNode.getItem()+" has coverage="+c+" in state "+stateStr);
-                if (cRatio==1.0 && !thisNode.isSuccessful(state)) {
-                    /* This subgoal did not succeed in this state
-                     * AND it has full coverage then
-                     * all subsequent subgoals can be considered
-                     * covered since they will never execute
-                     * in this state.
-                     */
-                    logger.writeLog("Child goal "+thisNode.getItem()+" is fully covered but has never succeeded in state "+stateStr+", so will consider remaining subgoals also fully covered");
-                    for (int k = j+1; k < nChildren; k++) {
-                        thisNode = (GoalNode)this.children.elementAt(k);
-                        cCoverage += thisNode.getPaths();
-                    }
-                    break;
-                }
-            }
-            logger.indentLeft();
-            coverage = cCoverage;
-        } else {
-            /* Plan has no children, so calculate coverage for this
-             * node only. We do not care about stochasticity here.
-             */
-            coverage = (this.experiences.containsKey(stateStr)) ? 1 : 0;
-            logger.writeLog("Plan "+this.getItem()+" is a leaf plan and has coverage="+coverage+" in state "+stateStr);
-        }
-        logger.writeLog("Plan "+this.getItem()+" calculated coverage="+coverage+"/"+this.getPaths()+" in state "+stateStr);
-        return coverage;
-    }
     
     /**
      * sets the state of the world each time the plan is chosen
