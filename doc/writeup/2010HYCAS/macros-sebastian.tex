@@ -358,11 +358,10 @@
 {\raggedright\footnotesize #1}}
 
 \setlength{\marginparwidth}{0.5in}
-\newcommand{\notem}[1]{\marginpar{\textbf{#1}}}
-\newcommand{\notems}[1]{\marginpar{\textbf{S: #1}}}
-\newcommand{\noteml}[1]{\marginpar{\textbf{L: #1}}}
-\newcommand{\notemd}[1]{\marginpar{\textbf{D: #1}}}
-\newcommand{\notetext}[1]{\notem{OBS} \textit{#1}}
+\newcommand{\notem}[1]{\marginpar{\scriptsize  \textbf{#1}}}
+\newcommand{\notems}[1]{\notem{S: #1}}
+\newcommand{\noteml}[1]{\notem{L: #1}}
+\newcommand{\notemd}[1]{\notem{D: #1}}
 
 \newcommand{\ncheck}{\notem{CHECK!}}
 \newcommand{\GGG}{\notem{GGG}}

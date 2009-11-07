@@ -17,7 +17,7 @@
 
 \node  (environment)  
        [below left of=B, rounded corners, minimum height=3cm,
-       starburst,fill=black!10,rotate=90,shift={(-1cm,3cm)}] 
+       starburst,fill=black!10,rotate=90,shift={(-1cm,4cm)}] 
        {\textbf{\large Environment}};
 
 
@@ -35,13 +35,13 @@
 
 
 \foreach \x in {4,3,2,1}
-\draw (0,5) node (I) [anchor=south,draw, centity, text width=.5em,
+\draw (-.6,5) node (I) [anchor=south,draw, centity, text width=.5em,
 	minimum height=\x em]{};
 \foreach \x in {3,2,1}
-\draw (0.8,5) node (I) [anchor=south,draw,centity, text width=.5em,
+\draw (0.2,5) node (I) [anchor=south,draw,centity, text width=.5em,
 	minimum height=\x em]{};
 \foreach \x in {5,4,3,2,1}
-\draw (1.6,5) node (I) [anchor=south,draw, centity, text width=0.5em,
+\draw (1,5) node (I) [anchor=south,draw, centity, text width=0.5em,
 	minimum height=\x em]{};
 \node[below left of=I] (Intentions) {{\bf  Intention Stacks}};
 
@@ -89,7 +89,9 @@
 
 
 \begin{pgfonlayer}{background}
-\path (-1,10.5) node (c) {};
+
+%% Dotted box encapuslating the agent
+\path (-1.5,10.5) node (c) {};
 \path (9.5,4) node (d) {};
 \path[fill=none,rounded corners, draw=black!50, dashed] (c) rectangle (d);
 
