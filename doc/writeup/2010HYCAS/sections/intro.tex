@@ -2,6 +2,28 @@
 \section{Introduction}\label{sec:intro}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\notems{new para}
+Agents are an important technology that have the potential to take over
+contemporary methods for analysing, designing, and implementing complex software
+systems suitable for domains such as telecommunications, industrial control,
+business process management, transportation, logistics, and aeronautics
+\cite{Jennings:COMACM01,Belecheanu:AAMAS06}.
+% %
+The BDI model of agency \cite{Pollack:AIJ92-IRMA,Bratman88} is a popular and
+well-studied approach with substantial theoretical and practical work. It has its
+roots in philosophy with Bratman's \cite{Bratman87:Intentions} theory of practical
+reasoning and Dennett's theory of intentional systems \cite{Dennet97:IntentionalStance}.
+% %
+A recent industry study \cite{Benfield:AAMAS06} analysing several applications
+claimed that the use of BDI (Belief-Desire-Intention) agent technology in complex
+business settings can improve overall project productivity by an average 350\% to
+500\%. Also the agent approach allowed the business to change and extend
+solutions quickly helping to bridge the semantic gap between the business side
+and IT development.
+
+
+
+
 In this paper, we are concerned with one of the key aspects of the BDI
 agent-oriented programming paradigm, namely, that of \emph{intelligent plan
 selection} \cite{Pollack92-IRMA,Georgeff89-PRS}.
@@ -11,14 +33,15 @@ learnt based on ongoing experience.
 
 
 There are a plethora of agent programming languages and development platforms in
-the BDI tradition, such as  \PRS\ \cite{Georgeff89-PRS}, \JACK~\cite{Busetta99jack},
-\TAPL~\cite{Hindriks99:Agent} and \DAPL~\cite{Dastani:JAAMAS08-2APL},
-\JASON~\cite{jasonbook}, and SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, among
-others. %%
+the BDI tradition, such as  \PRS\ \cite{Georgeff89-PRS},
+\JACK~\cite{Busetta99jack}, \TAPL~\cite{Hindriks99:Agent} and
+\DAPL~\cite{Dastani:JAAMAS08-2APL}, \JASON~\cite{jasonbook}, and SRI's
+\SPARK~\cite{MorelyM:AAMAS04-SPARK}, among others. %%
 % %
+\notems{added ``reactively''}
 Generally speaking, these systems enable \emph{abstract plans} written by
-programmers to be combined and used in real-time, in a way that is both flexible
-and robust. Concretely, a BDI agent is built around a
+programmers to be combined and used \emph{reactively} in real-time, in a way that
+is both flexible and robust. Concretely, a BDI agent is built around a
 \textit{plan library}, a collection of pre-defined \textit{hierarchical plans}
 indexed by goals and representing the standard operational procedures of the
 domain (e.g., landing a plane).
@@ -27,8 +50,8 @@ The so-called \emph{context condition} attached to each plan states the
 conditions under which the plan is a sensible strategy to address the
 corresponding goal in a given situation (e.g., it is not raining). The execution
 of a BDI system relies then entirely on \textit{context sensitive subgoal
-expansion}, allowing agents to ``act as they go'' by making \emph{plan
-choices} at each level of abstraction with respect to the current situation.
+expansion}, allowing agents to ``act as they go'' by making \emph{plan choices}
+at each level of abstraction with respect to the current situation.
 
 
 
@@ -38,10 +61,12 @@ important implications for the whole programming approach.
 % %
 First, it is often difficult or impossible for the programmer to craft the
 \emph{exact} conditions under which a plan would succeed. Second, once deployed,
-the plan selection mechanism is fixed and may not adapt to potential variations of different environments.
+the plan selection mechanism is fixed and may not adapt to potential variations
+of different environments.
 % %
 Finally, since plan execution often involves interaction with a \emph{partially
-observable} external world, it is desirable to measure success in terms of probabilities rather than boolean values.
+observable} external world, it is desirable to measure success in terms of
+probabilities rather than boolean values.
 
 
 %Following~\cite{Airiau:IJAT09}, we propose a BDI programming framework where plans'

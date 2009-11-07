@@ -61,8 +61,11 @@
 \usepackage{url}
 
 % Load pfg package for drawing transition systems
-\usepackage{tikz,pgf}
-\usetikzlibrary{arrows,automata,trees,plotmarks,calc}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations,backgrounds,matrix,automata,trees,shapes,shadows,plotmarks,calc}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
 
 
 \usepackage{algorithm}

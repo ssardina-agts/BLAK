@@ -4,14 +4,43 @@
 
 \subsection{BDI Agent-Oriented Programming}\label{sec:bdi_programming}
 
+\notems{new para}
 BDI agent-oriented programming is a popular, well-studied, and practical paradigm
 for building intelligent agents situated in complex and dynamic environments with
 (soft) real-time reasoning and control requirements
 \cite{Georgeff89-PRS,Benfield:AAMAS06}.
+% %
+Generally speaking, BDI agent-oriented programming languages are built around an
+explicit representation of propositional attitudes (e.g., beliefs, desires,
+intentions, etc.). A BDI architecture addresses how these components are
+represented, updated, and processed to determine the agent's actions.
+% .
+There are a number of agent programming languages and development platforms in
+the BDI tradition, such as \PRS~\cite{IngrandGR:IEEE92-PRS} and
+\dMARS~\cite{Inverno:JAAMAS04-dMARS}, \AgentSpeak\ and
+\JASON~\cite{Rao:LNCS96-AgentSpeak,Bordini:07-JASONBOOK},
+\JADEX~\cite{PokahrBL:EXP03-JADEX},
+\TAPL~\cite{Hindriks:JAAMAS99-3APL,DastaniRM:05} and
+\DAPL~\cite{Dastani:JAAMAS08-2APL}, \GOAL~\cite{BoerHHM:JAPL07-GOAL},
+\JACK~\cite{BusettaRHL:AL99-JACK}, SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, and
+\JAM~\cite{Huber:AGENTS99-JAM}.
+
+
+\begin{figure}[t]
+\begin{center}
+\resizebox{\textwidth}{!}{\input{figs/figbdiarch}}
+\end{center}
+\caption{A typical BDI-style architecture}
+\label{fig:bdiarch}
+\end{figure}
 
 In a BDI-style system, an agent consists, basically, of a belief base (akin to a
 database), a set of recorded pending goal events, a plan library, and an
-intention base. While the belief base encodes the agent's knowledge about the
+intention base. 
+%%
+Figure~\ref{fig:bdiarch} depicts a typical BDI architecture.
+%%
+While the belief base encodes the agent's knowledge about the
 world, the pending events stand for the \emph{goals} the agent wants to
 achieve/resolve.
 % %
