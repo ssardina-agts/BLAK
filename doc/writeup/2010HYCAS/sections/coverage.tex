@@ -10,7 +10,7 @@ than at learning time.
 The idea is that confidence in a plan's \dt\ increases as more of the possible
 choices below the plan in the goal-plan structure are explored.
 
-
+\notems{changed $T$ to $P$}
 So, with each plan in the goal-plan tree hierarchy, we identify its set of
 potential \textit{choices} as the set of all potential execution paths
 \textit{below} the plan in the hierarchy. This can easily be computed offline.
@@ -19,27 +19,31 @@ Intuitively, a plan's \dt\ is more \textit{informed} for a world state if it is
 based on a larger number of choices having been explored in that state. We say
 that a plan has a higher degree of \emph{coverage} as more of its underlying
 choices are explored and accounted for in the corresponding \dt. Technically,
-given a \dt\ $T$ for a certain plan, we define its coverage for the world state
-$w$ as $c_T(w) \in [0,\ldots,1]$.
+given a \dt\ for a certain BDI plan $P$, we define its coverage for the world
+state $w$ as $c_P(w) \in [0,\ldots,1]$.
 % %
 Initially, when the plan has not yet been executed in a world $w$, its coverage
-in such state is $c_T(w) = 0$ and the agent has no basis for confidence in the
-likelihood of success estimated by $T$ for $w$.
+in such state is $c_P(w) = 0$ and the agent has no basis for confidence in the
+likelihood of success estimated by $P$'s \dt\ for world/belief state $w$.
 % %
-As the different ways of executing the plan in the world state $w$ are explored,
-the value of $c_T(w)$ approaches $1$. When all choices have been tried,
-$c_T(w)=1$ and the agent may rely fully on the \dt\ estimation of success.
+As the different ways of executing the plan in state $w$ are explored, the value
+of $c_P(w)$ approaches $1$. When all choices have been tried, $c_P(w)=1$ and the
+agent may rely fully on the \dt\ estimation of success.
 % %
 In this way, coverage provides a confidence measure for the \dt\ classification.
 
-
+\notems{changed $p_T(\cdot)$ to $\kappa_P(\cdot)$}
 We then construct a probabilistic plan selection function that includes the
 coverage-based confidence measure.
 % %
-Formally, we define the plan selection weight $\Omega'(w)$ as a function of the
-\dt\ determined success expectation $p_T(w)$ and the degree of coverage $c_T(w)$:
+Formally, we define the plan selection weight $\Omega_P(w)$ as a function of the
+\dt\ determined success expectation $\kappa_P(w)$ and the degree of coverage
+$c_P(w)$:\footnote{For the \CL\ and \BUL\ schemes discussed above,
+$\Omega_P(w)=p_T(w)$, that is, the weight of a plan is exactly its \dt\
+estimation of success.}
+%%
 \begin{equation*}\label{eqn:coverage}   
-\Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
+\Omega_P(w) = 0.5 + \left[  c_P(w) *  \left( \kappa_P(w) - 0.5 \right)  \right].
 \end{equation*}
 	
 	
@@ -51,11 +55,8 @@ coverage increases and the selection weight approaches the true value estimated
 by the plan's \dt.
 
 
-%Regarding how the coverage degree is calculated at every point, we should make
-%the following two observations.
-% %
 Each time a plan execution result is recorded, the coverage
-$c_T(w)$ for a world $w$ is calculated and stored.
+$c_P(w)$ for a world $w$ is calculated and stored.
 % %
 It requires, in principle, $\tau \times |S|$ \emph{unique} executions of
 a plan for it to reach \emph{full} coverage, where $\tau$ is the total number of
@@ -81,7 +82,7 @@ We will refer to the new approaches as \CLSELB\ and \BULSELB, respectively.
 % %
 Similarly, $\CLSELA$ and $\BULSELA$ correspond to the approaches using the
 \emph{original} selection weighting that only uses its \dt\ success
-expectation, that is, $\Omega_T(w) = p_T(w)$.
+expectation, that is, $\Omega_P(w) = p_T(w)$.
 
 
 \notems{first some text that could be of use...}
@@ -161,7 +162,7 @@ This is not surprising, as the stability test performed by these agents at each
 plan node inherently results in close to full coverage. Indeed, for a plan to
 become ``stable,'' the agent needs to (substantially) explore all possible  ways
 of executing it. The stability check, then, effectively reduces $\Omega'_T(w)$ to
-$\Omega_T(w)$.
+$\Omega_P(w)$.
 % %
 So, for simplicity, we shall not give a further account of the $\BULSELB$
 approach in this section.
