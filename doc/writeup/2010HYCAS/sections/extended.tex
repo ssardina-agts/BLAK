@@ -2,6 +2,27 @@
 \section{Extended Framework: Event Types and Recursion}\label{sec:extended}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\notems{intro para for motivating the section in the context of sections 2 and
+3} The learning framework discussed so far suffers from several serious limitations
+for real world applicability.
+% %
+In particular, events were so far assumed propositional atoms, that is, event
+types were not considered. By \emph{event type} we mean here an event that may
+contain ``data'' as part of its definition. For instance, event
+$\textmath{travelTo(?dest)}$ may represent the goal to travel to location
+$\textmath{?dest}$ and $\textmath{moveDisk(?disk,?pin)}$ the goal to move a
+certain disk to a given pin for a robot trying to solve the Towers of Hanoi game.
+% %
+Another limitation is the assumption that the agent's plan library is
+non-recursive, so that the goal-plan tree structure induced is always
+\emph{finite}.
+% %
+Clearly both limitations would preclude the applicability of the approach in
+most real domains. Real world hierarchical structures encoding know-how information
+are generally expressed using parametrized goal events and plans, and often make
+use of (direct or indirect) recursive procedures.
+
+
 
 \subsection{Event Types}
 

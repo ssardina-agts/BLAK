@@ -2,9 +2,14 @@
 \section{Informed Plan Selection}\label{sec:coverage}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Our new approach relies on the idea that confidence in a plan's
-\dt\ increases as more of the possible choices below the plan
-in the goal-plan structure are explored.
+\notems{new intro}
+A middle-ground between the two extreme learning approaches \CL\ and \BUL\ can be
+obtained if the ``confidence'' test is realized at plan selection time, rather
+than at learning time.
+% %
+The idea is that confidence in a plan's \dt\ increases as more of the possible
+choices below the plan in the goal-plan structure are explored.
+
 
 So, with each plan in the goal-plan tree hierarchy, we identify its set of
 potential \textit{choices} as the set of all potential execution paths
@@ -38,10 +43,12 @@ Formally, we define the plan selection weight $\Omega'(w)$ as a function of the
 \end{equation*}
 	
 	
-Initially the selection weight of the plan for a previously unseen world state $w$ takes the default value of $0.5$.
+Initially the selection weight of the plan for a previously unseen world state
+$w$ takes the default value of $0.5$.
 % %
-Over time, as the various execution paths below the plan are tried in $w$, its coverage increases 
-and the selection weight approaches the true value estimated by the plan's \dt.
+Over time, as the various execution paths below the plan are tried in $w$, its
+coverage increases and the selection weight approaches the true value estimated
+by the plan's \dt.
 
 
 %Regarding how the coverage degree is calculated at every point, we should make
@@ -61,10 +68,10 @@ Also, a plan is generally not executed in every world state, so in
 practice it will only need to be assessed in the subset of the world
 states that is relevant to it.
 
+\notems{up to here }
+\subsection{Experiments}
 
-
-
-
+\textbf{Here we briefly go over the results on general coverage}
 
 We are now ready to revisit the two learning approaches \CL\ and \BUL\
 from the previous section, but this time using the modified selection weighting
@@ -75,6 +82,76 @@ We will refer to the new approaches as \CLSELB\ and \BULSELB, respectively.
 Similarly, $\CLSELA$ and $\BULSELA$ correspond to the approaches using the
 \emph{original} selection weighting that only uses its \dt\ success
 expectation, that is, $\Omega_T(w) = p_T(w)$.
+
+
+\notems{first some text that could be of use...}
+For the purpose of our analysis, we have used algorithm
+\propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
+well-known \weka\ learning package \cite{weka99}. Currently we
+recreate decision trees from scratch after each new piece of data is collected.
+% %
+Of course, for a real-world implementation, one should appeal to algorithms for
+\emph{incremental} induction of the decision tree, such as those described in
+\cite{Swere06:Fast,Utgoff97Decision}.
+% %
+
+\bigskip\bigskip
+
+
+The \BUL\ approach relies on a \emph{confidence} test---stability---that checks
+whether we are sufficiently well informed to trust that the current failure is
+indicative of future attempts.
+
+
+\bigskip\bigskip
+
+
+The \weka\ \propername{J48} algorithm for inducing \dt{}s aims to balance
+compactness of representation with accuracy. Consequently, it maintains in each
+\dt\ information about the number of instances (or world states in our case) from
+the training data correctly and incorrectly classified by each decision tree leaf
+node. Subsequently, whenever a plan's \dt\ is used to classify a new instance
+(world state), weka returns not only the classification (i.e. success or
+failure), but also a classification probability (i.e. to what degree it believes
+that the classification is correct). We then use this probability as an estimate
+of the plan's chances of success for the world in question.
+
+
+\bigskip\bigskip
+
+In order to explore the difference between \BUL\ and \CL, we set up testbed
+programs composed of several goals and plans combined in a hierarchical manner
+and yielding goal-plan tree structures of different shapes.\footnote{We have
+implemented the learning agent system in the \JACK\ BDI platform
+\cite{Busetta99jack}. The fact that \JACK\ is a Java-based system and
+provides powerful meta-level reasoning capabilities, allows us to integrate \weka\ and
+probabilistic plan-selection mechanisms with not much effort. Nonetheless, all
+the results are independent on this and any other BDI agent system could
+have been used.}
+
+
+\bigskip\bigskip
+
+
+
+
+The experiments consisted in posting the top-level goal repetitively under random
+world states, running the corresponding  BDI learning agent, and finally
+recording whether the execution terminated successfully or not.
+% %
+%We calculated the average rate of success of the goal every some fixed
+%number of iterations (in our case $20$), and investigated how such rate evolved
+%as the agent refined the context condition of plans.
+We calculate the average rate of success of the goal by first averaging the
+results at each time step over $5$ runs of the same experiment, and then
+smoothing using a moving average of the previous 100 time steps to get the trends
+reported in the figures.
+% %%
+We ran the tests with both a \BUL-based agent and a \CL-based agent, ensuring the
+same sampling of random world states for each.
+
+
+
 
 
 Our first observation is that the $\BULSELA$ and $\BULSELB$ approaches show
