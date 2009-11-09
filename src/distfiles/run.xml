@@ -263,7 +263,7 @@
   <attribute name="test.name"/>
   <attribute name="run.mode"/>
   <attribute name="run.class" default="agents.Environment"/>
-  <attribute name="run.select" default="X"/>
+  <attribute name="run.select" default=""/>
   <attribute name="run.id" default="1"/>
   <attribute name="run.params"/>
   <sequential>
@@ -854,14 +854,15 @@
 </target>
 <target name="runHanoi" description="Run hanoi">
     <failIfBuildNotFound test.name="hanoi"/>
-	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -r 15 -i 3000 -j 4 -m 1"/>
-	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="coverage"      run.params="-x -r 15 -i 3000 -j 4 -m 1"/>
-	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="probabilistic" run.params="-x -r 15 -i 3000 -j 4 -m 1 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="coverage"      run.params="-x -r 15 -i 3000 -j 4 -m 1 -k 3 -e 0.3"/>
+	<runTest        test.name="hanoi" run.class="Player" run.mode="benchmark"                             run.params="   -g 123456 -r 2 -i 5000 -j 4"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="coverage"      run.params="-x -g 123456 -r 2 -i 5000 -j 4 -m 1"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 2 -i 5000 -j 4 -m 1"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="coverage"      run.params="-x -g 123456 -r 2 -i 5000 -j 4 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="hanoi" run.class="Player" run.mode="stable"     run.select="probabilistic" run.params="-x -g 123456 -r 2 -i 5000 -j 4 -m 1 -k 3 -e 0.3"/>
 </target>
 <target name="plotHanoi" description="Plot hanoi" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoi"/>
-	<plotResult test.name="hanoi" every="300" label="hanoi"/>
+	<plotResult test.name="hanoi" every="500"  key1="top" key2="right" label="hanoi:discs=4,recursion=2"/>
 </target>
 
 

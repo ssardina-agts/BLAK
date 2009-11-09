@@ -25,7 +25,7 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5:key location,  $6: StableP data,  $7: StableC data,  $8: ConcurrentP data,  $9: ConcurrentP data
+# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5:key location,  $6: StableP data,  $7: StableC data,  $8: ConcurrentP data,  $9: ConcurrentP data,  $10: benchmark data
 local o=$1
 local r=$2
 local l=$3
@@ -35,7 +35,8 @@ local sp=$6
 local sc=$7
 local cp=$8
 local cc=$9
-if ( [ "$sp" == "nil" ] && [ "$sc" == "nil" ] && [ "$cp" == "nil" ] && [ "$cc" == "nil" ]); then
+local bd=${10}
+if ( [ "$bd" == "nil" ] && [ "$sp" == "nil" ] && [ "$sc" == "nil" ] && [ "$cp" == "nil" ] && [ "$cc" == "nil" ]); then
     plotcmd=""
 else 
     plotcmd="plot $r "
@@ -61,6 +62,13 @@ if [ "$sp" != "nil" ]; then
     fi
     plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 3 pt 6 lw 3 lc rgb 'dark-green' with linespoints"
 fi
+if [ "$bd" != "nil" ]; then
+    if [ "$cc" != "nil" ] || [ "$cp" != "nil" ] || [ "$sc" != "nil" ] || [ "$sp" != "nil" ]; then
+        plotcmd+=", "
+    fi
+    plotcmd+="\"$bd\" every $e title \"Benchmark\" lt 0 pt 3 lw 4 lc rgb 'black' with linespoints"
+fi
+
 
 cat << EOF
 #set terminal epslatex color rounded size 4,2.5
@@ -187,6 +195,7 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
+setB=`find $srcdir -name "$testname-benchmark--1.csv" -print`
 set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
 set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
 set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`
@@ -197,6 +206,17 @@ if [ "$set1p" == "" ] && [ "$set1c" == "nil" ] && [ "$set2p" == "nil" ] && [ "$s
 fi
 
 #--- Generate the averaged results
+if [ "$setB" == "" ]; then 
+benchmark=nil 
+else 
+benchmark=$tmpdir/.benchmarkdata
+/bin/cp $setB $benchmark
+`$mov_avg -i $benchmark -o $benchmark.mavg -w $window`
+/bin/mv $benchmark.mavg $benchmark
+if [ "$tikz" -ne "0" ]; then
+makeTikZ $benchmark $tikz > $outfile.B.tikzdata
+fi
+fi
 if [ "$set1p" == "" ]; then 
 stableP=nil 
 else 
@@ -245,7 +265,7 @@ fi
 
 #--- Plot and PDF
 if [ "$tikz" == "0" ]; then
-makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC  > $tmpdir/.gnuplot.commands 
+makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC $benchmark  > $tmpdir/.gnuplot.commands 
 $gnuplot $tmpdir/.gnuplot.commands
 ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 fi

@@ -7,13 +7,14 @@ public class Node{
 
     public Object item;
     private String name;
+    protected Node parent;
     public Vector children;
     public boolean successful;
     public Logger logger;
-    public boolean pathsKnown;
-    public boolean pathStringsKnown;
-    public int paths;
-    public Vector pathStrings;
+    protected Hashtable pathsKnown;
+    protected Hashtable pathStringsKnown;
+    protected Hashtable paths;
+    protected Hashtable pathStrings;
     
     public Node(Object val, Logger logger)
     {
@@ -21,10 +22,11 @@ public class Node{
     	children = new Vector();
     	successful = true;
         this.logger = logger;
-        pathsKnown = false;
-        pathStringsKnown = false;
-        paths = 0;
-        pathStrings = new Vector();
+        pathsKnown = new Hashtable();
+        pathStringsKnown = new Hashtable();
+        paths = new Hashtable();
+        pathStrings = new Hashtable();
+        parent = null;
     }
 
     public boolean isSuccessful()
@@ -73,8 +75,14 @@ public class Node{
     	return children.isEmpty();
     }
 
+    public void setParent(Node node) {
+        parent = node;
+    }
+
     public void addChild(Node node){
-	children.add(node);
+        node.setParent(this);
+        children.add(node);
+        
     }
 
     public Object getItem(){return item;}
@@ -262,7 +270,25 @@ public class Node{
     	return returnMe;	
     }
     
-    public int getPaths() {
-        return paths;
+    public int paths(int depth) {
+        return paths.containsKey(depth) ? ((Integer)(paths.get(depth))).intValue() : 0;
     }
+    public void setPaths(int depth, int val) {
+        paths.put(depth,val);
+    }
+    
+    public boolean pathStringsKnown(int depth) {
+        return pathStringsKnown.containsKey(depth);
+    }
+    public void setPathStringsKnown(int depth) {
+        pathStringsKnown.put(depth,true);
+    }
+    
+    public boolean pathsKnown(int depth) {
+        return pathsKnown.containsKey(depth);
+    }
+    public void setPathsKnown(int depth) {
+        pathsKnown.put(depth,true);
+    }
+    
 }

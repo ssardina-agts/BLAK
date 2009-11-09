@@ -125,8 +125,8 @@ public class GoalNode extends Node{
 	}
 
     public int getPaths(int depth) {
-        if (this.pathsKnown) {
-            return this.paths;
+        if (pathsKnown(depth)) {
+            return paths(depth);
         }
         int p = 0;
         int nChildren = this.children.size();
@@ -138,13 +138,13 @@ public class GoalNode extends Node{
                 }
             }    
         }
-        this.pathsKnown = true;
-        this.paths = p;
+        setPathsKnown(depth);
+        setPaths(depth,p);
         return p;
     }
     
-    public String pathID() {
-        return (String)(getItem());
+    public String pathID(int depth) {
+        return (String)(getItem())+Integer.toString(depth);
     }
 
     public Vector getPathStrings(int depth) {
@@ -157,7 +157,7 @@ public class GoalNode extends Node{
                 if (!thisNode.isFailedThresholdHandler) {
                     Vector pv = thisNode.getPathStrings(depth);
                     for (int k = 0; k < pv.size(); k++) {
-                        v.add(pathID()+(String)(pv.elementAt(k)));
+                        v.add(pathID(depth)+(String)(pv.elementAt(k)));
                     }
                 }
             }
@@ -172,7 +172,7 @@ public class GoalNode extends Node{
             PlanNode thisNode = (PlanNode)this.children.elementAt(j);
             path = thisNode.getDirtyPath(depth);
             if (path.length() > 0) {
-                return pathID()+path;
+                return pathID(depth)+path;
             }
         }
         return path;

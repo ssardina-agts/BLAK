@@ -1383,7 +1383,8 @@ public class ExpGenerator {
 		System.out.println("Building Refiner Agent");
 		String code = "package agents;\n";
 
-        code += "import agents.Config.UpdateMode;\n";
+        code += "import agents.Config.UpdateMode;\n"
+             +  "import agents.Config.PlanSelectMode;\n";
 
 		//java imports
 		code += "import java.util.Hashtable;\n"
@@ -1429,7 +1430,8 @@ public class ExpGenerator {
 		//Constructor
 		code +="\n\npublic RefinerAgent(String name){\n"
 		+"\tsuper(name);\n"
-		+"\tupdate_mode = UpdateMode.CONCURRENT;\n /* default: Concurrent */"
+		+"\tupdate_mode = UpdateMode.CONCURRENT;\n"
+		+"\tselect_mode = PlanSelectMode.PROBABILISTIC;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
         +"\tplanSelectThreshold = 0.0;\n"
@@ -1492,6 +1494,7 @@ public class ExpGenerator {
 		+"\tprivate FastVector boolVal;\n"
 		+"\tpublic Random generator;\n"
 		+"\tpublic UpdateMode update_mode;\n"
+		+"\tpublic PlanSelectMode select_mode;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
 		+"\tint[] startToUseDT;\n"	
@@ -1510,6 +1513,10 @@ public class ExpGenerator {
 		+"\tpublic void setUpdateMode(UpdateMode state)\n"
 		+"\t{\n"
 		+"\t\tthis.update_mode = state;\n"
+		+"\t}\n\n"
+		+"\tpublic void setSelectMode(PlanSelectMode state)\n"
+		+"\t{\n"
+		+"\t\tthis.select_mode = state;\n"
 		+"\t}\n\n"
 		+"\tpublic int getStableK()\n"
 		+"\t{\n"
@@ -1571,7 +1578,7 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, minNumInstances, update_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
+			+", atts, classVal, boolVal, minNumInstances, update_mode, select_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";

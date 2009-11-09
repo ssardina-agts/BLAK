@@ -27,32 +27,34 @@ public class Experience
 		numberOfSuccesses = 0;
 		numberOfAttempts = 0;
         coverage = new Hashtable();
-		
 	}
 
 	
 
-	public int addCoverage(String[] paths) 
+	public int addCoverage(String[] paths, int depth) 
 	{
         int added = 0;
         for (int i = 0; paths != null && i < paths.length; i++, added++) {
-            addCoverage(paths[i]);
+            addCoverage(paths[i],depth);
         }
         return added;
 	}
     
-	public boolean addCoverage(String path) 
+	public boolean addCoverage(String path, int depth) 
 	{
         if (path != null) {
-            coverage.put(path,true);
+            Hashtable c =  (coverage.containsKey(depth)) ? (Hashtable)(coverage.get(depth)) : new Hashtable();
+            c.put(path,true);
+            coverage.put(depth,c);
             return true;
         }
         return false;
 	}
     
-	public int coverage() 
+	public int coverage(int depth) 
 	{
-		return coverage.size();
+        Hashtable c = (Hashtable)(coverage.get(depth));
+		return (c != null) ? c.size() : 0;
 	}
 
 

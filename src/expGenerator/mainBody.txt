@@ -107,6 +107,7 @@ public static void main(String[] args)
 
         RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
         agent.setUpdateMode(update_mode);
+        agent.setSelectMode(plan_selection);
         if (update_mode == UpdateMode.STABLE) {
             agent.setStableK(staK);
             agent.setStableE(staE);
