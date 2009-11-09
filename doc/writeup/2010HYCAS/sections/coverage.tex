@@ -30,29 +30,8 @@ As the different ways of executing the plan in state $w$ are explored, the value
 of $c_P(w)$ approaches $1$. When all choices have been tried, $c_P(w)=1$ and the
 agent may rely fully on the \dt\ estimation of success.
 % %
-In this way, coverage provides a confidence measure for the \dt\ classification.
-
-\notems{changed $p_T(\cdot)$ to $\kappa_P(\cdot)$}
-We then construct a probabilistic plan selection function that includes the
-coverage-based confidence measure.
-% %
-Formally, we define the plan selection weight $\Omega_P(w)$ as a function of the
-\dt\ determined success expectation $\kappa_P(w)$ and the degree of coverage
-$c_P(w)$:\footnote{For the \CL\ and \BUL\ schemes discussed above,
-$\Omega_P(w)=p_T(w)$, that is, the weight of a plan is exactly its \dt\
-estimation of success.}
-%%
-\begin{equation*}\label{eqn:coverage}   
-\Omega_P(w) = 0.5 + \left[  c_P(w) *  \left( \kappa_P(w) - 0.5 \right)  \right].
-\end{equation*}
-	
-	
-Initially the selection weight of the plan for a previously unseen world state
-$w$ takes the default value of $0.5$.
-% %
-Over time, as the various execution paths below the plan are tried in $w$, its
-coverage increases and the selection weight approaches the true value estimated
-by the plan's \dt.
+In this way, coverage can provide a confidence measure for the \dt\
+classification.
 
 
 Each time a plan execution result is recorded, the coverage
@@ -69,90 +48,100 @@ Also, a plan is generally not executed in every world state, so in
 practice it will only need to be assessed in the subset of the world
 states that is relevant to it.
 
-\notems{up to here }
+
+
+
+
+
+\notems{changed $p_T(\cdot)$ to $\kappa_P(\cdot)$}
+So, we next construct a probabilistic plan selection function that includes the
+coverage-based confidence measure.
+% %
+Formally, we define the plan selection \emph{weight} $\Omega_P(w)$ as a function
+of the \dt\ determined success expectation $\kappa_P(w)$ and the degree of
+coverage $c_P(w)$:\footnote{For the \CL\ and \BUL\ schemes discussed above,
+$\Omega_P(w)=p_T(w)$, that is, the weight of a plan is exactly its \dt\
+estimation of success.}
+% %
+\begin{equation*}\label{eqn:coverage}   
+\Omega_P(w) = 0.5 + \left[  c_P(w)^{1/\alpha} *  \left( \kappa_P(w) - 0.5 \right)  \right], 
+\end{equation*}
+%%	
+where $\alpha \in [0,\ldots,\infty)$ is the coverage amplification factor, with
+default value $\alpha=1$.
+%%	
+Initially, the selection weight of the plan for a previously unseen world state
+$w$ takes the default value of $0.5$.
+% %
+Over time, as the various execution paths below the plan are tried in $w$, its
+coverage increases and the selection weight approaches the true value estimated
+by the plan's \dt.
+
+
+
+
+Interestingly, the coverage-based account provides a flexible mechanism for
+``tuning'' the behavior of the agent depending on application characteristics.
+% %
+As $\alpha \approx 0$, the $\CLSELB$ framework will behave more like the original
+$\BULSELA$ system: $c_P(w)^{1/\alpha}$ transitions directly from $0$ to $1$ when
+$c_P(w)$ reaches $1$ (and remains zero otherwise).
+% %
+On other hand, when $\alpha \approx \infty$, a $\CLSELB$ based agent will behave
+more like an $\CLSELA$ based agent: $c_P(w)^{1/\alpha}$ transitions from $0$ to
+$1$ faster and $\Omega'(w) \approx \kappa_P(w)$. With $\alpha=1$ we get our
+initial equation.
+% %
+It follows then that \CLSELB\ provides a principled \emph{middle ground} between
+the \CLSELA\ and \BULSELA\ schemes.
+
+
+
+
+
+
+
+
+
+
+
+
+
 \subsection{Experiments}
 
-\textbf{Here we briefly go over the results on general coverage}
 
-We are now ready to revisit the two learning approaches \CL\ and \BUL\
-from the previous section, but this time using the modified selection weighting
-based on coverage.
+We experimented with the alternative plan selection scheme by studying its impact
+with the two learning approaches \CL\ and \BUL\ from the previous section.
 % %
-We will refer to the new approaches as \CLSELB\ and \BULSELB, respectively.
+We will refer as \CLSELB\ and \BULSELB\ to the learning frameworks obtained when
+using \CL\ and \BUL\ approaches, respectively, together with the new
+coverage-based probabilistic selection.
 % %
-Similarly, $\CLSELA$ and $\BULSELA$ correspond to the approaches using the
-\emph{original} selection weighting that only uses its \dt\ success
-expectation, that is, $\Omega_P(w) = p_T(w)$.
-
-
-\notems{first some text that could be of use...}
-For the purpose of our analysis, we have used algorithm
-\propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
-well-known \weka\ learning package \cite{weka99}. Currently we
-recreate decision trees from scratch after each new piece of data is collected.
-% %
-Of course, for a real-world implementation, one should appeal to algorithms for
-\emph{incremental} induction of the decision tree, such as those described in
-\cite{Swere06:Fast,Utgoff97Decision}.
-% %
-
-\bigskip\bigskip
-
-
-The \BUL\ approach relies on a \emph{confidence} test---stability---that checks
-whether we are sufficiently well informed to trust that the current failure is
-indicative of future attempts.
-
-
-\bigskip\bigskip
-
-
-The \weka\ \propername{J48} algorithm for inducing \dt{}s aims to balance
-compactness of representation with accuracy. Consequently, it maintains in each
-\dt\ information about the number of instances (or world states in our case) from
-the training data correctly and incorrectly classified by each decision tree leaf
-node. Subsequently, whenever a plan's \dt\ is used to classify a new instance
-(world state), weka returns not only the classification (i.e. success or
-failure), but also a classification probability (i.e. to what degree it believes
-that the classification is correct). We then use this probability as an estimate
-of the plan's chances of success for the world in question.
-
-
-\bigskip\bigskip
-
-In order to explore the difference between \BUL\ and \CL, we set up testbed
-programs composed of several goals and plans combined in a hierarchical manner
-and yielding goal-plan tree structures of different shapes.\footnote{We have
-implemented the learning agent system in the \JACK\ BDI platform
-\cite{Busetta99jack}. The fact that \JACK\ is a Java-based system and
-provides powerful meta-level reasoning capabilities, allows us to integrate \weka\ and
-probabilistic plan-selection mechanisms with not much effort. Nonetheless, all
-the results are independent on this and any other BDI agent system could
-have been used.}
-
-
-\bigskip\bigskip
+Thus, $\CL$ and $\BUL$ correspond to the cases where the \emph{original}
+selection weighting using only the \dt{}s' expectation of success (i.e.,
+$\Omega_P(w) = \kappa_P(w)$) is used.
 
 
 
-
+So, we set up testbed programs composed of several goals and plans combined in a
+hierarchical manner and yielding goal-plan tree structures of different shapes.
+% %%
 The experiments consisted in posting the top-level goal repetitively under random
 world states, running the corresponding  BDI learning agent, and finally
-recording whether the execution terminated successfully or not.
+recording whether the execution terminated successfully or not.\footnote{We have
+implemented the learning agent system in the \JACK\ BDI platform
+\cite{BusettaRHL:AL99-JACK} and used used algorithm \propername{J48}, a version
+of \propername{c4.5} \cite{Mitchell97:ML}, from the well-known \weka\ learning
+package \cite{weka99} for representation and induction of \dt{}s. The fact that
+\JACK\ is a Java-based system and provides powerful meta-level reasoning
+capabilities, allows us to integrate \weka\ and probabilistic plan-selection
+mechanisms with not much effort. Nonetheless, all the results are independent on
+this and any other BDI agent system could have been used.}
 % %
-%We calculated the average rate of success of the goal every some fixed
-%number of iterations (in our case $20$), and investigated how such rate evolved
-%as the agent refined the context condition of plans.
 We calculate the average rate of success of the goal by first averaging the
 results at each time step over $5$ runs of the same experiment, and then
-smoothing using a moving average of the previous 100 time steps to get the trends
-reported in the figures.
-% %%
-We ran the tests with both a \BUL-based agent and a \CL-based agent, ensuring the
-same sampling of random world states for each.
-
-
-
+smoothing using a moving average of the previous $100$ time steps to get the
+trends reported in the figures.
 
 
 Our first observation is that the $\BULSELA$ and $\BULSELB$ approaches show
@@ -160,35 +149,21 @@ similar performance.
 % %
 This is not surprising, as the stability test performed by these agents at each
 plan node inherently results in close to full coverage. Indeed, for a plan to
-become ``stable,'' the agent needs to (substantially) explore all possible  ways
-of executing it. The stability check, then, effectively reduces $\Omega'_T(w)$ to
-$\Omega_P(w)$.
+become ``stable,'' the agent needs to (substantially) explore (i.e., cover) all
+possible ways of executing it. The stability check, then, effectively reduces
+$\kappa_P(w)$ to $\Omega_P(w)$.
 % %
-So, for simplicity, we shall not give a further account of the $\BULSELB$
-approach in this section.
+% So, for simplicity, we shall not give a further account of the $\BULSELB$
+% approach in this section.
 
 
 
 We now focus on the \CL\ approach.
 % %
-For the \CL-favouring structure $\T_1$, we find that the performance of $\CLSELB$ matches that
-of $\CLSELA$ reported earlier in Figure~\ref{fig:T1_result}.
+First of all, for the cases where $\CLSELA$ performs reasonably well compared to
+$\BULSELA$-based systems, the new $\CLSELA$ approach maintains comparable
+performance.
 % %
-Similarly, for the balanced structure $\T_3$ where previously both \CL\ and
-\BUL\ performed equally well, the performance of $\CLSELB$
-was the same as that reported for $\CLSELA$ earlier in Figure~\ref{fig:T3_result}.
-% %
-Thus, for the cases where $\CLSELA$ was performing reasonably well, the new $\CLSELA$ approach maintains comparable performance.
-
-\begin{figure}[t]
-\begin{center}
-\input{figs/T2-result2}
-\caption{Performance of $\CLSELB$ (solid crosses) in structure $\T_2$ compared against
-the earlier results for $\CLSELA$ and $\BULSELA$ (both in dotted grey).}
-\label{fig:T2_result2}
-\end{center}
-\end{figure}
-
 The benefit of the coverage-based approach is apparent, though, when one
 considers the goal-plan structure $\T_2$ in which the $\CLSELA$ performed
 poorly (cf. Figure \ref{fig:T2_result}).
@@ -199,7 +174,7 @@ plan selection $\CLSELB$ superimposed over the original results
 from Figure \ref{fig:T2_result}.
 % %
 The reason why the new plan selection mechanism improves the \CL\ learning scheme
-is that even though the success estimation $p_T(w)$ for a given plan $P_i$ would
+is that even though the success estimation $\kappa_P(w)$ for a given plan $P_i$ would
 still be low initially (remember that \CL, in contrast with \BUL, would record
 all initial failure outcomes for $P_i$), the agent would not be very confident in
 such estimation until the plan's coverage increases; therefore the
@@ -208,6 +183,17 @@ $0.5$. In other words, the false negative outcomes collected by the agent for
 plan $P_i$ would not be considered so seriously due to low plan coverage. As full
 coverage is approached, one would expect the agent to have discovered the success
 execution encoded in $P_i$.
+
+
+\begin{figure}[t]
+\begin{center}
+\input{figs/T2-result2}
+\caption{Performance of $\CLSELB$ (solid crosses) in structure $\T_2$ compared against
+the earlier results for $\CLSELA$ and $\BULSELA$ (both in dotted grey).}
+\label{fig:T2_result2}
+\end{center}
+\end{figure}
+
 
 
 Even more interesting is the the impact of the new plan selection mechanism on
@@ -240,25 +226,17 @@ the performance of the \CL\ approach in those cases where it performed poorly du
 to false negative experiences, i.e., failure runs for a plan that includes
 successful executions.
 % %
-Furthermore, coverage provides a flexible mechanism for tuning agent behaviour
-depending on application characteristics. Consider equation $\Omega'_T(w)$ with
-the coverage term modified to $c_T(w)^{1/\alpha}$, with parameter $\alpha \in
-[0,\ldots,\infty)$.
-% %
-Interestingly, as $\alpha \approx 0$, $\CLSELB$ will behave more like $\BULSELA$:
-$c_T(w)^{1/\alpha}$ transitions directly from $0$ to $1$ when $c_T(w)$ reaches
-$1$ (and remains zero otherwise).
-% %
-On other hand, when $\alpha \approx \infty$, $\CLSELB$ will behave more like the
-$\CLSELA$: $c_T(w)^{1/\alpha}$ transitions from $0$ to $1$ faster and $\Omega'(w)
-\approx p_T(w)$. With $\alpha=1$ we get our initial equation.
-% %
-It follows then that \CLSELB\ provides a \emph{middle ground} between
-the \CLSELA\ and \BULSELA\ schemes.
 
 
 Finally, we note that coverage-based selection weights encourage the agent to
 explore all available options. This further ensures that all solutions are
 systematically found, allowing the agent to decide which solution is optimal
 faster. For some domains this may be an important feature.
+
+
+
+
+
+
+
 
