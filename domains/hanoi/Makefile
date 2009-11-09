@@ -20,8 +20,8 @@ clean:
 	/bin/rm -rf build lib/hanoi.jar
 
 run: lib/hanoi.jar
-	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -w
+	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -g 123456 -r 15 -j 9 -i 10 -w
 
-run-learning: lib/hanoi.jar
-	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -x -u concurrent -s probabilistic -d . -o player.csv -r 15 -i 3000 -j 4
+runl: lib/hanoi.jar
+	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/hanoi.jar Player -x -u concurrent -s coverage -d . -o player.csv -g 123456 -r 2 -j 4 -i 3000
 

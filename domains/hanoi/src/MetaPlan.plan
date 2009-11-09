@@ -28,8 +28,8 @@ public plan MetaPlan extends Plan {
                 if (ag.pselect == PlanSelectMode.COVERAGE) {
                     p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
                     String str =
-                        "Plan" + info.plan_id +
-                        " REVISED the probability in state " + ag.planNodes[info.plan_id].stringOfLastState() +
+                        "MetaPlan: P" + info.plan_id +
+                        " REVISED probability" +
                         " to p=" + ((double) ((int) (p * 10000))) / 10000 +
                         " based on coverage c=" + ((double) ((int) (info.coverage * 10000))) / 10000 +
                         "^" + ((double) ((int) ((1/info.coverageWeight) * 10000))) / 10000;
@@ -58,7 +58,7 @@ public plan MetaPlan extends Plan {
             for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s), i++) {
                 if (s.getInfo() instanceof PlanIdInfo) {
                     PlanIdInfo info = (PlanIdInfo) s.getInfo();
-                    str = "MetaPlan: The probability for Plan" +info.plan_id+" is p=";
+                    str = "MetaPlan: P" +info.plan_id+" probability is p=";
                     double p = info.pSuccess;
                     if (ag.pselect == PlanSelectMode.COVERAGE) {
                         p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
@@ -79,7 +79,7 @@ public plan MetaPlan extends Plan {
                     ag.writeLog(str);
                 }
             }
-            double rnd = ag.generator.nextDouble();
+            double rnd = ag.selector.nextDouble();
             int choice = 0;
             while (prob[choice] < rnd) {
                 choice++;

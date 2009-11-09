@@ -16,24 +16,13 @@ import PlanIdInfo;
 
 public plan SolveRight extends Plan {
 
-    public int pid = 1;
+    public int pid = 3;
 
     #handles event SolveDisc ev;
     #uses interface Player ag;
 
     public PlanInstanceInfo getInstanceInfo(){
-        if (ag.learningMode) {
-            PlanNode thisNode = ag.planNodes[pid];
-            double coverage = thisNode.getCoverage(ev.state());
-            if (thisNode.useDT(1/*Iteration: not used*/)){
-                double[] ps = thisNode.getProbability(ev.state());
-                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
-            } else{
-                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
-            }
-        } else {
-            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
-        }
+        return ag.planInfo(pid, ev.state(), ev.level);
     }
 
     static boolean
@@ -47,7 +36,7 @@ public plan SolveRight extends Plan {
 
     context()
     {
-        (ev.level < ag.maxRecursion) && (ev.alwaysApplies || place.get(ev.pin,ev.disc));
+        (ev.level > 0) && (ev.alwaysApplies || place.get(ev.pin,ev.disc));
     }
     
     #reasoning method
@@ -60,14 +49,14 @@ public plan SolveRight extends Plan {
     pass() {
         if (ag.learningMode) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(true);
+            ag.planNodes[pid].record(true,ev.level,(ev.level==ag.maxRecursion));
         }
     }
     #reasoning method
     fail() {
         if (ag.learningMode) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(false);
+            ag.planNodes[pid].record(false,ev.level,(ev.level==ag.maxRecursion));
         }
     }
 }

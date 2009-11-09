@@ -27,11 +27,11 @@ public capability Solving extends Capability {
     #imports data Order order();
     #imports data Top top();
     #imports data Place place();
-    #uses plan SolveZero;
-    #uses plan SolveRight;
-    #uses plan SolveTopMove;
     #uses plan SolveTop;
+    #uses plan SolveTopMove;
     #uses plan SolveMiddle;
+    #uses plan SolveRight;
+    #uses plan SolveZero;
     /**
            Nice formatting functions (used to print debugging info).
         */

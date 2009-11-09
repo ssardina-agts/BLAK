@@ -50,6 +50,7 @@ public agent Player extends Agent implements Logger{
     public int numPins;
 
     public boolean learningMode;
+    public boolean demoMode  = false;
     
     public int episode = 0;
     public int maxEpisodes = 0;
@@ -61,6 +62,7 @@ public agent Player extends Agent implements Logger{
     public String filename;
     
     public Random generator;
+    public Random selector;
     public PrintWriter writerOut;
     public PrintWriter writerRes;
     
@@ -70,7 +72,7 @@ public agent Player extends Agent implements Logger{
     public PlanNode[] planNodes;
 
     // Constructor
-    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename) {
+    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed) {
         super("player");
         
         this.numDiscs = nDiscs;
@@ -78,25 +80,24 @@ public agent Player extends Agent implements Logger{
         
         this.pselect = pselect;
         this.maxRecursion = recursion;
-        generator = new Random();
+        generator = (seed == 0) ? new Random() : new Random(seed);
+        selector = new Random();
         
         this.targetDir = targetDir;
         this.filename = filename;
         
         try{
             writerOut = new PrintWriter(targetDir + "/player.out");
-            if (learning) {
-                writerRes = new PrintWriter(targetDir + "/" + filename);
-            }
+            writerRes = new PrintWriter(targetDir + "/" + filename);
         }catch(IOException e){
             System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
         }
         
+        episode = 0;
+        maxEpisodes = episodes;
         learningMode = learning;
         if (learningMode) {
-            episode = 0;
-            maxEpisodes = episodes;
             initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE);
         }
         
@@ -147,6 +148,22 @@ public agent Player extends Agent implements Logger{
         return p;
     }
 
+    public PlanIdInfo planInfo(int pid, String[] state, int level) {
+        if (learningMode) {
+            PlanNode thisNode = planNodes[pid];
+            //double coverage = thisNode.getCoverageRatio(state,level);
+            double coverage = thisNode.getCoverage(state,level)/thisNode.getPaths(level);
+            if (thisNode.useDT(1/*Iteration: not used*/)){
+                double[] ps = thisNode.getProbability(state);
+                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
+            } else{
+                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
+            }
+        } else {
+            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
+        }
+    }
+
     public void go() {
         postEvent(ss.start(true));
     }
@@ -158,9 +175,7 @@ public agent Player extends Agent implements Logger{
             }
         }
         writerOut.close();
-        if (learningMode) {
-            writerRes.close();
-        }
+        writerRes.close();
     }
     
     public void indentRight() {
@@ -182,11 +197,9 @@ public agent Player extends Agent implements Logger{
         writerOut.flush();
     }
     public void writeResult(int episode, boolean result) {
-        if (learningMode) {
-            String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0");
-            writerRes.println(str);
-            writerRes.flush();
-        }
+        String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0");
+        writerRes.println(str);
+        writerRes.flush();
     }
     
     public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
@@ -229,25 +242,25 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[5];
-        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
-        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, stableE, stableK, false, logger);
+        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
 
         Node[] goalNodes = new Node[1];
-        goalNodes[0] = new GoalNode(0,"SolveDisc", logger);
+        goalNodes[0] = new GoalNode(0,"G", logger);
         goalNodes[0].addChild(planNodes[0]);
         goalNodes[0].addChild(planNodes[1]);
         goalNodes[0].addChild(planNodes[2]);
         goalNodes[0].addChild(planNodes[3]);
         goalNodes[0].addChild(planNodes[4]);
 
-        planNodes[0].setTopGoal((GoalNode)goalNodes[0]);
-        planNodes[1].setTopGoal((GoalNode)goalNodes[0]);
-        planNodes[2].setTopGoal((GoalNode)goalNodes[0]);
-        planNodes[3].setTopGoal((GoalNode)goalNodes[0]);
-        planNodes[4].setTopGoal((GoalNode)goalNodes[0]);
+        planNodes[1].addChild(goalNodes[0]);
+        planNodes[1].addChild(goalNodes[0]);
+        planNodes[2].addChild(goalNodes[0]);
+        planNodes[2].addChild(goalNodes[0]);
+
     }
     
     // Application entry point.
@@ -266,6 +279,7 @@ public agent Player extends Agent implements Logger{
         int recursion = 20;
         String targetDir = ".";
         String filename = "player.csv";
+        long seed = 0;
         
         args = Jak.initialize(args);
         if (args.length > 0) {
@@ -335,10 +349,15 @@ public agent Player extends Agent implements Logger{
                     numDiscs = Integer.parseInt(args[index]);
                     index++;
                     break;
+                case 'g':
+                    seed = Long.parseLong(args[index]);
+                    index++;
+                    break;
                 }
             }
         }
-        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename);
+        System.out.println("Using random generator seed: "+seed);
+        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename, seed);
         p.go();
     }
 }

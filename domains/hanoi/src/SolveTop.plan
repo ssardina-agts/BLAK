@@ -17,7 +17,7 @@ import PlanIdInfo;
 
 public plan SolveTop extends Plan {
 
-    public int pid = 3;
+    public int pid = 0;
 
     logical int pin;
     logical int disc;
@@ -27,18 +27,7 @@ public plan SolveTop extends Plan {
     #uses interface Player ag;
 
     public PlanInstanceInfo getInstanceInfo(){
-        if (ag.learningMode) {
-            PlanNode thisNode = ag.planNodes[pid];
-            double coverage = thisNode.getCoverage(ev.state());
-            if (thisNode.useDT(1/*Iteration: not used*/)){
-                double[] ps = thisNode.getProbability(ev.state());
-                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
-            } else{
-                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
-            }
-        } else {
-            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
-        }
+        return ag.planInfo(pid, ev.state(), ev.level);
     }
 
     static boolean
@@ -55,7 +44,7 @@ public plan SolveTop extends Plan {
 
     context()
     {
-        (ev.level < ag.maxRecursion) && (ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() > ev.disc.getValue())));
+        (ev.level > 0) && (ev.alwaysApplies || (((top.get(pin,ev.disc) && !pin.unify(ev.pin)) && top.get(ev.pin,disc)) && (disc.getValue() > ev.disc.getValue())));
     }
 
     #reasoning method
@@ -69,11 +58,11 @@ public plan SolveTop extends Plan {
         deepest(disc,deep);
         ag.writeLog("Plan "+pid+" will first solve disc "+deep+" to pin "+pin3);
         ag.indentRight();
-        @subtask(sd.solve(deep,pin3,ev.level+1,ag.tops(),ag.places()));
+        @subtask(sd.solve(deep,pin3,ev.level-1,ag.tops(),ag.places()));
         ag.indentLeft();
         ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
         ag.indentRight();
-        @subtask(sd.solve(ev.disc,ev.pin,ev.level+1,ag.tops(),ag.places()));
+        @subtask(sd.solve(ev.disc,ev.pin,ev.level-1,ag.tops(),ag.places()));
         ag.indentLeft();
         @test(place.get(ev.pin,ev.disc), null);
     }
@@ -95,14 +84,14 @@ public plan SolveTop extends Plan {
     pass() {
         if (ag.learningMode) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(true);
+            ag.planNodes[pid].record(true,ev.level,(ev.level==ag.maxRecursion));
         }
     }
     #reasoning method
     fail() {
         if (ag.learningMode) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(false);
+            ag.planNodes[pid].record(false,ev.level,(ev.level==ag.maxRecursion));
         }
     }
 }
