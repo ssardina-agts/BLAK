@@ -1,3 +1,74 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Intro to BDI Learning Framework}\label{sec:introlearning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In order to facilitate learning regarding which plan should be
+executed for a given goal, in a particular world state, we replace the
+boolean formulae that are the standard representation for context
+conditions in BDI programming languages, with decision
+trees~\cite{Mitchell97:ML} that provide a judgement as to whether the
+plan is likely to succeed or fail, given a particular situation. 
+
+To select a plan, based on information in the decision trees, we use a
+probabilistic selection method whereby we choose a plan with
+probability proportional to its believed chance of success in the
+particular world state. This approach provides a balance between
+exploitation (we more often choose a plan with a higher belief of
+success), and exploration (we sometimes choose a plan which currently
+does not have a strong belief of success: perhaps the failure was
+unusual, or maybe we made a later wrong choice and there is another
+path from this plan which will succeed).
+
+As we have reported in earlier work~\cite{Airiau:IJAT:09} there are
+potential problems with learning the wrong information if a plan fails
+due to a wrong decision further down in the goal plan
+hierarchy. Consider the goal-plan tree in figure ... <do example as to why
+problem>
+
+Our experimentation has shown that the degree to which the learning is
+negatively affected due to wrong decisions is very dependent on
+the particular structure of the goal-plan tree (i.e. the
+program). In particular, if there is a threshhold below which a plan
+is not considered worth trying (for example, if belief of success is
+only 10\%, then the cost of trying the plan may not be justified),
+then storing failure information when its reliability is unceratin,
+can lead the agent to be unable to ever learn the successful
+execution. 
+
+There are two different approaches we can take to try to address this
+problem. The first approach, which we explored
+in~\cite{Airiau:IJAT:09} is to be careful about recording of failure
+examples for the decision tree, recording them only when we are
+sufficiently sure that the failure was not due to a later wrong
+choice. This requires recording which choices we have made at each
+point, for every world situation. We have shown that this conservative
+approach is more robust, though often slower, than a more agressive
+approach which records all experience, but can in some cases be
+severely impacted.
+
+The second approach that we have tried, reported in~\cite{aamas} is to
+consider how likely the decision tree is to be reliable, at the point
+we make our plan selection.  We consider the reliability of a decision
+tree for a particular plan, in a particular world state, to be
+relative to how many executions of the plan (or paths in the goal plan
+tree) have been explored in that world state. We refer to this measure
+as coverage. The greater the coverage, the more we can rely on what we
+have observed.  By biasing the selection probability number towards
+the default value of 0.5 in cases where the coverage, and therefore
+reliability is low, we can achieve the same robustness as that
+achieved by conservative recording of failure cases. The coverage
+approach is more flexible as teh extent to which this is used can be
+readily adjusted by parameters in the selection formula. Consequently,
+in this and ongoing work we use this approach.
+
+A limitation of the work that we have done with both the above
+approaches is that we have not considered parameterised goals. These
+are clearly necessary for any real application.  A robot goal to move
+would typically have some parameters, either a destination (where the
+world state contains the current position), or a direction. Clearly a
+goal to move from A to B will require different choices than a goal to
+move from A to C (assuming B and C are not close). The learning
+process must take account of this.  A second limitation is that we
+have not allowed for recursion, which again is heavily used in many
+real applications. In the following section we present our learning
+approach, incorporating both parametrised goals, and recursion, using
+the coverage approach to ensuring reliability.
