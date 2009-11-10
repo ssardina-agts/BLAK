@@ -1,3 +1,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Case Example: The Hanoi Towers Robot}\label{sec:hanoi}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\entity}[1]{\texttt{#1}}
+
+To evaluate our learning framework and approach, we considered a real BDI program
+that comes as an example domain within the \JACK\ agent platform
+distribution~\cite{BusettaRHL:AL99-JACK}.
+% %
+The example involves a robot playing the well-known Towers of Hanoi game.
+Although this is a fairly simple scenario, it is enough to test our overall
+framework. In particular, the plan library makes uses of (goal) recursion and
+events are parametrized. Moreover, even solving a sub-goal such as ``move disk
+$n$ to pin $1$'' may involve many sub-goal postings and plan activations.
+% %
+More importantly, unlike our previous empirical evaluations reported in
+\cite{Airiau:IJAT:09,Singh:AAMAS10} where plan-libraries were ``syntetic'' and
+thus with no special meaning, here we use an \emph{existing} working domain.
+Hence, the evaluation criteria is now more clear: \emph{is our learning framework
+able to achieve the performance of the existing system?}
+
+
+The Towers of Hanoi application included in the \JACK\ distribution is as
+follows.
+% %
+
+
+
