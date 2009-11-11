@@ -4,7 +4,7 @@
 
 Our learning task may be summarised as follows: \textit{Given past execution data and the current world state, determine which plan to execute next in order to best address the event-goal in question}. In the BDI sense, our task is to learn the context condition of each plan in the goal-plan hierarchy. In this section we describe our BDI Learning Framework that enables such learning. In particular we describe the use of \dt s for learning context conditions, together with the confidence-based probabilistic plan selection that uses the learning output, with a focus on learning with event-goal types and recursive event-goals.
 
-\subsection{Learning with Decision Trees}
+\subsection{Integrating Decision Trees into Context Conditions for Plans}\label{sec:introlearning}
 
 In a BDI system, a plans context condition is a logical formula that is constructed at design time and evaluated against an event-goal at run time to determine if the plan is applicable in the given world state\footnote{Context formulas may reference internal beliefs as well as environment states, and for this study we treat both as inclusive in the world state.}. As reported in \cite{Airiau:IJAT:09}, in order to allow the context condition to be learnt over time, we annotate each plans context formula with a \textit{\dt}\footnote{It is perfectly feasible to combine the existing logical formula with the \dt\ classification, but to aid our understanding of the \dt\ learning in this study we always use an empty initial formula.}. The idea is that the agent starts with some \textit{necessary but possibly insufficient} conditions for each plan (provided by the designer), and over time and in the course of trying various plans in various world states will be able to \textit{refine} each plans context condition using the learnt \dt\ classification of the world states encountered.
 
@@ -21,7 +21,7 @@ One source of misclassification in the learnt \dt s is from erroneous training s
 A second source of misclassification is from the unorthodox use of \dt s in our framework. Note that the typical use of \dt s lies in the \textit{offline} induction from a complete training set. However, in our case training samples are progressively added after each new execution, while all the time the agent makes the best choice given the experience so far. This results in an incomplete training set in the early stages of learning\footnote{Training data is incomplete in the sense that the agent has only collected a portion of the full data set required to learn the correct classification.} leading to misclassification errors. In \cite{Singh:AAMAS10} we show how a measure of confidence in the \dt\ classification based on the \textit{coverage} of the paths \textit{below} the plan in the goal-plan hierarchy may be used \textit{during plan selection} to address this issue (independent of the recording scheme used).
 
 
-\subsection{Coverage-based Probabilistic Plan Selection}
+\subsection{Confidence-based Probabilistic Plan Selection}
 
 In previous work \cite{Singh:AAMAS10} we introduced a confidence measure in the \dt\ classification based on the notion of \textit{coverage} of the choices below the plan in the BDI goal-plan hierarchy. The idea is that our confidence in a plan's \dt\ increases as more of the possible execution paths below the plan in the goal-plan hierarchy are explored.
 
