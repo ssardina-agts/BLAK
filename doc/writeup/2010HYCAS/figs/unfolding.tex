@@ -1,58 +1,53 @@
-\begin{tikzpicture}[scale=1.0,level distance=1.5cm]
+\begin{tikzpicture}[scale=0.8,level distance=2.2cm]
 \tikzstyle{txt}=[scale=1.0]
-\tikzstyle{planbox}=[scale=1.0,draw,minimum height=0.9cm,minimum width=1.0cm]
-\tikzstyle{goalbox}=[scale=1.0,draw,rounded corners,minimum height=0.9cm,minimum width=1.0cm]
-\tikzstyle{level 2}=[sibling distance=4.5cm] 
-\tikzstyle{level 2}=[sibling distance=4.5cm] 
-\tikzstyle{level 3}=[sibling distance=9.0cm] 
-\tikzstyle{level 4}=[sibling distance=2.5cm]
-\tikzstyle{level 5}=[sibling distance=4.5cm]
-\tikzstyle{level 6}=[sibling distance=1.5cm]
-\tikzstyle{level 7}=[sibling distance=1.3cm]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{planbox}=[draw,minimum height=0.9cm,minimum width=0.9cm]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.9cm,minimum width=1.0cm]
+\tikzstyle{level 1}=[sibling distance=4.5cm] 
+\tikzstyle{level 2}=[sibling distance=9.0cm] 
+\tikzstyle{level 3}=[sibling distance=2.5cm]
+\tikzstyle{level 4}=[sibling distance=4.5cm]
+\tikzstyle{level 5}=[sibling distance=1.5cm]
+\tikzstyle{level 6}=[sibling distance=1.3cm]
 
-\node[planbox,yshift=1cm,dashed] {}
-    child[solid] {node[goalbox] {$G[2]$}
+\node[goalbox,yshift=1cm] {$G\langle\varphi_1\rangle$}
 	child {node[planbox] {$P_1$}}
 	child {node[planbox] {$P_2$}
-		child {node[goalbox] {$G[1]$}
-			child {node[planbox] {$P_1$}}
-			child {node[planbox] {$P_2$}
-				child {node[goalbox] {$G[0]$}
+		child {node[goalbox] {$G\langle\varphi_2\rangle$}
+			child {node[planbox,succ] {$P_1$}}
+			child[dashed] {node[planbox] {$P_2$}
+				child {node[goalbox] {$G\langle\varphi_4\rangle$}
 					child {node[planbox] {$P_1$}}
-					child {node[planbox] {$P_2$}
-					}
+					child {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
-				child {node[goalbox] {$G[0]$}
+				child {node[goalbox] {$G\langle\varphi_5\rangle$}
 					child {node[planbox] {$P_1$}}
-					child {node[planbox] {$P_2$}
-					}
+					child {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
 			}
 			child {node[planbox] {$P_3$}}
 		}
-		child {node[goalbox] {$G[1]$}
+		child {node[goalbox] {$G\langle\varphi_3\rangle$}
 			child {node[planbox] {$P_1$}}
 			child {node[planbox] {$P_2$}
-				child {node[goalbox] {$G[0]$}
-					child {node[planbox] {$P_1$}}
-					child {node[planbox] {$P_2$}
-					}
+				child {node[goalbox] {$G\langle\varphi_6\rangle$}
+					child {node[planbox,succ] {$P_1$}}
+					child[dashed] {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
-				child {node[goalbox] {$G[0]$}
+				child {node[goalbox] {$G\langle\varphi_7\rangle$}
 					child {node[planbox] {$P_1$}}
-					child {node[planbox] {$P_2$}
-					}
-					child {node[planbox] {$P_3$}}
+					child[dashed] {node[planbox] {$P_2$}}
+					child {node[planbox,fail] {$P_3$}}
 				}
 			}
 			child {node[planbox] {$P_3$}}
 		}
 	}
 	child {node[planbox] {$P_3$}}
-    }
 ;
 
 \end{tikzpicture}
