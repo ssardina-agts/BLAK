@@ -20,114 +20,94 @@ business settings can improve overall project productivity by an average 350\% t
 500\%. Also the agent approach allowed the business to change and extend
 solutions quickly helping to bridge the semantic gap between the business side
 and IT development.
+%%
+BDI systems have built into them an ability to balance pro-actively
+pursuing a goal, with reactively responding to the environment. They
+also have a well developed failure recovery mechanism. This makes them
+very suitable for robotics applications operating in a physical world
+which is often more error prone than a software domain.
 
+BDI systems, despite their strengths, do not however incorporate any
+ability to learn from experience. Our work makes a start at addressing
+this issue, focussing specifically on learning which plan to select,
+given a particular goal and world state.
 
-
-
-In this paper, we are concerned with one of the key aspects of the BDI
-agent-oriented programming paradigm, namely, that of \emph{intelligent plan
-selection} \cite{Pollack92-IRMA,Georgeff89-PRS}.
-% %
-Specifically, we explore the details of how effective plan selection can be
-learnt based on ongoing experience.
-
-
-There are a plethora of agent programming languages and development platforms in
-the BDI tradition, such as  \PRS\ \cite{Georgeff89-PRS},
+There are many agent programming languages and development platforms
+in the BDI tradition, such as \PRS\ \cite{Georgeff89-PRS},
 \JACK~\cite{BusettaRHL:AL99-JACK}, \TAPL~\cite{Hindriks99:Agent} and
 \DAPL~\cite{Dastani:JAAMAS08-2APL}, \JASON~\cite{jasonbook}, and SRI's
-\SPARK~\cite{MorelyM:AAMAS04-SPARK}, among others. %%
-% %
-\notems{added ``reactively''}
-Generally speaking, these systems enable \emph{abstract plans} written by
-programmers to be combined and used \emph{reactively} in real-time, in a way that
-is both flexible and robust. Concretely, a BDI agent is built around a
-\textit{plan library}, a collection of pre-defined \textit{hierarchical plans}
-indexed by goals and representing the standard operational procedures of the
-domain (e.g., landing a plane).
-% %
-The so-called \emph{context condition} attached to each plan states the
+\SPARK~\cite{MorelyM:AAMAS04-SPARK}, among others. %% All of them
+follow a similar basic architecture, whereby \emph{abstract plans}
+written by programmers are combined and used \emph{reactively} in
+real-time, in a way that is both flexible and robust. Concretely, a
+BDI agent is built around a \textit{plan library}, a collection of
+pre-defined \textit{hierarchical plans} indexed by goals and
+representing the standard operational procedures of the domain (e.g.,
+landing a plane).
+%
+A \emph{context condition} attached to each plan states the
 conditions under which the plan is a sensible strategy to address the
 corresponding goal in a given situation (e.g., it is not raining). The execution
-of a BDI system relies then entirely on \textit{context sensitive subgoal
+of a BDI system then relies on \textit{context sensitive subgoal
 expansion}, allowing agents to ``act as they go'' by making \emph{plan choices}
 at each level of abstraction with respect to the current situation.
-
-
-
-The fact that both the actual behaviours (the plans) and the situations for which
-they are appropriate (their context conditions) are fixed at design time has
-important implications for the whole programming approach.
-% %
-First, it is often difficult or impossible for the programmer to craft the
-\emph{exact} conditions under which a plan would succeed. Second, once deployed,
-the plan selection mechanism is fixed and may not adapt to potential variations
-of different environments.
-% %
-Finally, since plan execution often involves interaction with a \emph{partially
-observable} external world, it is desirable to measure success in terms of
-probabilities rather than boolean values.
-
-
-%Following~\cite{Airiau:IJAT09}, we propose a BDI programming framework where plans'
-%context conditions can be learnt over time, by exploring the plan library and
-%suitably incorporating the outcomes into plans' context conditions.
-%% %
-%To that end, we first extend the standard BDI programming architecture by
-%modeling context conditions of plans with \emph{decision trees}
-%\cite{Mitchell97:ML} and developing a \emph{probabilistic plan selection scheme}
-%compatible with the new representation (Section~\ref{sec:framework}). %%
-%% %
-%We then  develop and empirically investigate an aggressive approach (called \CL) and a
-%conservative one (called \BUL) to learning such context decision trees, and
-%showed that they provide different advantages depending on the implicit structure
-%of the plan library (Sections~\ref{sec:context_learning} and
-%\ref{sec:experiments}). 
-In \cite{Airiau:IJAT09} the authors detail why it may be problematic for
-learning if the BDI hierarchical structure is not taken into account.
-They showed why it can be problematic to assume a mistake at a
-higher level in the hierarchy, when a poor outcome may have been
-related to a mistake in selection further down.  Their
-empirical work suggested that perhaps the advantages of an aggressive
-approach, where all failures were considered meaningful, outweighed
-the advantages of careful consideration.
 %
-In this work, we show that the aggressive scheme, though simpler, can at times lead to a complete inability to learn, thus yielding a much less robust performance than the conservative alternative.
-% %
-Informally, the difference between the two approaches is that whereas the
-aggressive approach accounts for every execution failure, the conservative
-approach instead considers failures only when decisions made during the execution
-are deemed sufficiently ``informed.''
+Although this is quite flexible and effective, an important drawback
+is the lack of ability to learn from ongoing experience. An ability to
+{\it learn} regarding the selection of plans in particular situations,
+adds a whole new layer of robustness and flexibility. Firstly there
+may be situations where it is difficult to determine in advance the
+exact situation under which a particular approach is likely to
+succeed. This is especially the case when it involves complex combinations of
+values of environmental variables. Secondly, an environment may change
+over time, or be slightly different in different deployment
+locations. The ability for the agent system to observe and learn
+from its performance is obviously a very desirable property.
 
+In our work we achieve this by replacing (or augmenting) the usual
+boolean formula for representation of context conditions, by a
+decision tree \cite{Mitchell97:ML} which is learnt based on
+experience. Our plan selection is then based on a probabilistic
+approach, usually choosing the plan which has the highest likelihood
+of success, based on experience. This probabilistic approach is also
+more suitable than the standard boolean approach for complex, often
+partially observable worlds, where various plans may be worth trying,
+but have different chances of succeeding.
 
-In order to obtain a flexible middle-ground between the above two approaches, we
-devise an extended probabilistic plan selection that includes a \emph{confidence}
-measure based on how much the agent has explored the space of possible
-executions of a given plan (Section~\ref{sec:coverage}). The more this space has
-been ``covered'' by previous executions, the more the agent ``trusts'' the
-estimation of success provided by the plan's decision tree.
-% %
-It turns out that an agent based on the aggressive learning scheme together
-with the enhanced plan selection mechanism provides a flexible and simple
-compromise between the two extreme approaches.
+There are however various nuances that must be addressed in using
+decision trees. There is the usual balance between exploration and
+exploitation evident in all learning. There are also particular issues
+to do with the hierarchical representation of BDI programs. 
+%
+We have explored these issues in previous papers
+\cite{Airiau:IJAT09,aamas}, looking at various approaches to the
+issues. In this paper we take what we believe is the preferred
+approach, extending it with the ability to deal with paramaterised
+goals and with recursive calls.  Both these properties are essential
+for real applications. We also take an existing BDI program from the
+JACK tutorial, remove the given context conditions, and show how we
+can learn the appropriate use of the plans provided.
 
-
-
-We point out that our new account of plans' context conditions is
-\emph{compatible} with the standard formula-based one.
-% %
-Indeed, our approach can be easily combined with the standard plan selection
+Our approach can easily be combined with the standard plan selection
 mechanism, by allowing the agent programmer to provide initial context conditions
-that could be later automatically ``refined'' by the agent system. By doing so,
+that could later be automatically ``refined'' by the agent system. By doing so,
 one can effectively take a BDI program and ``tune it'' using our learning
 framework.
 % %
 For simplicity, though, context conditions are learnt from scratch in our
 experimental work.
 
-
-
-
+In the next section we provide an introduction to and overview of both
+BDI programming and our learning framework. We then describe in detail
+the learning framework that has resulted from the work reported in
+\cite{aamas}, incorporating the additional aspects of parameterised
+goals and recursive calls. We show empirical evaluation on program
+structures, where the programs are artificial - i.e. they do not
+accomplish any real task. To further evaluate the efficacy of the approach
+with a real program, we then take an example program developed by
+Agent Oriented Software for their JACK tutorial, remove the context
+conditions and apply our learning approach.  We finish with a
+discussion of outstanding issues and related work.
 
 % The rest of the paper is organized as follows. In the next section, we
 % provide a quick overview of typical BDI-style agents.
