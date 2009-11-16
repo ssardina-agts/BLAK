@@ -71,6 +71,7 @@
 <target name="dist" description="Build all" depends="dependencies,config,trees,treeGenerator,agents,expGenerator">
 	<mkdir dir="${dist.dir}"/>
 	<mkdir dir="${dist.dir}/lib"/>
+	<copy file="${basedir}/lib/weka.jar" tofile="${dist.dir}/lib/weka.jar"/>
 	<mkdir dir="${dist.dir}/specs"/>
 	<mkdir dir="${dist.dir}/scripts"/>
 	<copy file="${src.scripts.dir}/plot.sh" tofile="${dist.dir}/scripts/plot.sh" />
