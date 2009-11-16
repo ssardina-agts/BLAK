@@ -743,6 +743,40 @@ public class PlanNode extends Node{
     {
         return this.getProbability(this.lastState);
     }    
+    
+    public double countForClassification(String[] state)
+    {
+        double val = 0.0;
+        if (useDT(goal_id)){
+            Instance instance = new Instance(numAttributes);
+            instance.setDataset(data);
+            for (int i=0;i<state.length;i++){
+                if (state[i].equals("true"))
+                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
+                else if (state[i].equals("false"))
+                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(state[i]));
+                    } else {
+                        instance.setValue(att,state[i]);
+                    }
+                }
+            }
+            try{
+                val = decisionTree.countForClassification(instance);
+                logger.writeLog("Plan "+this.getItem()+" DT has "+val+" instances in leaf that classifies state "+this.stringOfState(state));
+            }
+            catch(Exception e){
+                System.err.println("something went wrong when the instance was classified \n" +e);
+                System.exit(9);
+            }
+            
+        }
+        return val;
+    }
+    
     /** 
      * print the decision tree and info about it.
      */
