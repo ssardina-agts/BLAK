@@ -26,7 +26,7 @@ public plan SolveTopMove extends Plan {
     #uses interface Player ag;
 
     public PlanInstanceInfo getInstanceInfo(){
-        return ag.planInfo(pid, ev.state(), ev.level);
+        return ag.planInfo(pid, ev.state(), ev.level, 1/*nodeComplexity*/);
     }
 
     static boolean

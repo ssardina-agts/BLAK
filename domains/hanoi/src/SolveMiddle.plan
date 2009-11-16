@@ -23,7 +23,7 @@ public plan SolveMiddle extends Plan {
     #uses interface Player ag;
     
     public PlanInstanceInfo getInstanceInfo(){
-        return ag.planInfo(pid, ev.state(), ev.level);
+        return ag.planInfo(pid, ev.state(), ev.level, ev.level/*nodeComplexity*/);
     }
 
     static boolean

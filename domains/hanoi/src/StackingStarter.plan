@@ -46,6 +46,8 @@ public plan StackingStarter extends Plan {
         } else {
             ag.indentReset();
             ag.episode++;
+            ag.newRandomOrder();
+            initializeTop();
             @post(evt.start(false));
         }
     }
@@ -59,6 +61,8 @@ public plan StackingStarter extends Plan {
         } else {
             ag.indentReset();
             ag.episode++;
+            ag.newRandomOrder();
+            initializeTop();
             @post(evt.start(false));
         }
     }

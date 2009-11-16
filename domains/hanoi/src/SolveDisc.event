@@ -31,17 +31,17 @@ public event SolveDisc extends BDIGoalEvent {
         level = lvl;
         tops = t;
         places = pl;
+        String tstr = "";
+        String pstr = "";
         if (alwaysApplies) {
-            String tstr = "";
             for (int i = 0; i < tops.length; i++) {
                 tstr += tops[i].toString();
             }
-            String pstr = "";
             for (int i = 0; i < places.length; i++) {
                 pstr += places[i].toString();
             }
-            ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" tops="+tstr+" places="+pstr+")");
         }
+        ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" tops="+tstr+" places="+pstr+")");
       }
       catch (Exception e) {
         throw new Error(("Strange variable: " + d));

@@ -13,6 +13,7 @@ public beliefset Order extends ClosedWorld {
     #indexed query get(int disc1, logical int disc2);
     #indexed query get(logical int disc1, int disc2);
     #indexed query get(logical int disc1, logical int disc2);
+    #indexed query remove(logical int disc1, logical int disc2);
 
 
     #function query boolean isClear(int disc) {
@@ -21,6 +22,14 @@ public beliefset Order extends ClosedWorld {
         if (c.next()) {
             return false;
         }
+        return true;
+    }
+
+    #function query boolean deleteAll() {
+        logical int d1;
+        logical int d2;
+        BeliefSetCursor c = get(d1,d2);
+        c.removeAll();
         return true;
     }
 
@@ -34,6 +43,11 @@ public beliefset Order extends ClosedWorld {
         Order__Tuple os = (Order__Tuple)t;
         if (os.disc1 <= os.disc2)
           System.err.println("*** Violated Order constraint: " + os.disc1 + " on top of " + os.disc2 + " ***");
+    }
+
+    public void delfact(Tuple t, BeliefState was)
+    {
+        System.out.println("delfact: " +t);
     }
 
 }

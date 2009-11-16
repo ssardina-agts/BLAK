@@ -100,25 +100,29 @@ public agent Player extends Agent implements Logger{
         if (learningMode) {
             initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE);
         }
+
+        newRandomOrder();
         
-        // Initial order
-        try {
-            if (numDiscs >= 9) order.add(9,7);
-            if (numDiscs >= 7) order.add(7,4);
-            if (numDiscs >= 4) order.add(4,0);
-            if (numDiscs >= 8) order.add(8,5);
-            if (numDiscs >= 5) order.add(5,2);
-            if (numDiscs >= 2) order.add(2,0);
-            if (numDiscs >= 6) order.add(6,3);
-            if (numDiscs >= 3) order.add(3,1);
-            if (numDiscs >= 1) order.add(1,0);
-        } catch (BeliefSetException e) {
-            System.err.println("Error initialising the order of discs on the pins\n"+e);
-            System.exit(9);
-        }
-    
         if (visible) {
             window.initFrame();
+        }
+    }
+    
+    public void newRandomOrder() {
+        try {
+            order.deleteAll();
+            int[] tops = new int[3];
+            tops[0] = 0;
+            tops[1] = 0;
+            tops[2] = 0;
+            for (int i = 1; i <= numDiscs; i++) {
+                int r = generator.nextInt(3);
+                order.add(i,tops[r]);
+                tops[r] = i;
+            }
+        } catch (Exception e) {
+            System.err.println("Error initialising the order of discs on the pins\n"+e);
+            System.exit(9);
         }
     }
     
@@ -148,16 +152,18 @@ public agent Player extends Agent implements Logger{
         return p;
     }
 
-    public PlanIdInfo planInfo(int pid, String[] state, int level) {
+    public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
-            //double coverage = thisNode.getCoverageRatio(state,level);
-            double coverage = thisNode.getCoverage(state,level)/thisNode.getPaths(level);
+            //int nodeComplexity = 1 + selector.nextInt(rec);
+            int nodeComplexity = rec;
+            nodeComplexity = nodeComplexity * nodeComplexity;
+            double confidence = Math.min(1.0,thisNode.countForClassification(state)/nodeComplexity);
             if (thisNode.useDT(1/*Iteration: not used*/)){
                 double[] ps = thisNode.getProbability(state);
-                return new PlanIdInfo(pid, ps[0], coverage, 1.0, false);
+                return new PlanIdInfo(pid, ps[0], confidence, 1.0, false);
             } else{
-                return new PlanIdInfo(pid, 0.5, coverage, 1.0, false);
+                return new PlanIdInfo(pid, 0.5, confidence, 1.0, false);
             }
         } else {
             return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
@@ -242,11 +248,11 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[5];
-        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
 
         Node[] goalNodes = new Node[1];
         goalNodes[0] = new GoalNode(0,"G", logger);
