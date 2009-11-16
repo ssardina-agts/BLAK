@@ -29,19 +29,19 @@ public event SolveDisc extends BDIGoalEvent {
         disc = d;
         pin = p;
         level = lvl;
-        tops = t;
+        discsOnTop = t;
         places = pl;
         String tstr = "";
         String pstr = "";
         if (alwaysApplies) {
-            for (int i = 0; i < tops.length; i++) {
-                tstr += tops[i].toString();
+            for (int i = 0; i < discsOnTop.length; i++) {
+                tstr += discsOnTop[i].toString();
             }
             for (int i = 0; i < places.length; i++) {
                 pstr += places[i].toString();
             }
         }
-        ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" tops="+tstr+" places="+pstr+")");
+        ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" discsOnTop="+tstr+" places="+pstr+")");
       }
       catch (Exception e) {
         throw new Error(("Strange variable: " + d));
@@ -53,12 +53,12 @@ public event SolveDisc extends BDIGoalEvent {
     logical int disc;
     logical int pin;
     int level;
-    Integer[] tops;
+    Integer[] discsOnTop;
     Integer[] places;
 
     public String[] state() {
         int i = 0;
-        String[] state = new String[2+tops.length+places.length];
+        String[] state = new String[2+discsOnTop.length+places.length];
         try {
             state[i++] = Integer.toString(disc.getValue());
             state[i++] = Integer.toString(pin.getValue());
@@ -66,8 +66,8 @@ public event SolveDisc extends BDIGoalEvent {
             System.err.println("Error parsing logical variables\n"+e);
             System.exit(9);
         }
-        for (int j = 0; j < tops.length; j++) {
-            state[i++] = tops[j].toString();
+        for (int j = 0; j < discsOnTop.length; j++) {
+            state[i++] = discsOnTop[j].toString();
         }
         for (int j = 0; j < places.length; j++) {
             state[i++] = places[j].toString();

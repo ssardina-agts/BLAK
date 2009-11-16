@@ -4,13 +4,11 @@ lib/jack.jar:
 	@echo "JACK bundle not found in ./lib/jack.jar. Please copy it here before continuing."
 	@exit 1
 
-lib/weka.jar:
-	@echo "WEKA bundle not found in ./lib/weka.jar. Please copy it here before continuing."
-	@exit 1
+lib/weka.jar: ../../build/dist/lib/weka.jar
+	cp $? $@
 
-lib/blak.jar:
-	@echo "BDI-Learning bundle not found in ./lib/blak.jar. Please copy it here before continuing."
-	@exit 1
+lib/blak.jar: ../../build/dist/lib/blak.jar
+	cp $? $@
 
 lib/hanoi.jar:
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar aos.main.JackBuild -wd src -r -d ../build

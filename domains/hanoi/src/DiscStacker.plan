@@ -51,7 +51,7 @@ public plan DiscStacker extends Plan {
                 if (window.visibleMode()) {
                     window.setCaption("Solving disc"+disc+" to pin"+ pin);
                 }
-                @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.tops(),ag.places()));
+                @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.discsOnTop(),ag.places()));
                 ag.writeLog(((("Stacked disc " + disc) + " onto pin ") + pin));
             }
             if (window.visibleMode()) {
@@ -72,7 +72,7 @@ public plan DiscStacker extends Plan {
             }
             printStack();
             
-            @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.tops(),ag.places()));
+            @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.discsOnTop(),ag.places()));
         }
     }
 

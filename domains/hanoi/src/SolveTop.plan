@@ -58,11 +58,11 @@ public plan SolveTop extends Plan {
         deepest(disc,deep);
         ag.writeLog("Plan "+pid+" will first solve disc "+deep+" to pin "+pin3);
         ag.indentRight();
-        @subtask(sd.solve(deep,pin3,ev.level-1,ag.tops(),ag.places()));
+        @subtask(sd.solve(deep,pin3,ev.level-1,ag.discsOnTop(),ag.places()));
         ag.indentLeft();
         ag.writeLog("Plan "+pid+" will now solve disc "+ev.disc+" to pin "+ev.pin);
         ag.indentRight();
-        @subtask(sd.solve(ev.disc,ev.pin,ev.level-1,ag.tops(),ag.places()));
+        @subtask(sd.solve(ev.disc,ev.pin,ev.level-1,ag.discsOnTop(),ag.places()));
         ag.indentLeft();
         @test(place.get(ev.pin,ev.disc), null);
     }

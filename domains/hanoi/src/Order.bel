@@ -25,6 +25,15 @@ public beliefset Order extends ClosedWorld {
         return true;
     }
 
+    #function query int get(int disc) {
+        logical int d1;
+        Cursor c = get(d1,disc);
+        if (c.next()) {
+            return d1.getValue();
+        }
+        return -1;
+    }
+
     #function query boolean deleteAll() {
         logical int d1;
         logical int d2;

@@ -152,6 +152,25 @@ public agent Player extends Agent implements Logger{
         return p;
     }
 
+    Integer[] discsOnTop() {
+        Integer[] n = new Integer[numDiscs];
+        for (int i = 1; i <= n.length; i++) {
+            try{
+                int top = i;
+                int count = -1;
+                do {
+                    top = order.get(top);
+                    count++;
+                } while (top != -1);
+                n[i-1] = new Integer(count);
+            } catch (BeliefSetException e) {
+                System.err.println("Error accessing belief place.get("+i+")\n"+e);
+                System.exit(9);
+            }
+        }
+        return n;
+    }
+
     public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
@@ -237,11 +256,14 @@ public agent Player extends Agent implements Logger{
         atts.addElement(new Attribute("pin",pval));
         //atts.addElement(new Attribute("recursionLevel",rval));
         
-        for (int i = 0; i < nPins; i++) {
-            atts.addElement(new Attribute("topDiscOnPin"+i));
+        //for (int i = 0; i < nPins; i++) {
+        //    atts.addElement(new Attribute("topDiscOnPin"+i));
+        //}
+        for (int i = 1; i <= nDiscs; i++) {
+            atts.addElement(new Attribute("discsOnTopOf"+i));
         }
         for (int i = 1; i <= nDiscs; i++) {
-            atts.addElement(new Attribute("disc"+i+"IsOnPin",pval));
+            atts.addElement(new Attribute("pinOfDisc"+i,pval));
         }
 
         atts.addElement(new Attribute("outcome",classVal));
