@@ -1,6 +1,6 @@
 We use a modified version of weka where we have added the API function J48.countForClassification() to access the number of total instances classified by the J48 leaf node that classifies the provided instance.
 
-All modified weka files are to be commited here, including the updated library in ./lib/weka/jar that we will distribute.
+All modified weka files are to be commited here, including the updated library in ROOTDIR/lib/weka.jar that we will distribute.
 
 The process of creating a new library is manual. (1) Get the latest weka sources, (2) merge our checked in sources, (3) build the exejar target (4) check back all changes sources and updated lib here.
 
