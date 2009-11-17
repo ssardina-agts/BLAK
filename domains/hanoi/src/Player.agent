@@ -421,17 +421,47 @@ public agent Player extends Agent implements Logger{
                 index++;
                 char option = arg.charAt(1);
                 switch (option) {
+                case 'd':
+                    targetDir = args[index];
+                    index++;
+                    break;
+                case 'e':
+                    stableE = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'g':
+                    seed = Long.parseLong(args[index]);
+                    index++;
+                    break;
                 case 'h':
                     System.out.println("Valid options are:");
                     System.out.println(" -h: Help message");
                     System.out.println(" -w: Show GUI while solving");
                     System.out.println(" -x: Learning mode. Disables relevance and context checks");
                     System.exit(0);
-                case 'w':
-                    visible = true;
+                case 'i':
+                    episodes = Integer.parseInt(args[index]);
+                    index++;
                     break;
-                case 'x':
-                    learningMode = true;
+                case 'j':
+                    numDiscs = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'k':
+                    stableK = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'm':
+                    minInstances = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'o':
+                    filename = args[index];
+                    index++;
+                    break;
+                case 'r':
+                    recursion = Integer.parseInt(args[index]);
+                    index++;
                     break;
                 case 's':
                     String psmode = args[index];
@@ -449,41 +479,11 @@ public agent Player extends Agent implements Logger{
                     if (umode.equals("concurrent"))
                         uselect = UpdateMode.CONCURRENT;
                 break;
-                case 'm':
-                    minInstances = Integer.parseInt(args[index]);
-                    index++;
+                case 'w':
+                    visible = true;
                     break;
-                case 'k':
-                    stableK = Integer.parseInt(args[index]);
-                    index++;
-                    break;
-                case 'e':
-                    stableE = Double.parseDouble(args[index]);
-                    index++;
-                    break;
-                case 'i':
-                    episodes = Integer.parseInt(args[index]);
-                    index++;
-                    break;
-                case 'r':
-                    recursion = Integer.parseInt(args[index]);
-                    index++;
-                    break;
-                case 'd':
-                    targetDir = args[index];
-                    index++;
-                    break;
-                case 'o':
-                    filename = args[index];
-                    index++;
-                    break;
-                case 'j':
-                    numDiscs = Integer.parseInt(args[index]);
-                    index++;
-                    break;
-                case 'g':
-                    seed = Long.parseLong(args[index]);
-                    index++;
+                case 'x':
+                    learningMode = true;
                     break;
                 case 'z':
                     saveInit = true;
