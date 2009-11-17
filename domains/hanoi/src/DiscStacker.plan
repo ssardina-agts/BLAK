@@ -4,6 +4,7 @@
  * WARNING: DO NOT EDIT THIS OR YOUR CHANGES MAY BE LOST
  *************************************************************/
 
+import java.util.Vector;
 import gui.Towers;
 
 /* Documentation */
@@ -59,14 +60,21 @@ public plan DiscStacker extends Plan {
             }
         } else {
             logical int pin;
-            logical int pL;
-            int pI;
             logical int disc;
-            disc.unify(1+ag.generator().nextInt(ag.numDiscs()));
-            place.get(pL,disc);
-            while ((pI = ag.generator().nextInt(ag.numPins())) == pL.as_int());
-            pin.unify(pI);
             ag.writeLog("EPISODE "+ag.episode()+"--------------------");
+            String goalKey = ag.getGoalKeyThisEpisode();
+            if (ag.initSupplied() && (goalKey != null)) {
+                String[] vals = goalKey.split(",");
+                disc.unify(Integer.parseInt(vals[0]));
+                pin.unify(Integer.parseInt(vals[1]));
+            } else {
+                logical int pL;
+                int pI;
+                disc.unify(1+ag.generator().nextInt(ag.numDiscs()));
+                place.get(pL,disc);
+                while ((pI = ag.generator().nextInt(ag.numPins())) == pL.as_int());
+                pin.unify(pI);
+            }
             if (window.visibleMode()) {
                 window.setCaption("Episode "+ag.episode()+": Solving disc"+disc+" to pin"+ pin);
             }

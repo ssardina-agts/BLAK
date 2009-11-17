@@ -8,11 +8,7 @@ import aos.util.Properties;
 import aos.jack.jak.beliefset.BeliefSetException;
 
 import java.util.*;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 
 import trees.Logger;
 import trees.Tree;
@@ -76,7 +72,12 @@ public agent Player extends Agent implements Logger{
     private String episodeGoalKey;
     private Integer[] episodeStartState;
     private int maxDepthThisEpisode;
+
     private boolean saveInitStates;
+    private String saveInitToFile;
+    private boolean loadInitStates;
+    private String loadInitFromFile;
+    private int generateSolutionsAtLevel;
     
     private int indent = 0;
     
@@ -84,14 +85,13 @@ public agent Player extends Agent implements Logger{
     public PlanNode[] planNodes;
 
     // Constructor
-    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, boolean saveInit) {
+    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit) {
         super("player");
         
         this.init = new HanoiState(nDiscs);
         this.episodeStartState = null;
         this.episodeGoalKey = "";
         this.maxDepthThisEpisode = 0;
-        this.saveInitStates = saveInit;
         
         this.numDiscs = nDiscs;
         this.numPins = 3;
@@ -111,7 +111,34 @@ public agent Player extends Agent implements Logger{
             System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
         }
-        
+
+        this.generateSolutionsAtLevel = solutionLevel;
+        this.saveInitStates = (saveInit != null) ? true : false;
+        this.saveInitToFile = saveInit;
+        this.loadInitStates = (loadInit != null) ? true : false;
+        this.loadInitFromFile = loadInit;
+        if (loadInitStates) {
+            try {
+                String fname = targetDir + "/" + loadInitFromFile;
+                ObjectInputStream readerObj = new ObjectInputStream(new FileInputStream(fname));
+
+
+                Object obj = readerObj.readObject();
+                if (obj != null && obj instanceof HanoiState) {
+                    init = (HanoiState)obj;
+                    if (init.id() != nDiscs) {
+                        System.err.println("Hanoi states in file " + fname + " are for "+init.id()+" discs. Should be same as numDiscs i.e "+nDiscs);
+                        System.exit(9);
+                    }
+                    writeLog("Loaded initial hanoi states from file " + fname);
+                    writeLog(init.getStats());
+                }
+                readerObj.close();
+            } catch (Exception e) {
+                System.err.println("Error loading initial states: "+e);
+            }
+        }
+                
         episode = 0;
         maxEpisodes = episodes;
         learningMode = learning;
@@ -119,7 +146,7 @@ public agent Player extends Agent implements Logger{
             initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE);
         }
 
-        newRandomOrder();
+        episodeGoalKey = loadNewState();
         
         if (visible) {
             window.initFrame();
@@ -174,27 +201,76 @@ public agent Player extends Agent implements Logger{
         return pselect;
     }
 
+    public String getGoalKeyThisEpisode() {
+        return episodeGoalKey;
+    }
+
+    public void setGoalKeyThisEpisode(String key) {
+        episodeGoalKey = key;
+    }
+    
+    public boolean initSupplied() {
+        return loadInitStates;
+    }
+    
     public void finishEpisode() {
         indentReset();
         if (saveInitStates) {
             saveInitState();
         }
-        newRandomOrder();
+        episodeGoalKey = loadNewState();
         episode++;
         maxDepthThisEpisode = 0;
     }
     
-    public void setGoalKeyThisEpisode(String key) {
-        episodeGoalKey = key;
-    }
-    
     public void saveInitState() {
-        String key = episodeGoalKey+","+maxDepthThisEpisode;
-        writeLog("Storing initial hanoi state for key["+key+"]");
-        init.set(key, episodeStartState);
+        String depthKey = Integer.toString(maxDepthThisEpisode);
+        init.set(depthKey, episodeGoalKey, episodeStartState);
+        String ess = "";
+        for (int i = 0; i < episodeStartState.length; i++) {
+            ess += episodeStartState[i].toString();
+        }
+        writeLog("Stored state depthKey["+depthKey+"], goalKey["+episodeGoalKey+"], val["+ess+"]");
     }
     
+    public String loadNewState() {
+        String depthKey = Integer.toString(generateSolutionsAtLevel);
+        String goalKey = init.getRandomSecondKey(generator,depthKey);
 
+        if (loadInitStates && (goalKey != null)) {
+            try {
+                order.deleteAll();
+                Integer[] discBelow = init.get(depthKey, goalKey);
+                String ess = "";
+                for (int i = 0; i < discBelow.length; i++) {
+                    ess += discBelow[i].toString();
+                }
+                writeLog("Retrieved state depthKey["+depthKey+"], goalKey["+goalKey+"], val["+ess+"]");
+                for (int i = 0; i < discBelow.length; i++) {
+                    order.add(i+1,discBelow[i].intValue());
+                }
+            } catch (Exception e) {
+                System.err.println("Error initialising loaded order of discs\n"+e);
+                System.exit(9);
+            }
+            writeLog("Loaded initial hanoi state for depthKey["+depthKey+"] and goalKey["+goalKey+"]");
+        } else {
+            newRandomOrder();
+            writeLog("Generated random initial hanoi state");
+        }
+
+        try {
+            episodeStartState = new Integer[numDiscs];
+            for (int i = 0; i < numDiscs; i++) {
+                episodeStartState[i]=new Integer(order.getBelow(i+1));
+            }
+        } catch (Exception e) {
+            System.err.println("Error initialising start state order\n"+e);
+            System.exit(9);
+        }
+        return goalKey;
+    }
+    
     public void newRandomOrder() {
         try {
             order.deleteAll();
@@ -206,11 +282,6 @@ public agent Player extends Agent implements Logger{
                 int r = generator.nextInt(3);
                 order.add(i,tops[r]);
                 tops[r] = i;
-            }
-            
-            episodeStartState = new Integer[numDiscs];
-            for (int i = 0; i < numDiscs; i++) {
-                episodeStartState[i]=new Integer(order.getBelow(i));
             }
         } catch (Exception e) {
             System.err.println("Error initialising the order of discs on the pins\n"+e);
@@ -266,7 +337,6 @@ public agent Player extends Agent implements Logger{
     public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
-            //int nodeComplexity = 1 + selector.nextInt(rec);
             int nodeComplexity = rec;
             nodeComplexity = nodeComplexity * nodeComplexity;
             double confidence = Math.min(1.0,thisNode.countForClassification(state)/nodeComplexity);
@@ -293,11 +363,12 @@ public agent Player extends Agent implements Logger{
         }
         if (saveInitStates) {
             try {
-                String filename = targetDir + "/player.init";
+                String filename = targetDir + "/" + saveInitToFile;
                 ObjectOutputStream writerObj = new ObjectOutputStream(new FileOutputStream(filename));
                 writerObj.writeObject(init);
                 writerObj.close();
-                writeLog("Saved "+init.size()+" initial hanoi states to file " + filename);
+                writeLog("Saved initial hanoi states to file " + filename);
+                writeLog(init.getStats());
             } catch (Exception e) {
                 System.err.println("Error saving initial states: "+e);
             }
@@ -411,7 +482,9 @@ public agent Player extends Agent implements Logger{
         String targetDir = ".";
         String filename = "player.csv";
         long seed = 0;
-        boolean saveInit = false;
+        String saveInit = null;
+        String loadInit = null;
+        int generateSolutionsAtLevel = 0;
         
         args = Jak.initialize(args);
         if (args.length > 0) {
@@ -471,6 +544,10 @@ public agent Player extends Agent implements Logger{
                     if (psmode.equals("coverage"))
                         pselect = PlanSelectMode.COVERAGE;
                     break;
+                case 't':
+                    generateSolutionsAtLevel = Integer.parseInt(args[index]);
+                    index++;
+                    break;
                 case 'u':
                     String umode = args[index];
                     index++;
@@ -485,14 +562,19 @@ public agent Player extends Agent implements Logger{
                 case 'x':
                     learningMode = true;
                     break;
+                case 'y':
+                    loadInit = args[index];
+                    index++;
+                    break;
                 case 'z':
-                    saveInit = true;
+                    saveInit = args[index];
+                    index++;
                     break;
                 }
             }
         }
         System.out.println("Using random generator seed: "+seed);
-        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename, seed, saveInit);
+        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename, seed, loadInit, generateSolutionsAtLevel, saveInit);
         p.go();
     }
 }
@@ -513,19 +595,49 @@ class HanoiState implements Serializable{
         state = new Hashtable();
     }
     
-    public void set(String key, Integer[] val) {
-        state.put(key,val);
+    public void set(String key1, String key2, Integer[] val) {
+        Hashtable hash2 = (state.containsKey(key1)) ? (Hashtable)(state.get(key1)) : new Hashtable();
+        hash2.put(key2,val);
+        state.put(key1,hash2);
+    }
+
+    public String getRandomSecondKey(Random gen, String key1) {
+        if (!state.containsKey(key1)) {
+            return null;
+        }
+        String str = "";
+        Hashtable hash2 =  (Hashtable)(state.get(key1));
+        int pick = gen.nextInt(hash2.size());
+        int count = 0;
+        for (Enumeration e = hash2.keys(); e.hasMoreElements();) {
+            str = (String)(e.nextElement());
+            if (count == pick) {
+                break;
+            }
+            count++;
+        }
+        return str;
     }
     
-    public Vector get(String key) {
-        return (state.containsKey(key)) ? (Vector)(state.get(key)) : new Vector();
+    public Integer[] get(String key1, String key2) {
+        Hashtable hash2 = (state.containsKey(key1)) ? (Hashtable)(state.get(key1)) : new Hashtable();
+        return (hash2.containsKey(key2)) ? (Integer[])(hash2.get(key2)) : new Integer[0];
     }
 
     public int id() {
         return numDiscs;
     }
     
-    public int size() {
-        return state.size();
+    public String getStats() {
+        String stats = "";
+        for (Enumeration e = state.keys(); e.hasMoreElements();) {
+            String key = (String)(e.nextElement());
+            Hashtable hash = (Hashtable)(state.get(key));
+            Object[] a = new Object[2];
+            a[0] = key;
+            a[1] = new Integer(hash.size());
+            stats += String.format("key:%-5s size:%d\n", a);
+        }
+        return stats;
     }
 }
