@@ -40,10 +40,10 @@ public plan DiscStacker extends Plan {
     #reasoning method
     body()
     {
-        if (ag.demoMode) {
+        if (ag.demoMode()) {
             logical int pin;
             pin.unify(2);
-            for (int i = 1;(i < ag.numDiscs+1);i++ ){
+            for (int i = 1;(i < ag.numDiscs()+1);i++ ){
                 logical int disc;
                 disc.unify(i);
                 printStack();
@@ -51,7 +51,7 @@ public plan DiscStacker extends Plan {
                 if (window.visibleMode()) {
                     window.setCaption("Solving disc"+disc+" to pin"+ pin);
                 }
-                @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.discsOnTop(),ag.places()));
+                @subtask(sd.solve(disc,pin,ag.maxRecursion(),ag.discsOnTop(),ag.places()));
                 ag.writeLog(((("Stacked disc " + disc) + " onto pin ") + pin));
             }
             if (window.visibleMode()) {
@@ -62,17 +62,17 @@ public plan DiscStacker extends Plan {
             logical int pL;
             int pI;
             logical int disc;
-            disc.unify(1+ag.generator.nextInt(ag.numDiscs));
+            disc.unify(1+ag.generator().nextInt(ag.numDiscs()));
             place.get(pL,disc);
-            while ((pI = ag.generator.nextInt(ag.numPins)) == pL.as_int());
+            while ((pI = ag.generator().nextInt(ag.numPins())) == pL.as_int());
             pin.unify(pI);
-            ag.writeLog("EPISODE "+ag.episode+"--------------------");
+            ag.writeLog("EPISODE "+ag.episode()+"--------------------");
             if (window.visibleMode()) {
-                window.setCaption("Episode "+ag.episode+": Solving disc"+disc+" to pin"+ pin);
+                window.setCaption("Episode "+ag.episode()+": Solving disc"+disc+" to pin"+ pin);
             }
             printStack();
-            
-            @subtask(sd.solve(disc,pin,ag.maxRecursion,ag.discsOnTop(),ag.places()));
+            ag.setGoalKeyThisEpisode(Integer.toString(disc.getValue())+","+Integer.toString(pin.getValue()));
+            @subtask(sd.solve(disc,pin,ag.maxRecursion(),ag.discsOnTop(),ag.places()));
         }
     }
 
@@ -80,14 +80,14 @@ public plan DiscStacker extends Plan {
     pass()
     {
         ag.writeLog("PASSED");
-        ag.writeResult(ag.episode,true);
+        ag.writeResult(ag.episode(),true);
     }
 
     #reasoning method
     fail()
     {
         ag.writeLog("FAILED");
-        ag.writeResult(ag.episode,false);
+        ag.writeResult(ag.episode(),false);
     }
 
     #reasoning method

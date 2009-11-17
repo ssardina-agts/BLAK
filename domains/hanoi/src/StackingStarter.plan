@@ -40,13 +40,11 @@ public plan StackingStarter extends Plan {
     #reasoning method
     pass()
     {
-        if (ag.demoMode || (ag.episode >= (ag.maxEpisodes-1))) {
+        ag.finishEpisode();
+        if (ag.demoMode() || (ag.episode() >= (ag.maxEpisodes()-1))) {
             ag.finish();
             System.exit(0);
         } else {
-            ag.indentReset();
-            ag.episode++;
-            ag.newRandomOrder();
             initializeTop();
             @post(evt.start(false));
         }
@@ -55,13 +53,11 @@ public plan StackingStarter extends Plan {
     #reasoning method
     fail()
     {
-        if (ag.demoMode || (ag.episode >= (ag.maxEpisodes-1))) {
+        ag.finishEpisode();
+        if (ag.demoMode() || (ag.episode() >= (ag.maxEpisodes()-1))) {
             ag.finish();
             System.exit(0);
         } else {
-            ag.indentReset();
-            ag.episode++;
-            ag.newRandomOrder();
             initializeTop();
             @post(evt.start(false));
         }

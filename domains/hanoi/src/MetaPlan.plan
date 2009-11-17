@@ -25,7 +25,7 @@ public plan MetaPlan extends Plan {
             if (s.getInfo() instanceof PlanIdInfo) {
                 PlanIdInfo info = (PlanIdInfo) s.getInfo();
                 double p = info.pSuccess;
-                if (ag.pselect == PlanSelectMode.COVERAGE) {
+                if (ag.pselect() == PlanSelectMode.COVERAGE) {
                     p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
                     String str =
                         "MetaPlan: P" + info.plan_id +
@@ -33,7 +33,7 @@ public plan MetaPlan extends Plan {
                         " to p=" + ((double) ((int) (p * 10000))) / 10000 +
                         " based on coverage c=" + ((double) ((int) (info.coverage * 10000))) / 10000 +
                         "^" + ((double) ((int) ((1/info.coverageWeight) * 10000))) / 10000;
-                    if (ag.learningMode) {
+                    if (ag.learningMode()) {
                         ag.writeLog(str);
                     }
                 }
@@ -60,7 +60,7 @@ public plan MetaPlan extends Plan {
                     PlanIdInfo info = (PlanIdInfo) s.getInfo();
                     str = "MetaPlan: P" +info.plan_id+" probability is p=";
                     double p = info.pSuccess;
-                    if (ag.pselect == PlanSelectMode.COVERAGE) {
+                    if (ag.pselect() == PlanSelectMode.COVERAGE) {
                         p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
                     }
                     if (p < 0.0001) {
@@ -75,11 +75,11 @@ public plan MetaPlan extends Plan {
                     str += "(unknown) is 1.0/" + num;
                     prob[i] = 1.0 / num;
                 }
-                if (ag.learningMode) {
+                if (ag.learningMode()) {
                     ag.writeLog(str);
                 }
             }
-            double rnd = ag.selector.nextDouble();
+            double rnd = ag.selector().nextDouble();
             int choice = 0;
             while (prob[choice] < rnd) {
                 choice++;
@@ -89,7 +89,7 @@ public plan MetaPlan extends Plan {
                 str += " " + ((double) ((int) (prob[i] * 10000))) / 10000;
             }
             str += " ]";
-            if (ag.learningMode) {
+            if (ag.learningMode()) {
                 ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities " +
                     str + ". Chosen plan index " + choice);
             }

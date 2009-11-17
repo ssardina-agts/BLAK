@@ -24,8 +24,9 @@ public event SolveDisc extends BDIGoalEvent {
     solve(logical int d, logical int p, int lvl, Integer[] t, Integer[] pl)
     {
       try {
+        Player ag = ((Player)getAgent());
         movable = (d.getValue() != 0);
-        alwaysApplies = ((Player)getAgent()).learningMode;
+        alwaysApplies = ag.learningMode();
         disc = d;
         pin = p;
         level = lvl;
@@ -41,7 +42,10 @@ public event SolveDisc extends BDIGoalEvent {
                 pstr += places[i].toString();
             }
         }
-        ((Player)getAgent()).writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" discsOnTop="+tstr+" places="+pstr+")");
+        ag.writeLog("Posted Solve(d="+disc+" p="+pin+" r="+lvl+" discsOnTop="+tstr+" places="+pstr+")");
+        if ((ag.maxRecursion()-level) > ag.maxDepthThisEpisode()) {
+            ag.setMaxDepthThisEpisode(ag.maxRecursion()-level);
+        }
       }
       catch (Exception e) {
         throw new Error(("Strange variable: " + d));

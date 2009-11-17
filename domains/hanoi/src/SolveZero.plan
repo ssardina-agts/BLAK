@@ -47,16 +47,16 @@ public plan SolveZero extends Plan {
 
     #reasoning method
     pass() {
-        if (ag.learningMode) {
+        if (ag.learningMode()) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(true,ev.level,(ev.level==ag.maxRecursion));
+            ag.planNodes[pid].record(true,ev.level,(ev.level==ag.maxRecursion()));
         }
     }
     #reasoning method
     fail() {
-        if (ag.learningMode) {
+        if (ag.learningMode()) {
             ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(false,ev.level,(ev.level==ag.maxRecursion));
+            ag.planNodes[pid].record(false,ev.level,(ev.level==ag.maxRecursion()));
         }
     }
 }
