@@ -1,11 +1,14 @@
 all: lib/jack.jar lib/weka.jar lib/blak.jar clean lib/hanoi.jar
 
 lib/jack.jar:
-	@echo "JACK bundle not found in ./lib/jack.jar. Please copy it here before continuing."
+	@echo "JACK bundle not found in $@. Please copy it here before continuing."
 	@exit 1
 
-lib/weka.jar: ../../build/dist/lib/weka.jar
-	cp $? $@
+lib/weka.jar:
+	@echo "WEKA bundle not found in $@. Please copy it here before continuing."
+	@exit 1
+#lib/weka.jar: ../../build/dist/lib/weka.jar
+#	cp $? $@
 
 lib/blak.jar: ../../build/dist/lib/blak.jar
 	cp $? $@

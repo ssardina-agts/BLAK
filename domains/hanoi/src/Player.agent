@@ -337,17 +337,26 @@ public agent Player extends Agent implements Logger{
     public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
-            int nodeComplexity = rec;
-            nodeComplexity = nodeComplexity * nodeComplexity;
-            double confidence = Math.min(1.0,thisNode.countForClassification(state)/nodeComplexity);
+
+            /* This should be calculated by the node but is done here
+             * for simplicity for now.
+             */
+            double complexity = Math.pow(rec,4.0);
+            thisNode.setComplexity(level, complexity);
+
+            /* epsilon(i+i) = epsilon(i) * [1 - (1/log2(N))]
+             * where N is the node complexity given by the number of paths below.
+             */
+            double confidence = 1 - ((1.0-thisNode.getDecay(level)) * (1 - (1/complexity)));
+            
             if (thisNode.useDT(1/*Iteration: not used*/)){
                 double[] ps = thisNode.getProbability(state);
-                return new PlanIdInfo(pid, ps[0], confidence, 1.0, false);
+                return new PlanIdInfo(pid, ps[0], confidence, false);
             } else{
-                return new PlanIdInfo(pid, 0.5, confidence, 1.0, false);
+                return new PlanIdInfo(pid, 0.5, confidence, false);
             }
         } else {
-            return new PlanIdInfo(pid, 0.5, 1.0, 1.0, false);
+            return new PlanIdInfo(pid, 0.5, 1.0, false);
         }
     }
 
@@ -444,11 +453,11 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[5];
-        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
-        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
-        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
-        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
-        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, PlanSelectMode.PROBABILISTIC/*pselect*/, stableE, stableK, false, logger);
+        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
 
         Node[] goalNodes = new Node[1];
         goalNodes[0] = new GoalNode(0,"G", logger);
@@ -458,11 +467,11 @@ public agent Player extends Agent implements Logger{
         goalNodes[0].addChild(planNodes[3]);
         goalNodes[0].addChild(planNodes[4]);
 
-        planNodes[1].addChild(goalNodes[0]);
-        planNodes[1].addChild(goalNodes[0]);
+        planNodes[0].addChild(goalNodes[0]);
+        planNodes[0].addChild(goalNodes[0]);
         planNodes[2].addChild(goalNodes[0]);
         planNodes[2].addChild(goalNodes[0]);
-
+        
     }
     
     // Application entry point.
@@ -543,6 +552,8 @@ public agent Player extends Agent implements Logger{
                         pselect = PlanSelectMode.PROBABILISTIC;
                     if (psmode.equals("coverage"))
                         pselect = PlanSelectMode.COVERAGE;
+                    if (psmode.equals("confidence"))
+                        pselect = PlanSelectMode.CONFIDENCE;
                     break;
                 case 't':
                     generateSolutionsAtLevel = Integer.parseInt(args[index]);
