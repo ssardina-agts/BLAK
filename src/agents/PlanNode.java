@@ -48,7 +48,10 @@ public class PlanNode extends Node{
     private Hashtable isDirty;
     public boolean isFailedThresholdHandler;
     private Random rand;
-    
+
+    private Hashtable decay;
+    private Hashtable complexity;
+
     /*
     public boolean isDoStable() {
         return doStable;
@@ -188,6 +191,8 @@ public class PlanNode extends Node{
         successfulChildren = 0;
         topGoal = null;
         isDirty = new Hashtable();
+        decay = new Hashtable();
+        complexity = new Hashtable();
         isFailedThresholdHandler = isFTH;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
@@ -445,6 +450,11 @@ public class PlanNode extends Node{
             logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
             this.experiences.put(memoryKey, thisMemory);
         }
+        if (select_mode == PlanSelectMode.CONFIDENCE) {
+            double d = 1 - ((1.0-getDecay(depth)) * (1 - (1/getComplexity(depth))));
+            setDecay(depth,d);
+            logger.writeLog("Plan "+this.getItem()+" at depth "+depth+" with complexity "+(((double) ((int) (getComplexity(depth) * 10000))) / 10000)+" calculated new decay="+((double) ((int) (d * 10000))) / 10000);
+        }
     }
     
     public void setTopGoal(GoalNode val) {
@@ -486,6 +496,23 @@ public class PlanNode extends Node{
     public void setDirty(int depth) {
         isDirty.put(depth,true);
     }
+
+    public void setDecay(int depth, double d) {
+        decay.put(depth,d);
+    }
+    
+    public double getDecay(int depth) {
+        return decay.containsKey(depth) ? ((Double)(decay.get(depth))).doubleValue() : 0.0;
+    }
+
+    public void setComplexity(int depth, double c) {
+        complexity.put(depth,c);
+    }
+    
+    public double getComplexity(int depth) {
+        return complexity.containsKey(depth) ? ((Double)(complexity.get(depth))).doubleValue() : 1.0;
+    }
+    
     public void clearDirty(int depth) {
         isDirty.remove(depth);
     }
@@ -544,15 +571,15 @@ public class PlanNode extends Node{
         return pathStrings(depth);
     }
 
-    public int getPaths() {
+    public long getPaths() {
         return getPaths(0);
     }
     
-    public int getPaths(int depth) {
+    public long getPaths(int depth) {
         if (pathsKnown(depth)) {
             return paths(depth);
         }
-        int p = 1;
+        long p = 1;
         int nChildren = this.children.size();
         if(nChildren > 0) {
             for(int j = 0; nChildren > j; j++) {
@@ -630,7 +657,7 @@ public class PlanNode extends Node{
         String memoryKey = this.stringOfState(state);
         int coverage = 0;
         if (this.isFailedThresholdHandler) {
-            coverage = getPaths(depth); 
+            coverage = (int)getPaths(depth); 
             logger.writeLog("Failed threshold handler plan "+this.getItem()+" is using full coverage="+coverage+" in state "+memoryKey);
             return coverage;
         }
@@ -744,6 +771,7 @@ public class PlanNode extends Node{
         return this.getProbability(this.lastState);
     }    
     
+    /*
     public double countForClassification(String[] state)
     {
         double val = 0.0;
@@ -776,6 +804,7 @@ public class PlanNode extends Node{
         }
         return val;
     }
+    */
     
     /** 
      * print the decision tree and info about it.

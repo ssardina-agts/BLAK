@@ -124,11 +124,11 @@ public class GoalNode extends Node{
 		return false;
 	}
 
-    public int getPaths(int depth) {
+    public long getPaths(int depth) {
         if (pathsKnown(depth)) {
             return paths(depth);
         }
-        int p = 0;
+        long p = 0;
         int nChildren = this.children.size();
         if(nChildren > 0) {
             for(int j = 0; nChildren > j; j++) {

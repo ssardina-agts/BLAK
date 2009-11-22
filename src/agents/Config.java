@@ -11,5 +11,6 @@ public class Config {
     public enum PlanSelectMode {
         PROBABILISTIC,
         COVERAGE,
+        CONFIDENCE,
     }
 }

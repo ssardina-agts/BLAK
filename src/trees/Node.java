@@ -270,10 +270,10 @@ public class Node{
     	return returnMe;	
     }
     
-    public int paths(int depth) {
-        return paths.containsKey(depth) ? ((Integer)(paths.get(depth))).intValue() : 0;
+    public long paths(int depth) {
+        return paths.containsKey(depth) ? ((Long)(paths.get(depth))).longValue() : 0;
     }
-    public void setPaths(int depth, int val) {
+    public void setPaths(int depth, long val) {
         paths.put(depth,val);
     }
     

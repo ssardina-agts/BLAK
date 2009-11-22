@@ -195,7 +195,7 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
-setB=`find $srcdir -name "$testname-benchmark--1.csv" -print`
+setB=`find $srcdir -name "$testname-benchmark*.csv" -print`
 set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
 set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
 set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`

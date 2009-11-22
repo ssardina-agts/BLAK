@@ -79,7 +79,12 @@
 <target name="test05v3gmt" description="Build, run and plot test05v3gmt" depends="buildtest05v3gmt,graphtest05v3gmt,runtest05v3gmt,plottest05v3gmt"/>
 <target name="test05v5gm"  description="Build, run and plot test05v5gm"  depends="buildtest05v5gm, graphtest05v5gm, runtest05v5gm, plottest05v5gm"/>
 
-<target name="hanoi"       description="Build, run and plot hanoi"  depends="buildHanoi, runHanoi, plotHanoi"/>
+<target name="hanoid4s5"       description="Build, run and plot hanoi"  depends="buildhanoid4s5, runhanoid4s5, plothanoid4s5"/>
+<target name="hanoid4s4"       description="Build, run and plot hanoi"  depends="buildhanoid4s4, runhanoid4s4, plothanoid4s4"/>
+<target name="hanoid4s3"       description="Build, run and plot hanoi"  depends="buildhanoid4s3, runhanoid4s3, plothanoid4s3"/>
+<target name="hanoid4s2"       description="Build, run and plot hanoi"  depends="buildhanoid4s2, runhanoid4s2, plothanoid4s2"/>
+<target name="hanoid4s1"       description="Build, run and plot hanoi"  depends="buildhanoid4s1, runhanoid4s1, plothanoid4s1"/>
+<target name="hanoi"           description="Build, run and plot hanoi"  depends="hanoid4s5,hanoid4s4,hanoid4s3,hanoid4s2,hanoid4s1"/>
 
 
 <!-- Clean -->
@@ -842,26 +847,115 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- hanoi ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoid4s5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildHanoi" description="Build hanoi" if="available.buildDependencies" depends="buildDependencies">
-	<delete dir="${results.dir}/hanoi/build"/>
-	<mkdir dir="${results.dir}/hanoi/build"/>
-	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoi/build/gui/Towers.java"/>
-	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoi"/>
-	<makeJAR test.name="hanoi" make.dir="${results.dir}/hanoi"/>
-	<jar destfile="${results.dir}/hanoi/build/hanoi.jar" basedir="${results.dir}/hanoi/build" includes="*.class gui/*.class"/>
+<target name="buildhanoid4s5" description="Build hanoid4s5" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoid4s5/build"/>
+	<mkdir dir="${results.dir}/hanoid4s5/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid4s5/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid4s5"/>
+	<makeJAR test.name="hanoid4s5" make.dir="${results.dir}/hanoid4s5"/>
+	<jar destfile="${results.dir}/hanoid4s5/build/hanoid4s5.jar" basedir="${results.dir}/hanoid4s5/build" includes="*.class gui/*.class"/>
 </target>
-<target name="runHanoi" description="Run hanoi">
-    <failIfBuildNotFound test.name="hanoi"/>
-	<runTest        test.name="hanoi" run.class="Player" run.mode="benchmark"                             run.params="   -g 123456 -r 8 -i 3000 -j 4"/>
-	<runTest        test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="coverage"      run.params="-x -g 123456 -r 8 -i 3000 -j 4 -m 1"/>
-	<runTest        test.name="hanoi" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 3000 -j 4 -m 1"/>
+<target name="runhanoid4s5" description="Run hanoid4s5">
+    <failIfBuildNotFound test.name="hanoid4s5"/>
+	<runTest        test.name="hanoid4s5" run.class="Player" run.mode="benchmark"  run.select="x"             run.params="   -g 123456 -r 10 -i 4000 -j 4 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid4s5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 6 -i 4000 -j 4 -y ../benchmark-x-1/hanoi.init -t 5 -m 1"/>
+	<runTestRepeats test.name="hanoid4s5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 6 -i 4000 -j 4 -y ../benchmark-x-1/hanoi.init -t 5 -m 1"/>
 </target>
-<target name="plotHanoi" description="Plot hanoi" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="hanoi"/>
-	<plotResult test.name="hanoi" every="300"  key1="top" key2="right" label="hanoi"/>
+<target name="plothanoid4s5" description="Plot hanoid4s5" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoid4s5"/>
+	<plotResult test.name="hanoid4s5" every="350" label="hanoi:discs=4:solutions@level=5:goals=2:recursion=6"/>
 </target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoid4s4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildhanoid4s4" description="Build hanoid4s4" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoid4s4/build"/>
+	<mkdir dir="${results.dir}/hanoid4s4/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid4s4/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid4s4"/>
+	<makeJAR test.name="hanoid4s4" make.dir="${results.dir}/hanoid4s4"/>
+	<jar destfile="${results.dir}/hanoid4s4/build/hanoid4s4.jar" basedir="${results.dir}/hanoid4s4/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runhanoid4s4" description="Run hanoid4s4">
+    <failIfBuildNotFound test.name="hanoid4s4"/>
+	<runTest        test.name="hanoid4s4" run.class="Player" run.mode="benchmark"  run.select="x"             run.params="   -g 123456 -r 10 -i 3500 -j 4 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid4s4" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 5 -i 3500 -j 4 -y ../benchmark-x-1/hanoi.init -t 4 -m 1"/>
+	<runTestRepeats test.name="hanoid4s4" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 5 -i 3500 -j 4 -y ../benchmark-x-1/hanoi.init -t 4 -m 1"/>
+</target>
+<target name="plothanoid4s4" description="Plot hanoid4s4" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoid4s4"/>
+	<plotResult test.name="hanoid4s4" every="300" label="hanoi:discs=4:solutions@level=4:goals=2:recursion=5"/>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoid4s3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildhanoid4s3" description="Build hanoid4s3" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoid4s3/build"/>
+	<mkdir dir="${results.dir}/hanoid4s3/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid4s3/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid4s3"/>
+	<makeJAR test.name="hanoid4s3" make.dir="${results.dir}/hanoid4s3"/>
+	<jar destfile="${results.dir}/hanoid4s3/build/hanoid4s3.jar" basedir="${results.dir}/hanoid4s3/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runhanoid4s3" description="Run hanoid4s3">
+    <failIfBuildNotFound test.name="hanoid4s3"/>
+	<runTest        test.name="hanoid4s3" run.class="Player" run.mode="benchmark"  run.select="x"             run.params="   -g 123456 -r 10 -i 1500 -j 4 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid4s3" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 4 -i 1500 -j 4 -y ../benchmark-x-1/hanoi.init -t 3 -m 1"/>
+	<runTestRepeats test.name="hanoid4s3" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 4 -i 1500 -j 4 -y ../benchmark-x-1/hanoi.init -t 3 -m 1"/>
+</target>
+<target name="plothanoid4s3" description="Plot hanoid4s3" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoid4s3"/>
+	<plotResult test.name="hanoid4s3" every="100" label="hanoi:discs=4:solutions@level=3:goals=5:recursion=6"/>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoid4s2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildhanoid4s2" description="Build hanoid4s2" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoid4s2/build"/>
+	<mkdir dir="${results.dir}/hanoid4s2/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid4s2/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid4s2"/>
+	<makeJAR test.name="hanoid4s2" make.dir="${results.dir}/hanoid4s2"/>
+	<jar destfile="${results.dir}/hanoid4s2/build/hanoid4s2.jar" basedir="${results.dir}/hanoid4s2/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runhanoid4s2" description="Run hanoid4s2">
+    <failIfBuildNotFound test.name="hanoid4s2"/>
+	<runTest        test.name="hanoid4s2" run.class="Player" run.mode="benchmark"  run.select="x"             run.params="   -g 123456 -r 10 -i 1000 -j 4 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid4s2" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 3 -i 1000 -j 4 -y ../benchmark-x-1/hanoi.init -t 2 -m 1"/>
+	<runTestRepeats test.name="hanoid4s2" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 3 -i 1000 -j 4 -y ../benchmark-x-1/hanoi.init -t 2 -m 1"/>
+</target>
+<target name="plothanoid4s2" description="Plot hanoid4s2" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoid4s2"/>
+	<plotResult test.name="hanoid4s2" every="100" label="hanoi:discs=4:solutions@level=2:goals=5:recursion=6"/>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- hanoid4s1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildhanoid4s1" description="Build hanoid4s1" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/hanoid4s1/build"/>
+	<mkdir dir="${results.dir}/hanoid4s1/build"/>
+	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid4s1/build/gui/Towers.java"/>
+	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid4s1"/>
+	<makeJAR test.name="hanoid4s1" make.dir="${results.dir}/hanoid4s1"/>
+	<jar destfile="${results.dir}/hanoid4s1/build/hanoid4s1.jar" basedir="${results.dir}/hanoid4s1/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runhanoid4s1" description="Run hanoid4s1">
+    <failIfBuildNotFound test.name="hanoid4s1"/>
+	<runTest        test.name="hanoid4s1" run.class="Player" run.mode="benchmark"  run.select="x"             run.params="   -g 123456 -r 10 -i 1000 -j 4 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid4s1" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 2 -i 1000 -j 4 -y ../benchmark-x-1/hanoi.init -t 1 -m 1"/>
+	<runTestRepeats test.name="hanoid4s1" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 2 -i 1000 -j 4 -y ../benchmark-x-1/hanoi.init -t 1 -m 1"/>
+</target>
+<target name="plothanoid4s1" description="Plot hanoid4s1" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="hanoid4s1"/>
+	<plotResult test.name="hanoid4s1" every="100" label="hanoi:discs=4:solutions@level=1:goals=5:recursion=6"/>
+</target>
+
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
