@@ -16,6 +16,7 @@ public class Experience
 	private int numberOfAttempts;
     private Hashtable coverage;
     private Logger logger;
+    private String[] state;
 	
 	
 	public Experience(Logger logger)
@@ -93,6 +94,11 @@ public class Experience
 		return numberOfSuccesses;
 	}
 
+    public int getNumberOfFailures() 
+	{
+		return (numberOfAttempts - numberOfSuccesses);
+	}
+    
 
 	public void setNumberOfAttempts(int numberOfAttempts) 
 	{
@@ -170,6 +176,14 @@ public class Experience
 		}
 	}
 	
+    public void setState (String[] s) {
+        state = s;
+    }
+
+    public String[] getState () {
+        return state;
+    }
+    
 	public Object clone()
 	{
 		Experience myClone  = new Experience(this.logger);

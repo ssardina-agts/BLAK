@@ -38,7 +38,7 @@ public class PlanNode extends Node{
     int startToUseDT;
     int minNumInstances=100;
     Hashtable experiences;
-    
+    boolean hasDirtyExperiences;
     private int stableK;
     private double stableEpsilon;
     
@@ -184,6 +184,7 @@ public class PlanNode extends Node{
         lastState = null;
         memory = new Hashtable();
         experiences = new Hashtable();
+        hasDirtyExperiences = true;
         this.update_mode = update_mode;
         this.select_mode = select_mode;
         stableK = kStable;
@@ -247,183 +248,32 @@ public class PlanNode extends Node{
             logger.writeLog("Skipped recording for failed threshold handler plan "+this.getItem()+" in state "+this.stringOfLastState());
             return;
         }
+        
         logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
-        if(!res && (update_mode == UpdateMode.STABLE) && (this.getNumberOfChildren() > 0))
-        {
+
+        if(!res && (update_mode == UpdateMode.STABLE) && (this.getNumberOfChildren() > 0)) {
             //we failed...
-            if(this.childrenStable())
-            {
+            if(this.childrenStable()) {
                 //children are stable so we should update..
                 logger.writeLog("Plan "+this.getItem()+" has "+this.children.size()+" stable children for state "+this.stringOfLastState());
-            }
-            else
-            {
+            } else {
                 //children are unstable and we have failed. do not update. This pulls us out of the recording process.
                 logger.writeLog("Plan "+this.getItem()+" will not update on this failure since some of its "+this.children.size()+" children are unstable in state "+this.stringOfLastState());
                 return;
             }
         }
         
-        if(!(update_mode == UpdateMode.STABLE))
-        {
-            //Stephane's code to record the instance for use with a  Decision Tree.
-            //we aren't doing stable selection so record.....
-            String record = "";
-            for (int i=0;i<lastState.length-1;i++)
-                record += lastState[i] + ",";
-            record += lastState[lastState.length-1]+":";
-            if (res)
-            {
-                record += "+";
-                logger.writeLog("Plan "+this.getItem()+" is updating (+) result in state "+this.stringOfLastState());
-            }
-            else
-            {
-                record += "-";
-                logger.writeLog("Plan "+this.getItem()+" is updating (-) result in state "+this.stringOfLastState());
-            }
-            Integer num = (Integer)memory.remove(record);
-            if (num !=null)
-                memory.put(record, new Integer(num.intValue()+1));
-            else
-                memory.put(record, new Integer(1));
-            
-            // prepare the data to be used for a decision tree
-            Instance instance = new Instance(numAttributes+1);
-            instance.setDataset(data);
-            for (int i=0;i<lastState.length;i++){
-                if (lastState[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (lastState[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(lastState[i]));
-                    } else {
-                        instance.setValue(att,lastState[i]);
-                    }
-                }
-            }
-            if (res) {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                instance.setWeight(1000);
-                data.add(instance);
-                //data.resampleWithWeights(rand);
-            } else {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                data.add(instance);
-            }
-        }
-        else if((update_mode == UpdateMode.STABLE) && res)
-        {
-            //Stephane's code to record the instance for use with a  Decision Tree.     
-            //We are doing stable selection, and had a success, so record
-            String record = "";
-            for (int i=0;i<lastState.length-1;i++)
-                record += lastState[i] + ",";
-            record += lastState[lastState.length-1]+":";
-            if (res)
-            {
-                record += "+";
-                logger.writeLog("Plan "+this.getItem()+" is updating (+) result for state "+this.stringOfLastState()+" as it was successful");
-            }
-            else
-            {
-                //should not reach this point, but it is left in case
-                record += "-";
-                logger.writeLog("ERROR: PlanNode Stable Updates, Negative Results, Should not reach here: "+this.getItem()+" is updating even though it failed. It must have stable (or zero!) children. State was: "+this.stringOfLastState());
-            }
-            Integer num = (Integer)memory.remove(record);
-            if (num !=null)
-                memory.put(record, new Integer(num.intValue()+1));
-            else
-                memory.put(record, new Integer(1));
-            
-            // prepare the data to be used for a decision tree
-            Instance instance = new Instance(numAttributes+1);
-            instance.setDataset(data);
-            for (int i=0;i<lastState.length;i++){
-                if (lastState[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (lastState[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(lastState[i]));
-                    } else {
-                        instance.setValue(att,lastState[i]);
-                    }
-                }
-            }
-            if (res) {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                instance.setWeight(1000);
-                data.add(instance);
-                //data.resampleWithWeights(rand);
-            } else {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                data.add(instance);
-            }
-        }
-        else if((update_mode == UpdateMode.STABLE) && this.childrenStable())
-        {
-            //Stephane's code to record the instance for use with a  Decision Tree.     
-            //We are doing stable and our children are stable. So record.....
-            //If we have no children then we are stable and can therefore update in this situation.
-            String record = "";
-            for (int i=0;i<lastState.length-1;i++)
-                record += lastState[i] + ",";
-            record += lastState[lastState.length-1]+":";
-            if (res)
-            {
-                record += "+";
-                logger.writeLog("Plan "+this.getItem()+" is updating (+) result for state "+this.stringOfLastState()+" since all of its "+children.size()+" children are stable");
-            }
-            else
-            {
-                record += "-";
-                logger.writeLog("Plan "+this.getItem()+" is updating (-) result for state "+this.stringOfLastState()+" since all of its "+children.size()+" children are stable");
-            }
-            Integer num = (Integer)memory.remove(record);
-            if (num !=null)
-                memory.put(record, new Integer(num.intValue()+1));
-            else
-                memory.put(record, new Integer(1));
-            
-            // prepare the data to be used for a decision tree
-            Instance instance = new Instance(numAttributes+1);
-            instance.setDataset(data);
-            for (int i=0;i<lastState.length;i++){
-                if (lastState[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (lastState[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(lastState[i]));
-                    } else {
-                        instance.setValue(att,lastState[i]);
-                    }
-                }
-            }
-            if (res) {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                instance.setWeight(1000);
-                data.add(instance);
-                //data.resampleWithWeights(rand);
-            } else {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                data.add(instance);
-            }
-        }
-        
-        /* Now record the experience */
+        /* Now, record the experience */
         String memoryKey = this.stringOfState(lastState);
-        Experience thisMemory = (this.experiences.containsKey(memoryKey)) ? (Experience)this.experiences.get(memoryKey) : new Experience(logger);
-        String newold = (this.experiences.containsKey(memoryKey)) ? "EXISTING" : "NEW";
+        Experience thisMemory;
+        String newold;
+        if (this.experiences.containsKey(memoryKey)) {
+            thisMemory = (Experience)this.experiences.get(memoryKey);
+            newold = "EXISTING";
+        } else {
+            thisMemory = new Experience(logger);
+            newold = "NEW";
+        }
         if(res) {
             thisMemory.incrementAttempts();
             thisMemory.incrementSuccesses();
@@ -432,7 +282,13 @@ public class PlanNode extends Node{
         }
         thisMemory.updateProbability();
         
+        if(!(update_mode == UpdateMode.STABLE) || 
+           ((update_mode == UpdateMode.STABLE) && (res || this.childrenStable()))) {
+            thisMemory.setState(lastState);
+        }
+        
         this.experiences.put(memoryKey, thisMemory);
+        hasDirtyExperiences = true;
         
         if (select_mode == PlanSelectMode.COVERAGE) {
             /* Now calculate the coverage and store back */
@@ -832,12 +688,13 @@ public class PlanNode extends Node{
      * @return
      */
     public boolean useDT(int it){
-        if (data.numInstances() >= minNumInstances){
+        if (experiences.size() >= minNumInstances){
             if (startToUseDT ==0){
                 startToUseDT = it;
                 logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+data.numInstances()+">=M("+minNumInstances+")");
             }
             try{
+                buildDataset();
                 decisionTree.buildClassifier(data);
             }
             catch(Exception e){
@@ -1202,5 +1059,52 @@ public class PlanNode extends Node{
                 c++;
             }
         return c;
+    }
+    
+    private void buildDataset() {
+        if (!hasDirtyExperiences) {
+            return;
+        }
+        hasDirtyExperiences = false;
+        int added = 0;
+        /* Delete previous entries, we will recreate the dataset now */
+        data.delete();
+        /* Add each experience to the dataset */
+        for (Object val : experiences.values() ) {
+            Experience thisMemory = (Experience)val;
+            Instance instance = new Instance(numAttributes+1);
+            instance.setDataset(data);
+            String[] state = thisMemory.getState();
+            for (int i=0;i<state.length;i++){
+                if (state[i].equals("true"))
+                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
+                else if (state[i].equals("false"))
+                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
+                else {
+                    Attribute att = (Attribute) atts.elementAt(i);
+                    if (att.isNumeric()) {
+                        instance.setValue(att,Double.parseDouble(state[i]));
+                    } else {
+                        instance.setValue(att,state[i]);
+                    }
+                }
+            }
+            int successes = thisMemory.getNumberOfSuccesses();
+            int failures = thisMemory.getNumberOfFailures();
+            if (successes > 0) {
+                Instance instance2 = (Instance)(instance.copy());
+                instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
+                instance2.setWeight(successes);
+                data.add(instance2);
+                added++;
+            }  
+            if (failures > 0) {
+                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
+                instance.setWeight(failures);
+                data.add(instance);
+                added++;
+            }
+        }
+        logger.writeLog("Plan "+this.getItem()+" built training data set with "+added+" samples");
     }
 }
