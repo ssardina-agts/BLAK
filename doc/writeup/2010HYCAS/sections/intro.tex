@@ -81,12 +81,15 @@ to do with the hierarchical representation of BDI programs.
 %
 We have explored these issues in previous papers
 \cite{Airiau:IJAT09,aamas}, looking at various approaches to the
-issues. In this paper we take what we believe is the preferred
-approach, extending it with the ability to deal with paramaterised
-goals and with recursive calls.  Both these properties are essential
-for real applications. We also take an existing BDI program from the
-JACK tutorial, remove the given context conditions, and show how we
-can learn the appropriate use of the plans provided.
+issues. In this paper we add the ability to deal with paramaterised
+goals and with recursive calls, both of which are essential for real
+applications. Unfortunately, once we add this expressivity our
+previous preferred approach does not scale. Consequently we develop a
+simplified approximation to achieve the same basic intuition which we
+had shown to be correct in principle. We then take an existing BDI
+program from the JACK tutorial, remove the given context conditions,
+and show how we can learn the appropriate use of the plans provided
+using our new approach.
 
 Our approach can easily be combined with the standard plan selection
 mechanism, by allowing the agent programmer to provide initial context conditions
@@ -98,15 +101,14 @@ For simplicity, though, context conditions are learnt from scratch in our
 experimental work.
 
 In the next section we provide an introduction to and overview of both
-BDI programming and our learning framework. We then describe in detail
-the learning framework that has resulted from the work reported in
-\cite{aamas}, incorporating the additional aspects of parameterised
-goals and recursive calls. We show empirical evaluation on program
-structures, where the programs are artificial - i.e. they do not
-accomplish any real task. To further evaluate the efficacy of the approach
-with a real program, we then take an example program developed by
-Agent Oriented Software for their JACK tutorial, remove the context
-conditions and apply our learning approach.  We finish with a
+BDI programming and our learning framework, as well as an overview of
+our previous approaches. We then describe in detail
+the learning framework that incorporates the additional aspects of
+parameterised goals and recursive calls, with our revised approach to
+address previously identified issues.
+We show empirical evaluation on an example program developed by
+Agent Oriented Software for their JACK tutorial, by removing the context
+conditions and applying our learning approach.  We finish with a
 discussion of outstanding issues and related work.
 
 % The rest of the paper is organized as follows. In the next section, we
