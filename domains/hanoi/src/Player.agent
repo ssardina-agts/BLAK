@@ -85,7 +85,7 @@ public agent Player extends Agent implements Logger{
     public PlanNode[] planNodes;
 
     // Constructor
-    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit) {
+    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay) {
         super("player");
         
         this.init = new HanoiState(nDiscs);
@@ -143,7 +143,7 @@ public agent Player extends Agent implements Logger{
         maxEpisodes = episodes;
         learningMode = learning;
         if (learningMode) {
-            initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE);
+            initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE, domainDecay);
         }
 
         episodeGoalKey = loadNewState();
@@ -347,7 +347,7 @@ public agent Player extends Agent implements Logger{
             /* epsilon(i+i) = epsilon(i) * [1 - (1/log2(N))]
              * where N is the node complexity given by the number of paths below.
              */
-            double confidence = 1 - ((1.0-thisNode.getDecay(level)) * (1 - (1/complexity)));
+            double confidence = thisNode.getConfidence(level,state);
             
             if (thisNode.useDT(1/*Iteration: not used*/)){
                 double[] ps = thisNode.getProbability(state);
@@ -410,7 +410,7 @@ public agent Player extends Agent implements Logger{
         writerRes.flush();
     }
     
-    public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE) {
+    public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, double domainDecay) {
         FastVector classVal = new FastVector();
         classVal.addElement("+");
         classVal.addElement("-");
@@ -459,6 +459,12 @@ public agent Player extends Agent implements Logger{
         planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
         planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
 
+        planNodes[0].setDecayMultiplier(domainDecay);
+        planNodes[1].setDecayMultiplier(domainDecay);
+        planNodes[2].setDecayMultiplier(domainDecay);
+        planNodes[3].setDecayMultiplier(domainDecay);
+        planNodes[4].setDecayMultiplier(domainDecay);
+
         Node[] goalNodes = new Node[1];
         goalNodes[0] = new GoalNode(0,"G", logger);
         goalNodes[0].addChild(planNodes[0]);
@@ -494,6 +500,7 @@ public agent Player extends Agent implements Logger{
         String saveInit = null;
         String loadInit = null;
         int generateSolutionsAtLevel = 0;
+        double domainDecayMultiplier = 0.0; 
         
         args = Jak.initialize(args);
         if (args.length > 0) {
@@ -503,6 +510,10 @@ public agent Player extends Agent implements Logger{
                 index++;
                 char option = arg.charAt(1);
                 switch (option) {
+                case 'c':
+                    domainDecayMultiplier = Double.parseDouble(args[index]);
+                    index++;
+                    break;
                 case 'd':
                     targetDir = args[index];
                     index++;
@@ -585,7 +596,7 @@ public agent Player extends Agent implements Logger{
             }
         }
         System.out.println("Using random generator seed: "+seed);
-        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename, seed, loadInit, generateSolutionsAtLevel, saveInit);
+        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, targetDir, filename, seed, loadInit, generateSolutionsAtLevel, saveInit, domainDecayMultiplier);
         p.go();
     }
 }

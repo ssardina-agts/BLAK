@@ -38,7 +38,7 @@ public class PlanNode extends Node{
     int startToUseDT;
     int minNumInstances=100;
     Hashtable experiences;
-    boolean hasDirtyExperiences;
+    int hasDirtyExperiences;
     private int stableK;
     private double stableEpsilon;
     
@@ -50,8 +50,11 @@ public class PlanNode extends Node{
     private Random rand;
 
     private Hashtable decay;
+    private Hashtable domainDecay;
     private Hashtable complexity;
-
+    private double domainComplexityDecayMultiplier;
+    private final int buildThreshold = 25;
+    
     /*
     public boolean isDoStable() {
         return doStable;
@@ -184,7 +187,7 @@ public class PlanNode extends Node{
         lastState = null;
         memory = new Hashtable();
         experiences = new Hashtable();
-        hasDirtyExperiences = true;
+        hasDirtyExperiences = 0;
         this.update_mode = update_mode;
         this.select_mode = select_mode;
         stableK = kStable;
@@ -193,15 +196,21 @@ public class PlanNode extends Node{
         topGoal = null;
         isDirty = new Hashtable();
         decay = new Hashtable();
+        domainDecay = new Hashtable();
         complexity = new Hashtable();
         isFailedThresholdHandler = isFTH;
         data = new Instances(name, atts, 0);
         data.setClassIndex(numAttributes);
         rand = new Random();
+        domainComplexityDecayMultiplier = 0.0;
         try{
             decisionTree = new J48();
-            options = new String[1];
-            options[0] = "-U";            // unpruned tree
+            options = new String[3];
+            options[0] = "-U";
+            options[1] = "-M";
+            options[2] = "1";
+            //options[0] = "-C";
+            //options[1] = "0.0001";
             ((J48)decisionTree).setOptions(options);     // set the options
         }
         catch(Exception e){
@@ -288,7 +297,7 @@ public class PlanNode extends Node{
         }
         
         this.experiences.put(memoryKey, thisMemory);
-        hasDirtyExperiences = true;
+        hasDirtyExperiences++;
         
         if (select_mode == PlanSelectMode.COVERAGE) {
             /* Now calculate the coverage and store back */
@@ -306,10 +315,13 @@ public class PlanNode extends Node{
             logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
             this.experiences.put(memoryKey, thisMemory);
         }
-        if (select_mode == PlanSelectMode.CONFIDENCE) {
-            double d = 1 - ((1.0-getDecay(depth)) * (1 - (1/getComplexity(depth))));
-            setDecay(depth,d);
-            logger.writeLog("Plan "+this.getItem()+" at depth "+depth+" with complexity "+(((double) ((int) (getComplexity(depth) * 10000))) / 10000)+" calculated new decay="+((double) ((int) (d * 10000))) / 10000);
+        if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
+            setComplexityDecay(depth, getComplexityDecay(depth) * (1 - (1/getComplexity(depth))));
+            setDomainDecay(depth, getDomainDecay(depth) * domainComplexityDecayMultiplier);
+            logger.writeLog("Plan "+this.getItem()+" at depth "+depth
+                            +" with complexity "+ (((double) ((int) (getComplexity(depth) * 10000))) / 10000)
+                            +" calculated new decay="+(((double) ((int) (getComplexityDecay(depth)* 10000))) / 10000)
+                            +"*"+((double) ((int) (getDomainDecay(depth)* 10000))) / 10000);
         }
     }
     
@@ -353,20 +365,41 @@ public class PlanNode extends Node{
         isDirty.put(depth,true);
     }
 
-    public void setDecay(int depth, double d) {
+    public void setDecayMultiplier(double d) {
+        domainComplexityDecayMultiplier = d;
+    }
+    
+    public void setComplexityDecay(int depth, double d) {
         decay.put(depth,d);
     }
     
-    public double getDecay(int depth) {
-        return decay.containsKey(depth) ? ((Double)(decay.get(depth))).doubleValue() : 0.0;
+    public double getComplexityDecay(int depth) {
+        return decay.containsKey(depth) ? ((Double)(decay.get(depth))).doubleValue() : 1.0;
     }
 
+    public void setDomainDecay(int depth, double d) {
+        domainDecay.put(depth,d);
+    }
+    
+    public double getDomainDecay(int depth) {
+        return domainDecay.containsKey(depth) ? ((Double)(domainDecay.get(depth))).doubleValue() : 1.0;
+    }
+    
     public void setComplexity(int depth, double c) {
         complexity.put(depth,c);
     }
     
     public double getComplexity(int depth) {
         return complexity.containsKey(depth) ? ((Double)(complexity.get(depth))).doubleValue() : 1.0;
+    }
+
+    public double getConfidence(int depth, String[] state) {
+        /* If we have succeeded in this state before then we have full confidence in the DT */
+        if (isSuccessful(state)) {
+            return 1.0;
+        }
+        logger.writeLog("Plan "+this.getItem()+" using confidence c="+(1 - getComplexityDecay(depth))+"*"+(1 - getDomainDecay(depth)));
+        return (1 - getComplexityDecay(depth)) * (1 - getDomainDecay(depth));
     }
     
     public void clearDirty(int depth) {
@@ -688,14 +721,19 @@ public class PlanNode extends Node{
      * @return
      */
     public boolean useDT(int it){
+        boolean firstBuild = false;
         if (experiences.size() >= minNumInstances){
             if (startToUseDT ==0){
                 startToUseDT = it;
-                logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+data.numInstances()+">=M("+minNumInstances+")");
+                firstBuild = true;
+                logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+experiences.size()+">=M("+minNumInstances+")");
             }
             try{
-                buildDataset();
-                decisionTree.buildClassifier(data);
+                if ((hasDirtyExperiences >= buildThreshold) || firstBuild) {
+                    hasDirtyExperiences = 0;
+                    buildDataset();
+                    decisionTree.buildClassifier(data);
+                }
             }
             catch(Exception e){
                 System.err.println("Something went wrong during the construction of the decision tree\n" + e);
@@ -1062,11 +1100,7 @@ public class PlanNode extends Node{
     }
     
     private void buildDataset() {
-        if (!hasDirtyExperiences) {
-            return;
-        }
-        hasDirtyExperiences = false;
-        int added = 0;
+         int added = 0;
         /* Delete previous entries, we will recreate the dataset now */
         data.delete();
         /* Add each experience to the dataset */
@@ -1094,13 +1128,15 @@ public class PlanNode extends Node{
             if (successes > 0) {
                 Instance instance2 = (Instance)(instance.copy());
                 instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                instance2.setWeight(successes);
+                //instance2.setWeight(1000*successes);
+                instance2.setWeight(2);
                 data.add(instance2);
                 added++;
             }  
-            if (failures > 0) {
+            else if (failures > 0) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                instance.setWeight(failures);
+                //instance.setWeight(failures);
+                instance.setWeight(1);
                 data.add(instance);
                 added++;
             }
