@@ -388,6 +388,10 @@ public class PlanNode extends Node{
     public void setComplexity(int depth, double c) {
         complexity.put(depth,c);
     }
+
+    public void setComplexity(double c) {
+        complexity.put(0,c);
+    }
     
     public double getComplexity(int depth) {
         return complexity.containsKey(depth) ? ((Double)(complexity.get(depth))).doubleValue() : 1.0;

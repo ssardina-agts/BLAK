@@ -25,7 +25,7 @@ done
 }
 
 function makePlotCommands() {
-# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5:key location,  $6: StableP data,  $7: StableC data,  $8: ConcurrentP data,  $9: ConcurrentP data,  $10: benchmark data
+# $1: outputfile,  $2: plotrange,  $3: label,  $4: every,  $5:key location,  $6: StableP data,  $7: StableC data,  $8: ConcurrentP data,  $9: ConcurrentP data,  $10: confidence data
 local o=$1
 local r=$2
 local l=$3
@@ -42,31 +42,31 @@ else
     plotcmd="plot $r "
 fi
 if [ "$cc" != "nil" ]; then
-    plotcmd+="\"$cc\" every $e title \"Concurrent+C\" lt 1 pt 4 lw 2 lc rgb 'dark-magenta' with linespoints"
+    plotcmd+="\"$cc\" every $e title \"ACL+Covr\" lt 1 pt 4 lw 2 lc rgb 'dark-magenta' with linespoints"
 fi
 if [ "$cp" != "nil" ]; then
     if [ "$cc" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$cp\" every $e title \"Concurrent+P\" lt 5 pt 8 lw 3 lc rgb 'red' with linespoints"
+    plotcmd+="\"$cp\" every $e title \"ACL+Prob\" lt 5 pt 8 lw 3 lc rgb 'red' with linespoints"
 fi
 if [ "$sc" != "nil" ]; then
     if [ "$cc" != "nil" ] || [ "$cp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$sc\" every $e title \"Stable+C\" lt 8 pt 10 lw 3 lc rgb 'blue' with linespoints"
+    plotcmd+="\"$sc\" every $e title \"BUL+Covr\" lt 8 pt 10 lw 3 lc rgb 'blue' with linespoints"
 fi
 if [ "$sp" != "nil" ]; then
     if [ "$cc" != "nil" ] || [ "$cp" != "nil" ] || [ "$sc" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$sp\" every $e title \"Stable+P\" lt 3 pt 6 lw 3 lc rgb 'dark-green' with linespoints"
+    plotcmd+="\"$sp\" every $e title \"BUL+Prob\" lt 3 pt 6 lw 3 lc rgb 'dark-green' with linespoints"
 fi
 if [ "$bd" != "nil" ]; then
     if [ "$cc" != "nil" ] || [ "$cp" != "nil" ] || [ "$sc" != "nil" ] || [ "$sp" != "nil" ]; then
         plotcmd+=", "
     fi
-    plotcmd+="\"$bd\" every $e title \"Benchmark\" lt 0 pt 3 lw 4 lc rgb 'black' with linespoints"
+    plotcmd+="\"$bd\" every $e title \"ACL+Conf\" lt 0 pt 3 lw 4 lc rgb 'black' with linespoints"
 fi
 
 
@@ -195,7 +195,7 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
-setB=`find $srcdir -name "$testname-benchmark*.csv" -print`
+setB=`find $srcdir -name "$testname-concurrent-confidence*.csv" -print`
 set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
 set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
 set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`
@@ -207,14 +207,14 @@ fi
 
 #--- Generate the averaged results
 if [ "$setB" == "" ]; then 
-benchmark=nil 
+confidence=nil 
 else 
-benchmark=$tmpdir/.benchmarkdata
-/bin/cp $setB $benchmark
-`$mov_avg -i $benchmark -o $benchmark.mavg -w $window`
-/bin/mv $benchmark.mavg $benchmark
+confidence=$tmpdir/.confidencedata
+avg $setB > $confidence
+`$mov_avg -i $confidence -o $confidence.mavg -w $window`
+/bin/mv $confidence.mavg $confidence
 if [ "$tikz" -ne "0" ]; then
-makeTikZ $benchmark $tikz > $outfile.B.tikzdata
+makeTikZ $confidence $tikz > $outfile.CF.tikzdata
 fi
 fi
 if [ "$set1p" == "" ]; then 
@@ -265,7 +265,7 @@ fi
 
 #--- Plot and PDF
 if [ "$tikz" == "0" ]; then
-makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC $benchmark  > $tmpdir/.gnuplot.commands 
+makePlotCommands $tmpdir/.gnuplot.eps $range $label $every "$keyloc" $stableP $stableC $concurrentP $concurrentC $confidence  > $tmpdir/.gnuplot.commands 
 $gnuplot $tmpdir/.gnuplot.commands
 ps2pdf -sPAPERSIZE=a4 -dEmbedAllFonts=true $tmpdir/.gnuplot.eps $outfile
 fi

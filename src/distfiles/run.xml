@@ -918,7 +918,7 @@
 </target>
 <target name="plothanoid5s3" description="Plot hanoid5s3" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s3"/>
-	<plotResult test.name="hanoid5s3" every="300" label="hanoi:discs=5:solutions@level=3:goals=7:recursion=6"/>
+	<plotResult test.name="hanoid5s3" every="300" label="hanoi:discs=5:solutions@level=3:goals=7:recursion=4"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -940,7 +940,7 @@
 </target>
 <target name="plothanoid5s2" description="Plot hanoid5s2" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s2"/>
-	<plotResult test.name="hanoid5s2" every="200" label="hanoi:discs=5:solutions@level=2:goals=8:recursion=6"/>
+	<plotResult test.name="hanoid5s2" every="200" label="hanoi:discs=5:solutions@level=2:goals=8:recursion=3"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -962,7 +962,7 @@
 </target>
 <target name="plothanoid5s1" description="Plot hanoid5s1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s1"/>
-	<plotResult test.name="hanoid5s1" every="100" label="hanoi:discs=5:solutions@level=1:goals=8:recursion=6"/>
+	<plotResult test.name="hanoid5s1" every="100" label="hanoi:discs=5:solutions@level=1:goals=8:recursion=2"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->

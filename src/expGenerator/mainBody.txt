@@ -76,6 +76,9 @@ public static void main(String[] args)
                 } else if (psmode.equals("coverage")) {
                     plan_selection = PlanSelectMode.COVERAGE;
 	            System.out.println("Coverage-based Plan Selection");
+                } else if (psmode.equals("confidence")) {
+                    plan_selection = PlanSelectMode.CONFIDENCE;
+	            System.out.println("Coverage-based Plan Selection");
 		}
                 break;
             case 'k':

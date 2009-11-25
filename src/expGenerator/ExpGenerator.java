@@ -1606,6 +1606,12 @@ public class ExpGenerator {
 					code += "\tplanNodes["+p.index+"].addChild(goalNodes["+g.index+"]);\n";
 			
 		}
+        
+        // set complexity
+		for (Plan p : plans){
+			code+="\tplanNodes["+p.index+"].setComplexity(planNodes["+p.index+"].getPaths());\n";
+        }        
+        
 		code+="\n}\n\n";
         /*
 		code+="\n\nprintPlanNodes();\n}\n\n";
