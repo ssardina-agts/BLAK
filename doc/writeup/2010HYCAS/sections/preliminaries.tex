@@ -175,7 +175,7 @@ plans available in order to improve goal achievement over time.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Learning for BDI Plan Selection}
+\subsection{Learning for BDI Plan Selection} \label{subsec:bdi_learning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In order to facilitate learning regarding which plan should be
 executed for a given goal, in a particular world state, we replace the
@@ -267,11 +267,10 @@ would typically have some parameters, either a destination (where the
 world state contains the current position), or a direction. Clearly a
 goal to move from A to B will require different choices than a goal to
 move from A to C (assuming B and C are not close). The learning
-process must take account of this.  
-
-A second limitation is that we
+process must take account of this. A second limitation is that we
 have not allowed for recursion, which again is heavily used in many
 real applications. 
+
 %Unfortunately, when we applied our previous
 %coverage measures to unfolded recursive structures (with a fixed
 %recursion depth), the method, which relied on exact calculation of
@@ -282,17 +281,12 @@ real applications.
 %decision tree depending on both experience and complexity of the tree
 %- a more complex tree requiring more experience before we should feel
 %confident of learned results.
-For instance, one way to interpret coverage for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. 
-However, a serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. For instance, in the simple structure $\T_2$ in Figure \ref{fig:unfolding} the number of paths below $P_2$ for a progressively increasing recursion number is the series $[1, 9, 121, 15129, 228947161, \ldots]$. So within four levels of recursion, the number of paths below $P_2$ exceeds $228$ million. The problem is further compounded by event-goal types and the number of possible world states. As such, the coverage specification as presented earlier does not scale for all practical purposes. To overcome this problem, in this study we propose a simpler confidence measure that still takes from the general notion of coverage but is simpler to compute and has much more modest memory requirements.
-
+Furthermore, the preferred coverage approach as presented earlier does not scale for practical purposes. For instance, one way to interpret coverage for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. However, a serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. The problem is further compounded by event-goal types and the number of possible world states. A final limitation with the coverage-based confidence measure is that it does not consider domain complexity. For instance, a leaf plan that has no sub-goals will achieve full coverage when it is tried once, after which selection will be fully biased towards the plans \dt\ classification. However, the \dt\ that at this point has only witnessed one world will generalise the outcome to all as-yet-unseen worlds leading to mis-classification errors.
 
 In the following section we present the details of our learning
 approach, incorporating both parametrised goals, and recursion, as
-well as our new approach to estimating the confidence we should have in
-the decision tree for a particular plan, given a certain number of
-experiences. 
-
-
+well as a new simpler confidence measure that still takes from the 
+general notion of coverage but does not suffer from its limitations.
 
 
 
