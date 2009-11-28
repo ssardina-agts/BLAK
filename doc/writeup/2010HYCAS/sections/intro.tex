@@ -2,7 +2,7 @@
 \section{Introduction}\label{sec:intro}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\notems{new para; new refs}
+%\notems{new para; new refs}
 Agents are an important technology that have the potential to take over
 contemporary methods for analysing, designing, and implementing complex software
 systems suitable for domains such as telecommunications, industrial control,
@@ -36,7 +36,9 @@ There are many agent programming languages and development platforms
 in the BDI tradition, such as \PRS\ \cite{Georgeff89-PRS},
 \JACK~\cite{BusettaRHL:AL99-JACK}, \TAPL~\cite{Hindriks99:Agent} and
 \DAPL~\cite{Dastani:JAAMAS08-2APL}, \JASON~\cite{jasonbook}, and SRI's
-\SPARK~\cite{MorelyM:AAMAS04-SPARK}, among others. %% All of them
+\SPARK~\cite{MorelyM:AAMAS04-SPARK}, among others. 
+%% 
+All of them
 follow a similar basic architecture, whereby \emph{abstract plans}
 written by programmers are combined and used \emph{reactively} in
 real-time, in a way that is both flexible and robust. Concretely, a
@@ -80,13 +82,13 @@ exploitation evident in all learning. There are also particular issues
 to do with the hierarchical representation of BDI programs. 
 %
 We have explored these issues in previous papers
-\cite{Airiau:IJAT09,aamas}, looking at various approaches to the
+\cite{Airiau:IJAT09,Singh:AAMAS10}, looking at various approaches to the
 issues. In this paper we add the ability to deal with paramaterised
 goals and with recursive calls, both of which are essential for real
 applications. Unfortunately, once we add this expressivity our
 previous preferred approach does not scale. Consequently we develop a
 simplified approximation to achieve the same basic intuition which we
-had shown to be correct in principle. We then take an existing BDI
+have previously shown to be correct in principle. We then take an existing BDI
 program from the JACK tutorial, remove the given context conditions,
 and show how we can learn the appropriate use of the plans provided
 using our new approach.

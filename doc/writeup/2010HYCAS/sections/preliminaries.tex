@@ -16,7 +16,7 @@
 \subsection{BDI Agent Systems}\label{sec:bdi_programming}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\notems{new para}
+%\notems{new para}
 BDI agent-oriented programming is a popular, well-studied, and practical paradigm
 for building intelligent agents situated in complex and dynamic environments with
 (soft) real-time reasoning and control requirements
@@ -54,7 +54,7 @@ intention base.
 Figure~\ref{fig:bdiarch} depicts a typical BDI architecture.
 % %
 While the belief base encodes the agent's knowledge about the world, the pending
-events stand for the \emph{goals} the agent wants to achieve/resolve.
+events include the \emph{goals} the agent wants to achieve/resolve.
 % %
 The \textit{plan library}, in turn, contains \emph{plan rules}, or simply
 \emph{plans}, of the general form $e: \psi \leftarrow \delta$ encoding the
@@ -63,7 +63,7 @@ the event-goal $e$ when the so-called \textit{context condition} $\psi$ is
 believed true---program $\delta$ is a reasonable strategy to resolve event $e$
 whenever $\psi$ holds.
 % %
-\notems{UAV example}
+%\notems{UAV example}
 For example, a BDI controller for an unmanned aerial vehicle (UAV)
 \cite{Karim:AAMAS05,Ziming:AAC07} may include a certain procedure $\delta$ for
 achieving the goal of \emph{landing the aircraft} (the event) under \emph{normal
@@ -92,8 +92,8 @@ late as possible, together with the built-in goal-failure mechanisms, ensures
 that a successful execution will eventually be obtained while the system is
 sufficiently responsive to changes in the environment.
 
-\notems{fixes in para}
-For the purposes of this paper, we shall mostly focus on the plan library, as we
+%\notems{fixes in para}
+In this paper we focus on the plan library to
 investigate ways of learning how agents can make a better use of it over time.
 % %
 It is not hard to see that, by grouping together plans responding to the same
@@ -122,7 +122,7 @@ perform equally well in this structure.}
 \end{figure}
 
 
-Consider, for instance, the hierarachicaly structure sown in Figure~\ref{fig:T3}.
+Consider, for instance, the hierarachical structure sown in Figure~\ref{fig:T3}.
 % %%
 A link from a goal to a plan means that this plan is relevant (i.e., potentially
 suitable) for achieving the goal (e.g., $P_1 \ldots P4$ are the relevant plans
@@ -165,9 +165,11 @@ correct context conditions at design-time can, in some applications, be a
 demanding and error-prone task. In addition, fixed context conditions do not
 allow agents to adapt to changing environments.
 % %%
-\notems{changed last sentence} Thus, in this work, we shall be interested in
-exploring how an agent, while acting, can \emph{learn} how to better select the
-plans available in order to improve goal achievability over time.
+%\notems{changed last sentence} 
+Thus, in this work, we shall be interested in
+exploring how an agent, while acting, can \emph{learn} how to better
+select among the
+plans available in order to improve goal achievement over time.
 
 
 
@@ -195,8 +197,20 @@ path from this plan which will succeed).
 As we have reported in earlier work~\cite{Airiau:IJAT:09} there are
 potential problems with learning the wrong information if a plan fails
 due to a wrong decision further down in the goal plan
-hierarchy. Consider the goal-plan tree in figure ... <do example as to why
-problem>
+hierarchy. Consider the goal-plan tree in figure \ref{fig:bdiarch}: if
+as discussed previously we picked one of the  plans indicated by
+$P_{B2}'$ to address goal 
+$G_{B2}$ (in the world which this tree is annotated for), then we
+would fail. This failure of $G_{B2}$\footnote{We are not currently
+using BDI failure recovery.} would then cause $P_B$ to fail, failing
+$G_B$, and in turn $P_i$. As $P_{B2}'$ is a leaf node it is clearly
+reasonable to learn that this plan fails in the particular world
+state. However it is not so clear that one wants to learn that the
+parent plans $P_B$ and $P_i$ fail. In fact, as we can see in this
+annotated figure, had we made a different choice for achieving
+$G_{B2}$ they would have succeeded. If one does not take account of
+the hierarchical nature of the goal plan in some way, then it may be
+that learning is severely impacted or even made impossible.
 
 Our experimentation has shown that the degree to which the learning is
 negatively affected due to wrong decisions is very dependent on
@@ -219,7 +233,7 @@ approach is more robust, though often slower, than a more agressive
 approach which records all experience, but can in some cases be
 severely impacted.
 
-The second approach that we have tried, reported in~\cite{aamas} is to
+The second approach that we have tried, reported in~\cite{Singh:AAMAS10} is to
 consider how likely the decision tree is to be reliable, at the point
 we make our plan selection.  We consider the reliability of a decision
 tree for a particular plan, in a particular world state, to be
@@ -228,11 +242,10 @@ tree) have been explored in that world state. We refer to this measure
 as coverage. The greater the coverage, the more we can rely on what we
 have observed.  By biasing the selection probability number towards
 the default value of 0.5 in cases where the coverage, and therefore
-reliability is low, we can achieve the same robustness as that
+reliability is low, we achieved the same robustness as that
 achieved by conservative recording of failure cases. The coverage
-approach is more flexible as teh extent to which this is used can be
-readily adjusted by parameters in the selection formula. Consequently,
-in this and ongoing work we use this approach.
+approach is more flexible as the extent to which this is used can be
+readily adjusted by parameters in the selection formula. 
 
 A limitation of the work that we have done with both the above
 approaches is that we have not considered parameterised goals. These
@@ -243,9 +256,22 @@ goal to move from A to B will require different choices than a goal to
 move from A to C (assuming B and C are not close). The learning
 process must take account of this.  A second limitation is that we
 have not allowed for recursion, which again is heavily used in many
-real applications. In the following section we present our learning
-approach, incorporating both parametrised goals, and recursion, using
-the coverage approach to ensuring reliability.
+real applications. Unfortunately, when we applied our previous
+coverage measures to unfolded recursive structures (with a fixed
+recursion depth), the method, which relied on exact calculation of
+numbers of paths, was no longer viable computationally, and even had
+problems conceptually. Consequently, in this and ongoing work we adopt
+an approximate measure of complexity of the goal-plan tree beneath a
+given plan and use this, combined with a graduated reliance on the
+decision tree depending on both experience and complexity of the tree
+- a more complex tree requiring more experience before we should feel
+confident of learned results.
+%
+In the following section we present the details of our learning
+approach, incorporating both parametrised goals, and recursion, as
+well as our new approach to estimating the confidence we should have in
+the decision tree for a particular plan, given a certain number of
+experiences. 
 
 
 
