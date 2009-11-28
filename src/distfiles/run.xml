@@ -1088,12 +1088,13 @@
 </target>
 <target name="runhanoi5" description="Run hanoi5">
     <failIfBuildNotFound test.name="hanoi5"/>
-	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 50000 -j 5 -m 1"/>
-	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 50000 -j 5 -m 1"/>
+	<runTest        test.name="hanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 20000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t -1 -m 1"/>
+	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 20000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t -1 -m 1"/>
 </target>
 <target name="plothanoi5" description="Plot hanoi5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoi5"/>
-	<plotResult test.name="hanoi5" every="5000" window="250" label="hanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
+	<plotResult test.name="hanoi5" every="2000" window="200" label="hanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
 </target>
 
 

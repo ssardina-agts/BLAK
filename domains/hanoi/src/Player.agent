@@ -235,6 +235,9 @@ public agent Player extends Agent implements Logger{
     
     public String loadNewState() {
         String depthKey = Integer.toString(generateSolutionsAtLevel);
+        if (generateSolutionsAtLevel == -1) {
+            depthKey = Integer.toString(selector.nextInt(init.size()));
+        }
         String goalKey = init.getRandomSecondKey(generator,depthKey);
 
         if (loadInitStates && (goalKey != null)) {
@@ -648,6 +651,10 @@ class HanoiState implements Serializable{
 
     public int id() {
         return numDiscs;
+    }
+    
+    public int size() {
+        return state.size();
     }
     
     public String getStats() {
