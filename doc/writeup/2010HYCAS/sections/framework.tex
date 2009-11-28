@@ -90,17 +90,5 @@ Equation \ref{eqn:weight} shows how the final plan selection weight $\Omega_P(w)
 Given the set of applicable plans for resolving event-goal $G$ in world state $w$ then, our probabilistic plan selection mechanism chooses a plan $P_i$ with a probability directly proportional to its selection weight $\Omega_{P_i}(w)$. Such selection ensures a balance between the \emph{exploitation} of current know-how and the \textit{exploration} of new choices that is necessary for online learning tasks. 
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Calculating Coverage for Recursive Structures and Event-Goal Types} \label{subsec:coverage-limitations} \notem{DS: Move to 2.2}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Since coverage is concerned with the number of paths {below} a plan in the goal-plan hierarchy, then one way to interpret this for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. Consider again the goal-plan structure $\T_2$ in Figure \ref{fig:unfolding} that shows the unfolding of the hierarchy for two levels of recursion. For the purpose of coverage calculations in this case, the three plans under each goal-event $G\langle\varphi_{4\ldots7}\rangle$ can be seen as having $[1,1,1]$ paths, plans under event-goals $G\langle\varphi_{2\ldots3}\rangle$ as having $[1,9,1]$ paths, and finally plans under $G\langle\varphi_1\rangle$ as having $[1,121,1]$ paths below.
-
-A serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. For instance, in the simple structure $\T_2$ in Figure \ref{fig:unfolding} the number of paths below $P_2$ for a progressively increasing recursion number is the series $[1, 9, 121, 15129, 228947161, \ldots]$. So within four levels of recursion, the number of paths below $P_2$ exceeds $228$ million. The problem is further compounded by event-goal types and the number of possible world states.
-
-For the purpose of calculating coverage then, keeping record of all covered paths per plan per given world state, per event-goal instance, and per recursion level quickly becomes impractical. As such the coverage specification as presented earlier does not scale for all practical purposes. To overcome this problem, in this study we propose a simpler confidence measure that still takes from the general notion of coverage but is simpler to compute and has much more modest memory requirements.
-
-
 %Simplifications: Only single level goal recursion allowed ie G1->P1->G1 and not  G1->P1->G2->P2->G. Also no information of Gs in the system so only the parent goal recursion is tracked.
 
