@@ -18,32 +18,6 @@ The attributes in $w$ determine the quality of the final classification, and the
 
 The decision tree inductive bias is a preference for smaller trees. In other words, the induction of \dt s will trade-off some accuracy in classification for compactness of representation. In fact such inductive bias is necessary if the \dt\ is to generalise to as yet unseen world states. Once a \dt\ is induced from the training set, it may be used to classify any new world state $w$. In the strict sense the classification is an outcome $o$ (failure or success). However, several \dt\ implementations including \propername{J48} in \weka\footnote{In our study we use algorithm \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the \weka\ learning package \cite{weka99}.} annotate a likelihood of class membership (that is indicative of the inductive bias) to the returned classification. For the given world state $w$ then, we treat the returned likelihood of membership to the $success$ class as the expected likelihood of success of the plan.
 
-One source of misclassification in the learnt \dt s is from erroneous training samples collected when a plan fails not because it was a bad choice in the given world state, but because a bad choice was made somewhere in the execution path below it in the BDI goal-plan hierarchy. Previously in \cite{Airiau:IJAT:09} we have shown how \textit{selective recording} of outcomes may be used to overcome this issue.
-
-A second source of misclassification is from the unorthodox use of \dt s in our framework. Note that the typical use of \dt s lies in the \textit{offline} induction from a complete training set. However, in our case training samples are progressively added after each new execution, while all the time the agent makes the best choice given the experience so far. This results in an incomplete training set in the early stages of learning\footnote{Training data is incomplete in the sense that the agent has only collected a portion of the full data set required to learn the correct classification.} leading to misclassification errors. In \cite{Singh:AAMAS10} we show how a measure of confidence in the \dt\ classification based on the \textit{coverage} of the paths \textit{below} the plan in the goal-plan hierarchy may be used \textit{during plan selection} to address this issue (independent of the recording scheme used).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Confidence-based Probabilistic Plan Selection}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-In previous work \cite{Singh:AAMAS10} we introduced a confidence measure in the \dt\ classification based on the notion of \textit{coverage} of the choices below the plan in the BDI goal-plan hierarchy. The idea is that our confidence in a plan's \dt\ increases as more of the possible execution paths below the plan in the goal-plan hierarchy are explored.
-
-\begin{equation*}\label{eqn:coverage}   
-\Omega_P(w) = 0.5 + \left[  c_P(w) *  \left( \kappa_P(w) - 0.5 \right)  \right].
-\end{equation*}
-
-Equation \ref{eqn:coverage} shows how the final plan selection weight $\Omega_P(w)$ is calculated for a given world state $w$. Initially, the selection weight for a previously unseen world state $w$ takes the default value of $0.5$. Over time, as the various execution paths below the plan are tried in $w$, its coverage $c_P(w)$ increases and the selection weight approaches the value $\kappa_P(w)$ estimated by the plan's \dt.
-
-Given the set of all applicable plans for resolving event-goal $G$ in world state $w$, the \emph{probabilistic plan selection} mechanism chooses a plan $P_i$ with a probability directly proportional to its selection weight $\Omega_{P_i}(w)$. Such selection ensures a balance between the \emph{exploitation} of current know-how and the \textit{exploration} of new choices. Note that typical BDI platforms do offer various advanced mechanisms for plan selection, including plan precedence and meta-level reasoning. However, these mechanisms are pre-programmed and do not take into account the experience of the agent.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Handling Event-Goal Types}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Recall our previous definition of the learning task: \textit{Given past execution data and the current world state, determine which plan to execute next in order to best address the event-goal in question}. The simplifying assumption in this definition is that the event-goal in question is an \textit{event-goal instance}. In practical BDI systems, it is often the case that a single plan will handle all instances of an \textit{event-goal type}. Furthermore event-goal instance parameters will generally be included in the context logical formula. Our BDI learning framework account presented earlier in \cite{Airiau:IJAT:09} and \cite{Singh:AAMAS10} did not address the issue of learning context conditions for plans that handle event-goal types, and is the subject of this study.
-
-For the purpose of learning context conditions, we treat the event-goal parameters as relevant attributes of the world. As such, the training set then contains samples of the form $[w \cup \varphi,o]$ where the world state $w$ is the initial set of all relevant attributes that represent the state of affairs, $\varphi$ is the set of all event-type parameters, and $o$ is the outcome class (success or failure). This way, incorporating $\varphi$ in the training data is the only step required for handling event-goal types and no change to the actual framework is warranted.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Support for Recursive Event-Goals}
@@ -71,25 +45,62 @@ The first choice in the execution results in the selection of plan $P_2$ to hand
 
 Note that if plan $P_2$ had instead been selected to handle $G\langle\varphi_7\rangle$ then a deeper recursive call would have ensued. Similarly if earlier in the execution trace plan $P_2$ was selected to handle event-goal $G\langle\varphi_2\rangle$ then a different recursive sub-tree (shown in Figure \ref{fig:unfolding} as dotted nodes under $G\langle\varphi_2\rangle$) would have unfolded.
 
-The immediate implication of a recursive goal-plan structure is that the size of the hierarchy is no longer static but instead unfolds in a dynamic manner. The issue stems from the fact that the recursion is \textit{unbounded} because the context conditions that cause the recursion to terminate are initially unknown. So in order to know the context conditions we must recursively explore, but in doing so we risk an infinite recursive call because the context conditions that ought to guide the recursive exploration towards termination are unknown. This means that we may never find the ``bottom'' or leaf nodes. This has implications for any \textit{bottom-up} strategies. For instance, our conservative recording approach of \cite{Airiau:IJAT:09} and the coverage-based confidence measure of \cite{Singh:AAMAS10} both suffer from this problem. Interestingly, the simpler aggressive recording approach is not impacted by recursion as it does not consider the goal-plan structure . 
+The immediate implication of a recursive goal-plan structure is that the size of the hierarchy is no longer static but instead unfolds in a dynamic manner. The issue stems from the fact that the recursion is \textit{unbounded} because the context conditions that cause the recursion to terminate are initially unknown. So in order to know the context conditions we must recursively explore, but in doing so we risk an infinite recursive call because the context conditions that ought to guide the recursive exploration towards termination are unknown. This means that we may never find the ``bottom'' or leaf nodes. This has implications for any \textit{bottom-up} strategies. For instance, our conservative recording approach of \cite{Airiau:IJAT:09} and the coverage-based confidence measure of \cite{Singh:AAMAS10} both suffer from this problem. Incidentally, the simpler aggressive recording approach is not impacted by recursion as it does not consider the goal-plan structure.
 
-We will now focus on how the coverage-based confidence measure of \cite{Singh:AAMAS10} may be extended for use in recursive hierarchies.
+One way to resolve this issue is to treat all recursive goals simply as sub-trees in a static structure and limit the recursive \textit{unfolding}  to a maximum allowed depth. In this study we use this bounded recursion approach for handling recursive structures. It follows then that wherever a recursive structure applies, a maximum recursion value must always be supplied. This may not be an unrealistic requirement given that the domain expert will usually have some idea of how much recursion is sufficient for an event-goal type.
 
-\subsubsection{Calculating Coverage for Recursive Structures}
 
-Since coverage is concerned with the number of paths {below} a plan in the goal-pplan hierarchy, then one way to interpret this for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calculating Confidence in the Decision Tree Classification}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Consider again the goal-plan structure $\T_2$ in Figure \ref{fig:unfolding} that shows the unfolding of the hierarchy for two levels of recursion. For the purpose of coverage calculations in this case, the three plans under each goal-event $G\langle\varphi_{4\ldots7}\rangle$ can be seen as having $[1,1,1]$ paths, plans under event-goals $G\langle\varphi_{2\ldots3}\rangle$ as having $[1,9,1]$ paths, and finally plans under $G\langle\varphi_1\rangle$ as having $[1,121,1]$ paths below.
+The typical use of \dt s lies in the \textit{offline} induction from a complete training set. In that sense, the use of \dt s in our framework is unorthodox since the training set is built incrementally by recording samples after each new execution. This results in the training set being incomplete\footnote{Training data is incomplete in the sense that the agent has only collected a portion of the full data set required to learn the correct classification.} in the early stages of learning leading to misclassification errors. A confidence measure in the \dt\ classification is therefore desirable to overcome this issue. Previously in \cite{Singh:AAMAS10} we showed how the \textit{coverage} of possible execution paths below the plan in the goal-plan hierarchy may be used to build such a measure. Here we propose a new confidence measure that still takes from the notion of coverage but that does not suffer from its limitations (Section \ref{subsec:coverage-limitations}).
 
-The first difficulty with this reasoning, however, is that in fact the actual number of recursive unfoldings possible starting at $G\langle\varphi_1\rangle$ (or any other $G\langle\rangle$ for that matter) are \textit{infinite}. The only reason we are able to compute paths for structure $\T_2$ is because we have $bounded$ the recursion to a maximum of two levels.
+... \notem{DS: todo}
 
-It follows then that wherever a recursive structure applies and the coverage-based confidence measure is to be used, then a maximum recursion value must always be supplied. This may not be an unrealistic given that the domain expert will usually have some idea of how much recursion is sufficient, and as long as they provide a value that is sufficiently large for the domain then we have a valid case for computing coverage.
 
-A second difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. For instance, in structure $\T_2$ in Figure \ref{fig:unfolding} the number of paths below $P_2$ for a progressively increasing recursion number is the series $[1, 9, 121, 15129, 228947161, \ldots]$. So within four levels of recursion, the number of paths below $P_2$ exceeds $228$ million.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Handling Event-Goal Types}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Dhirendra says: Hmm.. one way to handle recursion would be to treat all recursive plans as \textit{leaf} nodes. This will enable coverage and stability to function in recursive domains ``as is''. Also all previous claims about coverage/stability will be preserved. Maybe this treatment of recursion makes more sense than bounded unfolding?!?
+Our BDI learning framework account as presented earlier in \cite{Airiau:IJAT:09} and \cite{Singh:AAMAS10} did not account for event-goal types. In practical BDI systems, it is often the case that a single plan will handle all instances of an \textit{event-goal type}. Furthermore event-goal instance parameters will generally be included in the context logical formula. 
+
+Recall our previous definition of the learning task: Given past execution data and the current world state, determine which plan to execute next in order to best address the event-goal in question. The simplifying assumption in this definition is that the event-goal in question is an \textit{event-goal instance}. 
+
+Consider once more the goal-plan structure $\T_2$ in Figure \ref{fig:unfolding} and the highlighted solution path terminating in the leaf plans indicated by the $\surd$ symbol. The key point here is that the indicated solution applies to the event-goal \textit{instance} $G\langle\varphi_1\rangle$ and to that instance alone. For a different instance $G\langle\varrho_1\rangle$ the solution path would likely be different (one way to visualise this in the Figure \ref{fig:unfolding} is to think of it as an animation where the event-goal parameters and the placement of the $\surd$ symbols changes on each frame).  This means that event-goal instance parameters must also be considered as input for a plans \dt\, if we are to have any hope of learning the solutions \textit{per event-goal instance}.
+
+We include such an account by augmenting the training samples for the \dt\ with the event-goal parameters. As such, the training set now contains samples of the form $[w \cup \varphi,o]$ where the world state $w$ is the initial set of all relevant attributes that represent the state of affairs, $\varphi$ is the set of all event-type parameters, and $o$ is the outcome class (success or failure). Incorporating the event-goal parameter set $\varphi$ in the training data is sufficient for learning with event-goal types, and no fundamental change to the framework is warrented.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calculating Plan Selection Weights based on Confidence}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Typical BDI platforms offer several mechanisms for plan selection from a set of applicable plans, such as plan precedence and meta-level reasoning. However, since these mechanisms are pre-programmed and do not take into account the experience of the agent, we provide a new \textit{probabilistic plan selection} function for this purpose. 
+
+For each plan, given its expectation of success (as determined by its \dt\ learning) and a confidence measure in this expectation (based on coverage), we calculate a final \textit{selection weight} that is indicative of the likelihood of the plan being selected for execution.
+
+\begin{equation*}\label{eqn:weight}   
+\Omega_P(w) = 0.5 + \left[  c_P(w) *  \left( \kappa_P(w) - 0.5 \right)  \right].
+\end{equation*}
+
+Equation \ref{eqn:weight} shows how the final plan selection weight $\Omega_P(w)$ is calculated for a given world state $w$. Initially, the confidence $c_P(w)$ is zero and the selection weight takes the default value of $0.5$. Over time, as the confidence improves towards the final value of $1.0$, the selection weight approaches the value $\kappa_P(w)$ estimated by the plan's \dt.
+
+Given the set of applicable plans for resolving event-goal $G$ in world state $w$ then, our probabilistic plan selection mechanism chooses a plan $P_i$ with a probability directly proportional to its selection weight $\Omega_{P_i}(w)$. Such selection ensures a balance between the \emph{exploitation} of current know-how and the \textit{exploration} of new choices that is necessary for online learning tasks. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calculating Coverage for Recursive Structures and Event-Goal Types} \label{subsec:coverage-limitations} \notem{DS: Move to 2.2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Since coverage is concerned with the number of paths {below} a plan in the goal-plan hierarchy, then one way to interpret this for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. Consider again the goal-plan structure $\T_2$ in Figure \ref{fig:unfolding} that shows the unfolding of the hierarchy for two levels of recursion. For the purpose of coverage calculations in this case, the three plans under each goal-event $G\langle\varphi_{4\ldots7}\rangle$ can be seen as having $[1,1,1]$ paths, plans under event-goals $G\langle\varphi_{2\ldots3}\rangle$ as having $[1,9,1]$ paths, and finally plans under $G\langle\varphi_1\rangle$ as having $[1,121,1]$ paths below.
+
+A serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. For instance, in the simple structure $\T_2$ in Figure \ref{fig:unfolding} the number of paths below $P_2$ for a progressively increasing recursion number is the series $[1, 9, 121, 15129, 228947161, \ldots]$. So within four levels of recursion, the number of paths below $P_2$ exceeds $228$ million. The problem is further compounded by event-goal types and the number of possible world states.
+
+For the purpose of calculating coverage then, keeping record of all covered paths per plan per given world state, per event-goal instance, and per recursion level quickly becomes impractical. As such the coverage specification as presented earlier does not scale for all practical purposes. To overcome this problem, in this study we propose a simpler confidence measure that still takes from the general notion of coverage but is simpler to compute and has much more modest memory requirements.
+
 
 %Simplifications: Only single level goal recursion allowed ie G1->P1->G1 and not  G1->P1->G2->P2->G. Also no information of Gs in the system so only the parent goal recursion is tracked.
 
-%\subsubsection{Discussion}
-%Can we calculate $c_P(w,r)$ for any r if we have witnessed one r? 
