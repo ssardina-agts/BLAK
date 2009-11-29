@@ -7,12 +7,12 @@
     \foreach \x/\xtext in {1000/1000, 2500/2500, 4000/4000} \node at (\x,0) [below] {$\xtext$};
     \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
     \node at (0,1.1) {Success};
-    \node at (4000,0.15) {Iterations};
-    \draw[-] plot[mark=x,mark size=4,mark options={color=black}] 
+    \node at (4000,0.25) {Iterations};
+    \draw[-] plot[mark=+,mark size=3,mark options={color=black}] 
 			file {data/hanoid5s1r8.CF.tikzdata};
     \draw[-] plot[mark=o,mark size=2,mark options={color=black}] 
 			file {data/hanoid5s3r8.CF.tikzdata};
-    \draw[-] plot[mark=+,mark size=2,mark options={color=black}] 
+    \draw[-] plot[mark=x,mark size=3,mark options={color=black}] 
 			file {data/hanoid5s5r8.CF.tikzdata};
 
 \end{tikzpicture}
