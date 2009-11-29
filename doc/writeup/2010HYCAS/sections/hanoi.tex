@@ -83,7 +83,7 @@ subgoal of moving it to pin \entity{?p}, that is, event \entity{Solve(?d,?p)}.
 
 \begin{figure}[t]
 \begin{center}
-\input{figs/GPtree-hanoi}
+\input{figs/gpt-hanoi}
 \end{center}
 \caption{Goal-plan hierarchy for the Towers of Hanoi domain.}
 \label{fig:hanoi_goalplan}
@@ -151,9 +151,31 @@ determined by the event goal corresponding to the plan. In our case, the last
 step of all four plans for event \entity{Solve(?d,?p)} would be testing that,
 indeed, disc \entity{d} is in pin \entity{p}.
 
+\subsection{Experimental Setup}
+
+Since the aim in this study is to evaluate our learning framework for recursive event-types, then for our experimentation with the Hanoi problem we focus on learning to resolve event \entity{Solve(?d,?p)} only - and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Furthermore, our experiments are for a Hanoi problem involving $five$ discs in order to keep the state space sufficiently small to allow learning runs to be completed and evaluated in reasonable time. 
+
+Since the full set of possible \entity{Solve(?d,?p)} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. We proceed by running the original Hanoi program for a number of randomly generated \entity{Solve(?d,?p)} events. For each run we record the \entity{Solve(?d,?p)} event and initial tower setup indexed by the maximum recursion encountered. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
+
+Next, we run each candidate learning approach on the set of saved configurations for a given recursion level. i.e. where all solutions lie exactly at the specified recursion number. Furthermore we use a set random generation seed for each experiment so that the same sequence of \entity{Solve(?d,?p)} events is generated for each learning approach. This isolates any environmental factors and allows us to attribute any differences in performance to the learning approaches alone.
+
+\subsection{Results}
+
+The following results are for a Hanoi problem with five discs\footnote{We use five discs in order to keep the state space rich enough yet sufficiently small to allow learning runs to be completed and evaluated in reasonable time.}. The performance of two learning configurations is contrasted. The baseline learning algorithm \CL\ refers to the original aggressive learning approach of \cite{Airiau:IJAT:09} and \cite{Singh:AAMAS10} using the original probabilistic plan selection function. The new algorithm is referred to as \CL+$\Omega$ and uses the same aggressive learning approach as the former but combined with the new confidence-based probabilistic selection function presented in this study.
 
 
-
-
-
+\begin{figure*}[t]
+\begin{center}
+\subfigure[\CL]{\label{fig:levelresult_1}
+\input{figs/levelresult1}
+}
+\qquad
+\subfigure[\CL+$\Omega$]{\label{fig: levelresult_2}
+\input{figs/levelresult2}
+}
+\caption{Agent performance under \CL\ and \CL+$\Omega$ schemes for solutions at various recursion levels.
+Each point represents results from $5$ experiment runs using an averaging window
+of $100$ samples.}
+\end{center}
+\end{figure*}
 

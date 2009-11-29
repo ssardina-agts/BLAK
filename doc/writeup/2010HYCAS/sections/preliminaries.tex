@@ -111,7 +111,7 @@ succeed one of the plans to achieve it must succeed (OR).
 
 \begin{figure}[t]
 \begin{center}
-\input{figs/GPtree-T3}
+\input{figs/gpt-example}
 \end{center}
 \caption{An Example BDI Goal-Plan Hierarchy.}
 \label{fig:T3}
@@ -252,16 +252,36 @@ failure cases. The coverage approach, however, is more
 flexible as the extent to which this is used can be
 readily adjusted by parameters in the selection formula. 
 
-A limitation with both the above
-approaches is that we have not considered parameterised goals. 
-A robot goal to move, for instance, 
-would typically have some parameters, either a destination (where the
-world state contains the current position), or a direction. Clearly a
-goal to move from A to B will require different choices than a goal to
-move from A to C (assuming B and C are not close). The learning
-process must take account of this. A second limitation is that we
-have not allowed for recursion, which again is heavily used in many
-real applications. 
+%A limitation with both the above
+%approaches is that we have not considered parameterised goals. 
+%A robot goal to move, for instance, 
+%would typically have some parameters, either a destination (where the
+%world state contains the current position), or a direction. Clearly a
+%goal to move from A to B will require different choices than a goal to
+%move from A to C (assuming B and C are not close). The learning
+%process must take account of this. A second limitation is that we
+%have not allowed for recursion, which again is heavily used in many
+%real applications. 
+
+
+A limitation with the previous approaches is that 
+events were assumed to be propositional atoms, that is, event
+types were not considered. By \emph{event type} we mean an event that may
+contain ``data'' as part of its definition. For instance, event
+$\textmath{travelTo(?dest)}$ may represent the goal to travel to location
+$\textmath{?dest}$. Presumably a goal to move to location $A$ would 
+require different choices than a goal to move to $B$, and the leanring
+must account for this.
+% % 
+Another limitation is the assumption that the agent's plan library is
+non-recursive, so that the goal-plan tree structure induced is always
+\emph{finite}.
+% %
+Clearly both limitations would preclude the applicability of the approach in
+several practical domains where hierarchies are usually expressed
+using parameterised goal events and plans, and often make
+use of (direct or indirect) recursive procedures.
+
 
 %Unfortunately, when we applied our previous
 %coverage measures to unfolded recursive structures (with a fixed
@@ -273,7 +293,7 @@ real applications.
 %decision tree depending on both experience and complexity of the tree
 %- a more complex tree requiring more experience before we should feel
 %confident of learned results.
-Furthermore, the preferred coverage approach as presented earlier does not scale for practical purposes. For instance, one way to interpret coverage for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. However, a serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. The problem is further compounded by event-goal types and the number of possible world states. A final limitation with the coverage-based confidence measure is that it does not consider domain complexity. For instance, a leaf plan that has no sub-goals will achieve full coverage when it is tried once, after which selection will be fully biased towards the plans \dt\ classification. However, the \dt\ that at this point has only witnessed one world will generalise the outcome to all as-yet-unseen worlds leading to mis-classification errors.
+Furthermore, the preferred coverage approach of~\cite{Singh:AAMAS10} does not scale for practical purposes. For instance, one way to interpret coverage for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. However, a serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. The problem is further compounded by event-goal types and the number of possible world states. A final limitation with the coverage-based confidence measure is that it does not consider domain complexity. For instance, a leaf plan that has no sub-goals will achieve full coverage when it is tried once, after which selection will be fully biased towards the plans \dt\ classification. However, the \dt\ that at this point has only witnessed one world will generalise the outcome to all as-yet-unseen worlds leading to mis-classification errors.
 
 In the following section we present the details of our learning
 approach, incorporating both parametrised goals, and recursion, as
