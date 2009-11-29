@@ -32,6 +32,7 @@ public capability Solving extends Capability {
     #uses plan SolveMiddle;
     #uses plan SolveRight;
     #uses plan SolveZero;
+    #uses plan SolveThreshold;
     /**
            Nice formatting functions (used to print debugging info).
         */

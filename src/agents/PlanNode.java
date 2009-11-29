@@ -399,7 +399,7 @@ public class PlanNode extends Node{
 
     public double getConfidence(int depth, String[] state) {
         /* If we have succeeded in this state before then we have full confidence in the DT */
-        if (isSuccessful(state)) {
+        if (isSuccessful(state) || this.isFailedThresholdHandler) {
             return 1.0;
         }
         logger.writeLog("Plan "+this.getItem()+" using confidence c="+(1 - getComplexityDecay(depth))+"*"+(1 - getDomainDecay(depth)));

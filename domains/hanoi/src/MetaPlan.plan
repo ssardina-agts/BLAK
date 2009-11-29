@@ -41,70 +41,83 @@ public plan MetaPlan extends Plan {
             if (s.getInfo() instanceof PlanIdInfo) {
                 PlanIdInfo info = (PlanIdInfo) s.getInfo();
                 double p = info.pSuccess;
-                if ((ag.pselect() == PlanSelectMode.CONFIDENCE) && !fullConfidence) {
-                    p = 0.5 + (info.confidence * (p - 0.5));
-                    String str =
-                        "MetaPlan: P" + info.plan_id +
-                        " REVISED probability" +
-                        " to p=" + ((double) ((int) (p * 10000))) / 10000 +
-                        " based on confidence c=" + ((double) ((int) (info.confidence * 10000))) / 10000;
-                    if (ag.learningMode()) {
-                        ag.writeLog(str);
-                    }
-                }
-                if (p < 0.0001) {
-                    mass += 0.0001;
+                if (info.isFailedThresholdHandler) {
+                    thandler = s;
                 } else {
-                    mass += Math.pow(p, POWER);
-                }
-                if (p > pMax) {
-                    pMax = p;
-                    pMaxId = info.plan_id;
+                    if ((ag.pselect() == PlanSelectMode.CONFIDENCE) && !fullConfidence) {
+                        p = 0.5 + (info.confidence * (p - 0.5));
+                        String str =
+                            "MetaPlan: P" + info.plan_id +
+                            " REVISED probability" +
+                            " to p=" + ((double) ((int) (p * 10000))) / 10000 +
+                            " based on confidence c=" + ((double) ((int) (info.confidence * 10000))) / 10000;
+                        if (ag.learningMode()) {
+                            ag.writeLog(str);
+                        }
+                    }
+                    if (p < 0.0001) {
+                        mass += 0.0001;
+                    } else {
+                        mass += Math.pow(p, POWER);
+                    }
+                    if (p > pMax) {
+                        pMax = p;
+                        pMaxId = info.plan_id;
+                    }
                 }
             }
             num++;
         }
 
-        if (num > 0) {
-            double[] prob = new double[num];
-            double acc = 0;
-            int i;
-            for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s), i++) {
-                if (s.getInfo() instanceof PlanIdInfo) {
-                    PlanIdInfo info = (PlanIdInfo) s.getInfo();
-                    double p = info.pSuccess;
-                    if ((ag.pselect() == PlanSelectMode.CONFIDENCE) && !fullConfidence) {
-                        p = 0.5 + (info.confidence * (p - 0.5));
-                    }
-                    if (p < 0.0001) {
-                        acc += 0.0001 / mass;
+        /* If pMax is less than the threshold and not a leaf plan then always select the failed threshold handler plan */
+        //ag.writeLog("MetaPlan: ag.applicabilityThreshold = " + ag.applicabilityThreshold() + " pMax = " + pMax + " thandler = " + thandler);
+        if ((pMax < ag.applicabilityThreshold()) && !fullConfidence && (thandler != null)) {
+            pc.chosen = thandler;
+            ag.writeLog("MetaPlan: Using failed threshold plan since " +
+            "p("+(((double) ((int) (pMax * 10000))) / 10000)+")<threshold("+
+            (((double) ((int) (ag.applicabilityThreshold() * 10000))) / 10000)+")");
+        } else {
+            if (num > 0) {
+                double[] prob = new double[num];
+                double acc = 0;
+                int i;
+                for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s), i++) {
+                    if (s.getInfo() instanceof PlanIdInfo) {
+                        PlanIdInfo info = (PlanIdInfo) s.getInfo();
+                        double p = info.pSuccess;
+                        if ((ag.pselect() == PlanSelectMode.CONFIDENCE) && !fullConfidence) {
+                            p = 0.5 + (info.confidence * (p - 0.5));
+                        }
+                        if (p < 0.0001) {
+                            acc += 0.0001 / mass;
+                        } else {
+                            acc += Math.pow(p, POWER) / mass;
+                        }
+                        prob[i] = acc;
                     } else {
-                        acc += Math.pow(p, POWER) / mass;
+                        prob[i] = 1.0 / num;
                     }
-                    prob[i] = acc;
-                } else {
-                    prob[i] = 1.0 / num;
                 }
+                double rnd = ag.selector().nextDouble();
+                int choice = 0;
+                while (prob[choice] < rnd) {
+                    choice++;
+                }
+                String str = "[";
+                for (i = 0; i < num; i++) {
+                    str += " " + ((double) ((int) (prob[i] * 10000))) / 10000;
+                }
+                str += " ]";
+                if (ag.learningMode()) {
+                    ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities " +
+                        str + ". Chosen plan index " + choice);
+                }
+                Signature s = pc.applicable.first();
+                for (i = 0; i < choice; i++) {
+                    s = pc.applicable.next(s);
+                }
+                pc.chosen = s;
             }
-            double rnd = ag.selector().nextDouble();
-            int choice = 0;
-            while (prob[choice] < rnd) {
-                choice++;
-            }
-            String str = "[";
-            for (i = 0; i < num; i++) {
-                str += " " + ((double) ((int) (prob[i] * 10000))) / 10000;
-            }
-            str += " ]";
-            if (ag.learningMode()) {
-                ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities " +
-                    str + ". Chosen plan index " + choice);
-            }
-            Signature s = pc.applicable.first();
-            for (i = 0; i < choice; i++) {
-                s = pc.applicable.next(s);
-            }
-            pc.chosen = s;
         }
 	}
 }
