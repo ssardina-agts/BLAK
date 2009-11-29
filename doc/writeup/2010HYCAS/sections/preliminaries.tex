@@ -22,21 +22,25 @@ for building intelligent agents situated in complex and dynamic environments wit
 (soft) real-time reasoning and control requirements
 \cite{Georgeff89-PRS,Benfield:AAMAS06}.
 % %
-Generally speaking, BDI agent-oriented programming languages are built around an
+Generally speaking, BDI agent-oriented programming languages are built
+around an 
 explicit representation of propositional attitudes (e.g., beliefs, desires,
 intentions, etc.). A BDI architecture addresses how these components are
 represented, updated, and processed to determine the agent's actions.
 % .
-There are a number of agent programming languages and development platforms in
-the BDI tradition, such as \PRS~\cite{IngrandGR:IEEE92-PRS} and
-\dMARS~\cite{Inverno:JAAMAS04-dMARS}, \AgentSpeak\ and
-\JASON~\cite{Rao:LNCS96-AgentSpeak,Bordini:07-JASONBOOK},
-\JADEX~\cite{PokahrBL:EXP03-JADEX},
-\TAPL~\cite{Hindriks:JAAMAS99-3APL,DastaniRM:05} and
-\DAPL~\cite{Dastani:JAAMAS08-2APL}, \GOAL~\cite{BoerHHM:JAPL07-GOAL},
-\JACK~\cite{BusettaRHL:AL99-JACK}, SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, and
-\JAM~\cite{Huber:AGENTS99-JAM}.
-
+%There are a number of agent programming languages and development platforms in
+%the BDI tradition, some examples of which include
+% \PRS~\cite{IngrandGR:IEEE92-PRS} and
+% \dMARS~\cite{Inverno:JAAMAS04-dMARS}, \AgentSpeak\ and
+%\JASON~\cite{Bordini:07-JASONBOOK},
+%Rao:LNCS96-AgentSpeak,
+%\JADEX~\cite{PokahrBL:EXP03-JADEX}, and
+% \TAPL~\cite{Hindriks:JAAMAS99-3APL,DastaniRM:05} and
+% \DAPL~\cite{Dastani:JAAMAS08-2APL}, \GOAL~\cite{BoerHHM:JAPL07-GOAL},
+%\JACK~\cite{BusettaRHL:AL99-JACK}.
+%, SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, and
+%\JAM~\cite{Huber:AGENTS99-JAM}.
+%ABOVE SAID IN INTRO
 
 
 \begin{figure}[t]
@@ -47,56 +51,53 @@ the BDI tradition, such as \PRS~\cite{IngrandGR:IEEE92-PRS} and
 \label{fig:bdiarch}
 \end{figure}
 
-In a BDI-style system, an agent consists, basically, of a belief base (akin to a
-database), a set of recorded pending goal events, a plan library, and an
-intention base.
+A BDI agent consists, basically, of a belief base (akin to a
+database) which stores the agent's knowledge about the world, a set of
+pending events, which includes both external percepts or messages and
+internal goals, a plan library and an intention structure.
 % %
 Figure~\ref{fig:bdiarch} depicts a typical BDI architecture.
 % %
-While the belief base encodes the agent's knowledge about the world, the pending
-events include the \emph{goals} the agent wants to achieve/resolve.
-% %
-The \textit{plan library}, in turn, contains \emph{plan rules}, or simply
-\emph{plans}, of the general form $e: \psi \leftarrow \delta$ encoding the
-standard domain operational procedure $\delta$ (that is, a program) for achieving
-the event-goal $e$ when the so-called \textit{context condition} $\psi$ is
-believed true---program $\delta$ is a reasonable strategy to resolve event $e$
-whenever $\psi$ holds.
+The plan library contains rules of the form $e: \psi \leftarrow
+\delta$ indicating that $\delta$ is a suitable procedure for achieving
+event-goal $e$ when context condition $\psi$ is true.
 % %
 %\notems{UAV example}
-For example, a BDI controller for an unmanned aerial vehicle (UAV)
-\cite{Karim:AAMAS05,Ziming:AAC07} may include a certain procedure $\delta$ for
-achieving the goal of \emph{landing the aircraft} (the event) under \emph{normal
-weather conditions} (the context).
+%For example, a BDI controller for an unmanned aerial vehicle (UAV)
+%\cite{Karim:AAMAS05,Ziming:AAC07} may include a certain procedure $\delta$ for
+%achieving the goal of \emph{landing the aircraft} (the event) under \emph{normal
+%weather conditions} (the context).
 % %
-Among other operations, the plan-body program $\delta$ will typically include the
+Among other operations, the plan body procedure $\delta$ will
+typically include the 
 execution of actions ($act$) in the environment and subgoal events ($!e$) that
-ought to be in turn resolved by selecting suitable plans for that subgoal event.
-Lastly, the intention base accounts for the current, partially instantiated,
-plans that the agent has already committed to in order to handle or achieve some
-event-goal.
-
+are in turn resolved by selecting suitable plans for that subgoal
+event.
+%
+The intention structure contains the current, partially instantiated,
+plans that the agent has committed to in order to handle or
+achieve some event-goal.
 
 The basic \emph{reactive goal-oriented behavior} of BDI systems involves the
-system responding to events, the inputs to the system, by committing to handle
-one pending event-goal, selecting a plan from the library, and placing its
-program body  into the intention base.
+system responding to events by 
+selecting an appropriate plan from the library, and placing its
+program body into the intention base.
 % %%
-A plan may be selected if it is \textit{relevant} and \textit{applicable}, that
-is, if it is a plan designed for the event in question and its context condition
-is believed true, respectively.
+A plan is appropriate if it is designed for the event in question
+(relevant) and its context
+condition is believed true (applicable).
 % %
 In contrast with traditional planning, execution happens at each step. The
-assumption is that the use of plans' context-preconditions to make choices as
+use of plans' context-preconditions to make choices as
 late as possible, together with the built-in goal-failure mechanisms, ensures
-that a successful execution will eventually be obtained while the system is
-sufficiently responsive to changes in the environment.
+that the system is responsive to changes in the environment.
 
 %\notems{fixes in para}
 In this paper we focus on the plan library to
-investigate ways of learning how agents can make a better use of it over time.
+investigate ways of learning appropriate or better plan selection
+based on experience. 
 % %
-It is not hard to see that, by grouping together plans responding to the same
+By grouping together plans responding to the same
 event type, the plan library can be seen as a set of \emph{goal-plan tree}
 templates: a goal (or event) node has children representing the alternative
 relevant plans for achieving it; and a plan node, in turn, has children nodes
@@ -106,9 +107,6 @@ These structures can be seen as AND/OR trees: for a plan to succeed all the
 subgoals and actions of the plan must be successful (AND); for a subgoal to
 succeed one of the plans to achieve it must succeed (OR).
 
-
-
-
 \begin{figure}[t]
 \begin{center}
 \input{figs/gpt-example}
@@ -117,8 +115,7 @@ succeed one of the plans to achieve it must succeed (OR).
 \label{fig:T3}
 \end{figure}
 
-
-Consider, for instance, the hierarachical structure sown in Figure~\ref{fig:T3}.
+Consider, for instance, the hierarachical structure shown in Figure~\ref{fig:T3}.
 % %%
 A link from a goal to a plan means that this plan is relevant (i.e., potentially
 suitable) for achieving the goal (e.g., $P_1 \ldots P4$ are the relevant plans
@@ -143,35 +140,25 @@ successful execution, though, if the agent decides to carry on any of the three
 plans labelled $P_{B2}'$ for achieving the low-level goal $G_{B2}$.
 
 
-
-
-
-As one can observe, the problem of \textit{plan-selection} is at the core
-of the whole BDI approach:
-\emph{which plan should the agent commit to in order to achieve a certain goal?}
-% %
-This problem amounts partly to what has been referred to as
-\emph{means-end analysis} in the agent foundational literature
-\cite{Pollack92-IRMA,Bratman88}, that is, the decision of \textit{how} goals are
-achieved.
-% %%
-To address the plan-selection task, state-of-the-art BDI systems leverage domain
-expertise by means of the context conditions of plans. However, crafting fully
-correct context conditions at design-time can, in some applications, be a
-demanding and error-prone task. In addition, fixed context conditions do not
-allow agents to adapt to changing environments.
+As can be seen \textit{plan-selection} is critically important.
+Standard BDI systems leverage domain
+expertise by means of the context conditions of plans.
+% However, crafting fully
+%correct context conditions at design-time can, in some applications, be a
+%demanding and error-prone task. In addition, fixed context conditions do not
+%allow agents to adapt to changing environments.
 % %%
 %\notems{changed last sentence} 
-In this work, we are interested in exploring how a situated agent may \emph{learn} plan selection over time in order to improve goal achievement.
-
-
+In this work, we are interested in exploring how a situated agent may
+\emph{learn} plan selection based on experience, in order to improve goal
+achievement. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Learning for BDI Plan Selection} \label{subsec:bdi_learning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In order to facilitate learning regarding which plan should be
-executed for a given goal, in a particular world state, we replace the
+executed for a given goal, in a particular world state, we first replace the
 boolean formulae that are the standard representation for context
 conditions in BDI programming languages, with decision
 trees~\cite{Mitchell97:ML} that provide a judgement as to whether the
@@ -190,12 +177,15 @@ The resolution of goals in BDI execution results in
 the invocation of plans that in turn may post sub-goals that are further
 handled by sub-plans in a hierarchical manner. In a programming context,
 this is equivalent to making a function call that in turn calls sub-functions.
-The key difference is that the choice of sub-plans in the BDI context is
-not determined by the designer - any sub-plan that can handle 
-the sub-goal will be applied at execution time. In our learning context, however,
-this means that a plan may fail not because the plan was a bad choice in the
-given situation, but instead because the run-time choice of sub-plans was
-incorrect. 
+%The key difference is that the choice of sub-plans in the BDI context is
+%not determined by the designer 
+%% ABOVE IS NOT CORRECT
+However a sub-goal may have a number of possible plans for achieving
+it, some of which will work better in particular situations than
+others. In our learning context, where we do not yet know which plans
+work well in which situations, a plan may fail not because the plan
+was a bad choice in the given situation, but instead because the
+run-time choice of sub-plans was incorrect for the situation.
 
 %As we have reported in earlier work~\cite{Airiau:IJAT:09} there are
 %potential problems with learning the wrong information if a plan fails
@@ -233,8 +223,8 @@ sub-plan choices.
 %point, for every world situation. 
 We have shown that this conservative approach is more robust, 
 though often slower, than a more agressive
-approach which records all experiences, but can in some cases be
-severely impacted.
+approach which records all experiences, but can in some particular cases
+completely fail to learn.
 
 Our second approach reported in~\cite{Singh:AAMAS10} was to
 adjust the plan selection probability based on some measure of 
@@ -242,7 +232,8 @@ our confidence in the decision tree classification.
 %
 We consider the reliability of a \dt\ for a given plan in a given 
 world state to be proportional to the number of sub-plan choices (or paths
-below the plan in the goal-plan hierarchy) that have been \textit{covered} in that 
+below the plan in the goal-plan hierarchy) that have been
+\textit{covered} in that  
 world state. The greater the coverage, the more we have explored and the
 greater the confidence in the resulting \dt.
 %
@@ -263,14 +254,13 @@ readily adjusted by parameters in the selection formula.
 %have not allowed for recursion, which again is heavily used in many
 %real applications. 
 
-
 A limitation with the previous approaches is that 
 events were assumed to be propositional atoms, that is, event
 types were not considered. By \emph{event type} we mean an event that may
 contain ``data'' as part of its definition. For instance, event
 $\textmath{travelTo(?dest)}$ may represent the goal to travel to location
 $\textmath{?dest}$. Presumably a goal to move to location $A$ would 
-require different choices than a goal to move to $B$, and the leanring
+require different choices than a goal to move to $B$, and the learning
 must account for this.
 % % 
 Another limitation is the assumption that the agent's plan library is
@@ -278,7 +268,7 @@ non-recursive, so that the goal-plan tree structure induced is always
 \emph{finite}.
 % %
 Clearly both limitations would preclude the applicability of the approach in
-several practical domains where hierarchies are usually expressed
+many practical domains where hierarchies are usually expressed
 using parameterised goal events and plans, and often make
 use of (direct or indirect) recursive procedures.
 
@@ -293,12 +283,27 @@ use of (direct or indirect) recursive procedures.
 %decision tree depending on both experience and complexity of the tree
 %- a more complex tree requiring more experience before we should feel
 %confident of learned results.
-Furthermore, the preferred coverage approach of~\cite{Singh:AAMAS10} does not scale for practical purposes. For instance, one way to interpret coverage for recursive structures is to treat all recursive goals simply as sub-trees in a static structure. Conceptually, this recursive unfolding of the structure is perfectly compatible with the coverage notion. However, a serious difficulty in this treatment of coverage is that the number of paths is exponential in the recursion number. The problem is further compounded by event-goal types and the number of possible world states. A final limitation with the coverage-based confidence measure is that it does not consider domain complexity. For instance, a leaf plan that has no sub-goals will achieve full coverage when it is tried once, after which selection will be fully biased towards the plans \dt\ classification. However, the \dt\ that at this point has only witnessed one world will generalise the outcome to all as-yet-unseen worlds leading to mis-classification errors.
+
+However the coverage approach of~\cite{Singh:AAMAS10} does not scale
+when recursive structures and event-goal types are
+introduced. Conceptually we can unfold the recursive structure to a
+specified depth. However, the number of paths is exponential in the
+recursion number and the problem is further compounded by event-goal
+types and the number of possible world states.
+%
+An additional limitation with the
+coverage-based confidence measure is that it does not consider domain
+complexity. For instance, a leaf plan that has no sub-goals will
+achieve full coverage when it is tried once, after which selection
+will be fully biased towards the plans \dt\ classification. However,
+the \dt\ that at this point has only witnessed one world will
+generalise the outcome to all as-yet-unseen worlds leading to
+mis-classification errors. 
 
 In the following section we present the details of our learning
 approach, incorporating both parametrised goals, and recursion, as
-well as a new simpler confidence measure that still takes from the 
-general notion of coverage but does not suffer from its limitations.
+well as a new simpler confidence measure that is based on the 
+general idea of coverage but does not suffer from its limitations.
 
 
 
