@@ -41,7 +41,7 @@ the BDI tradition, such as \PRS~\cite{IngrandGR:IEEE92-PRS} and
 
 \begin{figure}[t]
 \begin{center}
-\resizebox{.9\textwidth}{!}{\input{figs/figbdiarch}}
+\resizebox{.7\textwidth}{!}{\input{figs/figbdiarch}}
 \end{center}
 \caption{A typical BDI-style architecture}
 \label{fig:bdiarch}
@@ -113,11 +113,7 @@ succeed one of the plans to achieve it must succeed (OR).
 \begin{center}
 \input{figs/GPtree-T3}
 \end{center}
-\caption{Goal-plan hierarchy $\T_3$. There are $2^4$ worlds whose solutions are
-distributed evenly in each of the $4$ top level plans. Successful execution
-traces are of length $4$. Within each sub-tree $P_i$, \BUL\ is expected to
-perform better for a given world, but it suffers in the number of worlds. Overall, \CL\ and \BUL\
-perform equally well in this structure.}
+\caption{An Example BDI Goal-Plan Hierarchy.}
 \label{fig:T3}
 \end{figure}
 
@@ -150,26 +146,23 @@ plans labelled $P_{B2}'$ for achieving the low-level goal $G_{B2}$.
 
 
 
-As one can easily observe, the problem of \textit{plan-selection} is at the core
+As one can observe, the problem of \textit{plan-selection} is at the core
 of the whole BDI approach:
 \emph{which plan should the agent commit to in order to achieve a certain goal?}
 % %
-This problem amounts, at least partly, to what has been referred to as
+This problem amounts partly to what has been referred to as
 \emph{means-end analysis} in the agent foundational literature
 \cite{Pollack92-IRMA,Bratman88}, that is, the decision of \textit{how} goals are
 achieved.
 % %%
-To tackle the plan-selection task, state-of-the-art BDI systems leverage domain
+To address the plan-selection task, state-of-the-art BDI systems leverage domain
 expertise by means of the context conditions of plans. However, crafting fully
 correct context conditions at design-time can, in some applications, be a
 demanding and error-prone task. In addition, fixed context conditions do not
 allow agents to adapt to changing environments.
 % %%
 %\notems{changed last sentence} 
-Thus, in this work, we shall be interested in
-exploring how an agent, while acting, can \emph{learn} how to better
-select among the
-plans available in order to improve goal achievement over time.
+In this work, we are interested in exploring how a situated agent may \emph{learn} plan selection over time in order to improve goal achievement.
 
 
 
@@ -232,10 +225,9 @@ incorrect.
 %can lead the agent to be unable to ever learn the successful
 %execution. 
 
-There are two different approaches we may take to address this
-problem. Our first approach~\cite{Airiau:IJAT:09} was that of careful
-consideration whereby failures are recorded for learning purposes only 
-when we are sufficiently sure that the failure was not due to poor
+Our first approach~\cite{Airiau:IJAT:09} to address this problem was that 
+of careful consideration whereby failures are recorded for learning purposes 
+only when we are sufficiently sure that the failure was not due to poor
 sub-plan choices. 
 %This requires recording which choices we have made at each
 %point, for every world situation. 

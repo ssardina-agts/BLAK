@@ -1,15 +1,15 @@
-\begin{tikzpicture}[scale=0.8,level distance=2.2cm]
+\begin{tikzpicture}[scale=0.7]
 \tikzstyle{txt}=[scale=1.0]
 \tikzstyle{succ}=[label=below:$\surd$]
 \tikzstyle{fail}=[label=below:$\times$]
 \tikzstyle{planbox}=[draw,minimum height=0.9cm,minimum width=0.9cm]
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.9cm,minimum width=1.0cm]
-\tikzstyle{level 1}=[sibling distance=4.5cm] 
-\tikzstyle{level 2}=[sibling distance=9.0cm] 
-\tikzstyle{level 3}=[sibling distance=2.5cm]
-\tikzstyle{level 4}=[sibling distance=4.5cm]
-\tikzstyle{level 5}=[sibling distance=1.5cm]
-\tikzstyle{level 6}=[sibling distance=1.3cm]
+\tikzstyle{level 1}=[sibling distance=4.5cm,level distance=1.9cm] 
+\tikzstyle{level 2}=[sibling distance=9.0cm,level distance=1.9cm] 
+\tikzstyle{level 3}=[sibling distance=3.0cm,level distance=1.9cm]
+\tikzstyle{level 4}=[sibling distance=4.5cm,level distance=2.3cm]
+\tikzstyle{level 5}=[sibling distance=1.5cm,level distance=1.9cm]
+\tikzstyle{level 6}=[sibling distance=1.3cm,level distance=1.9cm]
 
 \node[goalbox,yshift=1cm] {$G\langle\varphi_1\rangle$}
 	child {node[planbox] {$P_1$}}
