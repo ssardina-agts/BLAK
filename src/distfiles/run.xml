@@ -1001,12 +1001,12 @@
 <target name="runhanoid5s4r8" description="Run hanoid5s4r8">
     <failIfBuildNotFound test.name="hanoid5s4r8"/>
 	<runTest        test.name="hanoid5s4r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 4000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 4 -m 1"/>
-	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 4000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 4 -m 1"/>
+	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 4 -m 1"/>
+	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 4 -m 1"/>
 </target>
 <target name="plothanoid5s4r8" description="Plot hanoid5s4r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s4r8"/>
-	<plotResult test.name="hanoid5s4r8" every="400" label="hanoi:discs=5:solutions@level=4:goals=6:recursion=8"/>
+	<plotResult test.name="hanoid5s4r8" every="500" label="hanoi:discs=5:solutions@level=4:goals=6:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1023,12 +1023,12 @@
 <target name="runhanoid5s3r8" description="Run hanoid5s3r8">
     <failIfBuildNotFound test.name="hanoid5s3r8"/>
 	<runTest        test.name="hanoid5s3r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 3000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 3 -m 1"/>
-	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 3000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 3 -m 1"/>
+	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 3 -m 1"/>
+	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 3 -m 1"/>
 </target>
 <target name="plothanoid5s3r8" description="Plot hanoid5s3r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s3r8"/>
-	<plotResult test.name="hanoid5s3r8" every="300" label="hanoi:discs=5:solutions@level=3:goals=7:recursion=8"/>
+	<plotResult test.name="hanoid5s3r8" every="500" label="hanoi:discs=5:solutions@level=3:goals=7:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1045,12 +1045,12 @@
 <target name="runhanoid5s2r8" description="Run hanoid5s2r8">
     <failIfBuildNotFound test.name="hanoid5s2r8"/>
 	<runTest        test.name="hanoid5s2r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 2000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 2 -m 1"/>
-	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 2000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 2 -m 1"/>
+	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 2 -m 1"/>
+	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 2 -m 1"/>
 </target>
 <target name="plothanoid5s2r8" description="Plot hanoid5s2r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s2r8"/>
-	<plotResult test.name="hanoid5s2r8" every="200" label="hanoi:discs=5:solutions@level=2:goals=8:recursion=8"/>
+	<plotResult test.name="hanoid5s2r8" every="500" label="hanoi:discs=5:solutions@level=2:goals=8:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1067,12 +1067,12 @@
 <target name="runhanoid5s1r8" description="Run hanoid5s1r8">
     <failIfBuildNotFound test.name="hanoid5s1r8"/>
 	<runTest        test.name="hanoid5s1r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 1000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 1 -m 1"/>
-	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 1000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 1 -m 1"/>
+	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 1 -m 1"/>
+	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -c 0.9 -t 1 -m 1"/>
 </target>
 <target name="plothanoid5s1r8" description="Plot hanoid5s1r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoid5s1r8"/>
-	<plotResult test.name="hanoid5s1r8" every="100" label="hanoi:discs=5:solutions@level=1:goals=8:recursion=8"/>
+	<plotResult test.name="hanoid5s1r8" every="500" label="hanoi:discs=5:solutions@level=1:goals=8:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
