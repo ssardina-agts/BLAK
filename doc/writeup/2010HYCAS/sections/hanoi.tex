@@ -166,14 +166,28 @@ The following results are for a Hanoi problem with five discs\footnote{We use fi
 
 \begin{figure*}[t]
 \begin{center}
-\subfigure[\CL]{\label{fig:levelresult_1}
-\input{figs/levelresult1}
+\subfigure[\CL]{\label{fig:result-levelsA}
+\input{figs/result-levelsA}
 }
 \qquad
-\subfigure[\CL+$\Omega$]{\label{fig: levelresult_2}
-\input{figs/levelresult2}
+\subfigure[\CL+$\Omega$]{\label{fig:result-levelsB}
+\input{figs/result-levelsB}
 }
 \caption{Agent performance under \CL\ and \CL+$\Omega$ schemes for solutions at recursion levels one (pluses), three (circles) and five (crosses). Each point represents results from $5$ experiment runs using an averaging window of $100$ samples.}
+\end{center}
+\end{figure*}
+
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[No Applicability Threshold]{\label{fig:result-fullA}
+\input{figs/result-fullA}
+}
+\qquad
+\subfigure[Applicability Threshold $20\%$]{\label{fig:result-fullB}
+\input{figs/result-fullB}
+}
+\caption{Agent performance under \CL\ (circles) and \CL+$\Omega$ (crosses) schemes with applicability thresholds. Each point represents results from $5$ experiment runs using an averaging window of $200$ samples.}
 \end{center}
 \end{figure*}
 
