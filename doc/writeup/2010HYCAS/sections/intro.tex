@@ -29,8 +29,8 @@ which is often more error prone than a software domain.
 
 BDI systems, despite their strengths, do not however incorporate any
 ability to learn from experience. Our work makes a start at addressing
-this issue, focussing specifically on learning which plan to select,
-given a particular goal and world state.
+this issue, focussing specifically on learning which plan to select next,
+to resolve a particular goal in a particular world state.
 
 There are many agent programming languages and development platforms
 in the BDI tradition, including
@@ -77,18 +77,18 @@ decision tree \cite{Mitchell97:ML} which is learnt based on
 experience. Our plan selection is then based on a probabilistic
 approach, usually choosing the plan which has the highest likelihood
 of success, based on experience. This probabilistic approach is also
-more suitable than the standard boolean approach for complex, often
+more suitable than the standard boolean approach for complex and often
 partially observable worlds, where various plans may be worth trying,
-but have different chances of succeeding.
+but have different chances of success.
 
-There are however various nuances that must be addressed in using
-decision trees. There is the usual balance between exploration and
-exploitation evident in all learning. There are also particular issues
-to do with the hierarchical representation of BDI programs. 
+There are however various nuances that must be addressed for such
+\textit{online} learning. There is the usual balance between exploration and
+exploitation evident in all learning. Moreover, learning is impacted by
+the structure imposed by the hierarchical representation of BDI programs.
 %
-We have explored these issues in previous papers
+We have addressed these issues in previous papers
 \cite{Airiau:IJAT:09,Singh:AAMAS10}, looking at various approaches to the
-issues. In this paper we add the ability to deal with paramaterised
+problem. In this paper we add the ability to deal with paramaterised
 goals and with recursive calls, both of which are essential for real
 applications. Unfortunately, once we add this expressivity our
 previous preferred approach does not scale. Consequently we develop a
@@ -96,7 +96,7 @@ simplified approximation to achieve the same basic intuition which we
 have previously shown to be correct in principle. We then take an existing BDI
 program from the JACK tutorial, remove the given context conditions,
 and show how we can learn the appropriate use of the plans provided
-using our new approach.
+using our learning framework.
 
 Our approach can easily be combined with the standard plan selection
 mechanism, by allowing the agent programmer to provide initial context conditions

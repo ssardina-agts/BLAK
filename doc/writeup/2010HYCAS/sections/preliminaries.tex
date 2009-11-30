@@ -76,7 +76,7 @@ event.
 %
 The intention structure contains the current, partially instantiated,
 plans that the agent has committed to in order to handle or
-achieve some event-goal.
+achieve some event-goals.
 
 The basic \emph{reactive goal-oriented behavior} of BDI systems involves the
 system responding to events by 
@@ -132,11 +132,10 @@ figure \emph{for some particular world} (of course, in other states, such plans
 may behave differently).
 % %
 In some world, given successful completion of $G_A$ first, the agent may achieve
-goal $G_B$ by selecting and executing $P_B$, followed by selecting and executing
-$2$ leaf working plans to resolve goals $G_{B1}$ and $G_{B2}$. If the agent
+goal $G_B$ by selecting and executing $P_B$, followed by selecting and executing two working leaf plans to resolve goals $G_{B1}$ and $G_{B2}$. If the agent
 succeeds with goals $G_{B1}$ and $G_{B2}$, then it succeeds for plan $P_B$,
 achieving thus goal $G_B$ and the top-level goal $G$ itself. There is no possible
-successful execution, though, if the agent decides to carry on any of the three
+successful execution though, if the agent decides to carry on any of the three
 plans labelled $P_{B2}'$ for achieving the low-level goal $G_{B2}$.
 
 
@@ -158,11 +157,11 @@ achievement.
 \subsection{Learning for BDI Plan Selection} \label{subsec:bdi_learning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In order to facilitate learning regarding which plan should be
-executed for a given goal, in a particular world state, we first replace the
+executed for a given goal in a particular world state, we first replace the
 boolean formulae that are the standard representation for context
 conditions in BDI programming languages, with decision
 trees~\cite{Mitchell97:ML} that provide a judgement as to whether the
-plan is likely to succeed or fail, given a particular situation. 
+plan is likely to succeed or fail for the given situation. 
 
 To select a plan, based on information in the decision trees, we use a
 probabilistic selection method whereby we choose a plan with
@@ -284,7 +283,7 @@ use of (direct or indirect) recursive procedures.
 %- a more complex tree requiring more experience before we should feel
 %confident of learned results.
 
-However the coverage approach of~\cite{Singh:AAMAS10} does not scale
+Furthermore, the coverage approach of~\cite{Singh:AAMAS10} does not scale
 when recursive structures and event-goal types are
 introduced. Conceptually we can unfold the recursive structure to a
 specified depth. However, the number of paths is exponential in the
@@ -298,7 +297,7 @@ achieve full coverage when it is tried once, after which selection
 will be fully biased towards the plans \dt\ classification. However,
 the \dt\ that at this point has only witnessed one world will
 generalise the outcome to all as-yet-unseen worlds leading to
-mis-classification errors. 
+misclassification errors. 
 
 In the following section we present the details of our learning
 approach, incorporating both parametrised goals, and recursion, as
