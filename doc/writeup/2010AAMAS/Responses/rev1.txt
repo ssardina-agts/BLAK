@@ -1,0 +1,13 @@
+The aim here is not (yet) to provide the final algorithm for a
+practical BDI learning system, but to explore carefully the
+issues that need to inform such an algorithm.
+The graphs in figures 4 and 5 both use non-deterministic actions. Only
+graph 6 uses deterministic actions and an applicability
+threshold. Figure 5 is actually the new algorithm superimposed on
+Figure 4b.
+The reason for presenting initial approach as well as improvement is
+because the aim here is to fully understand the issues.
+In a final system the learning is expected to complement rather than
+replace context conditions, and to use a limited set of fluents for
+any given goal (based on either developer information or automated
+calculation of fluents used).

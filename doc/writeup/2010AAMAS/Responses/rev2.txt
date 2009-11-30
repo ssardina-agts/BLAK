@@ -1,0 +1,12 @@
+We would appreciate references to work mentioned that allows agents to
+learn a plan is not suitable in a certain state.  Assumptions of no
+change in environment is a simplification to allow exploration of
+issues regarding the BDI structure. The agent must eventually learn in
+an environment that does change, but it should notice changes and
+learn outcomes accordingly. Automated failure handling was also
+excluded in order to more fully understand structural issues affecting
+learning. It would be incorporated in a practical system, and is part
+of ongoing work.  Stability is important only for failure, not
+success. All (failing) plans must be stable before propagating
+failure.  Difference between ACL and BUL is RecordFailedTrace routine
+which is applied to BUL whereas ACL simply records all results.
