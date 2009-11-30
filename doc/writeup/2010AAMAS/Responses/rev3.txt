@@ -1,0 +1,10 @@
+Regarding skepticism as to whether this is appropriate for a real
+world approach, we agree that further work is needed before that could
+be claimed. The current work attempts to carefully understand the
+issues in a simplified setting, so that eventually these can be
+incorporated into an approach which will include a variety of aspects to
+address practical real world learning.
+Although the assumptions and limitations are too strong for real world
+applications, we do not consider that relaxing these will invalidate
+the core findings. The simplifications make it easier to study the
+particular structural issues that are of concern.
