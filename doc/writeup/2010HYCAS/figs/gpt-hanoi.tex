@@ -19,11 +19,11 @@
 	child[solid] {node[planbox] {\entity{DiscStacker(?p)}}
 		child {node[goalbox] (G1) {\entity{Solve(1,?p)}}}
 		child {node[goalbox] (Gi) {\entity{Solve(i,?p)}}
-			child {node[planbox] {\entity{SolveRight}}}
 			child {node[planbox] {\entity{SolveMiddle}}
 				child {node[goalbox] {\entity{Solve(?d2,?p3)}} }
 				child {node[goalbox] (Pi) {\entity{Solve(?i,?p)}} }
 			}
+			child {node[planbox] {\entity{SolveRight}}}
 			child {node[planbox] {\entity{SolveTopMove}}}
 			child {node[planbox] {\entity{SolveTop}}
 				child {node[goalbox] {\entity{Solve(?d2,?p3)}} }

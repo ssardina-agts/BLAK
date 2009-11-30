@@ -4,160 +4,154 @@
 
 \newcommand{\entity}[1]{\texttt{#1}}
 
-To evaluate our learning framework and approach, we considered a real BDI program
-that comes as an example domain within the \JACK\ agent platform
+To evaluate our learning framework we consider an existing BDI program
+packaged as an example domain within the \JACK\ agent platform
 distribution~\cite{BusettaRHL:AL99-JACK}.
 % %
-The example involves a robot playing the well-known Towers of Hanoi game.
-Although this is a fairly simple scenario, it is enough to test our overall
-framework. In particular, the plan library makes uses of (goal) recursion and
-events are parametrized. Moreover, even solving a sub-goal such as ``move disc
-$n$ to pin $1$'' may involve many sub-goal postings and plan activations.
-% %
-More importantly, unlike our previous empirical evaluations reported in
-\cite{Airiau:IJAT:09,Singh:AAMAS10} where plan-libraries were ``syntetic'' and
-thus with no special meaning, here we use an \emph{existing} working domain.
-Hence, the evaluation criteria is now more clear: \emph{is our learning framework
-able to achieve the performance of the existing system?}
+The example involves a robot playing the well-known Towers of Hanoi game where the goal is to stack discs of decreasing size onto a single pin. The rules of the game forbid discs to be moved onto smaller discs, however top discs may be moved onto discs of larger size across three pins. The problem is interesting for our purposes since the example solution makes use of event-goal types and recursion. Furthermore, unlike our previous evaluations \cite{Airiau:IJAT:09,Singh:AAMAS10} with synthetic plan libraries, here the evaluation criteria is clearer: \emph{does our learning framework achieve the performance of the existing system?}
 
+%Although this is a fairly simple scenario, it is enough to test our overall
+%framework. In particular, the plan library makes uses of (goal) recursion and
+%events are parametrized. Moreover, even solving a sub-goal such as ``move disc
+%$n$ to pin $1$'' may involve many sub-goal postings and plan activations.
+%% %
+%More importantly, unlike our previous empirical evaluations reported in
+%\cite{Airiau:IJAT:09,Singh:AAMAS10} where plan-libraries were ``syntetic'' and
+%thus with no special meaning, here we use an \emph{existing} working domain.
+%Hence, the evaluation criteria is now more clear: \emph{is our learning framework
+%able to achieve the performance of the existing system?}
 
-The Towers of Hanoi application included in the \JACK\ distribution is as
-follows.
+%The Towers of Hanoi application included in the \JACK\ distribution is as
+%follows.
 % %
-There is a \entity{Player} agent that is meant to solve the game when given any
-legal initial configuration.
+The example solution consists of a \entity{Player} agent that solves the game for 
+any given legal initial configuration. The game solving strategy is encoded in plan
+\entity{DiscStacker} that solves for one disc at a time starting from the largest
+and ending with the smallest onto a chosen pin. This in turn is achieved by posting 
+event \entity{Solve(?d,?p)} for solving disc \entity{?d} 
+onto pin \entity{?p}. There are four plans that are relevant for this purpose:
 % %
-The agent top-level goal is to build the tower of discs in pin number $2$, which
-is captured by the BDI event \entity{BuildTower}.
+%The agent top-level goal is to build the tower of discs in pin number $2$, which
+%is captured by the BDI event \entity{BuildTower}.
 % %
-To handle such goal event, the agent uses a simple strategy encoded in plan
-\entity{DiscStacker}: stack the discs one by one in pin $2$, starting from the
-largest disc (disc $n$) and ending with he smallest disc (disc $1$). Each disc
-stacking is realized by the (successful) achievemnt of a sub-goal event
-\entity{Solve(?d,?p)}: move disc \entity{?d} to pin \entity{?p}.
+%To handle such goal event, the agent uses a simple strategy encoded in plan
+%\entity{DiscStacker}: stack the discs one by one in pin $2$, starting from the
+%largest disc (disc $n$) and ending with he smallest disc (disc $1$). Each disc
+%stacking is realized by the (successful) achievemnt of a sub-goal event
+%\entity{Solve(?d,?p)}: move disc \entity{?d} to pin \entity{?p}.
+%
+%Event \entity{Solve(?d,?p)} is indeed the most interesting and complex one. To
+%resolve such event, the agent has four plans at disposal that it can use, namely:
 
-Event \entity{Solve(?d,?p)} is indeed the most interesting and complex one. To
-resolve such event, the agent has four plans at disposal that it can use, namely:
 \begin{description}
 
-\item[\entity{SolveRight}] This plan solves moving a disc to the pin it is on
-already, that is, disc \entity{?d} is in pin \entity{?p}. Sicne the goal is
-already true, the plan just does \emph{nothing} (i.e., its body program is
-empty).
+\item[\entity{SolveRight}] This plan solves moving a disc to the pin it is
+already on. Since the goal is already true, the plan does \emph{nothing}.
 
+\item[\entity{SolveTopMove}] This plan moves the disc \entity{?d} to the destination
+pin \entity{?p} if the disc is not already there and if the move is legal. The actual move
+is perfomed by the primitive action \entity{move(?p2,?p)}, where \entity{?p2} is the source pin
+of disc \entity{d}.
 
-\item[\entity{SolveTopMove}] This plan can be used when the disc
-\entity{?d} to be moved is at the top of a pin, but not the destination pin
-\entity{?p}, though the (destination) pin \entity{?p} admits the disc, i.e.,
-the disc at the top of pin \entity{?p} is larger than disc \entity{?d}.
-%%
-In that case, the disc is just moved to the destination pin by performing the
-single promitive action \entity{move(?p2,?p)}, where \entity{?p2} is pin where
-disc \entity{d} is located.
-
-
-\item[\entity{SolveTop}] This plan solves how the disc to the destination pin
-when the disc is at the top of a pin different from the destination one and the
-destination pin has a disc in the top that is smaller than the disc to be moved.
+\item[\entity{SolveTop}] This plan solves for the case when the disc \entity{?d} 
+may be legally lifted but cannot be legally placed at the destination because the 
+top disc on the destination pin is smaller than \entity{?d}.
 % %
 In this case, the plan first moves all the discs in the destination pin that are
-smaller than disc \entity{?d} to the third (auxiliarly) pin, and then simpy
-re-posts the sub-goal that disc \entity{?d} is to be mvoed to pin \entity{?p},
-that is, event \entity{Solve(?d,?p)}. 
-
+smaller than disc \entity{?d} to the third (auxiliary) pin, and then
+re-posts the sub-goal to move \entity{?d} to pin \entity{?p} i.e. \entity{Solve(?d,?p)}. 
 
 \item[\entity{SolveMiddle}] This plan solves moving a disc from the
-\emph{middle} of a stack and is the most complex one.
+\emph{middle} of a stack.
 %%
-In this case, the plan first cleans up what is above of disc \entity{?d} so
-that \entity{?d} will be at the top of pin \entity{?p}. This is done by
-resolving the sub-goal \entity{Solve(?d2,?p2)} where disc \entity{?d2} is the
-disc currently on top of the disc to be moved and  \entity{?p2} is the
-(auxilarly) third pin, that is, not  \entity{?p} or the pin where  \entity{?d}
-is currently in.
+In this case, the plan first clears the source pin so
+that disc \entity{?d} becomes the new top of the pin. This is done by
+solving for sub-goal \entity{Solve(?d2,?p2)} where disc \entity{?d2} is the
+disc currently on top of \entity{?d} and \entity{?p2} is the
+auxiliary.
 %%
-Once disc \entity{?d} is at at the top of the pin, the plan re-posts the
-subgoal of moving it to pin \entity{?p}, that is, event \entity{Solve(?d,?p)}.
+Subsequently the plan re-posts the
+sub-goal of moving \entity{?d} to pin \entity{?p} i.e. event \entity{Solve(?d,?p)}.
 \end{description}
 
 
 \begin{figure}[t]
 \begin{center}
-\input{figs/gpt-hanoi}
+\resizebox{.9\textwidth}{!}{\input{figs/gpt-hanoi}}
 \end{center}
 \caption{Goal-plan hierarchy for the Towers of Hanoi domain.}
 \label{fig:hanoi_goalplan}
 \end{figure}
 
- 
-Figure~\ref{fig:hanoi_goalplan} depicts the goal-plan hierarchy for the domain.
+
+Figure~\ref{fig:hanoi_goalplan} illustrates the goal-plan hierarchy for the domain. 
+For the purpose of this study we will focus on the recursive typed event goal \entity{Solve(?d,?p)}.
 % %
-We only show the structure below a \entity{Solve(?d,?p)} goal event once, for the
-case when the plan \entity{Disckstacker} is moving the $i$-th disc to destination
-pin \entity{?p}; all the other instances of such goal have the same form.
+%We only show the structure below a \entity{Solve(?d,?p)} goal event once, for the
+%case when the plan \entity{Disckstacker} is moving the $i$-th disc to destination
+%pin \entity{?p}; all the other instances of such goal have the same form.
 % %
-First, notice that this plan-library relies on parametric events. Second, it
-substantially appeals to recursion, in that in order to solve a
-\entity{Solve(?d,?p)} goal event, some strategies use such same event type as a
-sub-goal, namely, strategies \entity{SolveMiddle} and \entity{SolveTop}.
+%First, notice that this plan-library relies on parametric events. Second, it
+%substantially appeals to recursion, in that in order to solve a
+%\entity{Solve(?d,?p)} goal event, some strategies use such same event type as a
+%sub-goal, namely, strategies \entity{SolveMiddle} and \entity{SolveTop}.
 %%
-Observe that the first sub-goals in such plans are relative to some disc
-\entity{?d2} and pin \entity{?p3} that are computed by the plan. For example,
-in plan \entity{SolveMiddle} disc \entity{?d2} is the disk that is currently on
-top of disk \entity{i} and \entity{?p3} is the third pin different from
-destination \entity{?p} and the pin where \entity{i} is located.
+%Observe that the first sub-goals in such plans are relative to some disc
+%\entity{?d2} and pin \entity{?p3} that are computed by the plan. For example,
+%in plan \entity{SolveMiddle} disc \entity{?d2} is the disk that is currently on
+%top of disk \entity{i} and \entity{?p3} is the third pin different from
+%destination \entity{?p} and the pin where \entity{i} is located.
+%
+%Now, clearly, the existing application does include \emph{correct}
+%context conditions in each of the plans. So, the context condition of plan
+%\entity{SolveRight} states that the current pin location of the disc
+%\entity{?d} to be moved is indeed the destination pin \entity{?p}. Similarly,
+%plan \entity{SolveTop} states that there is a disc that is smaller than disc
+%\entity{?d} in destination pin \entity{?p}.
 
+%So, the first step in our experiment involved \emph{deleting} all preconditions
+%from plans. Then, initially, each plan is, in principle, always feasible. The aim
+%is that the agent, after experimenting enough in the domain, will eventually
+%\emph{learn} the preconditions of each plan.
+%% %
+%Two problems arise when plans were stripped out of their original context
+%conditions.
+%% %
+%First, some plans may become non ``self-sufficient,'' in that their logic relied
+%on variables obtained in the context condition. We solve this by requiring that
+%the body programs of plans are indeed self-sufficient: they must be executable
+%just by themselves. If the actual body of a plan relies on variables obtained
+%while computing the context condition, then the plans themselves must include
+%such computations (e.g., obtaining the disc that is on top of the disc to be
+%moved).
 
-Now, clearly, the existing application does include \emph{correct}
-context conditions in each of the plans. So, the context condition of plan
-\entity{SolveRight} states that the current pin location of the disc
-\entity{?d} to be moved is indeed the destination pin \entity{?p}. Similarly,
-plan \entity{SolveTop} states that there is a disc that is smaller than disc
-\entity{?d} in destination pin \entity{?p}.
-
-So, the first step in our experiment involved \emph{deleting} all preconditions
-from plans. Then, initially, each plan is, in principle, always feasible. The aim
-is that the agent, after experimenting enough in the domain, will eventually
-\emph{learn} the preconditions of each plan.
-% %
-Two problems arise when plans were stripped out of their original context
-conditions.
-% %
-First, some plans may become non ``self-sufficient,'' in that their logic relied
-on variables obtained in the context condition. We solve this by requiring that
-the body programs of plans are indeed self-sufficient: they must be executable
-just by themselves. If the actual body of a plan relies on variables obtained
-while computing the context condition, then the plans themselves must include
-such computations (e.g., obtaining the disc that is on top of the disc to be
-moved).
-
-The second problem is that plans may succeed in their execution \emph{without}
-actually realizing the goal they have been called for. For instance, suppose that
-plan \entity{SolveRight} is used to resolve goal \entity{Solve(3,2)}, that disc
-\entity{3} is in pin \entity{1} and that disc \entity{5} is at the top of such
-pin. The program of  \entity{SolveRight} simply states to move the disc at the
-top of pin \entity{1} (where the disc to be moved is located) to the destination
-pin, in this case, pin \entity{2}. If pin \entity{2} allows that move, then the
-action \entity{move(1,2)} would succeed and so would plan \entity{SolveRight}.
-However, the goal of concern has not been achieved since all that we have done is
-move disc \entity{5} to pin \entity{2}; disc \entity{3} would still be in pin
-\entity{1}. Note that this will not occurr in the original plan-library because
-its precondition would not hold: disc \entity{3} is \emph{not} at the top of its
-pin.
-% %
-To overcome this problem, we require that every plan includes as its final step a
-test condition for the actual goal to be achieved. See that such test is fully
-determined by the event goal corresponding to the plan. In our case, the last
-step of all four plans for event \entity{Solve(?d,?p)} would be testing that,
-indeed, disc \entity{d} is in pin \entity{p}.
+%The second problem is that plans may succeed in their execution \emph{without}
+%actually realizing the goal they have been called for. For instance, suppose that
+%plan \entity{SolveRight} is used to resolve goal \entity{Solve(3,2)}, that disc
+%\entity{3} is in pin \entity{1} and that disc \entity{5} is at the top of such
+%pin. The program of  \entity{SolveRight} simply states to move the disc at the
+%top of pin \entity{1} (where the disc to be moved is located) to the destination
+%pin, in this case, pin \entity{2}. If pin \entity{2} allows that move, then the
+%action \entity{move(1,2)} would succeed and so would plan \entity{SolveRight}.
+%However, the goal of concern has not been achieved since all that we have done is
+%move disc \entity{5} to pin \entity{2}; disc \entity{3} would still be in pin
+%\entity{1}. Note that this will not occurr in the original plan-library because
+%its precondition would not hold: disc \entity{3} is \emph{not} at the top of its
+%pin.
+%% %
+%To overcome this problem, we require that every plan includes as its final step a
+%test condition for the actual goal to be achieved. See that such test is fully
+%determined by the event goal corresponding to the plan. In our case, the last
+%step of all four plans for event \entity{Solve(?d,?p)} would be testing that,
+%indeed, disc \entity{d} is in pin \entity{p}.
 
 \subsection{Experimental Setup} \label{sec:setup}
 
-The aim of this study is to evaluate our learning framework for recursive event-types. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \entity{Solve(?d,?p)} only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Since the full set of possible \entity{Solve(?d,?p)} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
+The aim of this study is to evaluate our learning framework for recursive event-types. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \entity{Solve} only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Since the full set of possible \entity{Solve} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
 
-We proceed by running the original Hanoi program for a number of randomly generated \entity{Solve(?d,?p)} events. For each run we record the \entity{Solve(?d,?p)} event, the initial pins configuration, and the maximum recursion encountered for the solution. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
+We proceed by running the original Hanoi program for a number of randomly generated \entity{Solve} events. For each run we record the \entity{Solve} event, the initial pins configuration, and the maximum recursion encountered for the solution. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
 
-Next, we run each candidate learning approach on the set of saved configurations for a given recursion level. i.e. where all solutions lie exactly at the specified recursion number. Furthermore we use a fixed random generation seed for each experiment so that the same sequence of \entity{Solve(?d,?p)} events is generated for each learning approach. This isolates any environmental factors and allows us to attribute any differences in performance to the learning approaches alone.
+Next, we run each candidate learning approach on the set of saved configurations for a given recursion level. i.e. where all solutions lie exactly at the specified recursion number. Furthermore we use a fixed random generation seed for each experiment so that the same sequence of \entity{Solve} events is generated for each learning approach. This isolates any environmental factors and allows us to attribute any differences in performance to the learning approaches alone.
 
 Finally, since in the Hanoi case we do not care about continuing exploration once a solution is found (optimality of solution is not a requirement), we have implemented two optimisations to the plan selection that boost the selection of plans with known solutions. Firstly, for a given plan, the confidence calculation of Equation \ref{eqn:confidence} is performed only when no solution has previously been found for the given world state, otherwise full confidence is assumed for that plan. Secondly, the plan selection mechanism of Equation \ref{eqn:weight} uses confidence only when no plan has a high expectation of success ($\kappa_P(w) > 0.95$) with high confidence ($c_P(w) > 0.95$), otherwise full confidence is assumed for \textit{all} plans. 
 
@@ -179,9 +173,9 @@ The following results are for a Hanoi problem with $five$ discs\footnote{We use 
 \end{center}
 \end{figure*}
 
-To understand how the two approaches perform against solutions of varying difficulty we conducted a set of experiments with solutions at various recursive levels. Each experiment consisted of learning to resolve a given set of \entity{Solve(?d,?p)} events saved earlier as explained in Section \ref{sec:setup} and whose solutions all required the same recursive depth. Figure \ref{fig:result-levels} shows the results for \CL\ and \CL+$\Omega$  for solutions at one, three and five recursion levels respectively. Figure \ref{fig:result-levelsA} shows that as the solution difficulty increases, \CL\ performance drops. For instance, for solutions at recursion level five, \CL\ is only able to resolve $20\%$ of the solutions by the end of the experiment. This is expected because as the solutions become harder and require more number of \entity{Solve(?p2,?p)} steps, the probabilistic plan selection of \CL\ that only considers the \dt\ expectation of success (that is equally zero for all plans because no solution has been found yet) has progressively less chances of exploring to deeper levels. The confidence-based measure of Equation \ref{eqn:weight} however, that takes into account the goal-plan tree complexity, is able to guide the exploration towards the deeper solutions. This is evident in Figure \ref{fig:result-levelsB} where \CL+$\Omega$ finds all level five solutions by experiment end.
+To understand how the two approaches perform for solutions of varying difficulty we conducted a set of experiments with solutions at various recursive levels. Each experiment consisted of learning to resolve a given set of \entity{Solve} events saved earlier as explained in Section \ref{sec:setup} and whose solutions all required the same recursive depth. Figure \ref{fig:result-levels} shows the results for \CL\ and \CL+$\Omega$  for solutions at one, three and five recursion levels respectively. Figure \ref{fig:result-levelsA} shows that as the solution difficulty increases, \CL\ performance drops. For instance, for solutions at recursion level five, \CL\ is only able to resolve $20\%$ of the solutions by the end of the experiment. This is expected because as the solutions become harder and require more number of \entity{move(?p2,?p)} steps, the probabilistic plan selection of \CL\ that only considers the \dt\ expectation of success (that is equally zero for all plans because no solution has been found yet) has progressively less chances of exploring to deeper levels. The confidence-based measure of Equation \ref{eqn:weight} however, that takes into account the goal-plan tree complexity, is able to guide the exploration towards the deeper solutions. This is evident in Figure \ref{fig:result-levelsB} where \CL+$\Omega$ finds all level five solutions by experiment end.
 
-Next, we conducted an experiment that consisted of resolving the full set of saved \entity{Solve(?d,?p)} events i.e. the set had solutions dispersed through all possible recursion levels. Figure \ref{fig:result-fullA} shows the results for the two approaches. Overall we expect \CL+$\Omega$ to do better than \CL\ which is the case although the performance benefits of the confidence-based selection are less obvious since approximately $75\%$ of the solutions require four recursion levels or less which both approaches perform reasonably at. 
+Next, we conducted an experiment that consisted of resolving the full set of saved \entity{Solve} events i.e. the set had solutions dispersed through all possible recursion levels. Figure \ref{fig:result-fullA} shows the results for the two approaches. Overall we expect \CL+$\Omega$ to do better than \CL\ which is the case although the performance benefits of the confidence-based selection are less obvious since approximately $75\%$ of the solutions require four recursion levels or less which both approaches perform reasonably at. 
 
 \begin{figure*}[t]
 \begin{center}
@@ -198,9 +192,9 @@ Next, we conducted an experiment that consisted of resolving the full set of sav
 \end{figure*}
 
 
-An important observation in Figure \ref{fig:result-fullA} is that neither approach converges to $1.0$. This is because the Hanoi domain is not free from goal inter-dependence. So if a plan learns to solve a sub-goal in two ways that each lead to different end states, then depending on the way the sub-goal was resolved the top level goal may pass or fail. Indeed, when we analyse the result log we find that \CL+$\Omega$ finds all solutions as expected, but even so fails now and then for some of these because of the way a sub-goal was realised. Our learning framework does not currently support goal inter-dependence.
+An important consideration during plan selection is the issue of applicability thresholds. In the classical BDI framework plans are either applicable or not in a boolean decision. However, in our modified framework plans are applicable according to the selection weight given by Equation \ref{eqn:weight}. Since plan execution is often not cost-free in real systems, it is likely that an adequate plan selection scheme would not select \textit{any} plan if they all have too low an expectation of success. In fact, an agent may then fail a plan without even trying if the cost of trying and possibly failing is considered too high. 
 
-A final consideration during plan selection is the issue of applicability thresholds. In the classical BDI framework plans are either applicable or not in a boolean decision. However, in our modified framework plans are applicable according to the selection weight given by Equation \ref{eqn:weight}. Since plan execution is often not cost-free in real systems, it is likely that an adequate plan selection scheme would not select \textit{any} plan if they all have too low an expectation of success. In fact, an agent may then fail a plan without even trying if the cost of trying and possibly failing is considered too high. 
+To represent this scenario, we run the same experiment as before using the full set of saved \entity{Solve} events but with an applicability threshold of $20\%$ whereby plans with expectations of success less than this threshold would not be selected. Figure \ref{fig:result-fullB} shows the learning outcome for the two approaches in this case. As reported in \cite{Singh:AAMAS10} earlier and confirmed here, \CL\ shows a complete inability to learn in this case. \CL+$\Omega$ on the other hand benefits from the adjusted selection weights of Equation \ref{eqn:weight} and is not impacted by the threshold constraint\footnote{Note that in the general sense it is perfectly possible that the Equation \ref{eqn:weight} weight will fall below any given threshold. This is the case when no solution has been found by the time full confidence is reached according to Equation \ref{eqn:confidence}.}.
 
-To represent this scenario, we run the same experiment as before using the full set of saved \entity{Solve(?d,?p)} events but with an applicability threshold of $20\%$ whereby plans with expectations of success less than this threshold would not be selected. Figure \ref{fig:result-fullB} shows the learning outcome for the two approaches in this case. As reported in \cite{Singh:AAMAS10} earlier and confirmed here, \CL\ shows a complete inability to learn in this case. \CL+$\Omega$ on the other hand benefits from the adjusted selection weights of Equation \ref{eqn:weight} and is not impacted by the threshold constraint\footnote{Note that in the general sense it is perfectly possible that the Equation \ref{eqn:weight} weight fall below the threshold. This will be the case if no solution has been found by the time full confidence is reached according to Equation \ref{eqn:confidence}.}.
+A final observation in Figure \ref{fig:result-full} is that neither approach converges to $1.0$. This is because the Hanoi domain is not free from goal inter-dependence. So if a plan learns to solve a sub-goal in two ways that each lead to different end states, then depending on the way the sub-goal was resolved the top level goal may pass or fail. Indeed, when we analyse the result log we find that \CL+$\Omega$ finds all solutions as expected, but even so fails now and then for some of these because of the way a sub-goal was realised. Our learning framework does not currently support goal inter-dependence.
 
