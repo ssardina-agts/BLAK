@@ -70,29 +70,26 @@ While not ideal, our approach nevertheless allows us to focus on
 understanding the complexities of learning in BDI programs first 
 without worrying about the underlying techniques.
 
-The issue of combining learning and deliberative approaches for decision making
-in autonomous systems has not been widely addressed.
+The issue of combining learning and deliberative approaches for online 
+decision making in BDI-like systems has not been widely addressed.
 % %
-In~\cite{Riedmiller01}, learning is used \emph{prior to deployment}
-for acquiring low level robot soccer skills that are then treated as
-fixed methods in the deliberative decision making process once deployed.
+In~\cite{Riedmiller01}, \textit{preiously learnt} low level robot soccer skills are 
+used in the deliberative decision making process once deployed.
 % %
 Hern\'andez et al. \cite{Hernandez04:Learning} give a preliminary
 account of how decision trees may be induced on plan failures in order
-to find an alternative logical context conditions in a deterministic
+to find alternative logical context conditions in a deterministic
 paint-world example. 
 % %
-More recently, \cite{Zhuo09:Learning} proposes a method for learning
-hierarchical task network (HTN) method preconditions under partial
-observations. There, a set of  constraints are constructed from
+A closely related area to BDI is that of hierarchical task network (HTN)
+systems where task decompositions used are similar to BDI goal-plan hierarchies.
+Recently, in similarly motivated work to ours, \cite{Zhuo09:Learning} 
+proposed a method for learning HTN method preconditions under partial
+observations. There, a set of constraints are constructed from
 observed decomposition trees that are then solved \emph{offline} using
-a constraint solver. Despite HTN systems being automated planning
-frameworks, rather than execution frameworks, these are highly 
-related to BDI agent systems when it comes to the \emph{know-how} information
-used---learning methods' preconditions amounts to learning plan's context
-conditions.
+a constraint solver.
 % %
-In contrast, in our work, learning and deliberation are fully integrated in a
+In contrast, in our work learning and deliberation are fully integrated in a
 way that one impacts the other and the classical
 exploration/exploitation dilemma applies. 
 
