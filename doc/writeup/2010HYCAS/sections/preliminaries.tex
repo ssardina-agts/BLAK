@@ -91,11 +91,11 @@ In contrast with traditional planning, execution happens at each step. The
 use of plans' context-preconditions to make choices as
 late as possible, together with the built-in goal-failure mechanisms, ensures
 that the system is responsive to changes in the environment.
-
 %\notems{fixes in para}
 In this paper we focus on the plan library to
 investigate ways of learning appropriate or better plan selection
 based on experience. 
+
 % %
 By grouping together plans responding to the same
 event type, the plan library can be seen as a set of \emph{goal-plan tree}
@@ -168,8 +168,9 @@ probabilistic method whereby we choose a plan with
 probability proportional to its believed chance of success in the
 given situation. This approach provides a balance between
 exploitation (we choose plans with relatively higher success expectations
-more often), and exploration (we choose plans randomly to improve
-confidence in their believed success by trying them in more 
+more often), and exploration (we sometimes choose plans with lower
+success expectation to get better
+confidence in their believed applicability by trying them in more 
 situations).
 
 The resolution of goals in BDI execution results in 
