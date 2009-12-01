@@ -2,14 +2,14 @@
 \section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This paper builds on previous work where we extend
+This paper builds on earlier work that extends
 the typical BDI programming framework to use \dt{}s as (part of) a
 plan's context condition, with a probabilistic plan selection
 mechanism that caters for both exploration and exploitation of plans.
 We have shown in earlier work that due to the structure of BDI
 programs, care must be taken in how learning is used, to avoid
 problems in certain situations. In some cases these problems lead to
-failure to learn at all, as we also show in this paper.
+failure to learn at all, as we also show here.
 
 In this paper we extend previous work to allow for parameterised
 goals such as {\it Travel(\$from, \$to)} and also for recursion, both
@@ -40,26 +40,35 @@ to be taken regarding changes to world state and possible interactions
 between failed attempts and eventually successful ones.
 
 %
-Also our current approach will not detect and learn interactions between
+Our current approach does not detect and learn interactions between
 sibling goals in the context of a particular parent; each
 subgoal is treated ``locally.'' To handle such interactions, the
 selection of a plan for resolving a sub-goal should also be predicated
 on the goals higher than the sub-goal, that is, it should take into
 account the ``reasons'' for the sub-goal.
 
-One issue with the use of a coverage-based confidence measure used is
-that it has a defined end state, namely $c_p=1$. However, in a system
-where the environment may actually be changing, then 
-re-learning will need to occur indefinitely, as the agent continually tries to
-\emph{adapt}. One option is to have an explicit resetting of the
-confidence factor when the agent is told, or deduces, that the
-environment has changed. Deduction could use a number of approaches
-such as noticing a lack of correlation in previously correlated
-features, 
-or noticing when a plan that has
-previously suceeded reliably begins to fail, concluding that the
-world has changed in a way that is relevant for the achievement of the
-goal related to that plan.
+%An issue with our use of a coverage-based confidence measure is
+%that it has a defined end state, namely $c_p=1$. However, in a system
+%where the environment is always changing, re-learning will need to occur 
+%indefinitely and the framework must allow for this.
+% as the agent continually tries to
+%\emph{adapt}. One option is to have an explicit resetting of the
+%confidence factor when the agent is told, or deduces, that the
+%environment has changed. Deduction could use a number of approaches
+%such as noticing a lack of correlation in previously correlated
+%features, 
+%or noticing when a plan that has
+%previously suceeded reliably begins to fail, concluding that the
+%world has changed in a way that is relevant for the achievement of the
+%goal related to that plan.
+
+Finally, we note that our current use of \dt s is naive. 
+For instance, in our framework all execution data is maintained forever and 
+\dt s re-built after each plan execution. Furthermore, we learn using actual 
+world states, whereas an improvement would be to learn using relational world information.
+While not ideal, our approach nevertheless allows us to focus on 
+understanding the complexities of learning in BDI programs first 
+without worrying about the underlying techniques.
 
 The issue of combining learning and deliberative approaches for decision making
 in autonomous systems has not been widely addressed.
