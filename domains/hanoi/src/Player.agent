@@ -336,7 +336,7 @@ public agent Player extends Agent implements Logger{
                     top = order.get(top);
                     count++;
                 } while (top != -1);
-                n[i-1] = new Integer(count);
+                n[i-1] = new Integer((count>0)?1:0);
             } catch (BeliefSetException e) {
                 System.err.println("Error accessing belief place.get("+i+")\n"+e);
                 System.exit(9);
