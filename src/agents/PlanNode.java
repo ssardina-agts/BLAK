@@ -329,8 +329,8 @@ public class PlanNode extends Node{
             setDomainDecay(depth, getDomainDecay(depth) * domainComplexityDecayMultiplier);
             logger.writeLog("Plan "+this.getItem()+" at depth "+depth
                             +" with complexity "+ (((double) ((int) (getComplexity(depth) * 10000))) / 10000)
-                            +" calculated new decay="+(((double) ((int) (getComplexityDecay(depth)* 10000))) / 10000)
-                            +"*"+((double) ((int) (getDomainDecay(depth)* 10000))) / 10000);
+                            +" calculated new decays="+(((double) ((int) (getComplexityDecay(depth)* 10000))) / 10000)
+                            +","+((double) ((int) (getDomainDecay(depth)* 10000))) / 10000);
         }
     }
     
