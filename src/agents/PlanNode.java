@@ -205,13 +205,13 @@ public class PlanNode extends Node{
         domainComplexityDecayMultiplier = 0.0;
         try{
             decisionTree = new J48();
-            options = new String[3];
-            options[0] = "-U";
-            options[1] = "-M";
-            options[2] = "1";
+            //options = new String[3];
+            //options[0] = "-U";
+            //options[1] = "-M";
+            //options[2] = "1";
             //options[0] = "-C";
             //options[1] = "0.0001";
-            ((J48)decisionTree).setOptions(options);     // set the options
+            //((J48)decisionTree).setOptions(options);     // set the options
         }
         catch(Exception e){
             System.err.println("error with weka when creating the decision tree \n" + e);
@@ -258,7 +258,7 @@ public class PlanNode extends Node{
             return;
         }
         
-        logger.writeLog("Recording result for plan "+this.getItem()+" for state "+this.stringOfLastState());
+        logger.writeLog("Recording result "+(res?"(+)":"(-)")+" for plan "+this.getItem()+" for state "+this.stringOfLastState());
 
         if(!res && (update_mode == UpdateMode.STABLE) && (this.getNumberOfChildren() > 0)) {
             //we failed...
@@ -284,6 +284,15 @@ public class PlanNode extends Node{
             newold = "NEW";
         }
         if(res) {
+            if (thisMemory.getNumberOfFailures() > 0) {
+                /* Always reset the failures count. At this point
+                 * we consider this a succesful plan for this state, 
+                 * so we will count any future failures afresh.
+                 */
+                thisMemory.setNumberOfSuccesses(1);
+                thisMemory.setNumberOfAttempts(1);
+                logger.writeLog("Plan "+this.getItem()+" had success in state "+memoryKey+" so will reset all previous failures now.");
+            }
             thisMemory.incrementAttempts();
             thisMemory.incrementSuccesses();
         } else {
@@ -398,10 +407,23 @@ public class PlanNode extends Node{
     }
 
     public double getConfidence(int depth, String[] state) {
-        /* If we have succeeded in this state before then we have full confidence in the DT */
-        if (isSuccessful(state) || this.isFailedThresholdHandler) {
+        if (this.isFailedThresholdHandler) {
             return 1.0;
         }
+        
+        /* If we have succeeded in this state before then base confidence in the
+         * ratio success/total.
+         */
+        String memoryKey = this.stringOfState(state);
+        if ((this.experiences.size() > 0) && this.experiences.containsKey(memoryKey)) {
+            Experience thisMemory = (Experience)this.experiences.get(memoryKey);
+            if (thisMemory.getNumberOfSuccesses() > 0) {
+                double c = ((double)thisMemory.getNumberOfSuccesses())/thisMemory.getNumberOfAttempts();
+                logger.writeLog("Plan "+this.getItem()+" using experience confidence c="+c);
+                return c;
+            }
+        }
+        /* Otherwise confidence is a decaying proposition */
         logger.writeLog("Plan "+this.getItem()+" using confidence c="+(1 - getComplexityDecay(depth))+"*"+(1 - getDomainDecay(depth)));
         return (1 - getComplexityDecay(depth)) * (1 - getDomainDecay(depth));
     }
@@ -628,6 +650,33 @@ public class PlanNode extends Node{
      */
     public double[] getProbability(String [] state)
     {
+        /* The following commented out code may be use to test the 
+         * performance without DT use for benchmarking purposes. 
+         * Basically, instead of using the DT we can estimate 
+         * the probability of success based on the number 
+         * of experienced successes per total number of tries.
+         * If we haven't seen this world then use default 0.5.
+         */
+        if (false) {
+            double[] val = new double[2];
+            String memoryKey = this.stringOfState(state);
+            if ((this.experiences.size() > 0) && this.experiences.containsKey(memoryKey)) {
+                Experience thisMemory = (Experience)this.experiences.get(memoryKey);
+                double prob = thisMemory.getNumberOfSuccesses()/thisMemory.getNumberOfAttempts();
+                val[0] = prob;
+                val[1] = 1-prob;
+                logger.writeLog("Plan "+this.getItem()+" has seen state "+memoryKey+" before so using experience probability="+prob);
+                return val;
+            }
+            val[0] = 0.5;
+            val[1] = 0.5;
+            return val;
+        }
+
+        /* Calculate the probability of success based on the DT classififcation.
+         * The value returned represents the 'correct/total' ratio of instances
+         * classified in the DT leaf node where this world will be classified.
+         */
         double[] val = null;
         if (useDT(goal_id)){
             Instance instance = new Instance(numAttributes);
@@ -659,6 +708,7 @@ public class PlanNode extends Node{
         }
         return val;
     }
+    
     public double[] getProbability()
     {
         return this.getProbability(this.lastState);
@@ -1132,15 +1182,13 @@ public class PlanNode extends Node{
             if (successes > 0) {
                 Instance instance2 = (Instance)(instance.copy());
                 instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                //instance2.setWeight(1000*successes);
-                instance2.setWeight(2);
+                instance2.setWeight(successes);
                 data.add(instance2);
                 added++;
             }  
-            else if (failures > 0) {
+            if (failures > 0) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                //instance.setWeight(failures);
-                instance.setWeight(1);
+                instance.setWeight(failures);
                 data.add(instance);
                 added++;
             }
