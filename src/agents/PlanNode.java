@@ -205,13 +205,13 @@ public class PlanNode extends Node{
         domainComplexityDecayMultiplier = 0.0;
         try{
             decisionTree = new J48();
-            //options = new String[3];
+            options = new String[4];
             //options[0] = "-U";
-            //options[1] = "-M";
-            //options[2] = "1";
-            //options[0] = "-C";
-            //options[1] = "0.0001";
-            //((J48)decisionTree).setOptions(options);     // set the options
+            options[0] = "-C";
+            options[1] = "0.5";
+            options[2] = "-M";
+            options[3] = "1";
+            decisionTree.setOptions(options);
         }
         catch(Exception e){
             System.err.println("error with weka when creating the decision tree \n" + e);
