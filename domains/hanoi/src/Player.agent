@@ -135,7 +135,7 @@ public agent Player extends Agent implements Logger{
                         System.exit(9);
                     }
                     writeLog("Loaded initial hanoi states from file " + fname);
-                    writeLog(init.getStats());
+                    writeLog(init.toString());
                 }
                 readerObj.close();
             } catch (Exception e) {
@@ -251,7 +251,7 @@ public agent Player extends Agent implements Logger{
         if (loadInitStates && (goalKey != null)) {
             try {
                 order.deleteAll();
-                Integer[] discBelow = init.get(depthKey, goalKey);
+                Integer[] discBelow = init.get(generator, depthKey, goalKey);
                 String ess = "";
                 for (int i = 0; i < discBelow.length; i++) {
                     ess += discBelow[i].toString();
@@ -348,18 +348,7 @@ public agent Player extends Agent implements Logger{
     public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
-
-            /* This should be calculated by the node but is done here
-             * for simplicity for now.
-             */
-            double complexity = Math.pow(rec,4.0);
-            thisNode.setComplexity(level, complexity);
-
-            /* epsilon(i+i) = epsilon(i) * [1 - (1/log2(N))]
-             * where N is the node complexity given by the number of paths below.
-             */
             double confidence = thisNode.getConfidence(level,state);
-            
             if (thisNode.useDT(1/*Iteration: not used*/)){
                 double[] ps = thisNode.getProbability(state);
                 return new PlanIdInfo(pid, ps[0], confidence, thisNode.isFailedThresholdHandler);
@@ -388,7 +377,7 @@ public agent Player extends Agent implements Logger{
                 writerObj.writeObject(init);
                 writerObj.close();
                 writeLog("Saved initial hanoi states to file " + filename);
-                writeLog(init.getStats());
+                writeLog(init.toString());
             } catch (Exception e) {
                 System.err.println("Error saving initial states: "+e);
             }
@@ -490,7 +479,28 @@ public agent Player extends Agent implements Logger{
         planNodes[0].addChild(goalNodes[0]);
         planNodes[2].addChild(goalNodes[0]);
         planNodes[2].addChild(goalNodes[0]);
-        
+
+        /* Complexity calculation
+         * For recursive nodes:
+         * c = [ log2(d+2) ] ^ (p^g) where
+         * c: complexity
+         * d: depth in the goal plan hierarchy (leaf is d=0)
+         * p: maximum branching for plans in the gp-hierarchy
+         * g: maximum branching for goals in the gp-hierarchy
+         * For non-recursive nodes we use the above formaula with d=1
+         */
+        int p = 5;
+        int g = 2;
+        for (int d = 0; d <= recursion; d++) {
+            double ln = Math.log(d+2.0)/Math.log(2.0);
+            double pg = Math.pow(p,g);
+            double c = Math.pow(ln, pg);
+            planNodes[0].setComplexity(d, c);
+            planNodes[1].setComplexity(d, pg);
+            planNodes[2].setComplexity(d, c);
+            planNodes[3].setComplexity(d, pg);
+            planNodes[4].setComplexity(d, pg);
+        }
     }
     
     // Application entry point.
@@ -637,7 +647,9 @@ class HanoiState implements Serializable{
     
     public void set(String key1, String key2, Integer[] val) {
         Hashtable hash2 = (state.containsKey(key1)) ? (Hashtable)(state.get(key1)) : new Hashtable();
-        hash2.put(key2,val);
+        Vector vals = (hash2.containsKey(key2)) ? (Vector)(hash2.get(key2)) : new Vector();
+        vals.add(val);
+        hash2.put(key2,vals);
         state.put(key1,hash2);
     }
 
@@ -659,9 +671,11 @@ class HanoiState implements Serializable{
         return str;
     }
     
-    public Integer[] get(String key1, String key2) {
+    public Integer[] get(Random gen, String key1, String key2) {
         Hashtable hash2 = (state.containsKey(key1)) ? (Hashtable)(state.get(key1)) : new Hashtable();
-        return (hash2.containsKey(key2)) ? (Integer[])(hash2.get(key2)) : new Integer[0];
+        Vector vals = (hash2.containsKey(key2)) ? (Vector)(hash2.get(key2)) : new Vector();
+        int pick = gen.nextInt(vals.size());
+        return (vals.size() > 0) ? (Integer[])(vals.elementAt(pick)) : new Integer[0];
     }
 
     public int id() {
@@ -672,15 +686,26 @@ class HanoiState implements Serializable{
         return state.size();
     }
     
-    public String getStats() {
+    public String toString() {
         String stats = "";
+        String key1 = "";
+        String key2 = "";
         for (Enumeration e = state.keys(); e.hasMoreElements();) {
-            String key = (String)(e.nextElement());
-            Hashtable hash = (Hashtable)(state.get(key));
-            Object[] a = new Object[2];
-            a[0] = key;
-            a[1] = new Integer(hash.size());
-            stats += String.format("key:%-5s size:%d\n", a);
+            key1 = (String)(e.nextElement());
+            Hashtable hash2 = (Hashtable)(state.get(key1));
+            int key2sz = 0;
+            int sz = 0;
+            for (Enumeration ee = hash2.keys(); ee.hasMoreElements();) {
+                key2 = (String)(ee.nextElement());
+                Vector vals = (Vector)(hash2.get(key2));
+                sz += vals.size();
+                key2sz ++;
+            }
+            Object[] a = new Object[3];
+            a[0] = key1;
+            a[1] = new Integer(key2sz);
+            a[2] = new Integer(sz);
+            stats += String.format("key:%-5s keys:%-5d size:%d\n", a);
         }
         return stats;
     }
