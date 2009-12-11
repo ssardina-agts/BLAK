@@ -17,7 +17,8 @@ public class Experience
     private Hashtable coverage;
     private Logger logger;
     private String[] state;
-	
+    private Hashtable decay;
+
 	
 	public Experience(Logger logger)
 	{
@@ -28,6 +29,7 @@ public class Experience
 		numberOfSuccesses = 0;
 		numberOfAttempts = 0;
         coverage = new Hashtable();
+        decay = new Hashtable();
 	}
 
 	
@@ -58,6 +60,14 @@ public class Experience
 		return (c != null) ? c.size() : 0;
 	}
 
+    public void setDecay(int depth, double d) {
+        decay.put(depth,d);
+	}
+
+    public double getDecay(int depth) {
+        return decay.containsKey(depth) ? ((Double)(decay.get(depth))).doubleValue() : 1.0;
+	}
+    
 
 	public void setPreviousProbability(double previousProbability) 
 	{

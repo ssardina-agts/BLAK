@@ -85,6 +85,8 @@ public agent Player extends Agent implements Logger{
     
 	Tree gpTree;
     public PlanNode[] planNodes;
+    private PlanNode failureNode;
+    private int failureNodeDepth;
 
     // Constructor
     Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
@@ -146,6 +148,8 @@ public agent Player extends Agent implements Logger{
         episode = 0;
         maxEpisodes = episodes;
         learningMode = learning;
+        failureNode = null;
+        failureNodeDepth = 0;
         if (learningMode) {
             initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE, domainDecay, threshold);
         }
@@ -221,12 +225,25 @@ public agent Player extends Agent implements Logger{
         return applicabilityThreshold;
     }
     
+    public void record(int pid, boolean res, String[] state, int depth) {
+        boolean isRoot = (depth == maxRecursion);
+        /** Only the first caller for the episode will succeed */
+        if (!res && failureNode == null) {
+            failureNode = planNodes[pid];
+            failureNodeDepth = depth;
+            writeLog("Episode "+episode+" first failure node was "+failureNode.getItem()+" at depth "+failureNodeDepth+" with complexity="+failureNode.getComplexity(failureNodeDepth));
+        }
+        planNodes[pid].setLastInstance(state);
+        planNodes[pid].record(res, depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
+    }
+
     public void finishEpisode() {
         indentReset();
         if (saveInitStates) {
             saveInitState();
         }
         episodeGoalKey = loadNewState();
+        failureNode = null;
         episode++;
         maxDepthThisEpisode = 0;
     }
@@ -489,7 +506,7 @@ public agent Player extends Agent implements Logger{
          * g: maximum branching for goals in the gp-hierarchy
          * For non-recursive nodes we use the above formaula with d=1
          */
-        int p = 5;
+        int p = 4;
         int g = 2;
         for (int d = 0; d <= recursion; d++) {
             double ln = Math.log(d+2.0)/Math.log(2.0);

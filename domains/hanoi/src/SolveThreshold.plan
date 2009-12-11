@@ -48,15 +48,13 @@ public plan SolveThreshold extends Plan {
     #reasoning method
     pass() {
         if (ag.learningMode()) {
-            ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(true,ev.level,(ev.level==ag.maxRecursion()));
+            ag.record(pid, true, ev.state(), ev.level);
         }
     }
     #reasoning method
     fail() {
         if (ag.learningMode()) {
-            ag.planNodes[pid].setLastInstance(ev.state());
-            ag.planNodes[pid].record(false,ev.level,(ev.level==ag.maxRecursion()));
+            ag.record(pid, false, ev.state(), ev.level);
         }
     }
 }

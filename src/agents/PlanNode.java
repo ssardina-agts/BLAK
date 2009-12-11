@@ -248,10 +248,10 @@ public class PlanNode extends Node{
      * @param res
      */
     public void record(boolean res) {   
-        record(res, 0 /*depth*/, (topGoal!=null) /*isRoot*/);
+        record(res, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
     }
     
-    public void record(boolean res, int depth, boolean isRoot)
+    public void record(boolean res, int depth, boolean isRoot, double failureNodeComplexity)
     {
         if (this.isFailedThresholdHandler) {
             logger.writeLog("Skipped recording for failed threshold handler plan "+this.getItem()+" in state "+this.stringOfLastState());
@@ -325,12 +325,14 @@ public class PlanNode extends Node{
             this.experiences.put(memoryKey, thisMemory);
         }
         if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
-            setComplexityDecay(depth, getComplexityDecay(depth) * (1 - (1/getComplexity(depth))));
+            //double f = (this.getNumberOfChildren() == 0) ? getComplexity(depth) : Math.max(1,getComplexity(depth)-failureNodeComplexity);
+            double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
+            setComplexityDecay(memoryKey, depth, getComplexityDecay(memoryKey,depth) * (1.0 - (1.0/(Math.log(f)/Math.log(2.0)))));
             setDomainDecay(depth, getDomainDecay(depth) * domainComplexityDecayMultiplier);
             logger.writeLog("Plan "+this.getItem()+" at depth "+depth
-                            +" with complexity "+ (((double) ((int) (getComplexity(depth) * 10000))) / 10000)
-                            +" calculated new decays="+(((double) ((int) (getComplexityDecay(depth)* 10000))) / 10000)
-                            +","+((double) ((int) (getDomainDecay(depth)* 10000))) / 10000);
+                            +" with complexity "+ getComplexity(depth)
+                            +" calculated new decays="+getComplexityDecay(memoryKey, depth)
+                            +","+getDomainDecay(depth));
         }
     }
     
@@ -378,12 +380,15 @@ public class PlanNode extends Node{
         domainComplexityDecayMultiplier = d;
     }
     
-    public void setComplexityDecay(int depth, double d) {
-        decay.put(depth,d);
+    public void setComplexityDecay(String memoryKey, int depth, double d) {
+        Experience thisMemory = (experiences.containsKey(memoryKey)) ? (Experience)(experiences.get(memoryKey)) : new Experience(logger);
+        thisMemory.setDecay(depth,d);
+        experiences.put(memoryKey,thisMemory);
     }
     
-    public double getComplexityDecay(int depth) {
-        return decay.containsKey(depth) ? ((Double)(decay.get(depth))).doubleValue() : 1.0;
+    public double getComplexityDecay(String memoryKey, int depth) {
+        Experience thisMemory = (experiences.containsKey(memoryKey)) ? (Experience)(experiences.get(memoryKey)) : new Experience(logger);
+        return thisMemory.getDecay(depth);
     }
 
     public void setDomainDecay(int depth, double d) {
@@ -415,17 +420,21 @@ public class PlanNode extends Node{
          * ratio success/total.
          */
         String memoryKey = this.stringOfState(state);
+        double cdecay = getComplexityDecay(memoryKey,depth);
         if ((this.experiences.size() > 0) && this.experiences.containsKey(memoryKey)) {
             Experience thisMemory = (Experience)this.experiences.get(memoryKey);
             if (thisMemory.getNumberOfSuccesses() > 0) {
                 double c = ((double)thisMemory.getNumberOfSuccesses())/thisMemory.getNumberOfAttempts();
                 logger.writeLog("Plan "+this.getItem()+" using experience confidence c="+c);
                 return c;
+            } else {
+                cdecay = thisMemory.getDecay(depth);
+                logger.writeLog("Plan "+this.getItem()+" using experience decay="+cdecay);
             }
         }
         /* Otherwise confidence is a decaying proposition */
-        logger.writeLog("Plan "+this.getItem()+" using confidence c="+(1 - getComplexityDecay(depth))+"*"+(1 - getDomainDecay(depth)));
-        return (1 - getComplexityDecay(depth)) * (1 - getDomainDecay(depth));
+        logger.writeLog("Plan "+this.getItem()+" using confidence c="+(1 - cdecay)+"*"+(1 - getDomainDecay(depth)));
+        return (1 - cdecay) * (1 - getDomainDecay(depth));
     }
     
     public void clearDirty(int depth) {
