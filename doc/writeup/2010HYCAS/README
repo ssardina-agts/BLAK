@@ -1,0 +1,14 @@
+The HYCAS submission was done online at the Elsevier site http://ees.elsevier.com/robot/default.asp. The process involved uploading all latex/fig source figs and then building the PDF on their system. 
+
+This was painstakingly slow of course because the steps involved include (1) uploading all files (2) assigning them in the right order specified by elsevier (3) doing a test build (4) fixing errors locally, (5) deleting old uploaded files, then repeating steps 1-5 again. So making a small local change in one file could take upto 5 minutes! It took half a day of error fixing only to find that the Elsevier system just wouldn't build our figures that are *all* done in PGF/TikZ. So I had to manually create figure PDFs from TikZ, convert them to EPS, and change all sources to use the EPS versions of the figures. That worked since the Elsevier system uses latex/dvips instead of pdflatex that we used to build our initial submission.
+
+Instead of updating the original files with the latex/dvips version used for the online submission, I have decided to keep the original files as is and instead have saved the submitted sources in the ./submission directory.
+
+So as things stand,
+(1) ./Makefile will build the original pdflatex version (./submission/hycas2010-20091201.pdf) that we submitted via email on the December 1, 2009.
+(2) ./submission/hycas2010-20091216.tar.gz has the modified latex/dvips sources and figures that were used to create the PDF using the Elsevier onlien system on 16 December, 2009.
+
+The source files betweeen the two versions are essentially the same apart from changes to the figure formats used - the former uses TikZ and the latter uses EPS. The cleaner version is the original version that uses TikZ as it directly builds all results from the raw data files.
+
+-- Dhirendra 17/Dec/2009
+
