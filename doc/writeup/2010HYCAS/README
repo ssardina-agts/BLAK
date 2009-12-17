@@ -6,7 +6,7 @@ Instead of updating the original files with the latex/dvips version used for the
 
 So as things stand,
 (1) ./Makefile will build the original pdflatex version (./submission/hycas2010-20091201.pdf) that we submitted via email on the December 1, 2009.
-(2) ./submission/hycas2010-20091216.tar.gz has the modified latex/dvips sources and figures that were used to create the PDF using the Elsevier onlien system on 16 December, 2009.
+(2) ./submission/hycas2010-20091216.tar.gz has the modified latex/dvips sources and figures that were used to create the PDF (./submission/ROBOT-S-09-00427.pdf) using the Elsevier online system on 16 December, 2009.
 
 The source files betweeen the two versions are essentially the same apart from changes to the figure formats used - the former uses TikZ and the latter uses EPS. The cleaner version is the original version that uses TikZ as it directly builds all results from the raw data files.
 
