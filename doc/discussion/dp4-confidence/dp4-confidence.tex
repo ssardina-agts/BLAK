@@ -95,19 +95,12 @@ One important issue with the decay-based confidence calculation is that it does 
 \subsection{Accuracy Improvements}
 
 
-Figure~\ref{fig:results-hycas} shows the results reproduced from \cite{Singh:HYCAS10}. There are two reasons why the $ACL+\Omega$ performance of Figure~\ref{fig:result-fullA} does not converge to $1.0$. The first reason is what was indicated in~\cite{Singh:HYCAS10} --- that the way a sub-goal is resolved may influence the parent failing or succeeding. This is because a sub-optimal resolution may increases the recursion level beyond what is legally allowed (user specified bounded recursion limit). The second reason is that decision tree classification is not always perfect even for previously successful worlds. To improve this, the following options are now passed to the $J48$ algorithm: $-C~0.5 -M~1$. See weka $J48$ documentation for details.
+Figure~\ref{fig:results-hycas} shows the results reproduced from \cite{Singh:HYCAS10}. There are two reasons why the $ACL+\Omega$ performance of Figure~\ref{fig:result-fullA} does not converge to $1.0$. The first reason is what was indicated in~\cite{Singh:HYCAS10} --- that the way a sub-goal is resolved may influence the parent failing or succeeding. This is because a sub-optimal resolution may increase the recursion level beyond what is legally allowed (user specified bounded recursion limit). The second reason is that decision tree classification is not always perfect even for previously successful worlds. To improve this, the following options are now passed to the $J48$ algorithm: $-C~0.5 -M~1$. See weka $J48$ documentation for details.
 
 
 \subsection{Testing}
 
-The individual recursive level tests reported in Figure~\ref{fig:result-levelsA} and Figure~\ref{fig:result-levelsB} are reproduced from \cite{Singh:HYCAS10} use a \textit{subset} of all possible goal/setup configurations for each experiment. This has now been extended to include \textit{all} possible goal/setup configurations per recursive level. Similarly, the full test reported in Figure 6 of~\cite{Singh:HYCAS10} now uses the full set of all possible goal/setup configurations.
-
-\subsection{Limitations}
-Two known limitations in the treatment of recursive goals are:
-\begin{itemize}
-\item Only one recursive goal-type $G$ is supported in the code. This is sufficient for the simple Towers of Hanoi problem of~\cite{Singh:HYCAS10} but will have to be extended for domains where multiple recursive goal-types are possible.
-\item Only $G \to P \to G$ recursion is supported where a plan posts the same goal that it handles. More complex interactions such as $G_1 \to P_1 \to G_2 \to P_2 \to G_1$ require global knowledge at the plan level that we do not support currently.
-\end{itemize}
+The individual recursive level tests reported in Figure~\ref{fig:result-levelsA} and Figure~\ref{fig:result-levelsB} and the full test reported in Figure~\ref{fig:result-fullA} and Figure~\ref{fig:result-fullB} are reproduced from \cite{Singh:HYCAS10} and use a \textit{subset} of all possible goal/setup configurations for each experiment. This has now been extended to include \textit{all} possible goal/setup configurations per recursive level.
 
 \section{Results}
 
@@ -133,6 +126,14 @@ The final results after all the listed changes are shown in Figure~\ref{fig:resu
 \label{fig:results-new}
 \end{center}
 \end{figure*}
+
+\subsection{Limitations}
+Two known limitations in the treatment of recursive goals are:
+\begin{itemize}
+\item Only one recursive goal-type $G$ is supported in the code. This is sufficient for the simple Towers of Hanoi problem of~\cite{Singh:HYCAS10} but will have to be extended for domains where multiple recursive goal-types are possible.
+\item Only $G \to P \to G$ recursion is supported where a plan posts the same goal that it handles. More complex interactions such as $G_1 \to P_1 \to G_2 \to P_2 \to G_1$ require global knowledge of goals in the system at the plan level that we do not support currently.
+\end{itemize}
+
 
 
 %%
