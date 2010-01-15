@@ -339,7 +339,10 @@ public class PlanNode extends Node{
     public void setTopGoal(GoalNode val) {
         topGoal = val;
     }
-
+    public GoalNode topGoal() {
+        return topGoal;
+    }
+    
     public Vector getPathStringsMatching(String str, int depth) {
         Object[] allPaths = getPathStrings(depth).toArray();
         Vector matches = new Vector();

@@ -28,43 +28,54 @@ public static void main(String[] args)
             index++;
             char option = arg.charAt(1);
             switch (option) {
-            case 'u':
-                String umode = args[index];
-                index++;
-                if (umode.equals("concurrent")) {
-                    update_mode = UpdateMode.CONCURRENT;
-	            System.out.println("ACL Learning");
-                } else if (umode.equals("stable")) {
-                    update_mode = UpdateMode.STABLE;
-	            System.out.println("BUL Learning");
-                }
-                break;
-            case 'i':
-                numIterations = Integer.parseInt(args[index]);
+            case 'b':
+                coverageWeightB = Double.parseDouble(args[index]);
                 index++;
                 break;
-            case 'm':
-                minNI = Integer.parseInt(args[index]);
+            case 'c':
+                doCompare = true;
+                compareTemplate = args[index];
                 index++;
                 break;
             case 'd':
                 targetDir = args[index];
                 index++;
                 break;
-            case 'o':
-                filename = args[index];
+            case 'e':
+                staE = Double.parseDouble(args[index]);
                 index++;
                 break;
-            case 'b':
-                coverageWeightB = Double.parseDouble(args[index]);
+            case 'i':
+                numIterations = Integer.parseInt(args[index]);
                 index++;
                 break;
-            case 't':
-                threshold = Double.parseDouble(args[index]);
+            case 'k':
+                staK = Integer.parseInt(args[index]);
+                index++;
+                break;
+            case 'm':
+                minNI = Integer.parseInt(args[index]);
                 index++;
                 break;
             case 'n':
                 noise = Double.parseDouble(args[index]);
+                index++;
+                break;
+            case 'o':
+                filename = args[index];
+                index++;
+                break;
+            case 'p':
+                String rmode = args[index];
+                index++;
+                if (rmode.equals("failure_recovery")) {
+                    run_mode = RunMode.FAILURE_RECOVERY;
+	            System.out.println("Failure Recovery mode is enabled");
+                }
+                break;
+            case 'r':
+                recordMeTheWorld = true;
+                recordMeFileName = args[index];
                 index++;
                 break;
             case 's':
@@ -81,36 +92,38 @@ public static void main(String[] args)
 	            System.out.println("Coverage-based Plan Selection");
 		}
                 break;
-            case 'k':
-                staK = Integer.parseInt(args[index]);
+            case 't':
+                threshold = Double.parseDouble(args[index]);
                 index++;
                 break;
-            case 'e':
-                staE = Double.parseDouble(args[index]);
+            case 'u':
+                String umode = args[index];
                 index++;
+                if (umode.equals("concurrent")) {
+                    update_mode = UpdateMode.CONCURRENT;
+	            System.out.println("ACL Learning");
+                } else if (umode.equals("stable")) {
+                    update_mode = UpdateMode.STABLE;
+	            System.out.println("BUL Learning");
+                }
                 break;
             case 'w':
                 feedMeTheWorld = true;
                 feedMeFileName = args[index];
                 index++;
                 break;
-            case 'r':
-                recordMeTheWorld = true;
-                recordMeFileName = args[index];
-                index++;
-                break;
-            case 'c':
-                doCompare = true;
-                compareTemplate = args[index];
-                index++;
-                break;
-
             }
         }
 
         RefinerAgent agent = new RefinerAgent("BDI-Learning Agent");
         agent.setUpdateMode(update_mode);
         agent.setSelectMode(plan_selection);
+        agent.setRunMode(run_mode);
+	if (run_mode == RunMode.FAILURE_RECOVERY) {
+	    agent.setTriggerNewIteration(false);
+	} else {
+	    agent.setTriggerNewIteration(true);
+	}
         if (update_mode == UpdateMode.STABLE) {
             agent.setStableK(staK);
             agent.setStableE(staE);
@@ -132,6 +145,7 @@ public static void main(String[] args)
         agent.minNumInstances = minNI;
         agent.planSelectThreshold = threshold;
 	agent.coverageWeight = coverageWeightB;
+	
 
         env.filenameOutcome = filename;
         env.learningAgent = agent;

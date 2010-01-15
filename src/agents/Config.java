@@ -13,4 +13,9 @@ public class Config {
         COVERAGE,
         CONFIDENCE,
     }
+    
+    public enum RunMode {
+        DEFAULT,
+        FAILURE_RECOVERY,
+    }
 }

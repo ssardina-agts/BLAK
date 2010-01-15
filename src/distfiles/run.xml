@@ -78,6 +78,7 @@
 <target name="test05v3gm"  description="Build, run and plot test05v3gm"  depends="buildtest05v3gm, graphtest05v3gm, runtest05v3gm, plottest05v3gm"/>
 <target name="test05v3gmt" description="Build, run and plot test05v3gmt" depends="buildtest05v3gmt,graphtest05v3gmt,runtest05v3gmt,plottest05v3gmt"/>
 <target name="test05v5gm"  description="Build, run and plot test05v5gm"  depends="buildtest05v5gm, graphtest05v5gm, runtest05v5gm, plottest05v5gm"/>
+<target name="test05v3gmf" description="Build, run and plot test05v3gmf" depends="buildtest05v3gmf,graphtest05v3gmf,runtest05v3gmf,plottest05v3gmf"/>
 
 <target name="hanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s5r8, runhanoid5s5r8, plothanoid5s5r8"/>
 <target name="hanoid5s4r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s4r8, runhanoid5s4r8, plothanoid5s4r8"/>
@@ -691,6 +692,29 @@
 <target name="plottest05v3gmt" description="Plot test05v3gmt" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05v3gmt"/>
 	<plotResult test.name="test05v3gmt" every="300" key1="center" key2="right" label="test05v3gmt:n=0.0,m=1,k=3,e=0.1,t=0.2:test05v3gm.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- test05v3gmf ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtest05v3gmf" description="Build test05v3gmf" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="test05v3gmf"/>
+	<buildTest test.name="test05v3gmf" specs.file="${specs.dir}/test05/test05v3gmf.txt"/>
+</target>
+<target name="graphtest05v3gmf" description="Graph test05v3gmf" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="test05v3gmf"/>
+</target>
+<target name="runtest05v3gmf" description="Run test05v3gmf">
+    <failIfBuildNotFound test.name="test05v3gmf"/>
+	<runTest test.name="test05v3gmf" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 3000 -m 1 -p failure_recovery"/>
+	<!--
+	<runTestRepeats test.name="test05v3gmf" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.0 -i 3000 -m 1"/>
+	<runTestRepeats test.name="test05v3gmf" run.mode="stable"     run.select="coverage"      run.params="-n 0.0 -i 3000 -m 1 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test05v3gmf" run.mode="stable"     run.select="probabilistic" run.params="-n 0.0 -i 3000 -m 1 -k 3 -e 0.3"/>
+	-->
+</target>
+<target name="plottest05v3gmf" description="Plot test05v3gmf" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="test05v3gmf"/>
+	<plotResult test.name="test05v3gmf" every="300" key1="center" key2="right" label="test05v3gmf:n=0.1,m=1,failure_recovery:test05v3gmf.txt"/>
 </target>
 
 

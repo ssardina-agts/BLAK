@@ -5,11 +5,26 @@
     Signature thandler = null;
     double pMax = -1.0;
     int pMaxId;
+
+    if (pc.failure.size() > 0) {
+	/* This is a re-posted goal */
+	ag.env.writeLog("MetaPlan: Choosing for reposted event " + pc.event.getEventName());
+    }
+
     for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
         if (s.getInfo() instanceof PlanIdInfo) {
 	    PlanIdInfo info = (PlanIdInfo) s.getInfo();
 	    if (info.isFailedThresholdHandler) {
 		thandler = s;
+		/* In failure recovery mode, a new leanring episode is started only when 
+		 * all options have been exhausted. So if we are in failure recovery mode 
+		 * AND the only applicable plan is the dummy plan AND we are handling
+		 * the top goal THEN we are ready to initiate a new leanring episode.
+		 */
+		if ((ag.run_mode == RunMode.FAILURE_RECOVERY) && (pc.applicable.size() == 1) && (ag.planNodes[info.plan_id].topGoal() != null)) {
+		    ag.setTriggerNewIteration(true);
+		    ag.env.writeLog("MetaPlan: Exhausted failure recovery at top level. Will trigger new iteration.");
+		}
 	    } else {
 		double p = info.pSuccess;
 		if (ag.env.plan_selection == PlanSelectMode.COVERAGE) {

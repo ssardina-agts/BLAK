@@ -235,18 +235,27 @@ public class ExpGenerator {
 	        int indexGoal=0;
 	        goals = new Vector<Goal>();
 	        topGoal = new Goal(readerObj.next());
+	        val = readerObj.next();
+            if (val.equals("repost")) {
+                topGoal.setFailureRecovery(val);
+                val = readerObj.next();
+            }
 	        topGoal.index=indexGoal;
 	        indexGoal++;
 	        goals.add(topGoal);
         	System.out.println("read goal "+ topGoal);
-	        val = readerObj.next();
 	        
 	        while (val.equals("@goal")){
-	        	goals.add( new Goal(readerObj.next()));
+                Goal g = new Goal(readerObj.next());
+	        	val = readerObj.next();
+                if (val.equals("repost")) {
+                    g.setFailureRecovery(val);
+                    val = readerObj.next();
+                }
+	        	goals.add(g);
 	        	goals.lastElement().index=indexGoal;
 	        	indexGoal++;
 	        	System.out.println("read goal "+ goals.lastElement());
-	        	val = readerObj.next();
 	        }
 	        //Read the actions
 	        int indexActions=0;
@@ -388,7 +397,9 @@ public class ExpGenerator {
                 generateThresholdFailPlan((p.getHandles()).getId(), p.getId(), planIndex, p.isTopLevelPlan()); 
             } else {
                 //write the import
-                String code = "package plans;\n"+"import agents.RefinerAgent;\n"
+                String code = "package plans;\n"
+                +"import agents.RefinerAgent;\n"
+                +"import agents.Config.RunMode;\n"
                 +"import events."+p.getHandles().getId()+";\n";
                 for (GoalPlan g: p.body){
                     if (g instanceof Goal)
@@ -599,13 +610,16 @@ public class ExpGenerator {
 		+"pass(){\n"
 		+"\tag.record(plan_id,true);\n";
 		if (p.isTopLevelPlan())
-			code+="\t@send(\"Environment\", ready.nextIt(true,ag.env.it));\n";
+            code+="\t@send(\"Environment\", ready.nextIt(true,ag.env.it));\n";
 		code += "}\n\n"
 		+ "#reasoning method\n"
 		+ "fail(){\n"
 		+ "\tag.record(plan_id,false);\n";
 		if (p.isTopLevelPlan())
-			code+= "\t@send(\"Environment\", ready.nextIt(false,ag.env.it));\n";
+			code+="\tif (ag.run_mode != RunMode.FAILURE_RECOVERY || ag.triggerNewIteration()) {\n"
+            +"\t\tag.setTriggerNewIteration(false);\n"
+            + "\t\t@send(\"Environment\", ready.nextIt(false,ag.env.it));\n"
+            + "}";
 		code+= "}\n\n";
 		return code;
 	}
@@ -799,22 +813,20 @@ public class ExpGenerator {
 		for (Goal g: goals){
 			String code = "package events;\n";
 			//write the class
-			if (g == topGoal)
+			if (g == topGoal) {
 				code += "public event "+ g.getId() + " extends BDIMessageEvent {\n"
 				+ "\t#posted as\n"
-				+ "\tstart(){}\n"
-				+ "\t#set behavior PostPlanChoice always;\n"
-				+ "\t#set behavior ApplicableChoice random;\n"
-				+ "\t#set behavior Recover never;\n"
-				+"\n}";
-			else
+				+ "\tstart(){}\n";
+            } else {
 				code += "public event "+ g.getId() + " extends BDIGoalEvent {\n"
 				+ "\t#posted as\n"
-				+"\tsubgoal(){}\n"
-				+ "\t#set behavior PostPlanChoice always;\n"
-				+ "\t#set behavior ApplicableChoice random;\n"
-				+ "\t#set behavior Recover never;\n"
-				+"}";
+				+"\tsubgoal(){}\n";
+            }
+            code += ""
+            + "\t#set behavior PostPlanChoice always;\n"
+            + "\t#set behavior ApplicableChoice random;\n"
+            + "\t#set behavior Recover "+g.failureRecovery()+";\n"
+            +"\n}";
 			try{	
 				PrintWriter writer = new PrintWriter(targetDir+"/events/"+g.getId()+".event");
 				writer.println(code);
@@ -918,6 +930,7 @@ public class ExpGenerator {
 		String code = "package plans;\n"
 		+ "import java.lang.Math;\n"
 		+ "import agents.Config.PlanSelectMode;\n"
+		+ "import agents.Config.RunMode;\n"
 		+ "import agents.RefinerAgent;\n";
 		for (Goal g: goals)
 			code +="import events."+g.getId()+";\n";
@@ -961,6 +974,7 @@ public class ExpGenerator {
 		String code = "package plans;\n"
 		+ "import java.lang.Math;\n"
 		+ "import agents.RefinerAgent;\n"
+		+ "import agents.Config.RunMode;\n"
         + "import events."+gid+";\n";
 		if (isTopLevelPlan) {
 			code+="import events.ReadyForNextIteration;\n";
@@ -994,14 +1008,17 @@ public class ExpGenerator {
 		+ "\tpass(){\n"
 		+ "\t\tag.record(plan_id,true);\n";
         if (isTopLevelPlan) {
-			code+="\t\t@send(\"Environment\", ready.nextIt(true,ag.env.it));\n";
+            code+="\t\t\t@send(\"Environment\", ready.nextIt(true,ag.env.it));\n";
         }
 		code += "\t}\n\n"
 		+ "\t#reasoning method\n"
 		+ "\tfail(){\n"
 		+ "\t\tag.record(plan_id,false);\n";
 		if (isTopLevelPlan) {
-			code+= "\t\t@send(\"Environment\", ready.nextIt(false,ag.env.it));\n";
+			code+="\t\tif (ag.run_mode != RunMode.FAILURE_RECOVERY || ag.triggerNewIteration()) {\n"
+            +"\t\t\tag.setTriggerNewIteration(false);\n"
+			+ "\t\t@send(\"Environment\", ready.nextIt(false,ag.env.it));\n"
+            +"\t\t}";
         }
 		code += "\t}\n\n"
 		+ "}\n";
@@ -1029,6 +1046,7 @@ public class ExpGenerator {
 		+"import plans.StartNewIteration;\n"
 		+"import agents.Config.UpdateMode;\n"
 		+"import agents.Config.PlanSelectMode;\n"
+		+"import agents.Config.RunMode;\n"
 		//+"import events.Update_Event;\n"
 		+"import events."+topGoal.getId()+";\n"
 		+"import trees.Logger;\n"
@@ -1079,6 +1097,7 @@ public class ExpGenerator {
 		+ "public double noise = 0.1;\n"
 		+ "public static PlanSelectMode plan_selection = PlanSelectMode.PROBABILISTIC;\n"
 		+ "public static UpdateMode update_mode = UpdateMode.CONCURRENT;\n"
+		+ "public static RunMode run_mode = RunMode.DEFAULT;\n"
 		+ "public boolean worldFed;\n"
 		+ "public String fedFileName;\n"
 		+ "public boolean recordWorldFeed;\n"
@@ -1152,6 +1171,8 @@ public class ExpGenerator {
 		+"\t\tlearningAgent.resetLastStates();\n"
 		//+"\t\tlearningAgent.clearAllLastStates();\n"
 		+"\t}\n"
+        
+        +"\tlearningAgent.stepsThisEpisode = 0;\n"
 		
 		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\");\n"
 		+"\tif (it < numIterations)\n\t{\n"
@@ -1346,18 +1367,19 @@ public class ExpGenerator {
 		+ "\tif (outcomePrev)\n"
 		+ "\t\tnum_successes++;\n"
 		+ "\telse\n"
-		+"\t\tnum_failures++;\n"
+		+ "\t\tnum_failures++;\n"
 		+ "\tif (it>0 && it%ticks==0){\n"
-		+"\t\twriterOutcome.println(it + \" \"+(num_successes*1.0/ticks)\n"
-		+"\t\t\t+ \" \"+(num_failures*1.0/ticks));\n"
-		+"\t\tnum_successes=0;\n"
-		+"\t\tnum_failures=0;\n"
-		+"\t\t//writerOutcome.println(it + \" \"+(num_successes*1.0/it)\n"
-		+"\t\t//\t+ \" \"+(num_failures*1.0/it));\n"
-		+"\t\twriterOutcome.flush();\n"
-		+"\t}\n"
-		+"\trunOneIteration();\n"
-		+"}\n\n";	
+        + "\t\tif(learningAgent.run_mode == RunMode.FAILURE_RECOVERY){\n"
+		+ "\t\t\twriterOutcome.println(it + \" \"+(learningAgent.stepsThisEpisode*1.0/ticks));\n"
+        + "\t\t} else {\n"
+		+ "\t\t\twriterOutcome.println(it + \" \"+(num_successes*1.0/ticks)+ \" \"+(num_failures*1.0/ticks));\n"
+        + "\t\t}\n"
+		+ "\t\tnum_successes=0;\n"
+		+ "\t\tnum_failures=0;\n"
+		+ "\t\twriterOutcome.flush();\n"
+		+ "\t}\n"
+		+ "\trunOneIteration();\n"
+		+ "}\n\n";	
 		
 		//code for the main method
 		Scanner reader = new Scanner(new InputStreamReader(getClass().getResourceAsStream(mainFileName)));			
@@ -1384,7 +1406,8 @@ public class ExpGenerator {
 		String code = "package agents;\n";
 
         code += "import agents.Config.UpdateMode;\n"
-             +  "import agents.Config.PlanSelectMode;\n";
+             +  "import agents.Config.PlanSelectMode;\n"
+             +  "import agents.Config.RunMode;\n";
 
 		//java imports
 		code += "import java.util.Hashtable;\n"
@@ -1432,6 +1455,9 @@ public class ExpGenerator {
 		+"\tsuper(name);\n"
 		+"\tupdate_mode = UpdateMode.CONCURRENT;\n"
 		+"\tselect_mode = PlanSelectMode.PROBABILISTIC;\n"
+		+"\trun_mode = RunMode.DEFAULT;\n"
+        +"\tstepsThisEpisode = 0;\n"
+		+"\ttriggerNewIteration = false;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
         +"\tplanSelectThreshold = 0.0;\n"
@@ -1495,6 +1521,9 @@ public class ExpGenerator {
 		+"\tpublic Random generator;\n"
 		+"\tpublic UpdateMode update_mode;\n"
 		+"\tpublic PlanSelectMode select_mode;\n"
+		+"\tpublic RunMode run_mode;\n"
+        +"\tpublic int stepsThisEpisode;\n"
+		+"\tprivate boolean triggerNewIteration;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
 		+"\tint[] startToUseDT;\n"	
@@ -1517,6 +1546,18 @@ public class ExpGenerator {
 		+"\tpublic void setSelectMode(PlanSelectMode state)\n"
 		+"\t{\n"
 		+"\t\tthis.select_mode = state;\n"
+		+"\t}\n\n"
+		+"\tpublic void setRunMode(RunMode mode)\n"
+		+"\t{\n"
+		+"\t\tthis.run_mode = mode;\n"
+		+"\t}\n\n"
+		+"\tpublic void setTriggerNewIteration(boolean val)\n"
+		+"\t{\n"
+		+"\t\tthis.triggerNewIteration = val;\n"
+		+"\t}\n\n"
+		+"\tpublic boolean triggerNewIteration()\n"
+		+"\t{\n"
+		+"\t\treturn this.triggerNewIteration;\n"
 		+"\t}\n\n"
 		+"\tpublic int getStableK()\n"
 		+"\t{\n"
@@ -1732,7 +1773,12 @@ public class ExpGenerator {
 		code+="public void record(int plan_id, boolean res)\n"
 		+"{\n"
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
-		+"\t\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
+		+"\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
+        
+        +"\tif (planNodes[plan_id].getNumberOfChildren() == 0) {\n"
+        +"\t\tstepsThisEpisode++;\n"
+        +"\tenv.writeLog(\"Total steps this episode is \"+stepsThisEpisode);\n"
+        +"\t}\n"
 		
 		+"\tif(res && (update_mode == UpdateMode.STABLE))\n"
 		+"\t{\n"
