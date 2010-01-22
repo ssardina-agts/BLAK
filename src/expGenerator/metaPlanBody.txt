@@ -5,10 +5,12 @@
     Signature thandler = null;
     double pMax = -1.0;
     int pMaxId;
+    boolean isReposted = false;
 
     if (pc.failure.size() > 0) {
 	/* This is a re-posted goal */
 	ag.env.writeLog("MetaPlan: Choosing for reposted event " + pc.event.getEventName());
+	isReposted = true;
     }
 
     for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s)) {
@@ -107,6 +109,8 @@
 		s = pc.applicable.next(s);
 	    }
 	    pc.chosen = s;
+	    PlanIdInfo info = (PlanIdInfo) s.getInfo();
+	    ag.planNodes[info.plan_id].setHandledRepostedGoal(isReposted);
 	}
     }
 }

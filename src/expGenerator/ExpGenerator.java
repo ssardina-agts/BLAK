@@ -929,6 +929,7 @@ public class ExpGenerator {
 	public void generateMetaPlan(){
 		String code = "package plans;\n"
 		+ "import java.lang.Math;\n"
+        + "import java.util.Enumeration;\n"
 		+ "import agents.Config.PlanSelectMode;\n"
 		+ "import agents.Config.RunMode;\n"
 		+ "import agents.RefinerAgent;\n";
@@ -1079,7 +1080,8 @@ public class ExpGenerator {
 		+"\tit =0;\n"
 		+"\tSystem.out.println(\"The environment has started\");\n"
 		+"\ttry{\n"
-		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename);\n"
+		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename + \".csv\");\n"
+		+"\t\twriterOutcomeTG = new PrintWriter(targetDir + \"/\" + filename + \"-topgoal.csv\");\n"
 		+"\t\tlog = new PrintWriter(targetDir + \"/run.log\");\n"
 		+"\t}catch(IOException e){\n"
 		+"\t\tSystem.err.println(\"error opening the file for writing the outcome \\n\"+e);\n"
@@ -1091,6 +1093,7 @@ public class ExpGenerator {
 		+ "public int it,ticks=1,num_successes=0,num_failures=0;\n"
 		+ 	"Random generator;\n"
 		+ "public PrintWriter writerOutcome;\n"
+		+ "public PrintWriter writerOutcomeTG;\n"
 		+ "public PrintWriter log;\n"
 		+ "private String logindent = \"\";\n"		
 		+ "public String filenameOutcome = \"outcome.dat\";\n"
@@ -1098,6 +1101,7 @@ public class ExpGenerator {
 		+ "public static PlanSelectMode plan_selection = PlanSelectMode.PROBABILISTIC;\n"
 		+ "public static UpdateMode update_mode = UpdateMode.CONCURRENT;\n"
 		+ "public static RunMode run_mode = RunMode.DEFAULT;\n"
+		+ "public static RunMode run_mode_sub = RunMode.DEFAULT;\n"
 		+ "public boolean worldFed;\n"
 		+ "public String fedFileName;\n"
 		+ "public boolean recordWorldFeed;\n"
@@ -1172,7 +1176,7 @@ public class ExpGenerator {
 		//+"\t\tlearningAgent.clearAllLastStates();\n"
 		+"\t}\n"
         
-        +"\tlearningAgent.stepsThisEpisode = 0;\n"
+        //+"\tlearningAgent.stepsToAchieveTopGoal = 0;\n"
 		
 		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\");\n"
 		+"\tif (it < numIterations)\n\t{\n"
@@ -1258,6 +1262,7 @@ public class ExpGenerator {
 		+"\t}\n"
 		+"\telse{\n"
 		+"\t\twriterOutcome.close();\n"
+		+"\t\twriterOutcomeTG.close();\n"
 		+"\t\tlog.close();\n"
 		+"\t\t//this.finish();\n"
 		+"\t\tlearningAgent.printDT();\n"
@@ -1369,16 +1374,17 @@ public class ExpGenerator {
 		+ "\telse\n"
 		+ "\t\tnum_failures++;\n"
 		+ "\tif (it>0 && it%ticks==0){\n"
-        + "\t\tif(learningAgent.run_mode == RunMode.FAILURE_RECOVERY){\n"
-		+ "\t\t\twriterOutcome.println(it + \" \"+(learningAgent.stepsThisEpisode*1.0/ticks));\n"
-        + "\t\t} else {\n"
-		+ "\t\t\twriterOutcome.println(it + \" \"+(num_successes*1.0/ticks)+ \" \"+(num_failures*1.0/ticks));\n"
-        + "\t\t}\n"
+		+ "\t\twriterOutcome.println(it + \" \"+(num_successes*1.0/ticks)+ \" \"+(num_failures*1.0/ticks));\n"
 		+ "\t\tnum_successes=0;\n"
 		+ "\t\tnum_failures=0;\n"
 		+ "\t\twriterOutcome.flush();\n"
 		+ "\t}\n"
 		+ "\trunOneIteration();\n"
+		+ "}\n\n";	
+
+		code+="public void writeOutcomeForTopGoal(int steps){\n"
+		+ "\twriterOutcomeTG.println(steps);\n"
+		+ "\twriterOutcomeTG.flush();\n"
 		+ "}\n\n";	
 		
 		//code for the main method
@@ -1456,7 +1462,8 @@ public class ExpGenerator {
 		+"\tupdate_mode = UpdateMode.CONCURRENT;\n"
 		+"\tselect_mode = PlanSelectMode.PROBABILISTIC;\n"
 		+"\trun_mode = RunMode.DEFAULT;\n"
-        +"\tstepsThisEpisode = 0;\n"
+		+"\trun_mode_sub = RunMode.DEFAULT;\n"
+        +"\tstepsToAchieveTopGoal = 0;\n"
 		+"\ttriggerNewIteration = false;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
@@ -1522,7 +1529,8 @@ public class ExpGenerator {
 		+"\tpublic UpdateMode update_mode;\n"
 		+"\tpublic PlanSelectMode select_mode;\n"
 		+"\tpublic RunMode run_mode;\n"
-        +"\tpublic int stepsThisEpisode;\n"
+		+"\tpublic RunMode run_mode_sub;\n"
+        +"\tpublic int stepsToAchieveTopGoal;\n"
 		+"\tprivate boolean triggerNewIteration;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
@@ -1550,6 +1558,10 @@ public class ExpGenerator {
 		+"\tpublic void setRunMode(RunMode mode)\n"
 		+"\t{\n"
 		+"\t\tthis.run_mode = mode;\n"
+		+"\t}\n\n"
+		+"\tpublic void setRunModeSub(RunMode mode)\n"
+		+"\t{\n"
+		+"\t\tthis.run_mode_sub = mode;\n"
 		+"\t}\n\n"
 		+"\tpublic void setTriggerNewIteration(boolean val)\n"
 		+"\t{\n"
@@ -1619,7 +1631,7 @@ public class ExpGenerator {
 		for (Plan p : plans){
 			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
 			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, minNumInstances, update_mode, select_mode, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
+			+", atts, classVal, boolVal, minNumInstances, update_mode, select_mode, run_mode, run_mode_sub, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
@@ -1775,10 +1787,17 @@ public class ExpGenerator {
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
 		+"\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
         
-        +"\tif (planNodes[plan_id].getNumberOfChildren() == 0) {\n"
-        +"\t\tstepsThisEpisode++;\n"
-        +"\tenv.writeLog(\"Total steps this episode is \"+stepsThisEpisode);\n"
+        +"\tif (!planNodes[plan_id].isFailedThresholdHandler && planNodes[plan_id].getNumberOfChildren() == 0) {\n"
+        +"\t\tstepsToAchieveTopGoal++;\n"
+        +"\t\tenv.writeLog(\"Tried \"+stepsToAchieveTopGoal+\" actions so far to achieve top goal.\");\n"
         +"\t}\n"
+
+        +"\tif (res && (planNodes[plan_id].topGoal() != null)) {\n"
+        +"\t\tenv.writeLog(\"Total actions to achieve top goal was \"+stepsToAchieveTopGoal);\n"
+        +"\t\tenv.writeOutcomeForTopGoal(stepsToAchieveTopGoal);\n"
+        +"\t\tstepsToAchieveTopGoal = 0;\n"
+        +"\t}\n"
+        
 		
 		+"\tif(res && (update_mode == UpdateMode.STABLE))\n"
 		+"\t{\n"

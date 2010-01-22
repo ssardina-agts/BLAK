@@ -185,6 +185,17 @@ public class GoalNode extends Node{
             thisNode.clearDirtyPath(depth);
         }
     }
+
+    public boolean isPropagatingFailure() {
+        int nChildren = this.children.size();
+        for(int j = 0; nChildren > j; j++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
+            if (thisNode.isPropagatingFailure()) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public int getCoverage(String[] state, int depth) {
         int coverage = 0;

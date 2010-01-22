@@ -2,6 +2,7 @@ package agents;
 
 import agents.Config.UpdateMode;
 import agents.Config.PlanSelectMode;
+import agents.Config.RunMode;
 import trees.*;
 
 import weka.classifiers.trees.J48;
@@ -30,6 +31,8 @@ public class PlanNode extends Node{
     String[] lastState;
     UpdateMode update_mode;
     PlanSelectMode select_mode;
+    RunMode run_mode;
+    RunMode run_mode_sub;
     public int successfulChildren;
     private FastVector atts;
     private FastVector classVal;
@@ -54,6 +57,8 @@ public class PlanNode extends Node{
     private Hashtable complexity;
     private double domainComplexityDecayMultiplier;
     private final int buildThreshold = 25;
+    
+    private boolean handledRepostedGoal;
     
     /*
     public boolean isDoStable() {
@@ -175,6 +180,7 @@ public class PlanNode extends Node{
     public PlanNode(int id, String pname, FastVector attributes,
                     FastVector classValue, FastVector booleanValue, 
                     int minNumInst, UpdateMode update_mode, PlanSelectMode select_mode,
+                    RunMode run_mode, RunMode run_mode_sub,
                     double epsilion, int kStable, boolean isFTH, Logger logger){
         super(pname, logger);
         name = pname;
@@ -190,6 +196,8 @@ public class PlanNode extends Node{
         hasDirtyExperiences = 0;
         this.update_mode = update_mode;
         this.select_mode = select_mode;
+        this.run_mode = run_mode;
+        this.run_mode_sub = run_mode_sub;
         stableK = kStable;
         stableEpsilon = epsilion;
         successfulChildren = 0;
@@ -203,6 +211,7 @@ public class PlanNode extends Node{
         data.setClassIndex(numAttributes);
         rand = new Random();
         domainComplexityDecayMultiplier = 0.0;
+        handledRepostedGoal = false;
         try{
             decisionTree = new J48();
             options = new String[4];
@@ -260,6 +269,21 @@ public class PlanNode extends Node{
         
         logger.writeLog("Recording result "+(res?"(+)":"(-)")+" for plan "+this.getItem()+" for state "+this.stringOfLastState());
 
+        /* In failure recovery mode, if a subplan at any level below handled a 
+         * reposted subgoal then that means that the initial choice had failed
+         * so for this parent the only sensible choice is to record a failure.
+         * Do this only for non-leaf plans.
+         */
+        if ((run_mode == RunMode.FAILURE_RECOVERY) && this.isPropagatingFailure() && (this.getNumberOfChildren() > 0)) {
+            logger.writeLog("Forced result to (-) for plan "+this.getItem()+" since a subgoal initially failed and was reposted." );
+            res = false;
+        }
+        
+        /* TODO: coverage calc for reposted goals is very tricky. 
+         * does not work as it is now.
+         * Needs more working out.
+         */
+        
         if(!res && (update_mode == UpdateMode.STABLE) && (this.getNumberOfChildren() > 0)) {
             //we failed...
             if(this.childrenStable()) {
@@ -309,21 +333,25 @@ public class PlanNode extends Node{
         hasDirtyExperiences++;
         
         if (select_mode == PlanSelectMode.COVERAGE) {
+            if (!this.handledRepostedGoal || (topGoal() != null)) {
+                /* Mark only the first tried plans as dirty for coverage calculation */
+                isDirty.put(depth,true);
+            }
             /* Now calculate the coverage and store back */
-            isDirty.put(depth,true);
-            /* TODO: Add non-determinism check here i.e. remove paths only if confident of failure */
             int pathsAdded;
             String dp = getDirtyPath(depth);
             logger.writeLog("Plan "+this.getItem()+" has dirty path ["+dp+"] in state "+memoryKey);
             if ((pathsAdded = thisMemory.addCoverage(deadPaths(dp,depth),depth)) > 0) {
                 logger.writeLog("Plan "+this.getItem()+" added "+pathsAdded+" dead paths in state "+memoryKey+". Coverage is now "+thisMemory.coverage(depth)+"/"+getPaths(depth));
             }
-            if (isRoot) {
-                this.clearDirtyPath(depth);
-            }
             logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
             this.experiences.put(memoryKey, thisMemory);
         }
+
+        if (isRoot) {
+            this.clearDirtyPath(depth);
+        }
+
         if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
             //double f = (this.getNumberOfChildren() == 0) ? getComplexity(depth) : Math.max(1,getComplexity(depth)-failureNodeComplexity);
             double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
@@ -341,6 +369,17 @@ public class PlanNode extends Node{
     }
     public GoalNode topGoal() {
         return topGoal;
+    }
+    
+    public boolean isPropagatingFailure() {
+        int nChildren = this.children.size();
+        for(int j = 0; nChildren > j; j++) {
+            GoalNode thisNode = (GoalNode)this.children.elementAt(j);
+            if (thisNode.isPropagatingFailure()) {
+                return true;
+            }
+        }
+        return handledRepostedGoal;
     }
     
     public Vector getPathStringsMatching(String str, int depth) {
@@ -378,7 +417,14 @@ public class PlanNode extends Node{
     public void setDirty(int depth) {
         isDirty.put(depth,true);
     }
-
+    
+    public boolean handledRepostedGoal() {
+        return handledRepostedGoal;
+    }
+    public void setHandledRepostedGoal(boolean val) {
+        handledRepostedGoal = val;
+    }
+    
     public void setDecayMultiplier(double d) {
         domainComplexityDecayMultiplier = d;
     }
@@ -548,6 +594,7 @@ public class PlanNode extends Node{
             }
         }
         isDirty.remove(depth);
+        handledRepostedGoal = false;
     }
 
     public String[] deadPaths(String prefix, int depth) {
