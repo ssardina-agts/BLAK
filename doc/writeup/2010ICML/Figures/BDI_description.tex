@@ -1,0 +1,72 @@
+
+% We need layers to draw the block diagram
+
+\resizebox{\columnwidth}{!}{
+\begin{tikzpicture}
+\draw (6,4.5) node [anchor=east] {\textcolor{red}{dynamic}};
+\draw (7,4.5) node [anchor=west] {\textcolor{red}{static}};
+\draw (1,10) node (belief) []{{\bf Beliefs}};
+\draw (1,9.7) node (B) [anchor=north,draw, fill=blue!20, text width=3em, 
+    text centered, minimum height=4.5em]{};
+\draw (4,10) node (eventQueue) {{\bf Event Queue}};
+\draw (3.5,9.4) -- (4.5,9.4);
+\draw (3.5,9.0) -- (4.5,9.0);
+\begin{pgfonlayer}{foreground}
+\foreach \x in {3.5,3.7,...,4.5}
+\draw [fill=blue!40](\x,9.2) circle (0.2);
+\end{pgfonlayer}
+%\path (4,9.1) node (Q) {}; 
+\draw (4,9.2) node (Q) [anchor=center,draw, fill=blue!20, text width=1.4cm, minimum height=0.8cm]{};
+\draw (8.5,7.1) node (lib) {{\bf plan library}};
+\draw (8.5,6) node (P) [anchor=center,draw, fill=blue!20, text width=3em, minimum height=4.5em]{};
+\draw (1,7.1) node {{\bf Intentions}};
+\draw (1,6) node (I) [anchor=center,draw, fill=blue!20, text width=3em, minimum height=4.5em]{};
+
+\begin{pgfonlayer}{foreground}
+\draw (4,6) node[anchor=center] (deli) {\begin{tabular}{c}{\bf Reasoning} \\ {\bf Deliberation} \end{tabular}};
+\draw (4,3) node (actions) {{\bf actions}};
+\draw (2.5,12) node (in) {{\bf input}};
+\draw[thick,->] (in) -- (belief) ; 
+\draw[thick,->] (in) -- (eventQueue) ; 
+\draw[thick,->] (deli) -- (actions) ; 
+\draw[thick,<->] (deli) -- (I) ; 
+\draw[thick,<->] (deli) -- (B) ; 
+\draw[thick,<-] (deli) -- (P) ; 
+\draw[thick,<->] (deli) -- (Q) ; 
+\end{pgfonlayer}
+
+\begin{pgfonlayer}{background}
+\path (7,11) node (a) [] {};
+\path (10,4) node (b) {};
+\path (-0.5,11) node (c) {};
+\path (6,4) node (d) {};
+\path[fill=blue!10,rounded corners, draw=black!50, dashed] (a) rectangle (b);
+\path[fill=blue!10,rounded corners, draw=black!50, dashed] (c) rectangle (d);
+\end{pgfonlayer}
+
+
+
+%\foreach \x in {0,36,...,360}
+%\fill [rotate around={\x:(4,6)},fill=blue!15] (2.4,5.775) rectangle (2.87,6.235);
+
+%\fill [fill=blue!15] (4,6) circle (1.25);
+
+%\foreach \x in {0,36,...,360}
+%\fill [rotate around={\x:(3.2,5.6)},fill=blue!85] (2.2743,5.4743) rectangle (2.5257,5.7257);
+%\fill [fill=blue!15] (3.2,5.6) circle (0.8);
+
+%\foreach \x in {0,36,...,360}
+%\fill [rotate around={\x:(4.8,6.4)},fill=blue!85] (3.8743,6.2743) rectangle (4.1257, 6.5257);
+
+\foreach \x in {-9,9,...,360}
+\fill [rotate around={\x:(3.2,5.6)},fill=blue!15] (4.0,5.4743) -- (4.2 ,5.6) -- (4.0,5.7257) -- (4.0,5.3487);
+\fill [fill=blue!15] (3.2,5.6) circle (0.8);
+
+\foreach \x in {0,18,...,360}
+\fill [rotate around={\x:(4.8,6.4)},fill=blue!15] (5.6,6.2743)-- (5.8,6.4) -- (5.6,6.5257) -- (5.6,6.2743);
+\fill [fill=blue!15] (4.8,6.4) circle (0.8);
+
+\end{tikzpicture}}
+
+
+

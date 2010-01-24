@@ -1,0 +1,373 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% ICML 2010 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use the following line _only_ if you're still using LaTeX 2.09.
+%\documentstyle[icml2010,epsf,natbib]{article}
+% If you rely on Latex2e packages, like most moden people use this:
+\documentclass{article}
+
+% For figures
+\usepackage{graphicx} % more modern
+%\usepackage{epsfig} % less modern
+\usepackage{subfigure} 
+
+% For citations
+\usepackage{natbib}
+
+% For algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{pgf,pgfpages,tikz}
+\usetikzlibrary{calc,arrows,shadows,fit,shapes,matrix,automata,positioning,backgrounds,trees,fit,plotmarks}
+\pgfdeclarelayer{background} \pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\newcommand{\BUL}{\textsf{\small BUL}}
+\newcommand{\CL}{\textsf{\small ACL}}
+\newcommand{\T}{$\cal T$}
+
+% As of 2010, we use the hyperref package to produce hyperlinks in the
+% resulting PDF.  If this breaks your system, please commend out the
+% following usepackage line and replace \usepackage{icml2010} with
+% \usepackage[nohyperref]{icml2010} above.
+\usepackage{hyperref}
+
+% Packages hyperref and algorithmic misbehave sometimes.  We can fix
+% this with the following command.
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Employ the following version of the ``usepackage'' statement for
+% submitting the draft version of the paper for review.  This will set
+% the note in the first column to ``Under review.  Do not distribute.''
+\usepackage{icml2010} 
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Appearing in''
+% \usepackage[accepted]{icml2010}
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Learning to refine the preconditions of plans in a
+  plan hierarchy.}
+
+\begin{document} 
+
+\twocolumn[
+\icmltitle{Learning to refine the preconditions of plans in a
+  plan hierarchy.}
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2010
+% package.
+\icmlauthor{}{}
+\icmladdress{}
+\icmlauthor{}{}
+\icmladdress{}
+
+% You may provide any keywords that you 
+% find helpful for describing your paper; these are used to populate 
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{boring formatting information, machine learning, ICML}
+
+\vskip 0.3in
+]
+
+\begin{abstract} 
+\end{abstract} 
+
+\section{Introduction}
+
+One difficulty for practical use of software agents is to precise the
+conditions under which a specific plan succeeds. A programmer should
+be able to encode some basic preconditions of an action. Considering
+the other actions needed for achieving a plan, a programmer may be
+able to propagate some of these conditions for the plan preconditions.
+This task, especially in a dynamic environment, may not be
+trivial. Moreover, some conditions may be specific to certain
+environments, which makes it very difficult for a programmer to come
+up with exact and accurate preconditions for each plan.  One desirable
+solution is 1) for a programmer to encode the basic preconditions
+ensuring that the agent functions under a generic environment and 2)
+to use a learning algorithm that automatically refines these
+preconditions using the experience of the agent with its
+environment. In this paper, we are interested in the online and
+incremental learning of precondition of plans.
+
+In order for the agent to be reactive, it may be useful to decompose the planning problem into sub-plans. This is for an example an idea used in Hierarchical Task Network (HTN) planning or for Belief Desire Intentions (BDI) agents.  For example, in the case of BDI agents, a plan can be decomposed into a set of sub-goals that have to be achieved in parallel or in sequence. Each of these sub-goals can be achieved by a set of sub-plans. The decomposition continues until a sub-plan coincides with an action that can be performed by an agent. One solution for learning the context condition is to use execution traces and learn the context conditions of top level plans. This solution, however, does not use the decomposition, i.e., some knowledge about the environment and the tasks. Our challenge is to learn a precondition for each plan in the hierarchy.  In other words, each plan in the hierarchy is associated with a learning algorithm that will learn to refine the context condition of the corresponding plan. This choice brings an interesting challenge. Consider for example that a plan failed because of the failure of one of its sub-plan. What went wrong: the choice of the top-level plan or the choice of its sub-plan?  It is possible that the use of a different sub-plan would have achieved the sub-goal, in which case it was correct to use the top-level plan. But it was equally possible that all sub-plans were doomed to fail and that the top level plan should not have been chosen at the first place.  For the learning algorithm, this means that the input of algorithm of the top level plan depends on the output of the lower level plan. 
+
+Through its experience with its environment, the agent collects additional instances and may learn the right choices of plans. We consider two solutions to this learning problem and provide empirical results using induction of decision tree to learn the preconditions of the plans of a BDI agent.
+
+
+\section{Related work}
+
+One related domain is the Hierarchical Task Network (HTN) planning. Here a task can be decomposed into an ordered sequence of sub-tasks.  The decomposition of the tasks, as decomposition of plans, contains much expert knowledge about the environment and the ability of solving problems in this environment. Instead of using expert to design the HTN structure, it is interesting to learn the relationship between tasks automatically from execution traces~\cite{Zhuo09:Learning,Ilghami05:Learning,Hogg08:htnmaker}. For example, one can monitor human activities to build a database of traces, and use HTN learning algorithm to learn the task decomposition. In our work, we assume that the decomposition of plans is already been programmed using expert knowledge. However, some additional plan preconditions that depends on the particular environment may still need to be learnt. In addition, these HTN learners are to be used offline when our work deals with learning as the agents operates, i.e., from the interaction with its environment, the agent learns how to improve its performance.
+
+Our work builds on the work in~\cite{Singh10:Learning} where two learning approaches to learn the preconditions of plans for BDI agents are presented.  One assumption from that work is that the failure recovery of the BDI agent is deactivated, i.e., when an action fails, the top-level plan fails and the agent restart to achieve the top-level goal from scratch. Failure recovery would enable the agent to try a different plan when a sub-plan has failed, i.e., the agent tries to fix the error on the go, which may be a much more effective behaviour in many environments. Using failure recovery adds additional issues to learning the preconditions of the plans, which will be described in the next section. Finally, the experiments of ~\cite{Singh10:Learning} explored different structure of the plan hierarchy, but little was reported about the plans that were learnt. In this paper, we use some classification problems from the machine learning repository to provide sounder results.
+
+
+\section{BDI agents}
+
+BDI agent-oriented programming is a popular, well-studied, and practical paradigm
+for building intelligent agents situated in complex and dynamic environments with
+(soft) real-time reasoning and control requirements
+\cite{Georgeff89-PRS,Benfield:AAMAS06}.
+
+In a BDI-style system, an agent consists, basically, of a belief base (akin to a
+database), a set of recorded pending goal events, a plan library, and an
+intention base. While the belief base encodes the agent's knowledge about the
+world, the pending events stand for the \emph{goals} the agent wants to
+achieve/resolve.
+% %
+The \textit{plan library}, in turn, contains \emph{plan rules}, or simply
+\emph{plans}, of the general form $e: \psi \leftarrow \delta$ encoding the
+standard domain operational procedure $\delta$ (that is, a program) for achieving
+the event-goal $e$ when the so-called \textit{context condition} $\psi$ is
+believed true---program $\delta$ is a reasonable strategy to resolve event $e$
+whenever $\psi$ holds. Among other operations, the plan-body program $\delta$
+will typically include the execution of actions ($act$) in the environment and
+subgoal events ($!e$) that ought to be in turn resolved by selecting suitable
+plans for that subgoal event. Lastly, the intention base accounts for the
+current, partially instantiated, plans that the agent has already committed to in
+order to handle or achieve some event-goal.
+
+
+The basic reactive goal-oriented behavior of BDI systems involves the system
+responding to events, the inputs to the system, by committing to handle one
+pending event-goal, \textit{selecting a plan} from the library, and placing its
+program body  into the intention base (see Figure~\ref{fig:BDI_description}).
+% %%
+A plan may be selected if it is \textit{relevant} and \textit{applicable}, that is, if it
+is a plan designed for the event in question and its context condition is
+believed true, respectively.
+% %
+In contrast with traditional planning, execution happens at each step. The
+assumption is that the use of plans' context-preconditions to make choices as
+late as possible, together with the built-in goal-failure mechanisms, ensures
+that a successful execution will eventually be obtained while the system is
+sufficiently responsive to changes in the environment.
+
+\begin{figure}
+\input{Figures/bdi_description}
+\caption{BDI architecture}
+\label{fig:BDI_description}
+\end{figure}
+
+
+For the purposes of this paper, we shall mostly focus on the plan library, as we
+investigate ways of learning how agents can make a better use of it over time.
+% %
+It is not hard to see that, by grouping together plans responding to the same
+event type, the plan library can be seen as a set of \emph{goal-plan tree}
+templates: a goal (or event) node has children representing the alternative
+relevant plans for achieving it; and a plan node, in turn, has children nodes
+representing the subgoals (including primitive actions) of the plan.
+% %%
+These structures, can be seen as AND/OR trees: for a plan to succeed all the
+subgoals and actions of the plan must be successful (AND); for a subgoal to
+succeed one of the plans to achieve it must succeed (OR).
+
+Consider, for instance, the structure depicted in
+Figure~\ref{fig:T3}.
+% %%
+A link from a goal to a plan means that this plan is relevant (i.e., potentially
+suitable) for achieving the goal (e.g., $P_1 \ldots P4$ are the relevant
+plans for event goal $G$); whereas a link from a plan to a goal means that the
+plan needs to achieve that goal as part of its (sequential) execution (e.g., plan
+$P_A$ needs to achieve goal $G_{A1}$ first and then $G_{A2}$).
+% %
+For compactness, an edge with a label $\times n$ states that there are $n$ edges
+of such type.
+% %
+Leaf plans directly interact with the environment and so, in a given world state,
+they can either succeed or fail when executed; this is marked accordingly in the
+figure \emph{for some particular world} (of course, in other states, such plans
+may behave differently).
+% %
+In some world, given successful completion of $G_A$ first, the agent may achieve goal $G_B$ by selecting and
+executing $P_B$, followed by selecting and executing $2$ leaf working plans to
+resolve goals $G_{B1}$ and $G_{B2}$. If the agent succeeds with goals $G_{B1}$
+and $G_{B2}$, then it succeeds for plan $P_B$, achieving thus goal $G_B$ and the
+top-level goal $G$ itself. There is no possible successful execution, though, if
+the agent decides to carry on any of the three plans labelled $P_{B2}'$ for
+achieving the low-level goal $G_{B2}$.
+
+\begin{figure}[t]
+\begin{center}
+\input{Figures/GPtree-T3}
+\end{center}
+\caption{Goal-plan hierarchy $\T_3$. There are $2^4$ worlds whose solutions are
+distributed evenly in each of the $4$ top level plans. Successful execution
+traces are of length $4$. Within each sub-tree $P_i$, \BUL\ is expected to
+perform better for a given world, but it suffers in the number of worlds. Overall, \CL\ and \BUL\
+perform equally well in this structure.}
+\label{fig:T3}
+\end{figure}
+
+
+As one can easily observe, the problem of \textit{plan-selection} is at the core
+of the whole BDI approach:
+\emph{which plan should the agent commit to in order to achieve a certain goal?}
+% %
+This problem amounts, at least partly, to what has been referred to as
+\emph{means-end analysis} in the agent foundational literature
+\cite{Pollack92-IRMA,Bratman88}, that is, the decision of \textit{how} goals are
+achieved.
+% %%
+To tackle the plan-selection task, state-of-the-art BDI systems leverage domain
+expertise by means of the context conditions of plans. However, crafting fully
+correct context conditions at design-time can, in some applications, be a
+demanding and error-prone task. In addition, fixed context conditions do not
+allow agents to adapt to changing environments.
+% %%
+In the rest of the paper, we shall provide an extended framework for BDI agent
+systems that allows agents to learn/adapt plans' context conditions, and discuss
+and empirically evaluate different approaches for such learning task.
+
+
+\section{Learning problem and two learning approaches}
+
+Our aim is to add learning capabilities to adapt and to refine context
+conditions of plans to the particular environment where the agent
+acts.  A first step in this direction is to use a decision tree (DT)
+in addition to the context condition. A decision tree is suitable for
+this task.  First, the state of the world can be represented using
+attribute-value pairs, since it is an implicit assumption of the
+implementation of BDI agents. Next, the issue at hand is a
+classification problem: is the plan applicable in the current state of
+the world?  Then, the decision tree can represent any context
+condition of standard BDI agent, since such a context condition is a
+formular of propositional logic. Finally, an agent may act in a non
+deterministic environment, and induction of decision trees is able to
+handle some noisy data.  Note, however, that we intend to use
+induction of decision trees in an incremental and online setting,
+which is not a standard use.  As the agent interacts with its
+environment, new instances are added to the data set of each decision
+tree. In the experimental section, we will induce a new decision tree
+every time an instance is added to the data set. For practical use of
+our agents, we intend to use algorithm that induce a decision tree in
+an incremental way~\cite{Swere06:Fast,Utgoff97Decision}.
+
+\subsection{Learning space}
+
+For each plan in the goal-plan tree of the BDI agent, we associate a
+decision tree. We assume that a programmer provides, for each plan, a
+set of attributes that may play a role in the success of a plan. Let
+us assume that the success of the plan $P$ is function of the values
+of the attributes in the set $D^{\top}$. We make the assumption that,
+the set of attributes $D$ provided by the programmer is such that
+$D^{\top} \subseteq D$. If the programmer may not be able to formalize
+precisely the precondition of $P$, he should at least be able to tell
+a superset of the set $D^{\top}$.
+
+Let us consider a plan $P$ with subplans $p_1$, $\dots$, $p_n$, and
+let further assume that $d_i$ is the set of attributes provided by the
+programmer for sub-plan $p_i$. The set of attributes $D$ to be used
+for $P$ is such that $D \subseteq \cup_{i=1}^n d_i$. The success of
+$P$ depends on the values of each $d_i$, but not necessarily all. Let
+$a \in d_i$ for a given $i$. It is possible to select a plan that will
+succeed for all possible values of $a$, in which case the success of
+plan $P$ may not depend on $a$. Moreover, an attribute $b \notin
+\cup_{i=1}^n d_i$ should not have any impact on the success of $P$,
+since it has no impact on any of its sub-plans. In theory, it is then
+possible that the higher a plan in the goal-plan tree is, the larger
+the learning space. We believe that the expert knowledge of the
+programmer is able to keep the learning space for top level plan to a
+reasonable size.
+
+\subsection{Probabilistic Plan Selection}
+
+The work of~\cite{Singh10:Learning} proposes to use a probabilistic
+plan selection. Let us assume that a given plan $P$ has $n$ sub-plans
+$p_1$, $\dots$, $p_n$ with their corresponding decision trees $d_1$,
+$\dots$, $d_n$, and let us assume that the state of the world,
+represented by a vector of attribute-value pairs, is $w$. For each
+decision tree $d_i$, we retrieve the number of positive and negative
+instances (respectively $o^+_i$ and $o^-_i$ that are contained in the
+leaf node of $d_i$ corresponding to $w$. For decision tree $d_i$, we
+compute the frequency of success $f_i$ of the node that contains $w$:
+$f_i=\frac{o^+_i}{o^+_i + o^-_i}$.  We then select probabilistically
+plan $p_i$ with a probability proportional to $f_i$. This plan
+selection will ensure some level of exploration and will favour plans
+that have a higher frequency of success\footnote{Note for us: Maybe
+  here, we could think for the future to improve that. We could take
+  into account the size of the space represented by the leaf node. Say
+  we have 50\% of success for that node. If it represents a huge space
+  say 128 worlds or only 4 worlds, this 50\% may have different
+  strength. We could have a bias towards exploring larger spaces}.
+
+\subsection{Two learning approaches}
+
+Let us first consider a plan which is a leaf node of a goal-plan tree,
+i.e., a plan that corresponds to an action of the agent. For this
+case, the learning problem is a standard classification problem: the
+outcome of the action depends only on the environment.  The agent
+records the state of the world, acts, records the outcome of the
+action, and updates the decision tree. When this plan is used a
+sufficiently large number of times, the induction algorithm will learn
+a correct decision tree.
+
+Now, let us consider a plan $P$ that is not a leaf node of a goal-plan
+tree. This plan has at least a sub-plan. Unlike in the previous case,
+the input of the decision tree of $P$ will not only depend on the
+environment: it also depends on the choice made for the
+sub-plan(s). If $P$ succeeded, it certainly means that the correct
+choices were made for the sub-plans, hence we should add the
+corresponding instance in the database. In case of failure, it is not
+so clear. If we knew that the choices made below in the goal-plan tree
+were the \emph{correct} choices, then a failure of $P$ should be
+recorded. However, if we are not that the right choices were made, it
+is not clear whether the instance is a false negative or not.
+
+First, let us consider the case of failure recovery. Say one of the
+$p_i$, trying to achieve the subgoal $g$, failed.  In that case, we
+claim that we should not add any instance in the data set of $P$, and
+that, even if the failure is recovered.  We assume that the goal-plan
+tree is correct. Consequently, if the execution needed to backtrack in
+the goal-plan tree, it was not the correct, expected behavior of the
+agent, hence, we should not learn it\footnote{Note that if we do not
+  trust the goal-plan tree, it could be interesting to use these
+  backtracks in the goal-plan tree to add new sub-trees, but we keep
+  this issue for future research}.
+
+
+In order to discuss further \emph{which} data should be recorded
+\emph{where}, we define the notion of an \textit{active execution
+  trace}, as a sequence of the form $G_0[P_0:w_0] \cdot G_1[P_1:w_1]
+\cdot \ldots \cdot G_n[P_n:w_n]$, which represents the sequence of
+currently active goals, along with the plans which have been selected
+to achieve each of them, and the world state in which the selection
+was made---plan $P_i$ has been selected in world state $w_i$ in order
+to achieve the $i$-th active subgoal $G_i$.
+
+Two mechanisms for learning were introduced
+in~\cite{Singh10:Learning}. The idea of the first approach is to
+filter the instances that are included in a data set by estimating the
+confidence of the decision trees of sub-plans. With this approach,
+decision trees of leaf plans will be learnt first, and when they
+appear accurate, decision trees of the level above will start to
+learn. Consequently, this method has been called Bottom Up learning
+(BUL). This method requires that all the decision trees that are in
+any sub-plans of the current plan to appear accurate, which is
+demanding.
+
+The idea of the second mechanism is to be less careful about which
+instances are recorded in the data set of a decision tree. Instead,
+Singh et al. prescribe the use of a more intelligent selection
+function. This function will select probabilistically a plan with a
+probability proportional to the fraction of paths that have been
+tried.
+
+
+\bibliography{bdilearning}
+\bibliographystyle{icml2010}
+
+\end{document} 
+
+
+
+
+
