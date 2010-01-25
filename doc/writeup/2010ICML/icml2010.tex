@@ -50,14 +50,13 @@
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Learning to refine the preconditions of plans in a
-  plan hierarchy.}
+%\icmltitlerunning{Learning to refine the preconditions of plans in a plan hierarchy.}
+\icmltitlerunning{Learning Dynamic Plan Selection for BDI Hierarchy} 
 
-\begin{document} 
-
+\begin{document}
 \twocolumn[
-\icmltitle{Learning to refine the preconditions of plans in a
-  plan hierarchy.}
+%\icmltitle{Learning to refine the preconditions of plans in a plan hierarchy.}
+\icmltitle{Learning Dynamic Plan Selection for BDI Hierarchy} 
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -77,11 +76,16 @@
 ]
 
 \begin{abstract} 
+
+Belief-Desire-Intention (BDI) paradigm provides a powerful/popular framework for building complex agent based systems.  The actions of these BDI agents are guided by a hierarchical plan tree on which every goal of actions associate with a set of plans.  Selecting a suitable plan for achieving a particular goal can be challenging especially if the environment is dynamic.  In the paper we present a hierarchical structure to learn BDI plan selection during plan execution.  Each selection point contains a separate decision tree which is built based on current experience and will be constantly updated when more experience is available.  These decision points are not independent as the decision made at one point may affect the learnable experience of subsequent points on the hierarchy(??).  Two variations of the learning method are investigated.  The results show that they not only can work coherently with BDI framework, but also can take advantage of the failure recovery mechanism in BDI to reduce the cost of learning.  Furthermore the success of goal/actions can be maintained even when the environment contains certain degrees of nondeterministic elements.
+
 \end{abstract} 
 
 \section{Introduction}
 
-\fbox{Test} One difficulty for practical use of software agents is to 
+a symbolic reasoning perspective
+
+One difficulty for practical use of software agents is to 
 precise the
 conditions under which a specific plan succeeds. A programmer should
 be able to encode some basic preconditions of an action. Considering
