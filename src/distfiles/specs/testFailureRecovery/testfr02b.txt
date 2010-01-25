@@ -1,0 +1,396 @@
+@attribute a observable boolean
+@attribute b observable boolean
+@attribute c observable boolean
+@attribute d observable boolean
+@attribute e observable boolean
+
+@topgoal TopGoal
+
+@goal Ga
+@goal Gaa
+@goal Gab
+@goal Gaaa
+@goal Gaab
+
+@goal Gb
+@goal Gba
+@goal Gbb
+@goal Gbaa
+@goal Gbab
+
+@goal Gc
+@goal Gca
+@goal Gcb
+@goal Gcaa
+@goal Gcab
+
+@action A0
+	@pre  (false)
+	@post 
+
+@action A1
+	@pre  (true)
+	@post a=true;
+@action A2
+	@pre  (a)
+	@post b=true;
+@action A3
+	@pre  (a && b)
+	@post c=true;
+@action A4
+	@pre  (a && b && c)
+	@post d=true;
+@action A5
+	@pre  (a && b && c && d)
+	@post e=true;
+@action A6
+	@pre  (a && b && c && d && e)
+	@post e=false;
+@action A7
+	@pre  (a && b && c && d)
+	@post d=false;
+@action A8
+	@pre  (a && b && c)
+	@post c=false;
+@action A9
+	@pre  (a && b)
+	@post b=false;
+
+
+@plan P1
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body Ga Gb Gc
+@plan P2
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan P3
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan P4
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pa1
+    @handles Ga
+    @initPre true;
+ 	@pre true;
+    @body Gaa Gab
+@plan Pa2
+    @handles Ga
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pa3
+    @handles Ga
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pa4
+    @handles Ga
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Paa1
+    @handles Gaa
+    @initPre true;
+ 	@pre true;
+    @body Gaaa Gaab
+@plan Paa2
+    @handles Gaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paa3
+    @handles Gaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paa4
+    @handles Gaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pab1
+    @handles Gab
+    @initPre true;
+ 	@pre true;
+    @body A3
+@plan Pab2
+    @handles Gab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pab3
+    @handles Gab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pab4
+    @handles Gab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Paaa1
+    @handles Gaaa
+    @initPre true;
+ 	@pre true;
+    @body A1
+@plan Paaa2
+    @handles Gaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paaa3
+    @handles Gaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paaa4
+    @handles Gaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Paab1
+    @handles Gaab
+    @initPre true;
+ 	@pre true;
+    @body A2
+@plan Paab2
+    @handles Gaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paab3
+    @handles Gaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Paab4
+    @handles Gaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan Pb1
+    @handles Gb
+    @initPre true;
+ 	@pre true;
+    @body Gba Gbb
+@plan Pb2
+    @handles Gb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pb3
+    @handles Gb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pb4
+    @handles Gb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pba1
+    @handles Gba
+    @initPre true;
+ 	@pre true;
+    @body Gbaa Gbab
+@plan Pba2
+    @handles Gba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pba3
+    @handles Gba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pba4
+    @handles Gba
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pbb1
+    @handles Gbb
+    @initPre true;
+ 	@pre true;
+    @body A6
+@plan Pbb2
+    @handles Gbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbb3
+    @handles Gbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbb4
+    @handles Gbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pbaa1
+    @handles Gbaa
+    @initPre true;
+ 	@pre true;
+    @body A4
+@plan Pbaa2
+    @handles Gbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbaa3
+    @handles Gbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbaa4
+    @handles Gbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pbab1
+    @handles Gbab
+    @initPre true;
+ 	@pre true;
+    @body A5
+@plan Pbab2
+    @handles Gbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbab3
+    @handles Gbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pbab4
+    @handles Gbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan Pc1
+    @handles Gc
+    @initPre true;
+ 	@pre true;
+    @body Gca Gcb
+@plan Pc2
+    @handles Gc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pc3
+    @handles Gc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pc4
+    @handles Gc
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pca1
+    @handles Gca
+    @initPre true;
+ 	@pre true;
+    @body Gcaa Gcab
+@plan Pca2
+    @handles Gca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pca3
+    @handles Gca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pca4
+    @handles Gca
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pcb1
+    @handles Gcb
+    @initPre true;
+ 	@pre true;
+    @body A9
+@plan Pcb2
+    @handles Gcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcb3
+    @handles Gcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcb4
+    @handles Gcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pcaa1
+    @handles Gcaa
+    @initPre true;
+ 	@pre true;
+    @body A7
+@plan Pcaa2
+    @handles Gcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcaa3
+    @handles Gcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcaa4
+    @handles Gcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan Pcab1
+    @handles Gcab
+    @initPre true;
+ 	@pre true;
+    @body A8
+@plan Pcab2
+    @handles Gcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcab3
+    @handles Gcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan Pcab4
+    @handles Gcab
+    @initPre true;
+ 	@pre true;
+    @body A0
