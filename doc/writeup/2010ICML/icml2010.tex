@@ -362,6 +362,47 @@ function. This function will select probabilistically a plan with a
 probability proportional to the fraction of paths that have been
 tried.
 
+\section{Results}
+
+\begin{figure*}[t]
+\begin{center}
+\resizebox{0.8\textwidth}{!}{
+\input{Figures/testfr01}
+}
+\end{center}
+\caption{The hierarchy has 4 top level plans $P_1 \ldots P_4$ and the total number of worlds is $2^5$. Only $P_1$ has the solutions, $P_2 \ldots P_4$ are all single action plans that always fail. Successful execution trace is of length $9$ distributed between goals $G_a \ldots G_c$. The aim is to compare how many actions it takes on average for the top level goal $G$ to succeed --- with and without failure recovery. The intuition is that failure recovery should help learn $G$ faster. For instance, say we have learnt to achieve $G_a$ and $G_b$. Then to learn $G_c$ we must first perform $G_a$, then $G_b$ and then try different options as we acquire experience in $G_c$. If we were to re-post $G$ after each failure then for each unsuccessful choice in $G_c$ we have to do a lot of re-work (i.e. achieve $G_a$ and $G_b$ again) before we can try something else. With failure recovery enabled however, when learning $G_c$ we only perform $G_a$ and $G_b$ once and then exhaust all options for $G_c$ in a single try. However, this assumes that failures do not (generally) change the world in such a way that alternatives tried with failure recovery will never succeed. If that were the case then failure recovery would perform worse than reposting.}
+\label{fig:test01fr}
+\end{figure*}
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[ACL]{\label{fig:result_1a}
+\input{Figures/testfr01-acl}
+}
+\qquad
+\subfigure[BUL]{\label{fig:result_1b}
+\input{Figures/testfr01-bul}
+}
+\caption{Agent performance under \BUL\ and \CL\ schemes. Circles represent performance without failure recovery while crosses show the performance with failure recovery enabled.
+Each point represents results from $5$ experiment runs using an averaging window
+of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are deterministic (no noise) and failed actions do not change the world in a negative way i.e. success is always possible with recovery.}
+\end{center}
+\end{figure*}
+
+\begin{figure*}[t]
+\begin{center}
+\subfigure[ACL]{\label{fig:result_1a}
+\input{Figures/testfr01n-acl}
+}
+\qquad
+\subfigure[BUL]{\label{fig:result_1b}
+\input{Figures/testfr01n-bul}
+}
+\caption{Agent performance under \BUL\ and \CL\ schemes. Circles represent performance without failure recovery while crosses show the performance with failure recovery enabled.
+Each point represents results from $5$ experiment runs using an averaging window
+of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are non-deterministic ($10\%$ probability of failure) and failed actions do not change the world in a negative way i.e. success is always possible with recovery.}
+\end{center}
+\end{figure*}
 
 \bibliography{bdilearning}
 \bibliographystyle{icml2010}

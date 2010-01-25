@@ -1,0 +1,99 @@
+\begin{tikzpicture}[scale=1.1,level distance=1.4cm]
+\tikzstyle{txt}=[scale=1.1]
+\tikzstyle{planbox}=[scale=1.1,draw,minimum height=0.7cm,minimum width=1.1cm]
+\tikzstyle{goalbox}=[scale=1.1,draw,rounded corners,minimum height=0.7cm,minimum width=1.1cm]
+\tikzstyle{level 1}=[sibling distance=4.0cm] 
+\tikzstyle{level 2}=[sibling distance=6.0cm] 
+\tikzstyle{level 3}=[sibling distance=3.0cm]
+\tikzstyle{level 4}=[sibling distance=3.0cm]
+\tikzstyle{level 5}=[sibling distance=1.5cm]
+\tikzstyle{level 6}=[sibling distance=3.0cm]
+\tikzstyle{level 7}=[sibling distance=1.5cm]
+
+\node[goalbox,yshift=1cm,solid] (T) {$G$}
+	child[solid] {node[planbox] (P1) {$P_1$}
+		child {node[goalbox] {$G_{a}$}
+			child {node[planbox] {$P_{a1}$}
+				child {node[goalbox] {$G_{aa}$}
+					child {node[planbox] {$P_{aa1}$}
+						child {node[goalbox] {$G_{aaa}$}
+							child {node[planbox] {$P_{aaa1}$} node[txt,below=0.3cm] {$\surd$}}
+							child {node[planbox] {$P_{aaa*}$} node[txt,below=0.3cm] {$\times$}
+								edge from parent node[txt,right,near start] {$\times 2$}
+							}
+							edge from parent node[txt,right] {$\times 2$}
+						}
+					}
+					child {node[planbox] {$P_{aa*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 3$}
+					}
+				}
+				child {node[goalbox] {$G_{ab}$}
+					child {node[planbox] {$P_{ab1}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{ab*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 2$}
+					}
+				}
+			}
+			child {node[planbox] {$P_{a*}$} node[txt,below=0.3cm] {$\times$}
+				edge from parent node[txt,right,near start] {$\times 3$}
+			}
+		}
+		child {node[goalbox] {$G_{b}$}
+			child {node[planbox] {$P_{b1}$}
+				child {node[goalbox] {$G_{ba}$}
+					child {node[planbox] {$P_{ba1}$}
+						child {node[goalbox] {$G_{baa}$}
+							child {node[planbox] {$P_{baa1}$} node[txt,below=0.3cm] {$\surd$}}
+							child {node[planbox] {$P_{baa*}$} node[txt,below=0.3cm] {$\times$}
+								edge from parent node[txt,right,near start] {$\times 2$}
+							}
+							edge from parent node[txt,right] {$\times 2$}
+						}
+					}
+					child {node[planbox] {$P_{ba*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 3$}
+					}
+				}
+				child {node[goalbox] {$G_{bb}$}
+					child {node[planbox] {$P_{bb1}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{bb*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 2$}
+					}
+				}
+			}
+			child {node[planbox] {$P_{b*}$} node[txt,below=0.3cm] {$\times$}
+				edge from parent node[txt,right,near start] {$\times 3$}
+			}
+		}
+		child {node[goalbox] {$G_{c}$}
+			child {node[planbox] {$P_{c1}$}
+				child {node[goalbox] {$G_{ca}$}
+					child {node[planbox] {$P_{ca1}$}
+						child {node[goalbox] {$G_{caa}$}
+							child {node[planbox] {$P_{caa1}$} node[txt,below=0.3cm] {$\surd$}}
+							child {node[planbox] {$P_{caa*}$} node[txt,below=0.3cm] {$\times$}
+								edge from parent node[txt,right,near start] {$\times 2$}
+							}
+							edge from parent node[txt,right] {$\times 2$}
+						}
+					}
+					child {node[planbox] {$P_{ca*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 3$}
+					}
+				}
+				child {node[goalbox] {$G_{cb}$}
+					child {node[planbox] {$P_{cb1}$} node[txt,below=0.3cm] {$\surd$}}
+					child {node[planbox] {$P_{cb*}$} node[txt,below=0.3cm] {$\times$}
+						edge from parent node[txt,right,near start] {$\times 2$}
+					}
+				}
+			}
+			child {node[planbox] {$P_{c*}$} node[txt,below=0.3cm] {$\times$}
+				edge from parent node[txt,right,near start] {$\times 3$}
+			}
+		}
+	}
+;
+
+\end{tikzpicture}
