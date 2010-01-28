@@ -295,6 +295,7 @@
 	</java>
 	<mkdir dir="${results.all.dir}"/>
 	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}.csv" todir="${results.all.dir}" flatten="true"/>
+	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}-topgoal.csv" todir="${results.all.dir}" flatten="true"/>
   </sequential>
 </macrodef>
 
