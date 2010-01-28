@@ -14,52 +14,41 @@ public class GoalNode extends Node{
 		goal_id = id;
 		successfulChildren = 0;
     }
-	
-    public boolean isStable(String[] state)
-    {
-    	logger.writeLog("Goal "+name+" is determining which state to check stability for, starting with state "+this.stringOfState(state));
-    	if(this.children.size()>0)
-    	{
-    		String[] checkState = null;
-    		//find the children which has a non null last state..
+
+	public String[] calculateEndStateFrom(String[] state) {
+    	logger.writeLog("Goal "+name+" is determining end state starting with state "+this.stringOfState(state));
+        String[] checkState = null;
+    	if(this.children.size()>0) {
+    		/* Find the child which has a non null last state i.e.
+             * the child that was selected in the last run.
+             */
             logger.indentRight();
-    		for(int j =0; this.children.size()>j;j++)
-    		{
+    		for(int j =0; this.children.size()>j;j++) {
     			PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-    			if(thisNode.lastState!=null)
-    			{
-    				logger.writeLog("Child plan "+thisNode.getItem()+" has last state "+thisNode.stringOfLastState());
-    				if(checkState==null)
-    				{
+    			if(thisNode.lastState!=null) {
+    				if(checkState==null) {
     					checkState = thisNode.lastState;
-    					logger.writeLog("Goal "+name+" should therefore check stability for state "+this.stringOfState(checkState));
-    					
+                        logger.writeLog("Child plan "+thisNode.getItem()+" has last state "+thisNode.stringOfLastState()+". Goal "+name+" will therefore use this state.");
     				}
+    			} else {
+    				//logger.writeLog("Child plan "+thisNode.getItem()+" has NULL last state");
     			}
-    			else
-    			{
-    				logger.writeLog("Child plan "+thisNode.getItem()+" has NULL last state");
-    			}
-    			
     		}
             logger.indentLeft();
-            
-    		if(checkState==null)
-    		{
-    			//System.out.println("Goal Node: Could not find check state");
-    			//this.writeLog("-Goal Node "+name+" found ALL last states to be NULL, so assume stable"/*+" HACK STABLE"*/, targetDir + "/" + "Stability-Updates");
-    			//skip it....this is a quick and dirty hack. We aren't stable, because we have not been used.
-    			//rather we are irrelevant to the question of stability....
-    			//return true;
-                
+        }
+        return checkState;
+    }
+        
+    public boolean isStable(String[] checkState)
+    {
+    	if(this.children.size()>0) {
+    		if(checkState==null) {
                 /* We have never been used in this state so can't say we are stable */
     			logger.writeLog("Goal "+name+" found ALL last states to be NULL, so assume not stable");
                 return false;
-    			
     		}
     			
-    		//check their stability
-    		logger.writeLog("Goal "+name+" is now checking stability for state "+this.stringOfState(checkState));
+    		logger.writeLog("Goal "+name+" is checking stability for state "+this.stringOfState(checkState));
             
             /* If we have succeeded in this state before then stability checking 
              * doesn't make sense (we may never experience other options
@@ -72,38 +61,34 @@ public class GoalNode extends Node{
             }
             
             logger.indentRight();
-    		for(int i = 0; this.children.size()>i;i++)
-    		{
+    		for(int i = 0; this.children.size()>i;i++) {
     			PlanNode thisNode = (PlanNode)this.children.elementAt(i);
-    			if(!thisNode.isStable(checkState))
-    			{
+    			if(!thisNode.isStable(checkState)) {
     				logger.writeLog("Child plan "+thisNode.getItem()+" is unstable for state "+this.stringOfState(checkState));
     				return false;
     			} else if (thisNode.isSuccessful(checkState)) {
                     /* Fine, so this child plan node is stable, but if this child
                      * was successful then there is no point continuing because 
-                     * the next child plan would never be tried (since we 
+                     * the next child plan may never be tried (since we 
                      * would select the successful option over it) 
-                     * and therefore the next child will always fail the
+                     * and therefore the next child will likely fail the
                      * the stability test.
-                     * The reality is that this goal is in fact stable, because
-                     * there is nothing else to try in this state.
                      */
     				logger.writeLog("Child plan "+thisNode.getItem()+" has previously succeeded in state "+this.stringOfState(checkState)+" so forego remaining children and consider us ("+name+") stable");
                     return true;
                 }
     		}	
             logger.indentLeft();
-    		//Made it all the way through the children and they are all stable,
-    		//Therefore we are considered stable :D 
-    		return true;
-    	}
-    	else
-    	{
-    		//We shouldn't reach this point, as a goal should always have children. 
-    		//But if is has none, lets assume it's stable.
-    		return true;
     		
+            /* Made it all the way through the children and they are all stable,
+    		 * so consider this goal stable.
+             */
+    		return true;
+    	} else {
+    		/* We shouldn't reach this point, as a goal should always have children. 
+    		 * But if is has none, lets assume it is stable.
+             */
+    		return true;
     	}
     }
     

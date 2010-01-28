@@ -56,7 +56,7 @@ public class PlanNode extends Node{
     private Hashtable domainDecay;
     private Hashtable complexity;
     private double domainComplexityDecayMultiplier;
-    private final int buildThreshold = 25;
+    private final int buildThreshold = 1;
     
     private boolean handledRepostedGoal;
     
@@ -267,7 +267,7 @@ public class PlanNode extends Node{
             return;
         }
         
-        logger.writeLog("Recording result "+(res?"(+)":"(-)")+" for plan "+this.getItem()+" for state "+this.stringOfLastState());
+        logger.writeLog("Plan "+this.getItem()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
 
         /* In failure recovery mode, if a subplan at any level below handled a 
          * reposted subgoal then that means that the initial choice had failed
@@ -344,7 +344,6 @@ public class PlanNode extends Node{
             if ((pathsAdded = thisMemory.addCoverage(deadPaths(dp,depth),depth)) > 0) {
                 logger.writeLog("Plan "+this.getItem()+" added "+pathsAdded+" dead paths in state "+memoryKey+". Coverage is now "+thisMemory.coverage(depth)+"/"+getPaths(depth));
             }
-            logger.writeLog("Plan "+this.getItem()+" is writing "+thisMemory.toString()+" to "+newold+" key "+memoryKey);
             this.experiences.put(memoryKey, thisMemory);
         }
 
@@ -362,6 +361,8 @@ public class PlanNode extends Node{
                             +" calculated new decays="+getComplexityDecay(memoryKey, depth)
                             +","+getDomainDecay(depth));
         }
+        logger.writeLog("Plan "+this.getItem()+" recorded "+(res?"(+)":"(-)")+" experience ["+thisMemory.toString()+"] to "+newold+" key "+memoryKey);
+
     }
     
     public void setTopGoal(GoalNode val) {
@@ -972,12 +973,13 @@ public class PlanNode extends Node{
         {
             for(int j = 0; this.children.size()>j;j++)
             {
-                Node thisNode = (Node)this.children.elementAt(j);
+                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
                 logger.writeLog("Plan "+this.getItem()+" is checking child goal "+thisNode.getItem()+" for stability for state "+this.stringOfState(lastState));
-                if(!thisNode.isStable(lastState))
+                String[] goalLastState = thisNode.calculateEndStateFrom(lastState);
+                if(!thisNode.isStable(goalLastState))
                 {
                     return false;
-                } else if (!thisNode.isSuccessful(lastState)) {
+                } else if (!thisNode.isSuccessful(goalLastState) && ((j+1)<this.children.size())) {
                     /* Fine, so this child goal node is stable, but if this child
                      * always fails then there is no point continuing because 
                      * the next child (also a goal) would've never been tried 
@@ -986,7 +988,7 @@ public class PlanNode extends Node{
                      * The reality is that this plan is in fact stable, because
                      * there is nothing else to try in this state.
                      */
-    				logger.writeLog("Goal "+thisNode.getItem()+" has previously failed in state "+this.stringOfState(lastState)+" so forego remaining children and consider us ("+this.getItem()+") stable");
+    				logger.writeLog("Goal "+thisNode.getItem()+" has previously failed in state "+this.stringOfState(goalLastState)+" so forego remaining children and consider us ("+this.getItem()+") stable");
                     return true;
                 }
             }   
