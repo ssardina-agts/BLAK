@@ -195,11 +195,11 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
-setB=`find $srcdir -name "$testname-concurrent-confidence*.csv" -print`
-set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
-set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
-set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`
-set2c=`find $srcdir -name "$testname-concurrent-coverage*.csv" -print`
+setB=`find $srcdir -name "$testname-concurrent-confidence-*[0-9].csv" -print`
+set1p=`find $srcdir -name "$testname-stable-probabilistic-*[0-9].csv" -print`
+set1c=`find $srcdir -name "$testname-stable-coverage-*[0-9].csv" -print`
+set2p=`find $srcdir -name "$testname-concurrent-probabilistic-*[0-9].csv" -print`
+set2c=`find $srcdir -name "$testname-concurrent-coverage-*[0-9].csv" -print`
 if [ "$set1p" == "" ] && [ "$set1c" == "nil" ] && [ "$set2p" == "nil" ] && [ "$set2c" == "nil" ]; then
  echo "No data found for test $testname"
  exit 0

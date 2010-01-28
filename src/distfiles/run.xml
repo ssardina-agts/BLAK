@@ -1029,7 +1029,7 @@
 </target>
 <target name="plottestfr01a" description="Plot testfr01a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01a"/>
-	<plotResult test.name="testfr01a" window="100" every="250" key1="center" key2="right" label="testfr01a:n=0.0,m=1,failure_recovery:testfr01a.txt"/>
+	<plotResult test.name="testfr01a" every="500" key1="center" key2="right" label="testfr01a:n=0.0,m=1,failure_recovery:testfr01a.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1049,7 +1049,7 @@
 </target>
 <target name="plottestfr01b" description="Plot testfr01b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01b"/>
-	<plotResult test.name="testfr01b" window="100" every="250" key1="center" key2="right" label="testfr01b:n=0.0,m=1:testfr01b.txt"/>
+	<plotResult test.name="testfr01b" every="500" key1="center" key2="right" label="testfr01b:n=0.0,m=1:testfr01b.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1069,7 +1069,7 @@
 </target>
 <target name="plottestfr01na" description="Plot testfr01na" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01na"/>
-	<plotResult test.name="testfr01na" window="100" every="250" key1="center" key2="right" label="testfr01na:n=0.1,m=1,failure_recovery:testfr01a.txt"/>
+	<plotResult test.name="testfr01na" every="1000" key1="center" key2="right" label="testfr01na:n=0.1,m=1,failure_recovery:testfr01a.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1089,7 +1089,7 @@
 </target>
 <target name="plottestfr01nb" description="Plot testfr01nb" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01nb"/>
-	<plotResult test.name="testfr01nb" window="100" every="250" key1="center" key2="right" label="testfr01nb:n=0.1,m=1:testfr01b.txt"/>
+	<plotResult test.name="testfr01nb" every="1000" key1="center" key2="right" label="testfr01nb:n=0.1,m=1:testfr01b.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
