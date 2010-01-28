@@ -48,7 +48,7 @@ while (<IN>) {
     chomp;
     @fields = split(/ /, $_);    
     $success[$i-int($i/$window)*$window]=$fields[1];
-    if($i>=$window){
+    if($i+1>=$window){
         for($l=0;$l<$window;$l++){
             $successAvg+=$success[$l]/$window;
         }
