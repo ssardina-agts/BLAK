@@ -389,7 +389,7 @@ tried.
 }
 \caption{Agent performance under \BUL\ and \CL\ schemes. Circles represent performance without failure recovery while crosses show the performance with failure recovery enabled.
 Each point represents results from $5$ experiment runs using an averaging window
-of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are deterministic (no noise) and failed actions do not change the world in a negative way i.e. success is always possible with recovery.}
+of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are deterministic (no noise) and failed actions do not change the world in a negative way i.e. success is always possible with recovery. As expected, early exploration is significantly improved with failure recovery enabled (Dhirendra: still to confirm that BUL recording with failure recovery is correct).}
 \end{center}
 \end{figure*}
 
@@ -404,7 +404,7 @@ of $5$ samples. The dashed line represents optimal performance ($9$ actions). Ac
 }
 \caption{Agent performance under \BUL\ and \CL\ schemes. Circles represent performance without failure recovery while crosses show the performance with failure recovery enabled.
 Each point represents results from $5$ experiment runs using an averaging window
-of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are non-deterministic ($10\%$ probability of failure) and failed actions do not change the world in a negative way i.e. success is always possible with recovery.}
+of $5$ samples. The dashed line represents optimal performance ($9$ actions). Actions are non-deterministic in that successful actions have a $10\%$ probability of failure (so with $9$ actions there is $\approx61\%$ probability that some action will fail). Note that if a good action fails, then there is no hope of succeeding the top goal with failure recovery because there is no alternative plan that can succeed. So in this case re-posting the top goal instead of trying failure recovery is the better option.}
 \end{center}
 \end{figure*}
 

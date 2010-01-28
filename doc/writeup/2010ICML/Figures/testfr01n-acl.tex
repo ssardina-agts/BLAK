@@ -1,18 +1,18 @@
-\begin{tikzpicture}[x=0.0068cm,y=0.025cm]
+\begin{tikzpicture}[x=0.0136cm,y=0.00625cm]
     % Draw the axes and grid lines
-    \draw[-] (0,0) -- (0,200) -- (1000,200) -- (1000,0) -- cycle; 
-    \draw[-,thin, dotted, ystep=50, xstep=1000] (0,0) grid (1000,200);
-    \foreach \x in {250, 500, 750}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
-    \foreach \y in {0,50,100,150,200}  \draw [-,yshift=0](4pt,\y) -- (1pt,\y);
-    \foreach \x/\xtext in {250, 500, 750} \node at (\x,0) [below] {$\x$};
-    \foreach \y/\ytext in {0,50,100,150,200}  \node at (0,\y) [left] {$\y$};
-    \node at (0,225) {Actions};
-    \node at (900,20) {Episodes};
+    \draw[-] (0,0) -- (0,800) -- (500,800) -- (500,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=200, xstep=500] (0,0) grid (500,800);
+    \foreach \x in {125,250,375}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0,200,400,600,800}  \draw [-,yshift=0](4pt,\y) -- (1pt,\y);
+    \foreach \x/\xtext in {125,250,375} \node at (\x,0) [below] {$\x$};
+    \foreach \y/\ytext in {0,200,400,600,800}  \node at (0,\y) [left] {$\y$};
+    \node at (0,850) {Actions};
+    \node at (440,100) {Episodes};
     \draw[-] plot[mark=x,mark size=4,mark options={color=black}] 
 			file {Data/testfr01na.CP.tikzdata};
     \draw[-] plot[mark=o,mark size=4,mark options={color=black}] 
 			file {Data/testfr01nb.CP.tikzdata};
     % Also draw the expected convergence: 0.9 actions
-    \draw[dashed,-,yshift=0](0,9) -- (1000,9);
+    \draw[dashed,-,yshift=0](0,9) -- (500,9);
 
 \end{tikzpicture}
