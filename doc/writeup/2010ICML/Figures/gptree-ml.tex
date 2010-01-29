@@ -1,0 +1,48 @@
+\resizebox{\columnwidth}{!}{
+\begin{tikzpicture}
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+
+\tikzstyle{planbox}=[draw,drop shadow,fill=white,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox}=[draw,drop shadow,fill=white,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+
+\tikzstyle{level 1}=[sibling distance=3.4cm]
+\tikzstyle{level 2}=[sibling distance=1.6cm]
+\tikzstyle{level 3}=[sibling distance=1.cm]
+
+
+
+\node[goalbox] (T) {$G$}
+child {
+  node[planbox] (P1) {$P_1$}
+  child { node[goalbox] (G1) {$G_1$}
+    child { node[planbox] (P11) {$P_{11}$}}
+    child { node[planbox] (P12) {$P_{12}$}}
+    }
+  child { node[goalbox] (G-1) {$G^\star_{1}$}
+    child { node[planbox] (P-1) {$P^\star_{1}$}}
+  }
+}
+child {
+  node[planbox] (P2) {$P_2$}
+  child { node[goalbox] (G2) {$G_2$}
+    child { node[planbox] (P21) {$P_{21}$}}
+    child { node[planbox] (P22) {$P_{22}$}}
+  }
+  child { node[goalbox] (G-2) {$G^\star_{2}$}
+    child { node[planbox] (P-2) {$P^\star_{2}$}}
+  }
+}
+child {
+  node[planbox] (P3) {$P_3$}
+  child { node[goalbox] (G3) {$G_3$}
+    child { node[planbox] (P31) {$P_{31}$}}
+    child { node[planbox] (P32) {$P_{32}$}}
+  }
+  child { node[goalbox] (G-3) {$G^\star_{3}$}
+    child { node[planbox] (P-3) {$P^\star_{3}$}}
+  }
+};
+\end{tikzpicture}
+}
