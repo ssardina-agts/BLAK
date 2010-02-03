@@ -85,21 +85,31 @@ focus on the core issues we are concerned with.
 First, we assume that actions in the environment may fail with some probability
 (if an action is not possible in a world state this probability is $1.0$).
 % %
-Second, we assume no external changes in the environment during execution other
-than those made by the agent. Although this may appear too limiting, the fact
-that actions may fail with some probability mitigates against
-over-simplification by capturing external changes as
-non-deterministic failures.
+% DSINGH#1: Based on review comments, Dhirendra changed this:
+%Second, we assume no external changes in the environment during execution other
+%than those made by the agent. Although this may appear too limiting, the fact
+%that actions may fail with some probability mitigates against
+%over-simplification by capturing external changes as
+%non-deterministic failures.
+% DSINGH#1: to this:
+This is a simple way to capture non-deterministic failures caused either by 
+imperfect execution or external changes in the environment. A success on the
+other hand is always attributed to the agent's actions.
+% DSINGH#1: end change
 % %
-Third, we consider the execution of a single intention; learning in the context
+Second, we consider the execution of a single intention; learning in the context
 of multiple, possibly interacting, intentions poses other extra challenges that
 would complicate our study substantially (see \cite{Thangarajah02}).
 % % %
 Lastly, we assume no automated failure handling, whereby the BDI system retries
-a goal with alternative options, if the selected plan happens to fail. 
-Integrating failure handling would not alter any of our results, but it would
-complicate our implementation framework and the understanding of the basic
-mechanisms.
+a goal with alternative options if the selected plan happens to fail. 
+% DSINGH#2: Based on review comments, Dhirendra changed this:
+%Integrating failure handling would not alter any of our results, but it would
+%complicate our implementation framework and the understanding of the basic
+%mechanisms.
+% DSINGH#2: to this:
+Integrating failure handling would complicate our implementation framework and the understanding of the basic mechanisms. For instance, if an alternative plan were to succeed after the initial failure then care must be taken in propagating this outcome to the parent because the success may have been caused precisely because the first choice failed in a way that enabled the second one to succeed.
+% DSINGH#2: end change
 
 
 
