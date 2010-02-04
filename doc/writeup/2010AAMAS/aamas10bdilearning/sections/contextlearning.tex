@@ -143,12 +143,12 @@ for world $w_1$ against $P_i$'s decision tree would be justified too.
 
 
 The judgement as to whether plan choices were sufficiently ``well informed,'' is
-however not a trivial one.  A plan $P$ is considered to be \emph{stable} for a
+however not a trivial one.  A failed plan $P$ is considered to be \emph{stable} for a
 particular world state $w$ if the rate of success of $P$ in $w$ is changing below
 a certain threshold $\epsilon$. In such a case, the agent can start to build
 confidence about the applicability level of $P$. The stability notion extends to
-goals as follows: a goal is considered \emph{stable} for world state $w$ if it was successfully resolved for $w$ or if all
-its relevant plans are stable for $w$.
+goals as follows: a failed goal is considered \emph{stable} for world state $w$ 
+if all its relevant plans are stable for $w$.
 % %
 When a goal is stable, we regard the plan selection for such goal as a ``well
 informed'' one. Thus, a failure is recorded in the plan for a given world if the subgoal that failed is stable for the respective world in which it was resolved. In our example, we
@@ -177,7 +177,7 @@ enough, the procedure terminates and no more failure data is assimilated.
 Observe that, in order to update the decision tree of a certain plan that was
 chosen along the execution, it has to be the case that the (failed) decisions
 taken during execution must have all been informed ones.
- 
+Note that the stability idea only applies to failures since successes are always recorded.
  \renewcommand{\algorithmiccomment}[1]{\hfill \texttt{\small // #1}}
  \newcommand{\assign}{\mbox{:=\ }}
  \begin{algorithm}[h]
