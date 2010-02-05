@@ -188,13 +188,13 @@ while the \BUL\ approach achieves optimal performance, which amounts to slightly
 over $40\%$ rate of success, in slightly more than $500$ iterations, the \CL\
 scheme, requires more than $3000$ execution experiences. The reason is this:
 since there are more chances to fail plan $P$ initially, \CL\ marks this plan as
-``bad'', along with the non-working plans $P_i'$. 
+``bad,'' along with the non-working plans $P_i'$. 
 %On the other hand, \BUL\
 %would not jump to the conclusion that $P$ is a ``bad'' plan even when failing it,
 %since it is aware that decisions made below $P$ were not sufficiently informed.
-On the other hand, \BUL\ does not treat any plan as ``bad'' until they are stable and plan $P$ is explored with \emph{equal} likelihood
+On the other hand, \BUL\ does not treat any plans as ``bad'' until they are stable, so plan $P$ is explored with \emph{equal} likelihood
 to plans $P_i'$. 
-Eventually, the simpler $P_i'$ plans become stable first after which their true expectation of success (zero) is used leaving \BUL\ to explore $P$ almost exclusively until it becomes stable (by which time the solution will be found).
+Eventually, the simpler $P_i'$ plans become stable first, leaving \BUL\ to explore plan $P$ almost exclusively.
 % %
 This structure shows exactly the problem discussed in the previous section,
 namely, the drawbacks of assuming that a plan is a bad option just because it
