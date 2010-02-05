@@ -7,7 +7,7 @@ mechanism in BDI systems by allowing agents to learn and adapt the context
 conditions of plans in the agent's plan library.
 % %
 As designing adequate context conditions that take full account of the agent's
-environment for its complete life-cycle is an non-trivial task, a framework that
+environment for its complete life-cycle is a non-trivial task, a framework that
 allows for the \emph{refinement} of (initial) context conditions of plans
 \textit{based on online experience} is highly desirable.
 % %
@@ -101,21 +101,20 @@ applies.
 % agents with no initial knowledge), our agents are guided by the existing domain
 % knowledge inherent in the BDI hierarchy.
 
-Our work is similar to that of \cite{Airiau:IJAT09} and in fact borrows from there the
-strategy of using decision trees for modeling plan's context conditions.
+This paper extends our earlier work \cite{Airiau:IJAT09} of using decision trees for modeling plan's context conditions in several ways.
 % %
-Nonetheless, there are major differences between that work and ours.
+%Nonetheless, there are major differences between that work and ours.
 % %
-First, our conservative learning approach, based on the notion of plan
-``stability,'' is substantially more grounded than the one used in \cite{Airiau:IJAT09},
+First, our conservative learning approach based on the notion of plan
+``stability,'' is substantially more grounded than in \cite{Airiau:IJAT09},
 where a plan is just required to be executed a \emph{fixed} number of times for
 failure executions to be recorded.
 % %
 Second, only one goal-plan hierarchical structure was used for experimentation
-in the mentioned work; we instead considered different structures identifying
+in \cite{Airiau:IJAT09}; here we considered different structures identifying
 various types of plan libraries.
 % %
-More importantly, in our work, we explored the realistic case of agents with
-plan applicability thresholds. Contrary to what was implied in \cite{Airiau:IJAT09}, our
-results do suggest that some sort of \emph{confidence} test is indeed
+More importantly, we explored the realistic case of agents with
+plan applicability thresholds. Contrary to what was implied in \cite{Airiau:IJAT09}, our extended work here suggests
+that some sort of \emph{confidence} test is indeed
 worthwhile---this was the motivation behind our coverage-based approach.

@@ -4,7 +4,7 @@
 
 In this paper, we are concerned with one of the key aspects of the BDI
 agent-oriented programming paradigm, namely, that of \emph{intelligent plan
-selection} \cite{Pollack92-IRMA,Georgeff89-PRS}.
+selection} \cite{Georgeff89-PRS,Pollack92-IRMA}.
 % %
 Specifically, we explore the details of how effective plan selection can be
 learnt based on ongoing experience.
@@ -62,13 +62,13 @@ The authors have been exploring the nuances in learning within the
 hierarchical structure of a BDI program \cite{Airiau:IJAT09} where
 it can be problematic to assume a mistake at a
 higher level in the hierarchy, when a poor outcome may have been
-related to a mistake in selection further down.  In this paper we show
+related to a mistake in selection further down (Section~\ref{sec:framework}).  In this paper we show
 how the scheme which does not take account of this fact, can at times
-lead to a complete inability to learn.
+lead to a complete inability to learn (Section~\ref{sec:experiments}).
 We outline two approaches which we have described previously: a conservative approach which takes account
 of the structure, considering failures only when decisions made during the execution
 are deemed sufficiently ``informed.'',  and an aggressive approach which
-ignores the structure and had initially seemed preferable. 
+ignores the structure and had initially seemed preferable (Section~\ref{sec:context_learning}). 
 We then describe a new approach which instead of being conservative in
 which training examples are used, includes a \emph{confidence}
 measure based on how much the agent has explored the space of possible
@@ -79,7 +79,7 @@ approach to selection, when combined with the aggressive approach to
 training examples achieves a flexible and simple
 compromise between the previous two approaches.
 
-Our approach is fully compatible with the usual approach to plan
+Our approach is fully compatible with the usual methodology to plan
 selection using programmed formula based context conditions. In real
 applications we would in fact expect the learning to ``refine''
 initially provided selection conditions. 

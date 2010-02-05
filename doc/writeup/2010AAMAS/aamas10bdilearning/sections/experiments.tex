@@ -6,11 +6,10 @@ In order to explore the difference between \BUL\ and \CL, we set up testbed
 programs composed of several goals and plans combined in a hierarchical manner
 and yielding goal-plan tree structures of different shapes.\footnote{We have
 implemented the learning agent system in the \JACK\ BDI platform
-\cite{Busetta99jack}. The fact that \JACK\ is a Java-based system and
-provides powerful meta-level reasoning capabilities, allows us to integrate \weka\ and
-probabilistic plan-selection mechanisms with not much effort. Nonetheless, all
-the results are independent on this and any other BDI agent system could
-have been used.}
+\cite{Busetta99jack}. The fact that \JACK\ is Java based and
+provides powerful meta-level reasoning capabilities allows us to integrate \weka\ and
+probabilistic plan-selection mechanisms with little effort. Nonetheless, all
+the results are independent of this choice and could be reproduced in other BDI implementations.}
 % %
 In particular, we crafted goal-plan tree structures representing different
 cases of BDI programs with one main top-level goal, i.e., the event to
@@ -187,13 +186,15 @@ Although we expected \BUL\ to yield better agent performance than \CL, the
 difference was enormous in our experiments. Figure~\ref{fig:T2_result} shows that
 while the \BUL\ approach achieves optimal performance, which amounts to slightly
 over $40\%$ rate of success, in slightly more than $500$ iterations, the \CL\
-scheme, requires more than $3000$ execution experiences. The reason is clear:
+scheme, requires more than $3000$ execution experiences. The reason is this:
 since there are more chances to fail plan $P$ initially, \CL\ marks this plan as
-``bad,'' compared with the non-working plans $P_i'$. On the other hand, \BUL\
-would not jump to the conclusion that $P$ is a ``bad'' plan even when failing it,
-since it is aware that decisions made below $P$ were not sufficiently informed.
-Consequently, plan $P$ will continue to be explored with \emph{equal} likelihood
-to plans $P_i'$.
+``bad'', along with the non-working plans $P_i'$. 
+%On the other hand, \BUL\
+%would not jump to the conclusion that $P$ is a ``bad'' plan even when failing it,
+%since it is aware that decisions made below $P$ were not sufficiently informed.
+On the other hand, \BUL\ does not treat any plan as ``bad'' until they are stable and plan $P$ is explored with \emph{equal} likelihood
+to plans $P_i'$. 
+Eventually, the simpler $P_i'$ plans become stable first after which their true expectation of success (zero) is used leaving \BUL\ to explore $P$ almost exclusively until it becomes stable (by which time the solution will be found).
 % %
 This structure shows exactly the problem discussed in the previous section,
 namely, the drawbacks of assuming that a plan is a bad option just because it
@@ -230,17 +231,17 @@ where both approaches show comparable performance.
 \subsection{Plan Applicability and Optimality}
 
 So far, we have assumed that the agent considers all relevant plans
-for a goal as also \emph{applicable}, even though some may have a very
+for a goal to be \emph{applicable}, even though some may have a very
 low chance of success.
 % %
 This implies that, in contrast with standard BDI systems, our extended
-learning BDI framework will \emph{always} select a plan among the relevant
+learning BDI framework will \emph{always} select a plan from the relevant
 options.
 % %
 Because executing a plan is often not cost-free in real systems, it is likely
 that an adequate plan selection mechanism would in fact \emph{not} execute plans
-with too low a probability of success. This, in turn, implies that the system
-may, at some point, decide to fail a goal without even trying it, if it
+with too low a probability of success. This in turn implies that the system
+may decide to fail a goal without even trying it, if it
 considers that the high likelihood of failure does not justify the
 cost of attempting any of the relevant plans.
 %cost of failing at that point is preferable to expected
@@ -253,9 +254,9 @@ is found for a certain event goal, that event goal is failed right away.
 To understand the impact of applicability in our BDI learning framework, we
 modified the probabilistic plan selection so that the agent does \emph{not} consider
 plans whose chances of success are deemed below a threshold; in our case we set
-this threshold to $0.2$.
+this threshold to $20\%$.
 % %
-For simplicity, we  removed the non-determinism in the model of the
+For simplicity in this experiment, we  removed the non-determinism in the model of the
 environment: actions either fail or succeed in each world state.
 
 %The difference between \CL-based and \BUL-based agents performance when run with
@@ -263,8 +264,8 @@ environment: actions either fail or succeed in each world state.
 % %
 Using the structure $\T_3$ we found that whereas the \BUL\ scheme maintains its
 performance (and in fact may slightly improve due to truly failing leaf plans
-being ruled out earlier), the \CL\ approach may not able to learn at all and
-could end up eventually failing the top-level goal \emph{always}. This is
+being ruled out earlier), the \CL\ approach may not learn at all and
+end up eventually failing the top-level goal \emph{always}. This is
 reported in Figure~\ref{fig:performance-applicability} (dotted lines).
 
 The explanation for this undesirable behavior under \CL\ is as follows.
@@ -280,7 +281,7 @@ applicable plans for the goal and will therefore fail it always.
 % %
 This behavior does not arise in the original system, because even if all plans
 perform very poorly, the agent would always pick one anyway, the successful path
-would be eventually be found, and the context decision trees of the plans
+would eventually be found, and the context decision trees of the plans
 associated with such a path would then start ``recovering.''
 
 
@@ -297,3 +298,4 @@ that takes account of how sure we are of the decision tree when we use
 it, rather than using stability as a confidence measure for deciding when to record.
 %that can be combined with \CL\ (or \BUL) and is able to overcome the
 %weaknesses shown here.
+Whereas stability is a boolean measure (true or false), the alternative measure gives us a more fine-grained \emph{degree} of confidence.

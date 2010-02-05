@@ -51,17 +51,17 @@ and do not take into account the experience of the agent.
 In our framework for context learning, we must consider the standard dilemma of
 \emph{exploitation} vs \emph{exploration}. To that end, we use an 
 approach in which plans are selected with a probability proportional to their relative expected
-success (in the world state of interest). Moreover, in
+success (in the world state of interest). Later, in
 Section~\ref{sec:coverage}, we discuss how to further enhance such plan selection
-account by considering how much each candidate plan has been
-explored, relative to its ``complexity.''
+by considering how much each candidate plan has been
+explored relative to its ``complexity.''
 
 
 
 For the purpose of our analysis, we have used algorithm
 \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the
 well-known \weka\ learning package \cite{weka99}. Currently we
-recreate decision trees from scratch after each new piece of data is collected.
+recreate decision trees from scratch after each new outcome is recorded.
 % %
 Of course, for a real-world implementation, one should appeal to algorithms for
 \emph{incremental} induction of the decision tree, such as those described in
@@ -108,7 +108,7 @@ a goal with alternative options if the selected plan happens to fail.
 %complicate our implementation framework and the understanding of the basic
 %mechanisms.
 % DSINGH#2: to this:
-Integrating failure handling would complicate our implementation framework and the understanding of the basic mechanisms. For instance, if an alternative plan were to succeed after the initial failure then care must be taken in propagating this outcome to the parent because the success may have been caused precisely because the first choice failed in a way that enabled the second one to succeed.
+Integrating failure handling would complicate our implementation framework and the understanding of the basic mechanisms. For instance, if an alternative plan were to succeed after the initial failure then care must be taken in propagating this outcome to the parent as the success may have been caused precisely because the first choice failed in a way that enabled the second one to succeed.
 % DSINGH#2: end change
 
 

@@ -24,7 +24,7 @@ in this work, we have no measure of cost for plans,\footnote{This could also be 
 useful addition, but is not part of standard BDI programming languages.} a good
 plan for a given world state is simply one which (usually) succeeds in such
 state. In order to learn the context decision tree for a plan, the agent keeps
-track of previous experiences she has had when running the plan in question. More
+track of previous experiences it has had when running the plan in question. More
 precisely, if a plan $P$ is tried in world state $w$ with certain outcome $o \in
 \{\success,\failure\}$, the agent may record the tuple $\tuple{w,o}$ as part of
 the training set for plan $P$.
@@ -77,7 +77,7 @@ Such bottom-level plans have no subgoals, so they interact with the
 external world directly, and over time we can expect to learn such interactions.
 % %
 On the other hand it is unclear, as we will show below, whether failure should also be
-recorded in the decision trees for plans higher up in the hierarchy (e.g., plans
+recorded in the decision trees for plans higher up in the hierarchy (i.e. plans
 $P_B$ and $P_i$).
 
 
@@ -97,8 +97,8 @@ In our example, the trace at the moment of failure is as follows: \[
 \lambda=G[P_i:w_1] \cdot G_B[P_B:w_2] \cdot G_{B2}[P_{B2}':w_3]. \]
 
 
-So, when the final goal of $\lambda$ fails, namely $G_{B2}$, it is clear that the
-decision tree of the plan being used to achieve such goal ought to be updated,
+So, when the final goal in $\lambda$ fails, namely $G_{B2}$, it is clear that the
+decision tree of the plan being used to achieve this goal ought to be updated,
 and a failure should be recorded for the world state $w_3$ against 
 the decision tree attached to plan $P_{B2}'$.  
 %%
@@ -121,7 +121,7 @@ against plans $P_B$ and $P_i$, respectively?
 The point is that it is conceivable that the failure of subgoal $G_{B2}$ in plan
 $P_B$, for instance, could indeed have been avoided, had the alternative plan
 $P_{B2}$, been chosen instead. Therefore, recording a failure against plan $P_B$
-would not be justified---it is not true that plan $P_{B}$ is a ``bad'' one
+would not be justified---it is not true that plan $P_{B}$ is a ``bad'' choice
 in world state $w_2$.
 % %
 Informally, one could argue that it is more appropiate to \emph{wait} before
