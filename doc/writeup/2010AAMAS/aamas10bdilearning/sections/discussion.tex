@@ -27,14 +27,14 @@ static kind of BDI agents.
 
 The framework presented here made a number of simplifying assumptions.
 % %
-We did not consider the effects of conflicting interactions between sub-goals of
-a plan. In fact, the way a sub-goal is resolved may affect how the next sub-goal
+We did not consider the effects of conflicting interactions between subgoals of
+a plan. In fact, the way a subgoal is resolved may affect how the next subgoal
 can be addressed or even if it can be resolved at all.
 % %
 Our current approach will not detect and learn such interactions; each subgoal
 is treated ``locally.'' To handle such interactions, the selection of a plan for 
-resolving a sub-goal should also be predicated on the goals higher than the
-sub-goal, that is, it should take into account the ``reasons'' for the sub-goal.
+resolving a subgoal should also be predicated on the goals higher than the
+subgoal, that is, it should take into account the ``reasons'' for the subgoal.
 % %
 Similarly, we did not consider the effects of using goal failure recovery, under
 which alternative plans for a goal are tried upon the failure of a plan.

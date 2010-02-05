@@ -12,9 +12,9 @@ probabilistic plan-selection mechanisms with little effort. Nonetheless, all
 the results are independent of this choice and could be reproduced in other BDI implementations.}
 % %
 In particular, we crafted goal-plan tree structures representing different
-cases of BDI programs with one main top-level goal, i.e., the event to
+cases of BDI programs with one main top-level goal to
 be resolved. In addition, for each structure there is always a way of addressing the main goal, i.e. there is at
-least one successful execution of the top-level event provided the right plan
+least one successful execution of the top-level goal provided the right plan
 choices are made. Observe that such successful (plan) choices are different
 for different world states.
 % , as know-how information is generally predicated on the situation it is
@@ -105,7 +105,7 @@ different parts of the tree.
 % For lack of space, we shall only give the form of tree $\T_1$ and informally
 % explain the characteristics of the other two.
 
-Let us next discuss each of the plan-goal structures and how the performance of
+Let us next discuss each of the goal-plan structures and how the performance of
 \BUL-based and \CL-based agents compare.
 
 
@@ -248,7 +248,7 @@ cost of attempting any of the relevant plans.
 %benefits of executing some available plan.
 %%
 This is exactly what standard BDI systems do. When no applicable plan
-is found for a certain event goal, that event goal is failed right away.
+is found for a certain event-goal, that event-goal is failed right away.
 
 
 To understand the impact of applicability in our BDI learning framework, we
