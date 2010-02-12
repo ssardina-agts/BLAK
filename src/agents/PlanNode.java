@@ -9,97 +9,137 @@ import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
+import weka.core.Instances;
+
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import weka.core.Instances;
 import java.util.*;
 import java.util.regex.*;
 import java.lang.Math;
 
-/**
- * Handy piece of info. Item is used to hold an object which is usually the name of the node.
- *
- */
-
 public class PlanNode extends Node{
-    
-    public int goal_id;
-    public String name;
-    Hashtable memory;
-    public J48 decisionTree;
-    String[] options;
-    String[] lastState;
-    UpdateMode update_mode;
-    PlanSelectMode select_mode;
-    RunMode run_mode;
-    RunMode run_mode_sub;
-    public int successfulChildren;
-    private FastVector atts;
-    private FastVector classVal;
-    private FastVector boolVal;
-    int numAttributes;
-    int startToUseDT;
-    int minNumInstances=100;
-    Hashtable experiences;
-    int hasDirtyExperiences;
-    private int stableK;
-    private double stableEpsilon;
-    
-    Instances data;
-    
-    GoalNode topGoal;
-    private Hashtable isDirty;
-    public boolean isFailedThresholdHandler;
-    private Random rand;
 
-    private Hashtable decay;
-    private Hashtable domainDecay;
-    private Hashtable complexity;
-    private double domainComplexityDecayMultiplier;
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Data Members */
+    /*-----------------------------------------------------------------------*/
+
+    /* Decision Tree related */
+    private J48 decisionTree;
+    private FastVector atts;
+    private Instances data;
+    private int countdownToRebuild;
     private final int buildThreshold = 1;
     
+    /* Stores the world state for when this plan was called last */
+    private String[] lastState;
+
+    /* Configuration parameters */
+    private UpdateMode update_mode;
+    private PlanSelectMode select_mode;
+    private RunMode run_mode;
+
+    /* Stores information about each success/fail experience */
+    private Hashtable experiences;
+
+    /* BUL related parameters */
+    private int stableK;
+    private double stableE;
+
+    /* Used to indicate that this is a "dummy" plan that should be selected
+     * when no other plans apply, for instance, if all plans have an 
+     * expectation of success lower than a set threshold.
+     */
+    public boolean isFailedThresholdHandler;
+    
+    /* Coverage related. See also parent Node class for more. */
+    private Hashtable isDirty;
+    
+    /* Complexity-based confidence measure related */
+    private Hashtable complexity;
+    private Hashtable decay;
+    private Hashtable domainDecay;
+    private double domainComplexityDecayMultiplier;
+
+    /* Failure-recovery related */
     private boolean handledRepostedGoal;
+
+    /* Todo: Vars to sort out */
+    public int successfulChildren;
+    GoalNode topGoal;
     
-    /*
-    public boolean isDoStable() {
-        return doStable;
-    }
-    public void setDoStable(boolean doStable) {
-        this.doStable = doStable;
-    }
-    */
-    public String[] getLastState() {
-        return lastState;
-    }
     
-    public void setLastState(String[] lastState) {
-        this.lastState = lastState;
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Constructors */
+    /*-----------------------------------------------------------------------*/
+    public PlanNode(String pname, 
+                    FastVector attributes,
+                    UpdateMode update_mode, 
+                    PlanSelectMode select_mode,
+                    RunMode run_mode,
+                    double epsilion, 
+                    int kStable, 
+                    boolean isFTH, 
+                    Logger logger){
+        super(pname, logger);
+        atts = attributes;
+        lastState = null;
+        experiences = new Hashtable();
+        countdownToRebuild = buildThreshold;
+        this.update_mode = update_mode;
+        this.select_mode = select_mode;
+        this.run_mode = run_mode;
+        stableK = kStable;
+        stableE = epsilion;
+        successfulChildren = 0;
+        topGoal = null;
+        isDirty = new Hashtable();
+        decay = new Hashtable();
+        domainDecay = new Hashtable();
+        complexity = new Hashtable();
+        isFailedThresholdHandler = isFTH;
+        data = new Instances(pname, atts, 0);
+        data.setClassIndex(atts.size()-1);
+        domainComplexityDecayMultiplier = 0.0;
+        handledRepostedGoal = false;
+        try{
+            decisionTree = new J48();
+            String[] options = new String[4];
+            //options[0] = "-U";
+            options[0] = "-C";
+            options[1] = "0.5";
+            options[2] = "-M";
+            options[3] = "1";
+            decisionTree.setOptions(options);
+        }
+        catch(Exception e){
+            System.err.println("error with weka when creating the decision tree \n" + e);
+            System.exit(9);
+        }
     }
+
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Access Members */
+    /*-----------------------------------------------------------------------*/
+
+    public String[] lastState() { return lastState; }
+    public void setLastState(String[] val) { this.lastState = val; }
     
-    public FastVector getAtts() {
-        return atts;
+    public FastVector attributesForDT() { return atts; }
+    public void setAttributesForDT(FastVector val) { this.atts = val; }
+        
+    public double stableE() { return stableE; }
+    public void setStableE(int e) { this.stableE = e; }
+
+    public int stableK() { return stableK; }
+    public void setStableK(int k) { this.stableK = k; }
+
+    public void setTopGoal(GoalNode val) {
+        topGoal = val;
     }
-    
-    public void setAtts(FastVector atts) {
-        this.atts = atts;
+    public GoalNode topGoal() {
+        return topGoal;
     }
-    
-    public FastVector getClassVal() {
-        return classVal;
-    }
-    
-    public void setClassVal(FastVector classVal) {
-        this.classVal = classVal;
-    }
-    
-    public FastVector getBoolVal() {
-        return boolVal;
-    }
-    
-    public void setBoolVal(FastVector boolVal) {
-        this.boolVal = boolVal;
-    }
-    
+        
     public void setSuccessFulChildren(int newValue)
     {
         this.successfulChildren = newValue;
@@ -169,81 +209,10 @@ public class PlanNode extends Node{
         }
     }
     
-    /**
-     * Constructor
-     * @param id
-     * @param pname
-     * @param attributes
-     * @param classValue
-     * @param booleanValue
-     */
-    public PlanNode(int id, String pname, FastVector attributes,
-                    FastVector classValue, FastVector booleanValue, 
-                    int minNumInst, UpdateMode update_mode, PlanSelectMode select_mode,
-                    RunMode run_mode, RunMode run_mode_sub,
-                    double epsilion, int kStable, boolean isFTH, Logger logger){
-        super(pname, logger);
-        name = pname;
-        goal_id = id;
-        atts = attributes;
-        classVal = classValue;
-        boolVal = booleanValue;
-        numAttributes = atts.size()-1;
-        minNumInstances = minNumInst;
-        lastState = null;
-        memory = new Hashtable();
-        experiences = new Hashtable();
-        hasDirtyExperiences = 0;
-        this.update_mode = update_mode;
-        this.select_mode = select_mode;
-        this.run_mode = run_mode;
-        this.run_mode_sub = run_mode_sub;
-        stableK = kStable;
-        stableEpsilon = epsilion;
-        successfulChildren = 0;
-        topGoal = null;
-        isDirty = new Hashtable();
-        decay = new Hashtable();
-        domainDecay = new Hashtable();
-        complexity = new Hashtable();
-        isFailedThresholdHandler = isFTH;
-        data = new Instances(name, atts, 0);
-        data.setClassIndex(numAttributes);
-        rand = new Random();
-        domainComplexityDecayMultiplier = 0.0;
-        handledRepostedGoal = false;
-        try{
-            decisionTree = new J48();
-            options = new String[4];
-            //options[0] = "-U";
-            options[0] = "-C";
-            options[1] = "0.5";
-            options[2] = "-M";
-            options[3] = "1";
-            decisionTree.setOptions(options);
-        }
-        catch(Exception e){
-            System.err.println("error with weka when creating the decision tree \n" + e);
-            System.exit(9);
-        }
-    }
     
     public void resetLastState()
     {
         this.lastState = null;
-    }
-    
-    public int getMinNumInstances() {
-        return minNumInstances;
-    }
-    
-    public void setMinNumInstances(int minNumInstances) {
-        this.minNumInstances = minNumInstances;
-    }
-    
-    public int getGoalID()
-    {
-        return goal_id;
     }
     
     /**
@@ -330,7 +299,6 @@ public class PlanNode extends Node{
         }
         
         this.experiences.put(memoryKey, thisMemory);
-        hasDirtyExperiences++;
         
         if (select_mode == PlanSelectMode.COVERAGE) {
             if (!this.handledRepostedGoal || (topGoal() != null)) {
@@ -363,13 +331,21 @@ public class PlanNode extends Node{
         }
         logger.writeLog("Plan "+this.getItem()+" recorded "+(res?"(+)":"(-)")+" experience ["+thisMemory.toString()+"] to "+newold+" key "+memoryKey);
 
-    }
-    
-    public void setTopGoal(GoalNode val) {
-        topGoal = val;
-    }
-    public GoalNode topGoal() {
-        return topGoal;
+        /* Rebuild the DT if we have had sufficient new experiences*/
+        countdownToRebuild--;
+        try{
+            if (countdownToRebuild == 0) {
+                countdownToRebuild = buildThreshold;
+                buildDataset();
+                decisionTree.buildClassifier(data);
+            }
+        }
+        catch(Exception e){
+            System.err.println("Something went wrong during the construction of the decision tree\n" + e);
+            System.exit(9);
+        }
+        
+
     }
     
     public boolean isPropagatingFailure() {
@@ -658,47 +634,11 @@ public class PlanNode extends Node{
      */
     public void setLastInstance(String[] state)
     {
-        lastState = new String[numAttributes];
+        lastState = new String[atts.size()-1];
         for (int i=0;i<state.length;i++)
         {
             lastState[i]= state[i];
         }
-    }
-    
-    /**
-     * get the classification of the last state using the decision tree
-     * @return true if the percentage of instances in the corresponding
-     * leaf node in the decision tree is higher than 50%
-     */
-    public boolean getClassification(){
-        Instance instance = new Instance(numAttributes);
-        instance.setDataset(data);
-        for (int i=0;i<lastState.length;i++){
-            if (lastState[i].equals("true"))
-                instance.setValue(((Attribute) atts.elementAt(i)),"T");
-            else if (lastState[i].equals("false"))
-                instance.setValue(((Attribute) atts.elementAt(i)),"F");
-            else {
-                Attribute att = (Attribute) atts.elementAt(i);
-                if (att.isNumeric()) {
-                    instance.setValue(att,Double.parseDouble(lastState[i]));
-                } else {
-                    instance.setValue(att,lastState[i]);
-                }
-            }
-        }
-        double val = 0;
-        try{
-            val = decisionTree.classifyInstance(instance);
-        }
-        catch(Exception e){
-            System.err.println("something went wrong when the instance was classified \n" +e);
-            System.exit(9);
-        }
-        if (val > 0.5)
-            return false;
-        else
-            return true;
     }
     
     /**
@@ -733,38 +673,43 @@ public class PlanNode extends Node{
             return val;
         }
 
+        /* If we have had no experience yet then use the default probability */
+        if (experiences.size() == 0) {
+            double[] val = new double[2];
+            val[0] = 0.5;
+            val[1] = 0.5;
+            return val;
+        }
+        
         /* Calculate the probability of success based on the DT classififcation.
          * The value returned represents the 'correct/total' ratio of instances
          * classified in the DT leaf node where this world will be classified.
          */
         double[] val = null;
-        if (useDT(goal_id)){
-            Instance instance = new Instance(numAttributes);
-            instance.setDataset(data);
-            for (int i=0;i<state.length;i++){
-                if (state[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (state[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(state[i]));
-                    } else {
-                        instance.setValue(att,state[i]);
-                    }
+        Instance instance = new Instance(atts.size()-1);
+        instance.setDataset(data);
+        for (int i=0;i<state.length;i++){
+            if (state[i].equals("true"))
+                instance.setValue(((Attribute) atts.elementAt(i)),"T");
+            else if (state[i].equals("false"))
+                instance.setValue(((Attribute) atts.elementAt(i)),"F");
+            else {
+                Attribute att = (Attribute) atts.elementAt(i);
+                if (att.isNumeric()) {
+                    instance.setValue(att,Double.parseDouble(state[i]));
+                } else {
+                    instance.setValue(att,state[i]);
                 }
             }
-            try{
-                val = decisionTree.distributionForInstance(instance);
-                logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfState(state)+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
-
-            }
-            catch(Exception e){
-                System.err.println("something went wrong when the instance was classified \n" +e);
-                System.exit(9);
-            }
+        }
+        try{
+            val = decisionTree.distributionForInstance(instance);
+            logger.writeLog("Plan "+this.getItem()+" is USING DT with "+data.numInstances()+" instances in state "+this.stringOfState(state)+". Probability of success p="+((double)((int)(val[0]*10000)))/10000);
             
+        }
+        catch(Exception e){
+            System.err.println("something went wrong when the instance was classified \n" +e);
+            System.exit(9);
         }
         return val;
     }
@@ -774,91 +719,16 @@ public class PlanNode extends Node{
         return this.getProbability(this.lastState);
     }    
     
-    /*
-    public double countForClassification(String[] state)
-    {
-        double val = 0.0;
-        if (useDT(goal_id)){
-            Instance instance = new Instance(numAttributes);
-            instance.setDataset(data);
-            for (int i=0;i<state.length;i++){
-                if (state[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (state[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(state[i]));
-                    } else {
-                        instance.setValue(att,state[i]);
-                    }
-                }
-            }
-            try{
-                val = decisionTree.countForClassification(instance);
-                logger.writeLog("Plan "+this.getItem()+" DT has "+val+" instances in leaf that classifies state "+this.stringOfState(state));
-            }
-            catch(Exception e){
-                System.err.println("something went wrong when the instance was classified \n" +e);
-                System.exit(9);
-            }
-            
-        }
-        return val;
-    }
-    */
     
     /** 
      * print the decision tree and info about it.
      */
     public void printDT(){
-        System.out.println("************> Outcomes for plan "+  name 
-                           + " built at iteration "+ startToUseDT);
+        System.out.println("************> Outcomes for plan "+ getItem());
         System.out.println("number of instances : " + data.numInstances());
         System.out.println(decisionTree);
+    }
         
-    }
-    
-    public String getDT()
-    {
-        String returnString = "************> Outcomes for plan "+  name+ " built at iteration "+ startToUseDT+"\n";
-        returnString +="number of instances : " + data.numInstances()+"\n";
-        returnString +=decisionTree;
-        return returnString;
-    }
-    
-    /**
-     * criterion that decides whether the decision tree should be used.  this 
-     * method calls the criterion to decide whether the subtree are correct
-     * @param it
-     * @return
-     */
-    public boolean useDT(int it){
-        boolean firstBuild = false;
-        if (experiences.size() >= minNumInstances){
-            if (startToUseDT ==0){
-                startToUseDT = it;
-                firstBuild = true;
-                logger.writeLog("Plan "+this.getItem()+" is OK to use DT since minimum number of instances "+experiences.size()+">=M("+minNumInstances+")");
-            }
-            try{
-                if ((hasDirtyExperiences >= buildThreshold) || firstBuild) {
-                    hasDirtyExperiences = 0;
-                    buildDataset();
-                    decisionTree.buildClassifier(data);
-                }
-            }
-            catch(Exception e){
-                System.err.println("Something went wrong during the construction of the decision tree\n" + e);
-                System.exit(9);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
     public String stringOfLastState() {
         return (lastState == null) ? "" : stringOfState(lastState);
     }
@@ -908,21 +778,21 @@ public class PlanNode extends Node{
             {
                 //We have a record of this state being used before
                 Experience thisRecord  = (Experience)experiences.get(lastStateReference);
-                if(this.getStableK()>thisRecord.getNumberOfAttempts())
+                if(this.stableK()>thisRecord.getNumberOfAttempts())
                 {
                     //We haven't yet tried enough attempts to be considered stable.
-                    logger.writeLog("Plan "+this.getItem()+" does not satisfy minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.getStableK()+")");
+                    logger.writeLog("Plan "+this.getItem()+" does not satisfy minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")");
                     return false;
                 }
-                if(thisRecord.getDeltaProbability()>this.getStableEpsilon())
+                if(thisRecord.getDeltaProbability()>this.stableE())
                 {
                     //Our rate of change is to high to be considered stable
-                    logger.writeLog("Plan "+this.getItem()+" does not satisfy change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.getStableEpsilon()+")");
+                    logger.writeLog("Plan "+this.getItem()+" does not satisfy change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")");
                     return false;
                 }
                 logger.writeLog("Plan "+this.getItem()+
-                                " satisfies minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.getStableK()+")"+
-                                " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.getStableEpsilon()+")"+
+                                " satisfies minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")"+
+                                " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")"+
                                 " for state "+lastStateReference);
             }
             else
@@ -1003,86 +873,15 @@ public class PlanNode extends Node{
         
     }
     
-    public Enumeration getStableEnumeration()
+    public Enumeration stableEnumeration()
     {
         return this.experiences.elements();
     }
     
-    /** criterion to decide whether I trust the subtrees below.  This version
-     * only looks whether the decision trees of the plan-nodes below have been
-     *  built and contain enough instances.
-     * @return true when I consider that the subtree below are accurate
-     */
-    public boolean subTreeOK(){
-        // check whether the decisicion tree for this node has enough instances.
-        if (is_DT_Accurate()){
-            /* for each sub-goal posted $sg$, check if *all* plan that satisfy 
-             * $sg$ have a decision tree with enough instances.
-             */
-            int index_sg=0;
-            boolean keepCheckingGoals = true;
-            //System.out.println("Node "+ this.getClass() +" "+this.name + " "
-            //      + data.numInstances() + " instances");
-            while (index_sg<children.size() && keepCheckingGoals){
-                //  it must be a GoalNode, representing either a subgoal or an action
-                int index_sp=0;
-                if (children.get(index_sg) instanceof GoalNode){            
-                    GoalNode subgoal = (GoalNode) children.get(index_sg);
-                    // for all plan that satisfy the subgoal, recursively check 
-                    // whether the subtree is ok 
-                    boolean keepCheckingPlans = true;
-                    // if it is an action, there will not be any children
-                    while (index_sp<subgoal.children.size() && keepCheckingPlans){
-                        // it must be a plan node!
-                        if (subgoal.children.get(index_sp) instanceof PlanNode){
-                            PlanNode subplan = (PlanNode) subgoal.children.get(index_sp);
-                            if (!subplan.subTreeOK())
-                                keepCheckingPlans = false;
-                        }
-                        else{
-                            System.err.println("we should have a plan node but we have an instance of "
-                                               +children.get(index_sp).getClass()+"\n"+children.get(index_sp));
-                            System.exit(9);
-                        }
-                        index_sp++;
-                    }
-                    if (!keepCheckingPlans)
-                        keepCheckingGoals = false;
-                }
-                else{
-                    System.err.println("we should have a goal node but we have an instance of "
-                                       +children.get(index_sp).getClass()+"\n"+children.get(index_sp));
-                    System.exit(9);
-                }
-                index_sg++;
-            }//end if checking goals
-            //if (keepCheckingGoals)
-            //  System.out.println("Use the decision tree for Plan "+name);
-            return keepCheckingGoals;
-        }//end if data.numInstance > min 
-        else
-            return false;
+    public void setStableE(double stableE) {
+        this.stableE = stableE;
     }
     
-    public boolean is_DT_Accurate(){
-        return data.numInstances() >= minNumInstances;
-    }
-    
-    public void setStableEpsilon(double stableEpsilon) {
-        this.stableEpsilon = stableEpsilon;
-    }
-    
-    public double getStableEpsilon() {
-        return stableEpsilon;
-    }
-    
-    public void setStableK(int stableK) {
-        this.stableK = stableK;
-    }
-    
-    public int getStableK() {
-        return stableK;
-    }
     
     public boolean equals(Object obj)
     {
@@ -1116,104 +915,6 @@ public class PlanNode extends Node{
         return out;
     }
     
-    public String stringBitSet(BitSet bs)
-    {
-        String returnString = "";
-        for(int i= 0 ; atts.size()-1>i;i++)
-        {
-            if(bs.get(i)==true)
-            {
-                returnString +="1";
-            }
-            else if (bs.get(i)==false)
-            {
-                returnString +="0";
-            }
-        }
-        return returnString;
-    }
-    
-    public void classifyAllWorlds(Vector bitSetCollection)
-    {
-        /*
-        int maxWorlds = bitSetCollection.size();
-        String str;
-        if (maxWorlds > 1024) {
-            maxWorlds = 1024;
-            str = "#Number of worlds: " + bitSetCollection.size() + "\n";
-            str += "#Generation of classifications for all worlds will take too long.\n";
-            str += "#Showing only the first " + maxWorlds + " classifications below.\n";
-            writeCsv(str, "dt."+this.getItem());
-        }
-        for(int j = 0; maxWorlds>j;j++)
-        {
-            BitSet tempBitSet = (BitSet)bitSetCollection.elementAt(j);
-            double[] val = null;
-            if (useDT(goal_id))
-            {
-                Instance instance = new Instance(numAttributes);
-                instance.setDataset(data);
-                for (int i=0;i<atts.size()-1;i++)
-                {
-                    if (tempBitSet.get(i))
-                    {
-                        instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                    }
-                    else if (!tempBitSet.get(i))
-                    {
-                        instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                    }
-                }
-                try
-                {
-                    val = (update_mode == UpdateMode.STABLE)?((Bagging)decisionTree).distributionForInstance(instance):((J48)decisionTree).distributionForInstance(instance);
-                    writeCsv(j+","+val[0]+","+val[1], "dt."+this.getItem());
-                }
-                catch(Exception e)
-                {
-                    System.err.println("something went wrong when the instance was classified \n" +e); // TODO: Fix for Stable
-                }
-            }
-            else
-            {
-                writeCsv("No DT available", "dt."+this.getItem());
-            }
-        }
-        */
-    }
-    
-    public void referenceAllWorlds(Vector bitSetCollection)
-    {
-        /*
-        int maxWorlds = bitSetCollection.size();
-        String str;
-        if (maxWorlds > 1024) {
-            maxWorlds = 1024;
-            str = "#Number of worlds: " + bitSetCollection.size() + "\n";
-            str += "#Generation of all worlds will take too long.\n";
-            str += "#Showing only the first " + maxWorlds + " worlds below.\n";
-            logger.writeLog(str, "worlds-key");
-        }
-        for(int j = 0; maxWorlds>j;j++)
-        {
-            BitSet tempBitSet = (BitSet)bitSetCollection.elementAt(j);
-            logger.writeLog(j+"="+stringBitSet(tempBitSet), "worlds-key");
-        }
-        */
-    }
-
-    int hamming (String str1, String str2) {
-        char[] s1 = str1.toCharArray();
-        char[] s2 = str2.toCharArray();
-        int m = (s1.length == s2.length) ? s1.length : Math.min(s1.length,s2.length);
-        int c = 0;
-        for (int i = 0; i < m; i++)
-            if(s1[i] != s2[i]) {
-                c++;
-            }
-        return c;
-    }
-    
     private void buildDataset() {
          int added = 0;
         /* Delete previous entries, we will recreate the dataset now */
@@ -1221,7 +922,7 @@ public class PlanNode extends Node{
         /* Add each experience to the dataset */
         for (Object val : experiences.values() ) {
             Experience thisMemory = (Experience)val;
-            Instance instance = new Instance(numAttributes+1);
+            Instance instance = new Instance(atts.size());
             instance.setDataset(data);
             String[] state = thisMemory.getState();
             for (int i=0;i<state.length;i++){

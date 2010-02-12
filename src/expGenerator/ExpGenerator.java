@@ -50,10 +50,6 @@ public class ExpGenerator {
 	 * learning agent, which should allow faster prototyping.
 	 */
 	public static String refinerMethods = "refinerMeth.txt";
-	/** global variable that tells whether the code for the learner has to 
-	 * be generated or not.
-	 */
-	public boolean LEARNING_ON;
 	/** name of the target directory */
 	public String targetDir;
 	/** name of the input tree file */
@@ -67,13 +63,10 @@ public class ExpGenerator {
 	 * @param args command line arguments
 	 * <li> -o target directory
 	 * <li> -i input filename
-	 * <li> -L learning enabled (else, only the agent and the goal plan tree
-	 * are generated)
 	 */
 	public static void main(String args[]){
 		String output = ".";
 		String input = "input";
-		boolean learningOn = true;
 		if (args.length >0){
 			int index =0;
 			while (index < args.length){
@@ -89,17 +82,12 @@ public class ExpGenerator {
 						input = args[index];
 						index++;
 						break;
-					case 'L': // learning enabled
-						learningOn = true;
-						index++;
-						break;
 				}
 			}
 		}
 		System.out.println("Generate a simulator in the directory " +output
 						   +" from the goal-plan tree in file "+input);
-		ExpGenerator exp = new ExpGenerator(input, output, learningOn);
-		//Scanner reader = new Scanner(new InputStreamReader(getClass().getResourceAsStream("mainBody.txt")));
+		ExpGenerator exp = new ExpGenerator(input, output);
 	}
 	
 	/**
@@ -112,13 +100,8 @@ public class ExpGenerator {
 	 * <li> generate the learning agent, which is JACK agent
 	 * @param inputFileName name of the input file containing the goal plan tree
 	 * @param outputDir name of the directory to write the output
-	 * @param withLearning tells whether we need to generate the code for the
-	 * learner, else, only the environment, the agent and its goal-plan tree
-	 * are implemented
 	 */
-	public ExpGenerator(String inputFileName, String outputDir, 
-						boolean withLearning){
-		LEARNING_ON = withLearning;
+	public ExpGenerator(String inputFileName, String outputDir) { 
 		targetDir = outputDir;
         inputTreeFile = inputFileName;
 		readInputFile(inputFileName);
@@ -531,12 +514,8 @@ public class ExpGenerator {
 		return	"public PlanInstanceInfo getInstanceInfo(){\n"
 		+"\tag.setLastInstance(plan_id);\n"
 		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
-		+"\tif (ag.useDT(plan_id)){\n"
-		+"\t\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, false);\n"
-		+"\t}\n"
-		+"\telse{\n" 
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.5, coverage, ag.coverageWeight, false);\n\t}\n"
+		+"\tdouble[] ps = ag.getProbability(plan_id);\n"
+		+"\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, false);\n"
 		+"}\n\n";
 	}
 	
@@ -648,166 +627,7 @@ public class ExpGenerator {
 		return code;
 	}
 	
-	
-	public void generatePlanNodeClass(){
-		String code = "package agents;\n"
-		+"import trees.*;\n"
-		+"import java.util.Hashtable;\n"
-		+"import weka.classifiers.trees.J48;\n"
-		+"import weka.core.Attribute;\nimport weka.core.FastVector\n;"
-		+"import weka.core.Instance;\nimport weka.core.Instances;\n"
-		+"\n"
-		+"public class PlanNode extends Node{\n"
-		+"\tpublic int goal_id;"
-		+"public String name;"
-		+"Hashtable memory;\n"
-		+"public J48 decisionTree;\n"
-		+"String[] options;\n"
-		+"String[] lastState;\n"
-		+"Instances data;\n"
-		+"private FastVector atts;\n"
-		+"private FastVector classVal;\n"
-		+"private FastVector boolVal;\n"
-		+"int numAttributes;\n"
-		+"int startToUseDT;\n"
-		+"int minNumInstances=100;\n\n";
-		
-		// constructor ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		
-		code += "public PlanNode(int id, String pname, FastVector attributes, FastVector classValue, FastVector booleanValue){\n"
-		+"\tsuper(pname);\n"
-		+"\tname = pname;\n"
-		+"\tgoal_id = id;\n"
-		+"\tatts = attributes;\n"
-		+"\tclassVal = classValue;\n"
-		+"\tboolVal = booleanValue;\n"
-		+"\tnumAttributes = atts.size()-1;\n"
-		+"\tlastState = new String[numAttributes];\n"
-		+"\tmemory = new Hashtable();\n"
-		+"\tdata = new Instances(name, atts, 0);\n"
-		+"\tdata.setClassIndex(numAttributes);\n"
-		+"\ttry{\n"
-		+"\t\tdecisionTree = new J48();\n"
-		+"\t\toptions = new String[1];\n"
-		+"\t\toptions[0] = \"-U\";            // unpruned tree\n"
-		+"\t\tdecisionTree = new J48();\n"
-		+"\t\tdecisionTree.setOptions(options);     // set the options\n"
-		+"\t}\n"
-		+"\tcatch(Exception e){\n"
-		+"\t\tSystem.err.println(\"error with weka when creating the decision tree \n\" + e);\n"
-		+"\t\tSystem.exit(9);\n"
-		+"\t}\n"
-		+"}\n";			
-		
-		// record method   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		
-		code += "public void record(boolean res){\n"
-		+"\tString record = \"\";"
-		+ "\tfor (int i=0;i<lastState.length-1;i++)\n"
-		+"\t\trecord += lastState[i] + \",\";\n"
-		+"record += lastState[lastState.length-1]+\":\";\n";
-		code += "\tif (res)\n"
-		+"\t\trecord += \"+\";\n"
-		+"\telse\n"
-		+"\t\trecord += \"-\";\n"
-		+"\tInteger num = (Integer)outcomes.remove(record);\n"
-		+"\tif (num !=null)\n"
-		+"\t\toutcomes.put(record, new Integer(num.intValue()+1));\n"
-		+"\telse\n"
-		+"\t\toutcomes.put(record, new Integer(1));\n"
-		+"\tInstances data = dataSets[index];\n"
-		+"\tInstance instance = new Instance(numAttributes+1);\n"
-		+"\tinstance.setDataset(data);\n";
-		for (int i=0;i<atts.size();i++){
-			if (attsType.get(i).equals("boolean")){
-				code+="\tif ("+((Attribute)atts.elementAt(i)).name()+")\n"
-				+"\t\tinstance.setValue(" 
-				+"((Attribute) atts.elementAt("+i+")),\"T\");\n"
-				+"\telse\n"
-				+"\t\tinstance.setValue(" 
-				+"((Attribute) atts.elementAt("+i+")),\"F\");\n";
-			}
-			else	
-				code+="\t\tinstance.setValue(" 
-				+"((Attribute) atts.elementAt("+i+")),"
-				+ ((Attribute) atts.elementAt(i)).name()+");\n";
-		}
-		code += "\tif (res)\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt("+atts.size()+")),\"+\");\n"
-		+"\telse\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt("+atts.size()+")),\"-\");\n"
-		+"\tdata.add(instance);\n";
-		code +="\t // System.out.println(\"recorded : \" + instance+ \"\t \"+num);\n"
-		+"}\n\n";
-		
-		//	set Last Instance method    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		
-		code +="public void setLastInstance(){\n"
-		+ "for (int i=0;i<state.length;i++)\n"
-		+ "lastState[i]= state[i];\n}\n\n";
-		
-		
-		// get classification method   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		code+="public boolean getClassification(){\n"
-		+"\tInstance instance = new Instance(numAttributes);\n"
-		+"\tinstance.setDataset(data);\n"
-		+"for (int i=0;i<lastState.length;i++){\n"
-		+"\tif (lastState[i].equals(\"true\"))\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),\"T\");\n"
-		+"\telse if (lastState[i].equals(\"false\"))\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),\"F\");\n"
-		+"\telse\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);\n"
-		+"\t}\n";
-		code+="\tdouble val = 0;\ntry{\n"
-		+"\t\tval = decisionTree.classifyInstance(instance);\n"
-		+"\t}\n"
-		+"\tcatch(Exception e){\n"
-		+"\t\tSystem.err.println(\"something went wrong when the instance was classified \\n\" +e);\n"
-		+"\t\tSystem.exit(9);\n"
-		+"\t}\n"
-		+"\tif (val > 0.5)\n"
-		+"\t\treturn false;\n"
-		+"\telse\n"
-		+"\t\treturn true;\n"
-		+"}\n\n";
-		
-		//	 get probability method    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		code+="public double[] getProbability(int plan_id){\n"
-		+"\tInstances data = dataSets[index];\n"
-		+"\tInstance instance = new Instance(numAttributes);\n"
-		+"\tinstance.setDataset(data);\n"
-		+"for (int i=0;i<lastState.length;i++){\n"
-		+"\tif (lastState[i].equals(\"true\"))\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),\"T\");\n"
-		+"\telse if (lastState[i].equals(\"false\"))\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),\"F\");\n"
-		+"\telse\n"
-		+"\t\tinstance.setValue(((Attribute) atts.elementAt(i)),lastState[i]);\n"
-		+"\t}\n";
-		code+="\tdouble[] val = null;\ntry{\n"
-		+"\t\tval = tree.distributionForInstance(instance);\n"
-		+"\t}\n"
-		+"\tcatch(Exception e){\n"
-		+"\t\tSystem.err.println(\"something went wrong when the instance was classified \\n\" +e);\n"
-		+"\t\tSystem.exit(9);\n"
-		+"\t}\n"
-		+"\treturn val;\n"
-		+"}\n\n";
-		
-		/*@Todo Write method subtreeOK 
-		 * 	the method needs to visit the subtree and check whether
-		 * the Decision Tree are "good enough" For now, we only 
-		 * consider the number of instances.
-		 */
-		
-		code+="public boolean subTreeOK(int plan_id){\n"
-		+"\treturn true;\n"
-		+"}\n\n";
-		
-		
-	}
-	
+
 	public void generateGoals(){
 		//generate the goals of the goal plan tree
 		for (Goal g: goals){
@@ -1075,8 +895,6 @@ public class ExpGenerator {
 		+"\tsuper(name);\n"
 		+"\ttargetDir = outputDir;\n"
 		+"\tgenerator = new Random();\n"
-		+"\tworldFed = false;\n"
-		+"\tfedFileName = \"\";\n"
 		+"\tit =0;\n"
 		+"\tSystem.out.println(\"The environment has started\");\n"
 		+"\ttry{\n"
@@ -1091,7 +909,7 @@ public class ExpGenerator {
 		//class attributes
 		code+= "public static int numIterations = 1000;\n"
 		+ "public int it,ticks=1,num_successes=0,num_failures=0;\n"
-		+ 	"Random generator;\n"
+		+ "Random generator;\n"
 		+ "public PrintWriter writerOutcome;\n"
 		+ "public PrintWriter writerOutcomeTG;\n"
 		+ "public PrintWriter log;\n"
@@ -1101,15 +919,6 @@ public class ExpGenerator {
 		+ "public static PlanSelectMode plan_selection = PlanSelectMode.PROBABILISTIC;\n"
 		+ "public static UpdateMode update_mode = UpdateMode.CONCURRENT;\n"
 		+ "public static RunMode run_mode = RunMode.DEFAULT;\n"
-		+ "public static RunMode run_mode_sub = RunMode.DEFAULT;\n"
-		+ "public boolean worldFed;\n"
-		+ "public String fedFileName;\n"
-		+ "public boolean recordWorldFeed;\n"
-		+ "public String recordFeedFileName;\n"
-		+ "public boolean compareToFile;\n"
-		+ "public String compareTemplate;\n"
-		+ "public BufferedReader br;\n"
-		+ "public BufferedReader compareReader; \n"
 		+ "public RefinerAgent learningAgent;\n"
 		+ "public String targetDir;\n"		
 		+"// attributes describing the world\n";
@@ -1164,29 +973,22 @@ public class ExpGenerator {
 		}
 		code +="\t}\n"
 		+"\treturn true;\n}\n\n";
+
 		
 		//run one iteration
 		code+="public void runOneIteration(){\n"
 		+"\tlearningAgent.clearAllNodeSuccesses();\n"
-		
-		
-		+"\tif(true || update_mode == UpdateMode.STABLE)\n"
-		+"\t{\n"
+		+"\tif(true || update_mode == UpdateMode.STABLE) {\n"
 		+"\t\tlearningAgent.resetLastStates();\n"
-		//+"\t\tlearningAgent.clearAllLastStates();\n"
 		+"\t}\n"
-        
-        //+"\tlearningAgent.stepsToAchieveTopGoal = 0;\n"
-		
 		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\");\n"
-		+"\tif (it < numIterations)\n\t{\n"
+		+"\tif (it < numIterations) {\n"
 		+"\t\tit++;\n"
-		+"\t\tif(!worldFed)\n\t\t{\n"
 		+"\t\t// randomly select the value of the attributes \n";
-		code+= "\t\t\tString[] attval;\n";
+		code+= "\t\tString[] attval;\n";
 		for (int i=0;i< atts.size(); i++){
 			if (attsType.get(i).equals("boolean"))
-				code+= "\t\t\t" + ((Attribute) atts.elementAt(i)).name() 
+				code+= "\t\t" + ((Attribute) atts.elementAt(i)).name() 
 				+"= generator.nextBoolean();\n";
 			else{
 				code+= "\t\tattval = new String["
@@ -1201,171 +1003,20 @@ public class ExpGenerator {
 				+"attval[generator.nextInt(attval.length)];\n";
 			}
 		}
-		code+= "\t\t\tlearningAgent.notify("+args_notify + ");\n";
-		code+="\t\t\tif(recordWorldFeed)\n"
-		+"\t\t\t{\n"
-		+"\t\t\t\tString msgWorldState = it+\", \";\n";
-		for (int i=0;i< atts.size(); i++)
-		{
-			if (attsType.get(i).equals("boolean"))
-			{
-				code+= "\t\t\t\tmsgWorldState += "+((Attribute) atts.elementAt(i)).name()+"+\",\";\n";
-			}
-			else
-			{
-				/*code+= "\t\t\tattval = new String["+((Attribute) atts.elementAt(i)).numValues()+"];\n";
-				 
-				 for (int k=0;k<((Attribute) atts.elementAt(i)).numValues()-1;k++)
-				 code+= "\t\t\tattval["+k+ "]=\""+((Attribute) atts.elementAt(i)).value(k)+"\";\n";
-				 code+= "\t\t\tattval["+(((Attribute) atts.elementAt(i)).numValues()-1)+ "]=\""+((Attribute) atts.elementAt(i)).value(((Attribute) atts.elementAt(i)).numValues()-1)+"\";\n";
-				 code += "\t\t\t"+((Attribute) atts.elementAt(i)).name() + "= "+"attval[generator.nextInt(attval.length)];\n";*/
-			}
-			
-		}
-		code +="\n\t\t\t\t//writeLog(msgWorldState, recordFeedFileName);\n";
-		code +="\t\t\t}\n";
-		
-		
-		
-		
-		code+="\t\t\t//MessageEvent mess = topGoal.start();\n"
-		+"\t\t\t//send(\"BDI-Learning Agent\", mess);\n"
-		+"\t\t}\n"
-		+"\t\telse{\n"
-		//+"\t\t\tSystem.out.println(\"Being Fed World States\");\n"
-		+"\t\t\tuseFedValues();\n";
-		code+="\t\t\tif(recordWorldFeed)\n"
-		+"\t\t\t{\n"
-		+"\t\t\t\tString msgWorldState = it+\", \";\n";
-		for (int i=0;i< atts.size(); i++)
-		{
-			if (attsType.get(i).equals("boolean"))
-			{
-				code+= "\t\t\t\tmsgWorldState += "+((Attribute) atts.elementAt(i)).name()+"+\",\";\n";
-			}
-			else
-			{
-				/*code+= "\t\t\tattval = new String["+((Attribute) atts.elementAt(i)).numValues()+"];\n";
-				 
-				 for (int k=0;k<((Attribute) atts.elementAt(i)).numValues()-1;k++)
-				 code+= "\t\t\tattval["+k+ "]=\""+((Attribute) atts.elementAt(i)).value(k)+"\";\n";
-				 code+= "\t\t\tattval["+(((Attribute) atts.elementAt(i)).numValues()-1)+ "]=\""+((Attribute) atts.elementAt(i)).value(((Attribute) atts.elementAt(i)).numValues()-1)+"\";\n";
-				 code += "\t\t\t"+((Attribute) atts.elementAt(i)).name() + "= "+"attval[generator.nextInt(attval.length)];\n";*/
-			}
-			
-		}
-		code +="\n\t\t\t\t//writeLog(msgWorldState, recordFeedFileName);\n";
-		code +="\t\t\t}\n";
-		code+="\t\t}\n";
-		code+="\t\t\tMessageEvent mess = topGoal.start();\n"
-		+"\t\t\tsend(\"BDI-Learning Agent\", mess);\n"
+		code+= "\t\tlearningAgent.notify("+args_notify + ");\n";
+		code+="\t\tMessageEvent mess = topGoal.start();\n"
+		+"\t\tsend(\"BDI-Learning Agent\", mess);\n"
 		+"\t}\n"
 		+"\telse{\n"
 		+"\t\twriterOutcome.close();\n"
 		+"\t\twriterOutcomeTG.close();\n"
 		+"\t\tlog.close();\n"
-		+"\t\t//this.finish();\n"
 		+"\t\tlearningAgent.printDT();\n"
-		+"\t\tint count=0;\n"
-		+"\t\tint stableCount = 0;\n"
-		+"\t\tint stableTotal = 0;\n"
-		+"\t\tfor (int i=0;i<learningAgent.planNodes.length;i++){\n"
-		+"\t\tint indCount = 0;\n"
-		+"\t\tint indStableCount = 0;\n"
-		+"\t\t\tPlanNode node = learningAgent.planNodes[i];\n"
-		+"\t\t\tEnumeration thisEnu = node.getStableEnumeration();\n"
-		+"\t\t\twhile(thisEnu.hasMoreElements())\n"
-		+"\t\t\t{\n"
-		+"\t\t\t\t\tindCount++;\n"
-		+"\t\t\t\t\tExperience thisMemory = (Experience)thisEnu.nextElement();\n"
-		+"\t\t\t\t\tstableTotal++;\n"
-		+"\t\t\t\t\tif(thisMemory.isStateStable(node.getStableK(),node.getStableEpsilon()))\n"
-		+"\t\t\t\t\t{\n"
-		+"\t\t\t\t\t\tstableCount++;\n" 
-		+"\t\t\t\t\t\tindStableCount++;\n"
-		+"\t\t\t\t\t}\n"
-		+"\t\t\t\t}\n"
-		+"\t\t\tSystem.out.print(\"Plan \" + node.name);\n"
-		+"\t\t\tif (node.startToUseDT > 0){\n"
-		+"\t\t\t\tSystem.out.print(\" created at \"+ node.startToUseDT);\n"
-		+"\t\t\t\tcount++;\n"
-		+"\t\t\t}\n"
-		+"\t\t\telse\n"
-		+"\t\t\t\tSystem.out.print(\" no DT\");\n"
-		+"\t\t\tSystem.out.println();\n"
-		+"\t\t\t}\n"
-		+"\t\tSystem.out.println(count +\" / \"+	learningAgent.planNodes.length+\" decision trees were learnt\");\n"
-		+"\t\tSystem.out.println(\"Stability: \"+stableCount+\"/ \"+stableTotal);\n"
-		+"\t\tif(compareToFile)\n"
-		+"\t\t{\n"
-		+"\t\t\tSystem.out.println(\"Compare asked for\");\n"
-		+"\t\t\topenCompareConnection();\n"
-		//+"\t\t\tSystem.exit(0);\n"
-		+"\t\t}\n" 
-		+"\t\tlearningAgent.generateAllWorldStates();\n"
 		+"\t\tlearningAgent.finish();\n"
 		+"\t\tSystem.exit(0);\n"
 		+"\t}\n"
 		+"}\n\n";
 		
-		code+="\n\n\n\tpublic void useFedValues()\n"
-		+"\t{\n"
-		+"\t\t\n";
-		
-		
-		//code+= "\t\t\tString[] attval;\n";
-		code+= "\t\t\tString[] thisLineSplit = null;\n";
-		
-		code+="\t\tString thisLine = \"\";\n"
-		
-		+ "\t\ttry{\n"
-		+ "\t\t\t thisLine= br.readLine();\n"
-		+ "\t\t\t thisLineSplit = thisLine.split(\",\");\n"
-		+ "\t\t\tfor(int j =0; thisLineSplit.length> j;j++)\n"
-		+ "\t\t\t{\n"
-		+ "\t\t\t\tthisLineSplit[j] = thisLineSplit[j].trim();\n"
-		+ "\t\t\t}\n"
-		
-		+ "\t\t}\n"
-		+ "\t\tcatch(Exception e) \n"
-		+ "\t\t{\n"
-		+ "\t\t\tSystem.out.println(\"Error reading line\");\n"
-		+ "\t\t\tSystem.exit(0);\n"
-		+ "\t\t}\n";
-		for (int i=0;i< atts.size(); i++)
-		{
-			if (attsType.get(i).equals("boolean"))
-			{
-				code+= "\t\tif(thisLineSplit["+(i+1)+"].equals(\"true\"))\n";
-				code+= "\t\t{\n";
-				code+= "\t\t\t"+((Attribute) atts.elementAt(i)).name() +"= true;\n";
-				code+= "\t\t}\n";
-				code+= "\t\telse\n";
-				code+= "\t\t{\n";
-				code+= "\t\t\t" + ((Attribute) atts.elementAt(i)).name() +"= false;\n";
-				code+= "\t\t}\n\n";
-			}
-			else
-			{
-				//I'm lazy. we only work with boolean for now. fix this later.
-				/* code+= "\t\tattval = new String["+((Attribute) atts.elementAt(i)).numValues()+"];\n";
-				 
-				 for (int k=0;k<((Attribute) atts.elementAt(i)).numValues()-1;k++)
-				 {
-				 code+= "\t\tattval["+k+ "]=\""+((Attribute) atts.elementAt(i)).value(k)+"\";\n";
-				 code+= "\t\tattval["+(((Attribute) atts.elementAt(i)).numValues()-1)+ "]=\""+((Attribute) atts.elementAt(i)).value(((Attribute) atts.elementAt(i)).numValues()-1)+"\";\n";
-				 code += "\t\t"+((Attribute) atts.elementAt(i)).name() + "= "+"attval[generator.nextInt(attval.length)];\n";
-				 }*/
-			}
-		}
-		/*code+="\t\tSystem.out.println(\"This line is: \"+thisLine);\n";
-		 code+="\t\tfor(int i = 0; thisLineSplit.length >i;i++)\n"
-		 +"\t\t{\n"
-		 +"\t\t\tSystem.out.println(i+\" :\"+thisLineSplit[i]);\n"
-		 +"\t\t}\n";*/
-		
-		
-		code+="\t}\n\n\n\n";
 		
 		// run one iteration initial
 		code+="public void runOneIteration(boolean outcomePrev){\n"
@@ -1462,7 +1113,6 @@ public class ExpGenerator {
 		+"\tupdate_mode = UpdateMode.CONCURRENT;\n"
 		+"\tselect_mode = PlanSelectMode.PROBABILISTIC;\n"
 		+"\trun_mode = RunMode.DEFAULT;\n"
-		+"\trun_mode_sub = RunMode.DEFAULT;\n"
         +"\tstepsToAchieveTopGoal = 0;\n"
 		+"\ttriggerNewIteration = false;\n"
 		+"\tstableK = 3;\n"
@@ -1520,7 +1170,6 @@ public class ExpGenerator {
 			if (obs)
 				numObs++;
 		code+="\tint numAttributes = "+numObs+";\n"
-		+"\tpublic int minNumInstances = 10;\n"
 		+"\tpublic PlanNode[] planNodes;\n"
 		+"\tprivate FastVector atts;\n"
 		+"\tprivate FastVector classVal;\n"
@@ -1529,7 +1178,6 @@ public class ExpGenerator {
 		+"\tpublic UpdateMode update_mode;\n"
 		+"\tpublic PlanSelectMode select_mode;\n"
 		+"\tpublic RunMode run_mode;\n"
-		+"\tpublic RunMode run_mode_sub;\n"
         +"\tpublic int stepsToAchieveTopGoal;\n"
 		+"\tprivate boolean triggerNewIteration;\n"
 		+"\tpublic int stableK;\n"
@@ -1558,10 +1206,6 @@ public class ExpGenerator {
 		+"\tpublic void setRunMode(RunMode mode)\n"
 		+"\t{\n"
 		+"\t\tthis.run_mode = mode;\n"
-		+"\t}\n\n"
-		+"\tpublic void setRunModeSub(RunMode mode)\n"
-		+"\t{\n"
-		+"\t\tthis.run_mode_sub = mode;\n"
 		+"\t}\n\n"
 		+"\tpublic void setTriggerNewIteration(boolean val)\n"
 		+"\t{\n"
@@ -1629,9 +1273,12 @@ public class ExpGenerator {
 		//~~~~  generate all the plan nodes
 		code += "\tplanNodes = new PlanNode["+plans.size()+"];\n";
 		for (Plan p : plans){
-			code+="\tplanNodes["+p.index+"] = new PlanNode(new Integer("+p.index+"),"
-			+ "\"" + p.getId()+ "\""
-			+", atts, classVal, boolVal, minNumInstances, update_mode, select_mode, run_mode, run_mode_sub, stableE, stableK, "+(p.isFailedThresholdHandler()?"true":"false")+", (trees.Logger)env);\n";
+			code+="\tplanNodes["+p.index+"] = new PlanNode("
+			+ "\"" + p.getId()+ "\", atts, "
+			+ "update_mode, select_mode, run_mode, "
+            + "stableE, stableK, "
+            + (p.isFailedThresholdHandler()?"true":"false")
+            + ", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
@@ -1684,32 +1331,6 @@ public class ExpGenerator {
 		+"\t}\n\n\n";
 		*/
         
-		code +="\tpublic void generateAllWorldStates()\n"
-		+"\t{\n"
-		+"\t\tVector bitSetCollection  = new Vector();\n"
-		+"\t\tBitSet startState = new BitSet(atts.size()-1);\n"
-		+"\t\tstartState.clear();\n"
-		+"\t\tBitSet addState = new BitSet(atts.size()-1);\n"
-		+"\t\taddState.set(atts.size()-2);\n"
-		+"\t\tbitSetCollection.add((BitSet)startState.clone());\n"
-		+"\t\twhile(atts.size()-1> startState.cardinality())\n"
-		+"\t\t{\n"
-		+"\t\t\tstartState = addBitSets(startState, addState);\n"
-		+"\t\t\tbitSetCollection.add((BitSet)startState.clone());\n"
-		+"\t\t}\n"
-		+"\t\tSystem.out.println(\"All World States Generated\\n\");\n"
-		+"\t\tif(planNodes.length>0)\n"
-		+"\t\t{\n"
-		+"\t\t\tplanNodes[0].referenceAllWorlds(bitSetCollection);\n"
-		+"\t\t}\n"
-		
-		+"\t\tfor(int j =0; planNodes.length>j;j++)\n"
-		+"\t\t{\n"
-		+"\t\t\tplanNodes[j].classifyAllWorlds(bitSetCollection);\n"
-		+"\t\t}\n"
-		
-		+"\t}\n\n\n"; 
-		
 		code +="\tpublic BitSet addBitSets(BitSet bs1, BitSet adder)\n"
 		+"\t{\n"
 		+"\t\tboolean carry = false;\n"
@@ -1880,11 +1501,6 @@ public class ExpGenerator {
 		code += "\tplanNodes[plan_id].setLastInstance(state);\n"
 		+"}\n\n";
 		
-		// useDT method ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		code += "public boolean useDT(int plan_id){\n"
-		+"\treturn planNodes[plan_id].useDT(env.it);\n"
-		+"}\n\n";
-		
 		// printDT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code += "public void printDT(){\n"
 		+"\tfor (int p=0;p<numPlans;p++){\n"
@@ -1899,7 +1515,7 @@ public class ExpGenerator {
 		
 		// getCoverage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code+="public double getCoverage(int plan_id){\n"
-		+"\treturn (double)(planNodes[plan_id].getCoverage(planNodes[plan_id].lastState))/planNodes[plan_id].getPaths();\n"
+		+"\treturn (double)(planNodes[plan_id].getCoverage(planNodes[plan_id].lastState()))/planNodes[plan_id].getPaths();\n"
 		+"}\n\n";
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		

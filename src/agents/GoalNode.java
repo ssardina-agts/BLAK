@@ -25,9 +25,9 @@ public class GoalNode extends Node{
             logger.indentRight();
     		for(int j =0; this.children.size()>j;j++) {
     			PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-    			if(thisNode.lastState!=null) {
+    			if(thisNode.lastState()!=null) {
     				if(checkState==null) {
-    					checkState = thisNode.lastState;
+    					checkState = thisNode.lastState();
                         logger.writeLog("Child plan "+thisNode.getItem()+" has last state "+thisNode.stringOfLastState()+". Goal "+name+" will therefore use this state.");
     				}
     			} else {
@@ -210,8 +210,8 @@ public class GoalNode extends Node{
         }
         for(int j =0; nChildren>j;j++) {
             PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-            if(thisNode.lastState!=null) {
-                resultingState = thisNode.lastState;
+            if(thisNode.lastState()!=null) {
+                resultingState = thisNode.lastState();
                 logger.writeLog("Goal "+name+" found resulting state "+this.stringOfState(resultingState));
                 break;
             }

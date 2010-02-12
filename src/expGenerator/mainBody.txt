@@ -4,12 +4,6 @@ public static void main(String[] args)
     String targetDir = ".";
     int staK;
     double staE;
-    boolean feedMeTheWorld = false;
-    String feedMeFileName = "";
-    boolean recordMeTheWorld = false;
-    String recordMeFileName = "";
-    boolean doCompare = false;
-    String compareTemplate = "";
     double noise;
     double threshold;
     double coverageWeightB;
@@ -19,7 +13,6 @@ public static void main(String[] args)
     coverageWeightB = 1.0;
     staK = 3;
     staE = 0.05;
-    int minNI = 10;
 
     if (args.length > 0) {
         int index = 0;
@@ -30,11 +23,6 @@ public static void main(String[] args)
             switch (option) {
             case 'b':
                 coverageWeightB = Double.parseDouble(args[index]);
-                index++;
-                break;
-            case 'c':
-                doCompare = true;
-                compareTemplate = args[index];
                 index++;
                 break;
             case 'd':
@@ -53,10 +41,6 @@ public static void main(String[] args)
                 staK = Integer.parseInt(args[index]);
                 index++;
                 break;
-            case 'm':
-                minNI = Integer.parseInt(args[index]);
-                index++;
-                break;
             case 'n':
                 noise = Double.parseDouble(args[index]);
                 index++;
@@ -72,11 +56,6 @@ public static void main(String[] args)
                     run_mode = RunMode.FAILURE_RECOVERY;
 	            System.out.println("Failure Recovery mode is enabled");
                 }
-                break;
-            case 'r':
-                recordMeTheWorld = true;
-                recordMeFileName = args[index];
-                index++;
                 break;
             case 's':
                 String psmode = args[index];
@@ -107,11 +86,6 @@ public static void main(String[] args)
 	            System.out.println("BUL Learning");
                 }
                 break;
-            case 'w':
-                feedMeTheWorld = true;
-                feedMeFileName = args[index];
-                index++;
-                break;
             }
         }
 
@@ -130,27 +104,16 @@ public static void main(String[] args)
             System.out.println("K: " + staK + ", e: " + staE);
         }
         Environment env = new Environment("Environment", targetDir, filename);
-        env.worldFed = feedMeTheWorld;
-        env.fedFileName = feedMeFileName;
-        env.recordWorldFeed = recordMeTheWorld;
-        env.recordFeedFileName = recordMeFileName;
-        env.compareToFile = doCompare;
-        env.compareTemplate = compareTemplate;
         env.noise = noise;
 
-        if (feedMeTheWorld) {
-            env.openWorldFedConnection();
-        }
         agent.setEnvironment(env);
-        agent.minNumInstances = minNI;
         agent.planSelectThreshold = threshold;
 	agent.coverageWeight = coverageWeightB;
 	
 
         env.filenameOutcome = filename;
         env.learningAgent = agent;
-        System.out.println("Start the simulation with " + env.numIterations +
-                           " iterations \n min num instances to build a tree is set to " + agent.minNumInstances);
+        System.out.println("Start the simulation with " + env.numIterations + "iterations.\n");
 
         agent.generateTree();
         env.runOneIteration();
@@ -195,43 +158,3 @@ public void writeLog(String msg)
     }
 }
 /*************************/
-
-
-public void openWorldFedConnection()
-{
-    try
-    {
-        br = new BufferedReader(new FileReader(fedFileName));
-    }
-    catch(Exception e) {
-        System.out.println("br failed");
-        System.exit(0);
-    }
-}
-
-
-public void openCompareConnection()
-{
-    try
-    {
-        compareReader = new BufferedReader(new FileReader(compareTemplate));
-        try
-        {
-            String thisLine = compareReader.readLine();
-            while (thisLine != null) {
-                thisLine = thisLine.trim();
-                int planNodeIndex = learningAgent.findPlanNodeByID(thisLine);
-                String msg = learningAgent.planNodes[planNodeIndex].getDT();
-                thisLine = compareReader.readLine();
-            }
-        }
-        catch(Exception e) {
-            System.out.println("Compare file Line reading failed. failed");
-            System.exit(0);
-        }
-    }
-    catch(Exception e) {
-        System.out.println("Compare file reading failed. failed");
-        System.exit(0);
-    }
-}
