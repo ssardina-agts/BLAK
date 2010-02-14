@@ -898,7 +898,7 @@ public class ExpGenerator {
 		+"\tit =0;\n"
 		+"\tSystem.out.println(\"The environment has started\");\n"
 		+"\ttry{\n"
-		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename + \".csv\");\n"
+		+"\t\twriterOutcome = new PrintWriter(targetDir + \"/\" + filename + \"-episodes.csv\");\n"
 		+"\t\twriterOutcomeTG = new PrintWriter(targetDir + \"/\" + filename + \"-topgoal.csv\");\n"
 		+"\t\tlog = new PrintWriter(targetDir + \"/run.log\");\n"
 		+"\t}catch(IOException e){\n"
@@ -977,7 +977,6 @@ public class ExpGenerator {
 		
 		//run one iteration
 		code+="public void runOneIteration(){\n"
-		+"\tlearningAgent.clearAllNodeSuccesses();\n"
 		+"\tif(true || update_mode == UpdateMode.STABLE) {\n"
 		+"\t\tlearningAgent.resetLastStates();\n"
 		+"\t}\n"
@@ -1236,7 +1235,7 @@ public class ExpGenerator {
 		+"\t{\n"
 		+"\t\tfor(int j = 0; this.planNodes.length >j;j++)\n"
 		+"\t\t{\n"
-		+"\t\t\tif(this.planNodes[j].getItem().equals(planID))\n"
+		+"\t\t\tif(this.planNodes[j].name().equals(planID))\n"
 		+"\t\t\t{\n"
 		+"\t\t\t\treturn j;\n"
 		+"\t\t\t}\n"
@@ -1281,10 +1280,10 @@ public class ExpGenerator {
             + ", (trees.Logger)env);\n";
 		}	
 		//~~~ generate all the goal nodes
-		code += "\tNode[] goalNodes = new Node["+goals.size()+"];\n";
+		code += "\tNode[] goalNodes = new GoalNode["+goals.size()+"];\n";
 		index = 0;
 		for (Goal g: goals){
-			code+="\tgoalNodes["+index+"] = new GoalNode("+ index+ ",\""+ g.getId() +"\", (trees.Logger)env);\n";
+			code+="\tgoalNodes["+index+"] = new GoalNode(\""+ g.getId() +"\", (trees.Logger)env);\n";
 			if (g.equals(topGoal))
 				code+="\tgpTree = new Tree(goalNodes["+index+"]);\n";
 			index++;
@@ -1375,19 +1374,6 @@ public class ExpGenerator {
 		+"\t}\n\n\n";
 		
 		
-		code+="\n\npublic void clearAllNodeSuccesses()\n"
-		+"{\n"
-		+"\tfor(int i = 0; planNodes.length>i;i++)\n"
-		+"\t{\n"
-		+"\t\tplanNodes[i].resetSuccessfulChildren();\n"
-		+"\t}\n"
-		//+"\tfor(int i = 0; goalNodes.length>i; i++)\n"
-		//+"\t{\n" 
-		//+"\t\tgoalNodes[i].resetSuccessfulChildren();\n"
-		//+"\t}\n"
-		+"}\n"
-		+"\n\n\n";
-		
 		code +="\npublic int findPlanIndex(PlanNode thePlan)\n"
 		+"{\n"
 		+"\tfor (int i = 0; planNodes.length>i;i++)\n"
@@ -1406,9 +1392,9 @@ public class ExpGenerator {
 		code+="public void record(int plan_id, boolean res)\n"
 		+"{\n"
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
-		+"\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].getItem()+\" on iteration \"+env.it);\n"
+		+"\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].name()+\" on iteration \"+env.it);\n"
         
-        +"\tif (!planNodes[plan_id].isFailedThresholdHandler && planNodes[plan_id].getNumberOfChildren() == 0) {\n"
+        +"\tif (!planNodes[plan_id].isFailedThresholdHandler() && planNodes[plan_id].numberOfChildren() == 0) {\n"
         +"\t\tstepsToAchieveTopGoal++;\n"
         +"\t\tenv.writeLog(\"Tried \"+stepsToAchieveTopGoal+\" actions so far to achieve top goal.\");\n"
         +"\t}\n"
@@ -1418,40 +1404,10 @@ public class ExpGenerator {
         +"\t\tenv.writeOutcomeForTopGoal(stepsToAchieveTopGoal);\n"
         +"\t\tstepsToAchieveTopGoal = 0;\n"
         +"\t}\n"
-        
 		
-		+"\tif(res && (update_mode == UpdateMode.STABLE))\n"
-		+"\t{\n"
-		+"\t\tplanNodes[plan_id].setSuccessful(true);\n"
-        +"\t\tenv.indentRight();\n"
-		+"\t\tplanNodes[plan_id].record(res);\n"
-        +"\t\tenv.indentLeft();\n"
-		+"\t\tGoalNode theRoot = (GoalNode)gpTree.getRoot();\n"
-		+"\t\tVector pathToNode = gpTree.getRoot().getPathTo(planNodes[plan_id]);\n"
-		+"\t\tString path=\"\";\n"
-		
-		+"\t\tfor(int j =pathToNode.size()-2; j> 0;j--) \n"
-		+"\t\t{\n"
-		+"\t\t\tNode thisNode = (Node)pathToNode.elementAt(j);\n"
-		+"\t\t\tthisNode.determineSuccessful();\n"
-		+"\t\t\tif(thisNode.isSuccessful())\n"
-		+"\t\t\t{\n"
-		+"\t\t\t\tenv.writeLog(\"Node \"+thisNode.getItem()+\" is all successful and ready to propagate up the tree\");\n"
-		+"\t\t\t}\n"
-		+"\t\t\telse\n"
-		+"\t\t\t{\n"
-		+"\t\t\t\tenv. writeLog(\"Node \"+thisNode.getItem()+\" is NOT all successful and NOT ready to propagate up the tree\");\n"
-		+"\t\t\t\tenv. writeLog(\"Assuming no further nodes are ready to update....\");\n"
-		+"\t\t\t\tbreak;\n"
-		+"\t\t\t}\n"
-		+"\t\t}\n"
-		+"\t}\n"
-		+"\telse\n"
-		+"\t{\n"
-        +"\t\tenv.indentRight();\n"
-		+"\t\tplanNodes[plan_id].record(res);\n"
-        +"\t\tenv.indentLeft();\n"
-		+"\t}\n"
+        +"\tenv.indentRight();\n"
+		+"\tplanNodes[plan_id].record(res);\n"
+        +"\tenv.indentLeft();\n"
 		+"}\n";
 		
 		
@@ -1462,7 +1418,7 @@ public class ExpGenerator {
 		+"\t\tString returnString  = \"-------------------------------------\\nLocal: \";\n"
 		+"\t\tfor(int i = 0; planNodes.length>i;i++)\n"
 		+"\t\t{\n"
-		+"\t\t\tif(planNodes[i].getItem().equals(item))\n"
+		+"\t\t\tif(planNodes[i].name().equals(item))\n"
 		+"\t\t\t{\n"
 		+"\t\t\t\treturnString = returnString + planNodes[i];\n"
 		+"\t\t\t}\n"

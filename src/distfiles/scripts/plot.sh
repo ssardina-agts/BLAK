@@ -105,7 +105,7 @@ tikz=0
 HELP='
 Usage: '`basename $0`' -d srcdir -t testname -o outfile -g gnuplot [-r plotrange] [-e N]
        -d srcdir     Top-level directory containing test result files
-       -t testname   Test name (must match srcdir/**/testname**.csv)
+       -t testname   Test name (must match srcdir/**/testname**-episodes.csv)
        -o outfile    File to store the plot results to (PDF format)
        -g gnuplot    Full path to gnuplot binary
        -l label      String to use as plot title
@@ -195,11 +195,11 @@ tmpdir=/tmp/`date "+%Y%m%d%H%M%S"`
 /bin/mkdir $tmpdir
 
 #--- Collect the result files
-setB=`find $srcdir -name "$testname-concurrent-confidence*.csv" -print`
-set1p=`find $srcdir -name "$testname-stable-probabilistic*.csv" -print`
-set1c=`find $srcdir -name "$testname-stable-coverage*.csv" -print`
-set2p=`find $srcdir -name "$testname-concurrent-probabilistic*.csv" -print`
-set2c=`find $srcdir -name "$testname-concurrent-coverage*.csv" -print`
+setB=`find $srcdir -name "$testname-concurrent-confidence*-episodes.csv" -print`
+set1p=`find $srcdir -name "$testname-stable-probabilistic*-episodes.csv" -print`
+set1c=`find $srcdir -name "$testname-stable-coverage*-episodes.csv" -print`
+set2p=`find $srcdir -name "$testname-concurrent-probabilistic*-episodes.csv" -print`
+set2c=`find $srcdir -name "$testname-concurrent-coverage*-episodes.csv" -print`
 if [ "$set1p" == "" ] && [ "$set1c" == "nil" ] && [ "$set2p" == "nil" ] && [ "$set2c" == "nil" ]; then
  echo "No data found for test $testname"
  exit 0

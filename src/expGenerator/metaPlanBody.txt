@@ -32,7 +32,7 @@
 		if (ag.env.plan_selection == PlanSelectMode.COVERAGE) {
 		    p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
 		    String str =
-		    "Plan " + ag.planNodes[info.plan_id].getItem() +
+		    "Plan " + ag.planNodes[info.plan_id].name() +
 		    " REVISED the probability in state " + ag.planNodes[info.plan_id].stringOfLastState() +
 		    " to p=" + ((double) ((int) (p * 10000))) / 10000 +
 		    " based on coverage c=" + ((double) ((int) (info.coverage * 10000))) / 10000 +
@@ -54,7 +54,7 @@
     }
 
     /* If pMax is less than the threshold and not a leaf plan then always select the failed threshold handler plan */
-    if ((pMax < ag.planSelectThreshold) && (thandler != null) && (ag.planNodes[pMaxId].getNumberOfChildren() > 0) ) {
+    if ((pMax < ag.planSelectThreshold) && (thandler != null) && (ag.planNodes[pMaxId].numberOfChildren() > 0) ) {
 	    pc.chosen = thandler;
 	    ag.env.writeLog("MetaPlan: Using failed threshold plan since " +
 		"p("+(((double) ((int) (pMax * 10000))) / 10000)+")<threshold("+
@@ -75,7 +75,7 @@
 			if (ag.env.plan_selection == PlanSelectMode.COVERAGE) {
 			    p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
 			}
-			str += "(" + ag.planNodes[info.plan_id].getItem() + ") for state " +
+			str += "(" + ag.planNodes[info.plan_id].name() + ") for state " +
 			    ag.planNodes[info.plan_id].stringOfLastState() + " is ";
 			if (p < 0.0001) {
 			    str += "0.0001/" + mass;
