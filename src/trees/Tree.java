@@ -17,10 +17,6 @@ public class Tree{
     public void setRoot(Node node){
         root = node;
     }
-    public void setRoot(String item, Logger logger){
-        root = new Node(item, logger);
-    }
-
     public String toString(){
         return root.toString(0);
     }

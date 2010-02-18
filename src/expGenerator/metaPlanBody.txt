@@ -111,6 +111,8 @@
 	    pc.chosen = s;
 	    PlanIdInfo info = (PlanIdInfo) s.getInfo();
 	    ag.planNodes[info.plan_id].setHandledRepostedGoal(isReposted);
+	    ag.activeExecutionTrace.pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],ag.state());
+	    ag.env.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace);
 	}
     }
 }

@@ -480,8 +480,8 @@ public class ExpGenerator {
 		// plan to start new iteration
 		code = "package plans;\n"
 		+"import agents.Environment;\n"
-		+ "import events.ReadyForNextIteration;\n"
-		+ "\n"
+		+"import events.ReadyForNextIteration;\n"
+		+"\n"
 		+"public plan StartNewIteration extends Plan {\n"
 		+"\t#handles event ReadyForNextIteration ready;\n"
 		+"\t#uses interface Environment env;\n\n"
@@ -489,7 +489,10 @@ public class ExpGenerator {
 		+"\t return true;\n"
 		+"}\n\n"
 		+"context(){\n\ttrue;\n}\n\n"
-		+"#reasoning method\nbody(){\n\tenv.runOneIteration(ready.outcome);\n}\n\n}";
+		+"#reasoning method\nbody(){\n"
+        +"\t/* Start new episode */\n"
+        +"\tenv.runOneIteration(ready.outcome);\n"
+        +"}\n\n}";
 		try{	
 			PrintWriter writer = new PrintWriter(targetDir+"/plans/StartNewIteration.plan");
 			writer.println(code);
@@ -977,9 +980,7 @@ public class ExpGenerator {
 		
 		//run one iteration
 		code+="public void runOneIteration(){\n"
-		+"\tif(true || update_mode == UpdateMode.STABLE) {\n"
-		+"\t\tlearningAgent.resetLastStates();\n"
-		+"\t}\n"
+        +"\tlearningAgent.resetNewEpisode();\n"
 		+"\twriteLog(\"Iteration: \"+it+\"--------------------------\");\n"
 		+"\tif (it < numIterations) {\n"
 		+"\t\tit++;\n"
@@ -1118,6 +1119,8 @@ public class ExpGenerator {
 		+"\tstableE = 0.05;\n"
         +"\tplanSelectThreshold = 0.0;\n"
         +"\tcoverageWeight = 1.0;\n"
+        
+        +"\tactiveExecutionTrace = new ExecutionTrace();\n"
 
 		+"\tSystem.out.println(\"The BDI-learning agent has started!\");\n";
 		int index=0; 
@@ -1186,6 +1189,8 @@ public class ExpGenerator {
 		+"\tTree gpTree;\n"
 		+"\tpublic double planSelectThreshold;\n"
 		+"\tpublic double coverageWeight;\n"
+        
+        +"\tpublic ExecutionTrace activeExecutionTrace; \n"
 
 		/*
 		+"\tpublic boolean isStableUpdates()\n"
@@ -1391,28 +1396,44 @@ public class ExpGenerator {
 		
 		code+="public void record(int plan_id, boolean res)\n"
 		+"{\n"
+        +"\tif (planNodes[plan_id].isFailedThresholdHandler()) {\n"
+        +"\t\tenv.writeLog(\"Refiner Agent: Skip recording for threshold handler plan \"+planNodes[plan_id].name()+\"\");\n"
+        +"\t\treturn;\n"
+        +"\t}\n"
+
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
-		+"\tenv.writeLog(\"Refiner Agent is recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].name()+\" on iteration \"+env.it);\n"
+		+"\tenv.writeLog(\"Refiner Agent: Recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].name()+\" on iteration \"+env.it);\n"
         
-        +"\tif (!planNodes[plan_id].isFailedThresholdHandler() && planNodes[plan_id].numberOfChildren() == 0) {\n"
+        +"\tif (planNodes[plan_id].numberOfChildren() == 0) {\n"
         +"\t\tstepsToAchieveTopGoal++;\n"
-        +"\t\tenv.writeLog(\"Tried \"+stepsToAchieveTopGoal+\" actions so far to achieve top goal.\");\n"
+        +"\t\tenv.writeLog(\"Refiner Agent: Tried \"+stepsToAchieveTopGoal+\" actions so far to achieve top goal.\");\n"
         +"\t}\n"
 
         +"\tif (res && (planNodes[plan_id].topGoal() != null)) {\n"
-        +"\t\tenv.writeLog(\"Total actions to achieve top goal was \"+stepsToAchieveTopGoal);\n"
+        +"\t\tenv.writeLog(\"Refiner Agent: Total actions to achieve top goal was \"+stepsToAchieveTopGoal);\n"
         +"\t\tenv.writeOutcomeForTopGoal(stepsToAchieveTopGoal);\n"
         +"\t\tstepsToAchieveTopGoal = 0;\n"
         +"\t}\n"
 		
+        +"\t/* Now record the experience */\n"
         +"\tenv.indentRight();\n"
-		+"\tplanNodes[plan_id].record(res);\n"
+		+"\tplanNodes[plan_id].record(res, (res || activeExecutionTrace.werePoppedTracesStable()));\n"
         +"\tenv.indentLeft();\n"
+        
+        +"\t/* Finished recording so pop this plan off the active execution trace */\n"
+        +"\tactiveExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);\n"
+        +"\t\tenv.writeLog(\"Refiner Agent: Removed Plan \"+planNodes[plan_id].name()+\" from active execution trace: \"+activeExecutionTrace);\n"
 		+"}\n";
 		
 		
-		
-		
+		// resetNewEpisode ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		code+= "public void resetNewEpisode() {\n"
+		+"\tif(true || update_mode == UpdateMode.STABLE) {\n"
+		+"\tresetLastStates();\n"
+		+"\tactiveExecutionTrace.reset();\n"
+		+"\t}\n"
+		+"}\n";
+
 		code+= "\tpublic String findPlanNode(Object item)\n"
 		+"\t{\n"
 		+"\t\tString returnString  = \"-------------------------------------\\nLocal: \";\n"
@@ -1456,6 +1477,25 @@ public class ExpGenerator {
 		}
 		code += "\tplanNodes[plan_id].setLastInstance(state);\n"
 		+"}\n\n";
+
+        // get last state method ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		code += "public String[] state(){\n"
+		+"\tString[] state = new String[numAttributes];\n";
+		index =0;
+		for (int i=0;i<atts.size();i++){
+			if (observableAtts.get(i)){
+				if (attsType.get(i).equals("boolean"))
+					code += "\tstate[" + index +"]=Boolean.toString("
+					+ ((Attribute) atts.elementAt(i)).name() + ");\n";
+				else
+					code += "\tstate[" + index +"]="
+					+((Attribute) atts.elementAt(i)).name() + ";\n";
+				index++;
+			}
+		}
+		code += "\treturn state;\n"
+		+"}\n\n";
+        
 		
 		// printDT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code += "public void printDT(){\n"
@@ -1473,8 +1513,8 @@ public class ExpGenerator {
 		code+="public double getCoverage(int plan_id){\n"
 		+"\treturn (double)(planNodes[plan_id].getCoverage(planNodes[plan_id].lastState()))/planNodes[plan_id].getPaths();\n"
 		+"}\n\n";
+        
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		
 		code += "public void notify(";
 		// count the number of observable attributes
 		int j=0;
@@ -1507,18 +1547,8 @@ public class ExpGenerator {
 			System.err.println("Error creating the agent RefinerAgent\n"+e);
 			System.exit(9);
 		}	
-/*		
-		try{
-			PrintWriter writer = new PrintWriter("/root/scott/BDI-Workspace/src/agents/RefinerAgent.agent");
-			writer.println(code);
-			writer.close();
-		}
-		catch(IOException e){
-			System.err.println("Error creating the agent RefinerAgent\n"+e);
-			System.exit(9);
-		}	
-*/
 	}
+
     public void generateGoalPlanVisualisation() {
         int index = 0;
         String str = "";

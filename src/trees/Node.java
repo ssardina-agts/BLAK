@@ -3,7 +3,7 @@ import java.util.*;
 
 
 
-public class Node{
+public abstract class Node{
 
     /*-----------------------------------------------------------------------*/
     /* MARK: Data Members */
@@ -194,5 +194,10 @@ public class Node{
         }
         return out;
     }
+
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Member Functions - Abstract */
+    /*-----------------------------------------------------------------------*/
+    public abstract boolean isStable(String[] state);
     
 }

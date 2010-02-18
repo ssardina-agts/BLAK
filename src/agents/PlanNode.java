@@ -105,12 +105,12 @@ public class PlanNode extends Node{
         handledRepostedGoal = false;
         try{
             decisionTree = new J48();
-            String[] options = new String[4];
-            //options[0] = "-U";
-            options[0] = "-C";
-            options[1] = "0.5";
-            options[2] = "-M";
-            options[3] = "1";
+            String[] options = new String[1];
+            options[0] = "-U";
+            //options[0] = "-C";
+            //options[1] = "0.5";
+            //options[2] = "-M";
+            //options[3] = "1";
             decisionTree.setOptions(options);
         }
         catch(Exception e){
@@ -181,16 +181,20 @@ public class PlanNode extends Node{
                 instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
                 instance2.setWeight(successes);
                 data.add(instance2);
+                logger.writeLog("Plan "+name()+" added training instance: "+instance2);
                 added++;
             }  
-            if (failures > 0) {
+            if ((failures > 0) && thisMemory.useForLearning()) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
                 instance.setWeight(failures);
                 data.add(instance);
+                logger.writeLog("Plan "+name()+" added training instance: "+instance);
                 added++;
             }
         }
-        logger.writeLog("Plan "+name()+" built training data set with "+added+" samples");
+        if (added > 0) {
+            logger.writeLog("Plan "+name()+" built training data set with "+added+" samples");
+        }
     }
 
     public double[] getProbability() {
@@ -229,7 +233,7 @@ public class PlanNode extends Node{
         }
         
         /* If we have had no experience yet then use the default probability */
-        if (experiences.size() == 0) {
+        if (data.numInstances() == 0) {
             double[] val = new double[2];
             val[0] = 0.5;
             val[1] = 0.5;
@@ -278,27 +282,23 @@ public class PlanNode extends Node{
         System.out.println(decisionTree);
     }
 
-    /**
-     * record method called each time a plan succeeds or fails. The method
-     * retrieves the state of the world at the moment when the plan was
-     * chosen, and records the feature vector with the outcome.  In this 
-     * implementation, the feature vector with the outcome is used as a key 
-     * in a hash table and the number of times this feature vector occured
-     * is stored as the data, and then, it is translated to the format accepted
-     * by weka
-     * @param res
+    /* Caller responsibilities:
+     * 1. Ensure this is not a failed threshold handler plan
+     * 2. If using BUL recording, to ensure that active execution trace
+     *    below this plan is stable.
      */
     public void record(boolean res) {   
-        record(res, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
+        record(res, true/*isStableBelow*/);
     }
-    
-    public void record(boolean res, int depth, boolean isRoot, double failureNodeComplexity)
+    public void record(boolean res, boolean isStableBelow) {   
+        record(res, isStableBelow, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
+    }
+    public void record(boolean res,
+                       boolean isStableBelow,
+                       int depth, 
+                       boolean isRoot, 
+                       double failureNodeComplexity)
     {
-        if (this.isFailedThresholdHandler) {
-            logger.writeLog("Skipped recording for failed threshold handler plan "+name()+" in state "+this.stringOfLastState());
-            return;
-        }
-        
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
         /* In failure recovery mode, if a subplan at any level below handled a 
@@ -311,22 +311,10 @@ public class PlanNode extends Node{
             res = false;
         }
         
-        /* !!!: coverage calc for reposted goals is very tricky. 
+        /* !!!: Coverage calculation for reposted goals is very tricky. 
          * does not work as it is now.
          * Needs more working out.
          */
-        
-        if(!res && (update_mode == UpdateMode.STABLE) && (this.numberOfChildren() > 0)) {
-            //we failed...
-            if(this.childrenStable()) {
-                //children are stable so we should update..
-                logger.writeLog("Plan "+name()+" has "+this.children.size()+" stable children for state "+this.stringOfLastState());
-            } else {
-                //children are unstable and we have failed. do not update. This pulls us out of the recording process.
-                logger.writeLog("Plan "+name()+" will not update on this failure since some of its "+this.children.size()+" children are unstable in state "+this.stringOfLastState());
-                return;
-            }
-        }
         
         /* Now, record the experience */
         String memoryKey = this.stringOfState(lastState);
@@ -339,30 +327,38 @@ public class PlanNode extends Node{
             thisMemory = new Experience(logger);
             newold = "NEW";
         }
+        thisMemory.setState(lastState);
+        thisMemory.incrementAttempts();
         if(res) {
-            if (thisMemory.getNumberOfFailures() > 0) {
-                /* Always reset the failures count. At this point
-                 * we consider this a succesful plan for this state, 
-                 * so we will count any future failures afresh.
-                 */
-                thisMemory.setNumberOfSuccesses(1);
-                thisMemory.setNumberOfAttempts(1);
-                logger.writeLog("Plan "+name()+" had success in state "+memoryKey+" so will reset all previous failures now.");
-            }
-            thisMemory.incrementAttempts();
             thisMemory.incrementSuccesses();
-        } else {
-            thisMemory.incrementAttempts();
         }
+        
+        /* BUL: Check if this experience should be used in learning */
+        if ((update_mode == UpdateMode.STABLE) && !res && (!isStableBelow || !isStable())) {
+            thisMemory.setUseForLearning(false);
+        } else {
+            thisMemory.setUseForLearning(true);
+        }
+
+        /* Reset failures on first success */
+        if(res && (thisMemory.getNumberOfSuccesses() == 1)) {
+            /* This is the first tme we succeeded in this state. 
+             * At this point we consider this a succesful plan for this state, 
+             * so we will count any future failures afresh.
+             */
+            thisMemory.setNumberOfSuccesses(1);
+            thisMemory.setNumberOfAttempts(1);
+            logger.writeLog("Plan "+name()+" had success in state "+memoryKey+" so will reset all previous failures now.");
+        }
+        
+        /* BUL: Now update the rate of change of success */
         thisMemory.updateProbability();
         
-        if(!(update_mode == UpdateMode.STABLE) || 
-           ((update_mode == UpdateMode.STABLE) && (res || this.childrenStable()))) {
-            thisMemory.setState(lastState);
-        }
         
+        /* Finally, save this experience */
         this.experiences.put(memoryKey, thisMemory);
         
+        /* Coverage related updates */
         if (select_mode == PlanSelectMode.COVERAGE) {
             if (!this.handledRepostedGoal || (topGoal() != null)) {
                 /* Mark only the first tried plans as dirty for coverage calculation */
@@ -378,10 +374,12 @@ public class PlanNode extends Node{
             this.experiences.put(memoryKey, thisMemory);
         }
         
+        /* !!!: This should be handled by the caller instead */
         if (isRoot) {
             this.clearDirtyPath(depth);
         }
         
+        /* Confidence related updates */
         if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
             //double f = (this.numberOfChildren() == 0) ? getComplexity(depth) : Math.max(1,getComplexity(depth)-failureNodeComplexity);
             double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
@@ -392,6 +390,7 @@ public class PlanNode extends Node{
                             +" calculated new decays="+getComplexityDecay(memoryKey, depth)
                             +","+getDomainDecay(depth));
         }
+        
         logger.writeLog("Plan "+name()+" recorded "+(res?"(+)":"(-)")+" experience ["+thisMemory.toString()+"] to "+newold+" key "+memoryKey);
         
         /* Rebuild the DT if we have had sufficient new experiences*/
@@ -415,108 +414,36 @@ public class PlanNode extends Node{
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
 
-    /**
-     * Used to determine if this node can be considered stable.
-     * Perhaps will require a parameter indicating state as a node could be stable for some, yet no other states.
-     * @return True if we consider this node stable, which ATM implies that its sub nodes are stable.
-     */
+    public boolean isStable() {
+        return isStable(lastState);
+    }
     public boolean isStable(String[] state)
     {
+        boolean stable = false;
         String lastStateReference = this.stringOfState(state);
-        if (this.isFailedThresholdHandler) {
-            logger.writeLog("Failed threshold handler plan "+name()+" assumed stable in state "+lastStateReference);
-            return true;
-        }
-        //System.out.println("Checking Stability");
-        boolean stable = true;
-        
-        logger.writeLog("Plan "+name()+" is checking stability for state "+lastStateReference);
-        
-        if (this.isSuccessful(state)) {
-            //We have succeeded in this state before so consider this stable
-            logger.writeLog("Plan "+name()+" has succeeded in state "+lastStateReference+" before, so will consider it stable");
-            return true;
-        }
-        if(lastStateReference!=null)
-        {   
-            if(experiences.containsKey(lastStateReference))
-            {
-                //We have a record of this state being used before
-                Experience thisRecord  = (Experience)experiences.get(lastStateReference);
-                if(this.stableK()>thisRecord.getNumberOfAttempts())
-                {
-                    //We haven't yet tried enough attempts to be considered stable.
-                    logger.writeLog("Plan "+name()+" does not satisfy minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")");
-                    return false;
-                }
-                if(thisRecord.getDeltaProbability()>this.stableE())
-                {
-                    //Our rate of change is to high to be considered stable
-                    logger.writeLog("Plan "+name()+" does not satisfy change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")");
-                    return false;
-                }
-                logger.writeLog("Plan "+name()+
-                                " satisfies minimum number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")"+
-                                " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")"+
-                                " for state "+lastStateReference);
-            }
-            else
-            {
-                //We've not seen this record before...
-                logger.writeLog("Plan "+name()+" has never seen state "+lastStateReference+" before");
-                return false;
-            }
-        }
-        else
-        {
-            //We have no last state...
-            //We can't be considered stable if we've never been used before!
-            return false; 
-        }
-        //I believe this now comes out in the wash....
-        //We are stable. What about our sub-nodes?
-        //if(!this.childrenStable())
-        //{
-        //return false;
-        //}
-        
-        return stable;
-    }
 
-    public boolean childrenStable()
-    {
-        if(this.children.size()>0)
-        {
-            for(int j = 0; this.children.size()>j;j++)
-            {
-                GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-                logger.writeLog("Plan "+name()+" is checking child goal "+thisNode.name()+" for stability for state "+this.stringOfState(lastState));
-                String[] goalLastState = thisNode.calculateEndStateFrom(lastState);
-                if(!thisNode.isStable(goalLastState))
-                {
-                    return false;
-                } else if (!thisNode.isSuccessful(goalLastState) && ((j+1)<this.children.size())) {
-                    /* Fine, so this child goal node is stable, but if this child
-                     * always fails then there is no point continuing because 
-                     * the next child (also a goal) would've never been tried 
-                     * (since we would've stopped at the failure of this goal node)
-                     * and therefore will always fail the stability test.
-                     * The reality is that this plan is in fact stable, because
-                     * there is nothing else to try in this state.
-                     */
-    				logger.writeLog("Goal "+thisNode.name()+" has previously failed in state "+this.stringOfState(goalLastState)+" so forego remaining children and consider us ("+name()+") stable");
-                    return true;
+        if(isFailedThresholdHandler) {
+            logger.writeLog("Plan "+name()+" IS STABLE for state "+lastStateReference+": It is a dummy plan");
+            stable = true;
+        } else if(experiences.containsKey(lastStateReference)) {
+            /*We have a record of this state being used before */
+            Experience thisRecord  = (Experience)experiences.get(lastStateReference);
+            if(this.stableK()<=thisRecord.getNumberOfAttempts()) {
+                if(thisRecord.getDeltaProbability()<=this.stableE()) {
+                    stable = true;
+                    logger.writeLog("Plan "+name()+" is stable for state "+lastStateReference+":"+
+                                    " number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")"+
+                                    " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")");
+                } else {
+                    logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": change in probability "+thisRecord.getDeltaProbability()+">E("+this.stableE()+")");
                 }
-            }   
-            return true;
+            } else {
+                logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": number of attempts "+thisRecord.getNumberOfAttempts()+"<K("+this.stableK()+")");
+            }
+        } else {
+            logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": has never witnessed this state before");
         }
-        else
-        {
-            //This node has no children.
-            //No children means stable as far as children are concerned.
-            return true;
-        }
-        
+        return stable;
     }
 
     

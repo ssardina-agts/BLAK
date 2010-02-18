@@ -9,7 +9,10 @@ import weka.core.*;
 
 public class Experience 
 {
-	//private Instance state;
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Data Members */
+    /*-----------------------------------------------------------------------*/
+
 	private double previousProbability;
 	private double deltaProbability;
 	private int numberOfSuccesses;
@@ -18,8 +21,11 @@ public class Experience
     private Logger logger;
     private String[] state;
     private Hashtable decay;
-
+    private boolean useForLearning;
 	
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Constructors */
+    /*-----------------------------------------------------------------------*/
 	public Experience(Logger logger)
 	{
 		//setState(null);
@@ -30,9 +36,20 @@ public class Experience
 		numberOfAttempts = 0;
         coverage = new Hashtable();
         decay = new Hashtable();
+        useForLearning = true;
 	}
 
-	
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Access Members */
+    /*-----------------------------------------------------------------------*/
+
+    public boolean useForLearning() { return useForLearning; }
+    public void setUseForLearning(boolean val) { useForLearning = val; }
+    
+    
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Member Functions - Misc */
+    /*-----------------------------------------------------------------------*/
 
 	public int addCoverage(String[] paths, int depth) 
 	{
@@ -146,13 +163,16 @@ public class Experience
 		double newDelta = Math.abs(this.previousProbability - newProb);
 		this.setPreviousProbability(newProb);
 		this.setDeltaProbability(newDelta);
-		
 	}
 	
 	public String toString()
 	{
-		String returnString = "previous probability:"+previousProbability+", delta probability:"+deltaProbability
-		+", successful attempts:"+numberOfSuccesses+", total attempts:"+numberOfAttempts+", coverage:"+coverage.size();
+		String returnString = "previous probability:"+previousProbability+
+        ", delta probability:"+deltaProbability+
+		", successful attempts:"+numberOfSuccesses+
+        ", total attempts:"+numberOfAttempts+
+        ", coverage:"+coverage.size()+
+        ", use for learning:"+useForLearning;
 		
 		return returnString;
 	}
