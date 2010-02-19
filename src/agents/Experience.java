@@ -22,6 +22,7 @@ public class Experience
     private String[] state;
     private Hashtable decay;
     private boolean useForLearning;
+    private boolean hasStableChildren;
 	
     /*-----------------------------------------------------------------------*/
     /* MARK: Constructors */
@@ -37,6 +38,7 @@ public class Experience
         coverage = new Hashtable();
         decay = new Hashtable();
         useForLearning = true;
+        hasStableChildren = false;
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -45,7 +47,10 @@ public class Experience
 
     public boolean useForLearning() { return useForLearning; }
     public void setUseForLearning(boolean val) { useForLearning = val; }
-    
+
+    public boolean hasStableChildren() { return hasStableChildren; }
+    public void setHasStableChildren(boolean val) { hasStableChildren = val; }
+
     
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - Misc */

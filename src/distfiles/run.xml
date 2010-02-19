@@ -689,7 +689,7 @@
 </target>
 <target name="runtest05v3gmt" description="Run test05v3gmt">
     <failIfBuildNotFound test.name="test05v3gmt"/>
-	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="coverage"      run.params="-n 0.0 -i 3000 -t 0.2 -b 0.01"/>
+	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="coverage"      run.params="-n 0.0 -i 3000 -t 0.2 -b 0.01"/>
 	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.0 -i 3000 -t 0.2"/>
 	<runTestRepeats test.name="test05v3gmt" run.mode="stable"     run.select="coverage"      run.params="-n 0.0 -i 3000 -k 3 -e 0.1 -t 0.2 -b 0.01"/>
 	<runTestRepeats test.name="test05v3gmt" run.mode="stable"     run.select="probabilistic" run.params="-n 0.0 -i 3000 -k 3 -e 0.1 -t 0.2"/>

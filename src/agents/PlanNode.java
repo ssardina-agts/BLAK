@@ -328,6 +328,7 @@ public class PlanNode extends Node{
             newold = "NEW";
         }
         thisMemory.setState(lastState);
+        thisMemory.setHasStableChildren(isStableBelow);
         thisMemory.incrementAttempts();
         if(res) {
             thisMemory.incrementSuccesses();
@@ -428,17 +429,21 @@ public class PlanNode extends Node{
         } else if(experiences.containsKey(lastStateReference)) {
             /*We have a record of this state being used before */
             Experience thisRecord  = (Experience)experiences.get(lastStateReference);
-            if(this.stableK()<=thisRecord.getNumberOfAttempts()) {
-                if(thisRecord.getDeltaProbability()<=this.stableE()) {
-                    stable = true;
-                    logger.writeLog("Plan "+name()+" is stable for state "+lastStateReference+":"+
-                                    " number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")"+
-                                    " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")");
+            if (thisRecord.hasStableChildren()) {
+                if(this.stableK()<=thisRecord.getNumberOfAttempts()) {
+                    if(thisRecord.getDeltaProbability()<=this.stableE()) {
+                        stable = true;
+                        logger.writeLog("Plan "+name()+" is stable for state "+lastStateReference+":"+
+                                        " number of attempts "+thisRecord.getNumberOfAttempts()+">=K("+this.stableK()+")"+
+                                        " and change in probability "+thisRecord.getDeltaProbability()+"<=E("+this.stableE()+")");
+                    } else {
+                        logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": change in probability "+thisRecord.getDeltaProbability()+">E("+this.stableE()+")");
+                    }
                 } else {
-                    logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": change in probability "+thisRecord.getDeltaProbability()+">E("+this.stableE()+")");
+                    logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": number of attempts "+thisRecord.getNumberOfAttempts()+"<K("+this.stableK()+")");
                 }
             } else {
-                logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": number of attempts "+thisRecord.getNumberOfAttempts()+"<K("+this.stableK()+")");
+                logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": choices below are not stable");
             }
         } else {
             logger.writeLog("Plan "+name()+" is NOT stable for state "+lastStateReference+": has never witnessed this state before");
