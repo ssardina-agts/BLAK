@@ -1,0 +1,184 @@
+Reviewers' comments:
+
+
+Reviewer #1: The paper is concerned with learning plan selection for parametrized goals with
+sub-goal recursion in the context of a BDI architecture. The work is based on
+an earlier approach by the same authors applying decision-tree (DT) learning to this
+problem. Previously, goals were not parametrized and hence no recursion needed.
+Technical contributions include equations to compute a measure
+of confidence in the DT classification based on both plan and domain complexity
+and a likelihood measure for selecting a plan for execution. Experimental
+results using the Towers of Hanoi problem are presented and discussed.
+
+The problem is well motivated and is clearly relevant to the topic of this
+special issue. The way the above two measures are computed seems plausible,
+although this is only partly supported by the experiments. This is because of
+the "optimizations" you mention on page 16 for the particular problem at
+hand. What would happen if you did not use these optimizations?
+
+You say on p. 12 that \delta_Pt can be computed offline. It is not clear to me
+how. In your example, you state the equation for \delta_Pt but not how you
+obtained it. Was it derived automatically or by hand?
+
+You only compare your new approach to your previous work in the experiments. Why
+did you not include a comparison with the existing BDI program that comes with
+JACK? This is all the more surprising since you yourself ask: does our learning
+framework achieve the performance of the existing system. Does the existing
+program always do the right thing? In any case, it would be good to compare at
+least some of the hand-crafted context formulas with those learned by the DT
+approach.
+
+The paper is well written and the relevant literature is discussed/cited as far
+as I can tell. (I am no BDI expert.)
+
+Typo: p.20: preiously
+
+
+
+
+Reviewer #2: This paper presents work that aims at adding learning capabilities to
+BDI agent systems. In particular, the authors introduce learning of
+the context conditions of BDI agent programs, that is, the state
+conditions that are required to hold in the current state of execution
+in order for an agent program to be considered for execution.
+The approach is based on replacing the context formulae of programs by
+decision trees. The work builds on previous work by the authors by
+generalizing the learning scheme to work with parametrized goal/events
+and (bounded) recursive programs. An experimental evaluation of the
+learning approach is presented showing the improvement over their
+previous work.
+
+The overall work seems reasonable and appears to be effective,
+although it does not seem to be particularly challenging. The learning
+approach is limited by the inabilitiy to take into account goal
+inter-dependencies. Nevertheless, the work represents progress towards
+endowing BDI agents with learning capabilities.
+
+There are some parts of the paper where clarity could be
+improved. More detailed comments follow.
+
+In sec.3, 1st para., what do you mean by "event-goal type"? just a
+parametrized event-goal?
+
+The whole section 3.1 is written in a confusing way.
+In the 2nd para. pg 9, you talk about "the plan". One can guess that
+you mean learning is applyied for each plan in the library. But it
+would be better to make it explicit here, e.g., that you need a
+training data set for each plan in the library.
+At the end of this paragraph, it says that a classification is learnt
+"based purely on the subset of attributes in w that are relevant to
+the contex condition of the plan." This is not clear. What 'w' are you
+referring to here? The next para. starts again talking about "The
+attributes in w...", what 'w'?
+Also in the 2nd para. it says "the decision tree will learn a
+classification..." isn't the tree itself what is being learnt?
+In the 3rd para. pg 11, it says that "...we may never find the bottom
+or leaf nodes. This has implication for any bottom-up strategies."
+You mean top-down strategies?
+
+In sec. 3.2, goals G are sometimes followed by square brackets, as in
+G[phi1], and sometimes buy angle brackets, G<phi1>, which one may
+guess represent modalities, but the notation has not been defined. So
+the reader is left guessing what the notation means.
+
+Sec 3.4, 1st para., you refer to a "previous definition of the
+learning task (Section 3)", which one can guess refers to the informal
+definition at the beginning of Section 3, since there is no definition
+anywhere. Btw, the reference itself is in section 3.
+Also in sec 3.4, you define the training data set as tuples
+[w U phi, o]. This is strange since I would think the world would be
+represented differently from a goal's parameters, but you specify the
+first element in a training data tuple as the union of a world and
+the goal's parameters. Why not add a ground goal instead? Or use a
+triple?
+
+At the end of sec. 4.1, you discuss some "optimizations" that are
+possible in the case of the towers of hanoi problem. It is not really
+clear why you need to make these optimizations (I'd called them
+simplifying assumptions rather than optimizations). What if you don't
+make them?
+
+Typos etc:
+
+pg 8: "a plans ..." -> "a plan ..." or "a plan's ..." (occurs in many places).
+pg 20: "preiously learnt"
+
+
+
+
+Reviewer #3: The paper addresses a nice new idea of learning of conditions in the context of bdi plan hierarchy.
+It claims that with the approach better conditions can be learned based on the success of previous
+executions plans. The approach is based on previous work of the authors. The paper is well written
+and is easy to understand but some parts in the sections 2 and 3 would be easier to understand if
+a good real example would guide the line of argumentation (e.g. an example from the agents or robotics
+domain). The major weaknesses of the paper is the lack of emperical or formal results and the number of
+assumptions made which makes the general applicability questionable.
+
+detailed remarks:
+
+A good example of a domain used in the explanation of the background in section 2 and in
+the development of the approach in section 3 would ease the understanding of the paper
+and would even non-bdi experts to profit from the paper.
+
+In the middle part of page 7 the authors claim that event types and recursion is important
+to handle. But it is not very well explained why these constructs are important to handle.
+Also throughout the paper it is not really point out how the event types are handled in fact.
+
+The term "coverage" is used very often starting with page 7. It seems to be an important
+part in the approach but is neither formally defined nor really explained. A definition
+and a deeper explanation would help the reader to understand the approach.
+
+On page 9 the authors introduce decision trees to represent the chance of a plan to
+be successful which is used later to define if a plan should be used in a certain
+situation. To me it is not clear as a decision tree covers both the negative and
+the positive case of the execution how the information on the negative outcome is used.
+
+On the second half of page 9 the authors claim that the set of attributes used in the
+learning of a decision tree are selected by the programmer of the domain. This means in
+the first place additional work for the programmer and might in the second place prevent
+the system to find a good solution. Would it be feasible to learn the conditions without
+this artificial limitation of the attributes?
+
+On page 10 the authors explain recursion and the need for. Could you give a proper
+example for a recursive event goal in a real world domain.
+
+In chapter 3.3 the authors explain that the training set is build up incrementally.
+To my understanding it might be the case that the training set so far and the plan
+selection learned so far has an influence of the future training data. Therefore,
+is it possible that a somehow unlucky plan selection and therefore probably bad
+training set prevent the system to converge to a good or correct set of conditions?
+
+Formula 2 on page 14. The construction of the formula looks to me a little bit
+ad-hoc. Is there a better justification for the formula? What are others or maybe
+better weight functions.
+
+In the middle part of page 16 the authors state that they do not continuous
+exploration once a solution is found. Why this is done or why it is sufficient?
+It seems to me that this assumption is against the authors arguments for the
+properties of their approach.
+
+In 4.2. k is introduced but no real number for it in the experiments is presented
+nor the influence of this parameter is described. Please give more information
+on this.
+
+At the end of page 18 the authors that the applicability threshold is set to
+20% in the second experiment. It seems to my a little bit artificial and tuned
+towards an ad-hoc justification for the approach. Please give further information
+on the performance of the compared algorithms in the context of this threshold.
+
+On the top of page a number of assumptions are stated. These assumption seems
+to limit the practical general applicability of the approach a lot. Please
+give a deeper justification for these assumptions and on probably solutions
+to them.
+
+The coverage of related research seems to me a bit weak. Only three references
+on such a topic is not much. I guess there is more related work out there.
+Please rework these section.
+
+The result section is not very much convincing. First to me it is not clear
+why a simple toy domain like the towers of Hanoi justifies the usefulness
+of the algorithm. Even the two experiments in this domain are made in a
+ad-hoc manner. For a journal this is too weak.
+I like to see a deeper treatment of the toy domain and to see experiments
+in a more advanced, more relevant or even real world domain.
+Otherwise I am not completely convinced about the advantages of the approach.
