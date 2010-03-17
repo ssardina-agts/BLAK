@@ -1,11 +1,81 @@
 %!TEX root = ./dp6-confidence.tex
+\begin{tikzpicture}[level distance=1.3cm]
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{trace}=[solid,style=circle,fill=green!20,above left=0.3cm,scale=.7]
 
-\begin{tikzpicture}
-\draw[|->,very thick] (0,0) -- (7,0);
-\draw[|-|,>=angle 90] (5,-0.4) -- (7,-0.4) node[midway,fill=white]{$n$}; 
-\draw[|-|,>=angle 90] (0,0.4) -- (5,0.4) node[midway,fill=white]{$W$}; 
-\draw[|-|,>=angle 90] (5,0.4) -- (7,0.4) node[midway,fill=white]{$\triangle W$}; 
+\tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{planbox2}=[planbox,fill=black!20]
+\tikzstyle{planbox3}=[planbox,fill=red!20]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox2}=[goalbox,fill=black!20]
+\tikzstyle{goalbox3}=[goalbox,fill=red!20]
+
+	
+\tikzstyle{level 1}=[sibling distance=4.0cm] 
+\tikzstyle{level 2}=[sibling distance=1.1cm] 
+\tikzstyle{level 3}=[sibling distance=3.5cm]
+\tikzstyle{level 4}=[sibling distance=1.1cm]
+
+\node[planbox3,solid] {$P$}
+		child {node[goalbox2] {$G_{1}$}
+			child {node[planbox2] {$P_{1}$}
+				child {node[goalbox2] {$G_{3}$}
+					child {node[planbox,fail] {$P_{7}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox,fail] {$P_{8}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox2,succ] {$P_{9}$}
+						node[trace]{$1$}
+					}
+				}
+				node[trace]{$4$}
+			}
+			child {node[planbox,fail] {$P_{2}$}
+				node[trace]{$1$}
+			}
+			child {node[planbox,fail] {$P_{3}$}
+				node[trace]{$1$}
+			}
+		}
+		child {node[goalbox3] {$G_{2}$}
+			child {node[planbox,fail] {$P_{4}$}
+				node[trace]{$1$}
+			}
+			child {node[planbox,fail] {$P_{5}$}
+				node[trace]{$1$}
+			}
+			child {node[planbox3] {$P_6$}
+				child {node[goalbox3] {$G_{4}$}
+					child {node[planbox3,fail] {$P_{10}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox,succ] {$P_{11}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox,fail] {$P_{12}$}
+						node[trace]{$1$}
+					}
+				}
+				child {node[goalbox] {$G_{5}$}
+					child {node[planbox,succ] {$P_{13}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox,fail] {$P_{14}$}
+						node[trace]{$1$}
+					}
+					child {node[planbox,fail] {$P_{15}$}
+						node[trace]{$1$}
+					}
+				}
+			node[trace]{$7$}
+			}
+		}
+		node[trace]{$16$}
+		
+;
 
 \end{tikzpicture}
-
-
