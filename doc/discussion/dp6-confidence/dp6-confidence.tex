@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-\usepackage[left=1.0in, right=1.0in, top=1in, bottom=1in, includefoot, headheight=13.6pt]{geometry}
+\usepackage[left=1.0in, right=1.0in, top=1in, bottom=1in]{geometry}
 \usepackage{times}
 \usepackage{tikz}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
@@ -54,7 +54,7 @@ Let's say the second execution results in the failed trace $\lambda=G[P:w] \cdot
 confidence(P,w)=\frac{stable~plans~in~[P,P_1,\boldsymbol{P_2},P_7]}{total~plans~in~[P,P_1,\boldsymbol{P_2},P_7]} = \frac{0}{4}
 \end{equation}
 
-Now, let's say the next four executions fail in $P_2$, $P_8$, $P_2$ (that is the first plan to become stable), $P_{10}$ (for which $P_9$ must have succeeded first). At step six then, the confidence is given by (new set members in bold):
+Now, let's say the next four executions fail in $P_2$, $P_8$, $P_2$ (that is the first plan to become stable), $P_{10}$ (for which $P_9$ must have succeeded first\footnote{Note that $P_9$ is not part of the final active execution trace ending in $P_{10}$ as it was a successful choice that would have been removed from the active trace. As such, the set shown in Equation \ref{eqn:conf3} would not contain $P_9$. In order for this to work as intended, the confidence calculation must be done after every leaf node outcome regardless of success or failure.}). At step six then, the confidence is given by:
 
 \begin{equation}
 confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_2, \boldsymbol{P_6},P_7,\boldsymbol{P_8},\boldsymbol{P_9},\boldsymbol{P_{10}}]}{total~plans~in~[P,P_1,P_2, \boldsymbol{P_6},P_7,\boldsymbol{P_8},\boldsymbol{P_9},\boldsymbol{P_{10}}]} = \frac{1}{8}
@@ -63,7 +63,7 @@ confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_2, \boldsymbol{P_6},P_7,\boldsymb
 
 And so on. In Figure \ref{fig:conf}, the number against each plan node $P*$ indicates the maximum number of sub-plans that will eventually be considered for stability at that node for full confidence. 
 
-The first benefit of this approach is that the confidence grows gradually, in a manner similar to coverage, and may be used to similarly guide exploration. The second benefit is that we do not have to concern ourselves with possibilities (paths) that may never eventuate, as we do with coverage. Say if plan $P_9$ was to also fail in world $w$. In that case goal $G_2$ would never be posted and all it's sub-plans would never be executed. For coverage-based calculations this is a problem since we consider the full gamut of possibilities, and ignoring such combinations would mean that full coverage would never be achieved. With this new measure however, since we only deal with past occurrences then we are still guaranteed to converge to full confidence as long as the set of previously tried plans are executed sufficient times to become stable. The third benefit is that the method scales well as it does not depend on the complexity of the domain, but only on the execution history.
+The approach has several merits. Firstly, the confidence measure grows gradually, in a manner similar to coverage, and may be used to similarly guide exploration. Secondly, we do not have to concern ourselves with possibilities (paths) that may never eventuate, as we do with coverage. Say if plan $P_9$ was to also fail in world $w$. In that case goal $G_2$ would never be posted and all it's sub-plans would never be executed. For coverage-based calculations this is a problem since we consider the full gamut of possibilities, and ignoring such combinations would mean that full coverage would never be achieved. With this new measure however, since we only deal with past occurrences then we are still guaranteed to converge to full confidence as long as the set of previously tried plans are executed sufficient times to become stable. Finally, the method scales well as it does not depend on the complexity of the domain, but only on the execution history.
 
 Algorithm \ref{alg:conf} describes this confidence calculation for a given active execution trace $\lambda$. Here $\eta$ is used to propagate the full list of sub-plans in the trace up to the parent. $StablePlan$ is a boolean function to check if the given plan $P_n$ is stable or not. For any given plan, $Choices$ holds the complete list of all executed sub-plans along with their stability status.
 
@@ -83,7 +83,6 @@ $confidence(P_n,w_n) +\!\!= |choices(P_n,w_n) == true|/|choices(P_n,w_n)|$\;
 
 One limitation of this (and our previous approaches) is that the confidence measure is a per-world concept while the decision tree that it is applied to encapsulates knowledge about multiple worlds. This means that if a new world is witnessed, then even though the decision tree might generalise based on all seen worlds, the confidence measure will be zero resulting is the plan selection weight to default to $0.5$. One way to improve this situation for unseen worlds would be to use the average confidence from all previously seen worlds. This would allow generalisations to be used, but with some reservation. However, a better approach is to use a second specialised confidence measure that captures such domain complexity. This is described in the following section.
 
-\fbox{Open Issue: $P_9$ is not part of the active execution trace ending in $P_{10}$ so will be missed in Equation \ref{eqn:conf3}.}
 
 
 \section{Calculating Domain Confidence}
@@ -116,13 +115,13 @@ In inverse terms, confidence would increase with the rate at which old worlds ar
 
 \section{Putting It all Together: Calculating Plan Selection Weight}
 
-For plan $T$, the plan confidence $c_T(w)$ and domain confidence $\kappa_T$ may then be used to calculate a final plan selection weight $\Omega(w)$ as given by Equation \ref{eqn:omega}. Here $p_T(w)$ is the probability of success in world $w$ given by the decision tree of plan $T$.
-
-
 \begin{equation}
 \Omega'_T(w) = 0.5 + \left[  c_T(w) *  \kappa_T * \left( p_T(w) - 0.5 \right)  \right].
 \label{eqn:omega}
 \end{equation}
+
+For plan $T$, the plan confidence $c_T(w)$ and domain confidence $\kappa_T$ may then be used to calculate a final plan selection weight $\Omega(w)$ as given by Equation \ref{eqn:omega}. Here $p_T(w)$ is the probability of success in world $w$ given by the decision tree of plan $T$. This formulation is similar to the one presented in \cite{Singh:AAMAS10} bar the addition of the $\kappa_T$ term.
+
 
 
 %%
