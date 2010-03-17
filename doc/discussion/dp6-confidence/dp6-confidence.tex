@@ -4,6 +4,7 @@
 \usepackage{tikz}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usetikzlibrary{calc,arrows}
+\usepackage{amssymb,amsmath}
 \parindent 0pt
 \parskip 1.33ex
   
@@ -47,22 +48,24 @@ Let us consider the example goal-plan structure of Figure \ref{fig:conf}, and se
 confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_7]}{total~plans~in~[P,P_1,P_7]} = \frac{0}{3}
 \end{equation}
 
-Let's say the second execution results in the failed trace $\lambda=G[P:w] \cdot G1[P_2:w]$. The confidence at this step is then:
+Let's say the second execution results in the failed trace $\lambda=G[P:w] \cdot G1[P_2:w]$. The confidence at this step is then (new set members in bold):
 
 \begin{equation}
-confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_2,P_7]}{total~plans~in~[P,P_1,P_2,P_7]} = \frac{0}{4}
+confidence(P,w)=\frac{stable~plans~in~[P,P_1,\boldsymbol{P_2},P_7]}{total~plans~in~[P,P_1,\boldsymbol{P_2},P_7]} = \frac{0}{4}
 \end{equation}
 
-Now, let's say the next four executions fail in $P_2$, $P_8$, $P_2$ (that becomes stable), $P_4$ (note that for this to happen $P_9$ must have been selected first). At step six then, the confidence is given by:
+Now, let's say the next four executions fail in $P_2$, $P_8$, $P_2$ (that is the first plan to become stable), $P_{10}$ (for which $P_9$ must have succeeded first). At step six then, the confidence is given by (new set members in bold):
 
 \begin{equation}
-confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_2,P_4,P_7,P_8,P_9]}{total~plans~in~[P,P_1,P_2,P_4,P_7,P_8,P_9]} = \frac{1}{7}
+confidence(P,w)=\frac{stable~plans~in~[P,P_1,P_2, \boldsymbol{P_6},P_7,\boldsymbol{P_8},\boldsymbol{P_9},\boldsymbol{P_{10}}]}{total~plans~in~[P,P_1,P_2, \boldsymbol{P_6},P_7,\boldsymbol{P_8},\boldsymbol{P_9},\boldsymbol{P_{10}}]} = \frac{1}{8}
 \label{eqn:conf3}
 \end{equation}
 
-And so on. 
+And so on. In Figure \ref{fig:conf}, the number against each plan node $P*$ indicates the maximum number of sub-plans that will eventually be considered for stability at that node for full confidence. 
 
-In Figure \ref{fig:conf}, the number against each plan node $P*$ indicates the maximum number of sub-plans that will eventually be considered at that node for full confidence. Algorithm \ref{alg:conf} describes this confidence calculation for a given active execution trace $\lambda$. Here $\eta$ is used to propagate the full list of sub-plans in the trace up to the parent. $StablePlan$ is a boolean function to check if the given plan $P_n$ is stable r not. $Choices$ holds the full list of all past sub-plans executed along with their stability status.
+The first benefit of this approach is that the confidence grows gradually, in a manner similar to coverage, and may be used to similarly guide exploration. The second benefit is that we do not have to concern ourselves with possibilities (paths) that may never eventuate, as we do with coverage. Say if plan $P_9$ was to also fail in world $w$. In that case goal $G_2$ would never be posted and all it's sub-plans would never be executed. For coverage-based calculations this is a problem since we consider the full gamut of possibilities, and ignoring such combinations would mean that full coverage would never be achieved. With this new measure however, since we only deal with past occurrences then we are still guaranteed to converge to full confidence as long as the set of previously tried plans are executed sufficient times to become stable. The third benefit is that the method scales well as it does not depend on the complexity of the domain, but only on the execution history.
+
+Algorithm \ref{alg:conf} describes this confidence calculation for a given active execution trace $\lambda$. Here $\eta$ is used to propagate the full list of sub-plans in the trace up to the parent. $StablePlan$ is a boolean function to check if the given plan $P_n$ is stable or not. For any given plan, $Choices$ holds the complete list of all executed sub-plans along with their stability status.
 
 \begin{algorithm}[ht]
 \KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $\eta=[P,b] \cdot \ldots \cdot [P_{r},b_{r}]$; $k\geq0$; $\epsilon\geq0$}
@@ -78,15 +81,14 @@ $confidence(P_n,w_n) +\!\!= |choices(P_n,w_n) == true|/|choices(P_n,w_n)|$\;
 \label{alg:conf}
 \end{algorithm}
 
-The first benefit of this approach is that the confidence grows gradually, in a manner similar to coverage, and may be used to similarly guide exploration. The second benefit is that we do not have to concern ourselves with possibilities (paths) that may never eventuate, as we do with coverage. Say if plan $P_9$ was to also fail in world $w$. In that case goal $G_2$ would never be posted and all it's sub-plans would never be executed. For coverage-based calculations this is a problem since we consider the full gamut of possibilities, and ignoring such combinations would mean that full coverage would never be achieved. With this new measure however, since we only deal with past occurrences then we are still guaranteed to converge to full confidence as long as the set of previously tried plans are executed sufficient times to become stable. The third benefit is that the method scales well as it does not depend on the complexity of the domain, but only on the execution history.
+One limitation of this (and our previous approaches) is that the confidence measure is a per-world concept while the decision tree that it is applied to encapsulates knowledge about multiple worlds. This means that if a new world is witnessed, then even though the decision tree might generalise based on all seen worlds, the confidence measure will be zero resulting is the plan selection weight to default to $0.5$. One way to improve this situation for unseen worlds would be to use the average confidence from all previously seen worlds. This would allow generalisations to be used, but with some reservation. However, a better approach is to use a second specialised confidence measure that captures such domain complexity. This is described in the following section.
 
-One limitation of this (and our previous approaches) is that the confidence measure is a per-world concept while the decision tree that it is applied to encapsulates knowledge from multiple worlds. This means that if a new world is witnessed, then even though the decision tree might generalise based on past worlds, the confidence measure will always be zero resulting is the plan selection weight to default to $0.5$. One way to improve this situation for unseen worlds would be to use an average confidence value from all previously seen worlds. This would allow generalisations to be used, but with some reservation based on confidence.
+\fbox{Open Issue: $P_9$ is not part of the active execution trace ending in $P_{10}$ so will be missed in Equation \ref{eqn:conf3}.}
 
-\fbox{To Resolve: $P_9$ is not part of the active execution trace ending in $P_4$ so will be missed in Equation \ref{eqn:conf3}.}
 
 \section{Calculating Domain Confidence}
 
-Here, instead of determining our confidence in the plan (based on exploration of the structure), the aim is to build a confidence measure to capture the complexity of the domain (i.e number of worlds). The motivating idea for the solution is that a confidence measure may be constructed around the rate at which new worlds are being witnessed by a plan. During early exploration it is expected that the majority of worlds that a plan is selected for will be unique, therefore this rate is high and our confidence is low. Over time as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would taper off towards zero. Intuitively, our confidence over this period would increase to it's maximum. 
+Here, instead of defining confidence based on exploration of the structure, the aim is to build a confidence measure to capture the complexity of the domain (i.e number of worlds). The motivating idea for the solution is that a confidence measure may be constructed around the rate at which new worlds are being witnessed by a plan. During early exploration it is expected that the majority of worlds that a plan is selected for will be unique, therefore this rate is high and our confidence is low. Over time as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would taper off towards zero. Intuitively, our confidence over this period would increase to it's maximum. 
 
 \begin{figure}[ht]
 \begin{center}
