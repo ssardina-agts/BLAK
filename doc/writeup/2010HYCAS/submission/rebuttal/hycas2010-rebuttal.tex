@@ -1,0 +1,297 @@
+\documentclass[preprint,12pt]{elsarticle}
+\parindent 0pt
+
+\title{Extending BDI Plan Selection to Incorporate Learning from Experience\\(Manuscript Changes and Rebuttal)}
+
+\author{Dhirendra Singh \& Sebastian Sardina \& Lin Padgham}
+\ead{\{dhirendra.singh,sebastian.sardina,lin.padgham\}@rmit.edu.au}
+\address{RMIT University, Melbourne, Australia}
+
+\usepackage{color}
+\definecolor{gray}{rgb}{0.2,0.2,0.2}
+\newcounter{countshout}
+\newcommand{\shout}[1]{
+\vspace{0.15in}
+\noindent
+%\begin{center}
+%\begin{tabular}{c}
+		\fcolorbox{black}{white}{
+			\begin{minipage}{0.96\textwidth}
+			#1\addtocounter{countshout}{1}%
+			\end{minipage}
+			}
+		\fcolorbox{gray}{gray}{\textcolor
+		{white}{\textbf{Action}}}
+%		{white}{\textbf{\ Note \thecountshout\ }}}
+%\end{tabular}
+%\end{center}
+\vskip 0.25in
+}
+
+\begin{document}
+
+\begin{abstract}
+This document details the changes based on, including rebuttal against, reviewer comments on the original manuscript submitted to the Special Issue on Hybrid Control of Autonomous Systems of the Journal of Robotics and Autonomous Systems \cite{Singh:HYCAS10}.    
+\end{abstract}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{General Comments}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+We would like to point out that our previous work referred to as ``under review'' in the manuscript  is now accepted as a peer-reviewed publication \cite{Singh:AAMAS10} and we have duly updated the citation. Some concerns raised by the reviewers have also been addressed in \cite{Singh:AAMAS10} and we have noted this in our responses where appropriate.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Reviewer \#1 Comments and Responses}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\em The paper is concerned with learning plan selection for parametrized goals with sub-goal recursion in the context of a BDI architecture. The work is based on an earlier approach by the same authors applying decision-tree (DT) learning to this problem. Previously, goals were not parametrized and hence no recursion needed. Technical contributions include equations to compute a measure of confidence in the DT classification based on both plan and domain complexity and a likelihood measure for selecting a plan for execution. Experimental results using the Towers of Hanoi problem are presented and discussed.}
+
+
+\subsection{ The problem is well motivated and is clearly relevant to the topic of this special issue. The way the above two measures are computed seems plausible, although this is only partly supported by the experiments. This is because of the "optimizations" you mention on page 16 for the particular problem at hand. What would happen if you did not use these optimizations?}
+\label{rev1:optimisations}
+..
+
+\subsection{ You say on p. 12 that $\delta_Pt$ can be computed offline. It is not clear to me how. In your example, you state the equation for $\delta_Pt$ but not how you obtained it. Was it derived automatically or by hand?}
+
+..
+
+\subsection{ You only compare your new approach to your previous work in the experiments. Why did you not include a comparison with the existing BDI program that comes with JACK? This is all the more surprising since you yourself ask: does our learning framework achieve the performance of the existing system. Does the existing program always do the right thing? In any case, it would be good to compare at least some of the hand-crafted context formulas with those learned by the DT approach.}
+
+..
+
+\subsection{ The paper is well written and the relevant literature is discussed/cited as far as I can tell. (I am no BDI expert.)}
+
+..
+
+\subsection{ Typo: p.20: preiously}
+
+..
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Reviewer \#2 Comments and Responses}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\em This paper presents work that aims at adding learning capabilities to
+BDI agent systems. In particular, the authors introduce learning of
+the context conditions of BDI agent programs, that is, the state
+conditions that are required to hold in the current state of execution
+in order for an agent program to be considered for execution.
+The approach is based on replacing the context formulae of programs by
+decision trees. The work builds on previous work by the authors by
+generalizing the learning scheme to work with parametrized goal/events
+and (bounded) recursive programs. An experimental evaluation of the
+learning approach is presented showing the improvement over their
+previous work.}
+
+
+\subsection{ The overall work seems reasonable and appears to be effective,
+although it does not seem to be particularly challenging. The learning
+approach is limited by the inabilitiy to take into account goal
+inter-dependencies. Nevertheless, the work represents progress towards
+endowing BDI agents with learning capabilities.}
+
+..
+
+\subsection{ There are some parts of the paper where clarity could be
+improved. More detailed comments follow.}
+
+..
+
+\subsection{ In sec.3, 1st para., what do you mean by "event-goal type"? just a
+parametrized event-goal?}
+
+..
+
+\subsection{ The whole section 3.1 is written in a confusing way.
+In the 2nd para. pg 9, you talk about "the plan". One can guess that
+you mean learning is applyied for each plan in the library. But it
+would be better to make it explicit here, e.g., that you need a
+training data set for each plan in the library.}
+
+..
+
+\subsection{ At the end of this paragraph, it says that a classification is learnt
+"based purely on the subset of attributes in w that are relevant to
+the contex condition of the plan." This is not clear. What 'w' are you
+referring to here? The next para. starts again talking about "The
+attributes in w...", what 'w'?}
+
+..
+
+\subsection{ Also in the 2nd para. it says "the decision tree will learn a
+classification..." isn't the tree itself what is being learnt?
+In the 3rd para. pg 11, it says that "...we may never find the bottom
+or leaf nodes. This has implication for any bottom-up strategies."
+You mean top-down strategies?}
+
+..
+
+\subsection{ In sec. 3.2, goals G are sometimes followed by square brackets, as in
+G[phi1], and sometimes buy angle brackets, G<phi1>, which one may
+guess represent modalities, but the notation has not been defined. So
+the reader is left guessing what the notation means.}
+
+..
+
+\subsection{ Sec 3.4, 1st para., you refer to a "previous definition of the
+learning task (Section 3)", which one can guess refers to the informal
+definition at the beginning of Section 3, since there is no definition
+anywhere. Btw, the reference itself is in section 3.
+Also in sec 3.4, you define the training data set as tuples
+[w U phi, o]. This is strange since I would think the world would be
+represented differently from a goal's parameters, but you specify the
+first element in a training data tuple as the union of a world and
+the goal's parameters. Why not add a ground goal instead? Or use a
+triple?}
+
+..
+
+\subsection{ At the end of sec. 4.1, you discuss some "optimizations" that are
+possible in the case of the towers of hanoi problem. It is not really
+clear why you need to make these optimizations (I'd called them
+simplifying assumptions rather than optimizations). What if you don't
+make them?}
+
+We refer the reviewer to the response in \ref{rev1:optimisations} that addressed this exact concern.
+
+\subsection{ Typos etc:}
+
+..
+
+\subsection{ pg 8: "a plans ..." -> "a plan ..." or "a plan's ..." (occurs in many places).}
+
+..
+
+\subsection{ pg 20: "preiously learnt"}
+
+..
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Reviewer \#3 Comments and Responses}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+{\em The paper addresses a nice new idea of learning of conditions in the context of bdi plan hierarchy. It claims that with the approach better conditions can be learned based on the success of previous executions plans. The approach is based on previous work of the authors. The paper is well written and is easy to understand but some parts in the sections 2 and 3 would be easier to understand if a good real example would guide the line of argumentation (e.g. an example from the agents or robotics domain). The major weaknesses of the paper is the lack of emperical or formal results and the number of assumptions made which makes the general applicability questionable. detailed remarks:}
+
+
+\subsection{ A good example of a domain used in the explanation of the background in section 2 and in the development of the approach in section 3 would ease the understanding of the paper and would even non-bdi experts to profit from the paper.}
+\label{rev3:recursion_examples}
+
+\shout{We agree and have included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
+
+
+\subsection{ In the middle part of page 7 the authors claim that event types and recursion is important to handle. But it is not very well explained why these constructs are important to handle.} 
+
+In procedural languages that do not provide constructs for looping (for instance, $for$ and $while$ loops in programming), the basic mechanism for achieving this behaviour is through recursion. Since BDI falls in this category, then parameterised events and recursion become essential features that are heavily used in real systems.
+
+\shout{We have added this explanation to ...}
+
+\subsection{Also throughout the paper it is not really point out how the event types are handled in fact.}
+
+We believe this is adequately addressed and refer the reviewer to Section 3.4 Handling Event-Goal Types.
+
+\subsection{ The term "coverage" is used very often starting with page 7. It seems to be an important part in the approach but is neither formally defined nor really explained. A definition and a deeper explanation would help the reader to understand the approach.}
+
+\shout{We agree and have now clarified this in page 7.}
+
+\subsection{ On page 9 the authors introduce decision trees to represent the chance of a plan to be successful which is used later to define if a plan should be used in a certain situation. To me it is not clear as a decision tree covers both the negative and the positive case of the execution how the information on the negative outcome is used.}
+
+In a given world state $w$ (or a set of attributes as far as the decision tree is concerned), a plan may first fail due to a poor choice of sub-plan but later pass when all correct sub-choices were made. Both outcomes will be recorded in the training set against the same world state (i.e tuples [w,F] and [w,T]). This  along with positive and negative outcomes from other world states for which the plan was invoked.
+
+The positive and negative outcomes for various attribute value combinations (worlds) allows the decision tree induction algorithm ($J48$ from package $weka$) to filter out the attributes that carry the least information given the data. The resulting decision tree is essentially a compact representation that best explains the observations. 
+
+If we were to only use the positive outcomes, we would simply get a look-up table (decision table) for success in given world states. However, using both negative and positive outcomes, we can build an abstract representation (decision tree) that may be used to predict outcomes even for ``as yet unseen'' worlds --- based on the values of only those world attributes that are deemed important by the representation.
+
+
+\shout{We have updated [Section 3.1 Integrating Decision Trees into Context Conditions for Plans] to help clarify this further.}
+
+\subsection{On the second half of page 9 the authors claim that the set of attributes used in the learning of a decision tree are selected by the programmer of the domain. This means in the first place additional work for the programmer and might in the second place prevent the system to find a good solution. Would it be feasible to learn the conditions without this artificial limitation of the attributes?}
+
+The reviewer highlights an important issue, that of knowledge representation, and is the focus of ongoing work. Due to lack of space however, we do not delve into this in much detail apart from paragraph 2 on page 9. 
+
+To answer your question, one way to automate the attribute set is to parse the plan bodies for this information. However, this may still miss features that are important to the decision (and would normally be included in the context condition of the plan) but are never used in the plan body. An alternative is to include the full set of attributes, however that would entail longer learning periods for collecting sufficient data to filter out the irrelevant attributes. For this work, we suggest the domain expert make the first pass at filtering out the (certainly) irrelevant attributes.
+
+\subsection{ On page 10 the authors explain recursion and the need for. Could you give a proper example for a recursive event goal in a real world domain.}
+
+We believe this is addressed by the response in \ref{rev3:recursion_examples}.
+
+\subsection{ In chapter 3.3 the authors explain that the training set is build up incrementally. To my understanding it might be the case that the training set so far and the plan selection learned so far has an influence of the future training data. Therefore, is it possible that a somehow unlucky plan selection and therefore probably bad training set prevent the system to converge to a good or correct set of conditions?}
+
+This very concern has been the subject of our previous works \cite{Airiau:IJAT09,Singh:AAMAS10} to date. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to  decide how much value we will put in the resulting decision tree. The two address orthogonal issues i.e. how best to collect training data and how best to use it.
+
+We agree this is an important question and have already devoted [Section 2.2 Learning for BDI Plan Selection] to this.
+
+\subsection{ Formula 2 on page 14. The construction of the formula looks to me a little bit ad-hoc. Is there a better justification for the formula? What are others or maybe better weight functions.}
+
+The formula is the same as described in \cite{Singh:AAMAS10} where we also discuss an alternative weighting and how it may be used to adjust the performance of the system to suit different hierarchies. As \cite{Singh:AAMAS10} is now a peer-reviewed publication (was under review at this of our original submission) we do not believe this should be addressed again in this paper.
+
+
+\subsection{ In the middle part of page 16 the authors state that they do not continuous exploration once a solution is found. Why this is done or why it is sufficient? It seems to me that this assumption is against the authors arguments for the properties of their approach.}
+
+We refer the reviewer to the response in \ref{rev1:optimisations} that addresses this exact concern.
+
+\subsection{ In 4.2. k is introduced but no real number for it in the experiments is presented nor the influence of this parameter is described. Please give more information on this.}
+
+\shout{We have updated the related paragraph in [Section 4.2 Results].}
+
+\subsection{ At the end of page 18 the authors that the applicability threshold is set to 20\% in the second experiment. It seems to my a little bit artificial and tuned towards an ad-hoc justification for the approach. Please give further information on the performance of the compared algorithms in the context of this threshold.}
+
+Yes, the threshold setting of is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. We do not believe it impacts the justification of the approach. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) will decide how much ``give'' we have in the exploration. Of course if we set the threshold to be the same as the default, then no exploration will result since the selection weight (from Equation 2) will always fail the threshold test. However for the range $0 \leq threshold < 0.5$, the justification holds.
+
+\shout{We have updated the related paragraph to help clarify this further.}
+
+\subsection{ On the top of page a number of assumptions are stated. These assumption seems to limit the practical general applicability of the approach a lot. Please give a deeper justification for these assumptions and on probably solutions to them.}
+
+We are unsure which page is being referred to as page 18 has no assumptions. Perhaps the reviewer is referring to the assumptions in [Section 5. Discussion and Conclusion] on page 20? In that instance, we believe the discussion covers the concern appropriately. 
+
+
+
+\subsection{ The coverage of related research seems to me a bit weak. Only three references on such a topic is not much. I guess there is more related work out there. Please rework these section.}
+
+\shout{We have updated the related work review in [Section 5. Discussion and Conclusion].}
+ 
+\subsection{The result section is not very much convincing. First to me it is not clear why a simple toy domain like the towers of Hanoi justifies the usefulness of the algorithm.}
+
+We reiterate that our end goal is to allow use of our learning framework in real applications. This toy domain captures several key issues in an idealised setting and provides a good platform for the extension of our previous work that used synthetic hierarchies \cite{Airiau:IJAT09,Singh:AAMAS10} to ones with real meaning. 
+
+\shout{We have adjusted the final paragraph of the paper to reinforce this message.}
+
+\subsection{ Even the two experiments in this domain are made in a ad-hoc manner. For a journal this is too weak. I like to see a deeper treatment of the toy domain and to see experiments in a more advanced, more relevant or even real world domain. Otherwise I am not completely convinced about the advantages of the approach.}
+
+Our experiments were chosen to highlight the key improvements to our approach using a similar experimental setting as before \cite{Singh:AAMAS10}. 
+
+The first experiment (Figure 5) captures several important results that we wish to highlight. Firstly, it shows the benefits of the structured exploration of $ACL+\Omega$ over the original $ACL$ \cite{Airiau:IJAT09} that largely explores randomly when no solution has been found since all plans have an equal likelihood of success (nearly zero). The result further confirms the merits of the coverage-based exploration idea that in it's original form \cite{Singh:AAMAS10} does not scale well to programs that use recursion and parameterised goals and forms the motivation for this paper. Secondly, the experiment reinforces the intuition that the structured $ACL+\Omega$ approach is likely to show more gains where the solution is more complex. For instance, $ACL$ only discovers $20\%$ of all solutions that require $5$ levels of recursion whereas $ACL+\Omega$ finds all such solutions. For levels $3$ and $1$, the advantages of $ACL+\Omega$ over $ACL$ are progressively less. 
+
+The first experiment equips us to understand the performance of the two approaches in the full experiment (Figure 6a). Perhaps it is the choice of the experiment with applicability thresholds (Figure 6b) that seems ad-hoc to the reader in this context, however it is there to emphasise that the improved $ACL+\Omega$ avoids this issue in a manner similar to the coverage approach \cite{Singh:AAMAS10} it lends from.
+
+\shout{We have made changes to the second last paragraph of Section 4.2 Results to help clarify this further.}
+\shout{Page 19: Update paragraph about goal inter-dependence?}
+
+\begin{thebibliography}{10}
+
+\bibitem{Airiau:IJAT09}
+S.~Airiau, L.~Padgham, S.~Sardina, and S.~Sen.
+\newblock Enhancing Adaptation in {BDI} Agents Using Learning Techniques.
+\newblock In {\em International Journal of Agent Technologies and Systems},
+2009.
+
+\bibitem{Singh:AAMAS10}
+D.~Singh, S.~Sardina, L.~Padgham, S.~Airiau.
+\newblock Learning Context Conditions for {BDI} Plan Selection.
+\newblock In {\em Proceedings of Autonomous Agents and Multi-Agent Systems (AAMAS)}, 2010.
+
+\bibitem{Singh:HYCAS10}
+D.~Singh, S.~Sardina, L.~Padgham.
+\newblock Extending BDI Plan Selection to Incorporate Learning from Experience.
+\newblock Submission under review for the Special Issue on Hybrid Control of Autonomous Systems (HYCAS), Journal of Robotics and Autonomous Systems, 2010.
+
+
+\end{thebibliography}
+
+\end{document}
