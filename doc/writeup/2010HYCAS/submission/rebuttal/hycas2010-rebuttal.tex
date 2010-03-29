@@ -24,11 +24,14 @@
 \vskip 0.25in
 }
 
+\newcommand{\question}[1]{\subsection{#1}}
+
 \begin{document}
 
 \begin{frontmatter}
 
-\title{Extending BDI Plan Selection to Incorporate Learning from Experience\\(Manuscript Changes and Rebuttal)}
+\title{Extending BDI Plan Selection to Incorporate Learning from Experience\\
+(Responses to reviewers)}
 
 \author{Dhirendra Singh \& Sebastian Sardina \& Lin Padgham}
 \ead{\{dhirendra.singh,sebastian.sardina,lin.padgham\}@rmit.edu.au}
@@ -45,28 +48,86 @@ This document details the changes based on, including rebuttal against, reviewer
 \section*{General Comments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We would like to point out that our previous work referred to as ``under review'' in the manuscript  is now accepted as a peer-reviewed publication \cite{Singh:AAMAS10} and we have duly updated the citation. Some concerns raised by the reviewers have also been addressed in \cite{Singh:AAMAS10} and we have noted this in our responses where appropriate.
+We would like to point out that our previous work referred to as ``under review''
+in the manuscript  is now accepted as a peer-reviewed publication
+\cite{Singh:AAMAS10} and we have duly updated the citation. Some concerns raised
+by the reviewers have also been addressed in \cite{Singh:AAMAS10} and we have
+noted this in our responses where appropriate.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reviewer \#1 Comments and Responses}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\em The paper is concerned with learning plan selection for parametrized goals with sub-goal recursion in the context of a BDI architecture. The work is based on an earlier approach by the same authors applying decision-tree (DT) learning to this problem. Previously, goals were not parametrized and hence no recursion needed. Technical contributions include equations to compute a measure of confidence in the DT classification based on both plan and domain complexity and a likelihood measure for selecting a plan for execution. Experimental results using the Towers of Hanoi problem are presented and discussed.}
+% {\em The paper is concerned with learning plan selection for parametrized goals
+% with sub-goal recursion in the context of a BDI architecture. The work is based
+% on an earlier approach by the same authors applying decision-tree (DT) learning
+% to this problem. Previously, goals were not parametrized and hence no recursion
+% needed. Technical contributions include equations to compute a measure of
+% confidence in the DT classification based on both plan and domain complexity and
+% a likelihood measure for selecting a plan for execution. Experimental results
+% using the Towers of Hanoi problem are presented and discussed.}
 
+\question{ The problem is well motivated and is clearly relevant to the topic
+of this special issue. The way the above two measures are computed seems plausible,
+although this is only partly supported by the experiments. This is because of the
+"optimizations" you mention on page 16 for the particular problem at hand. What
+would happen if you did not use these optimizations? }
 
-\subsection{The problem is well motivated and is clearly relevant to the topic of this special issue. The way the above two measures are computed seems plausible, although this is only partly supported by the experiments. This is because of the "optimizations" you mention on page 16 for the particular problem at hand. What would happen if you did not use these optimizations?}
 \label{rev1:optimisations}
 
-We see how that the details of the optimisations have added to some confusion. We would like to emphasise that these optimisations were in place for all experiments and so impacted both approaches --- the baseline $ACL$ and the improved $ACL+\Omega$. Our main motivation for this was to speed-up absolute convergence times for both approaches during experimentation allowing us to significantly reduce the run-time for our full suite of experiments. The impact of not applying the optimisations is that the graphs of Figure 5 a/b and Figure 6 a/b take more absolute iterations to converge to the solutions. This however, does not impact our claims about the effectiveness of the new $ACL+\Omega$ ``relative'' to the baseline $ACL$. 
+We see how the details of the optimisations have added to some confusion.
+% %
+These optimisations were in place for \emph{all} experiments and so impacted both
+approaches --- the baseline $ACL$ and the improved $ACL+\Omega$. Our main
+motivation for this was to speed-up absolute convergence times for both
+approaches during experimentation allowing us to significantly reduce the
+run-time for our full suite of experiments.
+% %
+The impact of not applying the optimisations is that the graphs of Figure 5 a/b
+and Figure 6 a/b take more absolute iterations to converge to the solutions. This
+however does not impact any of our claims about the effectiveness of the new
+$ACL+\Omega$ ``relative'' to the baseline $ACL$.
 
-\shout{For that reason we have reworded the paragraph to remove the details of the optimisations per se, as they are not relevant to the discussion at hand and have no bearing on the relative results.}
 
 
-\subsection{You say on p. 12 that $\delta_Pt$ can be computed offline. It is not clear to me how. In your example, you state the equation for $\delta_Pt$ but not how you obtained it. Was it derived automatically or by hand?}
+\shout{ For that reason we have reworded the paragraph to remove the details of
+the optimisations per se, as they are not relevant to the discussion at hand and
+have no bearing on the relative results. }
 
-The idea of $\delta_Pt$ is a decay factor that matches the ``complexity'' of the goal-plan structure. This factor would be smaller for a less complex structure than for a more complex one. The goal-plan structure itself is nothing more than the BDI program and is given upfront in the form of a plan library that may be  parsed offline to compute a structure similar to that shown in Figure 2. We may further parse this structure to compute a plan's complexity relative to another. Previously \cite{Singh:AAMAS10} we have used an accurate calculation of the number of choices below the plan to measure this. However, the same calculation is not possible with parameterised goals --- we cannot compute offline the full set of possibilities as it depends on the runtime values of the parameters. For this work then, we use an approximation based on the breadth and depth of the structure that still gives us the same relative behaviour as before \cite{Singh:AAMAS10}.
 
-\shout{We have updated the related paragraph on page 12 to clarify this point.}
+\subsection{You say on p. 12 that $\delta_{Pt}$ can be computed offline. It is
+not clear to me how. In your example, you state the equation for $\delta_Pt$ but
+not how you obtained it. Was it derived automatically or by hand?
+}
+
+% The idea of $\delta_Pt$ is a decay factor that matches the ``complexity'' of the
+% goal-plan structure. This factor would be smaller for a less complex structure
+% than for a more complex one. The goal-plan structure itself is nothing more than
+% the BDI program and is given upfront in the form of a plan library that may be 
+% parsed offline to compute a structure similar to that shown in Figure 2. We may
+% further parse this structure to compute a plan's complexity relative to another.
+% Previously \cite{Singh:AAMAS10} we have used an accurate calculation of the
+% number of choices below the plan to measure this. However, the same calculation
+% is not possible with parameterised goals --- we cannot compute offline the full
+% set of possibilities as it depends on the runtime values of the parameters. 
+
+For this work, we have calculated $\delta_{Pt}$ in terms of average breadth and
+depth of the structure, where the depth of a structure with recursion is the
+maximum level of recursion, to provide an approximation of the complexity of the
+structure.
+% %
+Of course, there are other ways of calculating $\delta_{Pt}$ (e.g., in
+\cite{Singh:AAMAS10} we have used an accurate calculation of the number of
+choices below plans; however this is not feasible anymore when goals and plans
+are schemas with possibly infinite instances); the whole idea is to somehow
+measure the complexity of a hierarchical structure.
+
+\shout{We have updated the related paragraph on page 12 to clarify that
+$\delta_{Pt}$ is computed in terms of breadth and depth of a structure but that
+that other measures may be used with analogous overall results.}
+
+
+
 
 \subsection{You only compare your new approach to your previous work in the experiments. Why did you not include a comparison with the existing BDI program that comes with JACK? This is all the more surprising since you yourself ask: does our learning framework achieve the performance of the existing system. Does the existing program always do the right thing? In any case, it would be good to compare at least some of the hand-crafted context formulas with those learned by the DT approach.}
 
@@ -96,17 +157,17 @@ We would like to point out here that the learnt context conditions do not ``look
 \section{Reviewer \#2 Comments and Responses}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\em This paper presents work that aims at adding learning capabilities to
-BDI agent systems. In particular, the authors introduce learning of
-the context conditions of BDI agent programs, that is, the state
-conditions that are required to hold in the current state of execution
-in order for an agent program to be considered for execution.
-The approach is based on replacing the context formulae of programs by
-decision trees. The work builds on previous work by the authors by
-generalizing the learning scheme to work with parametrized goal/events
-and (bounded) recursive programs. An experimental evaluation of the
-learning approach is presented showing the improvement over their
-previous work.}
+% {\em This paper presents work that aims at adding learning capabilities to
+% BDI agent systems. In particular, the authors introduce learning of
+% the context conditions of BDI agent programs, that is, the state
+% conditions that are required to hold in the current state of execution
+% in order for an agent program to be considered for execution.
+% The approach is based on replacing the context formulae of programs by
+% decision trees. The work builds on previous work by the authors by
+% generalizing the learning scheme to work with parametrized goal/events
+% and (bounded) recursive programs. An experimental evaluation of the
+% learning approach is presented showing the improvement over their
+% previous work.}
 
 
 \subsection{The overall work seems reasonable and appears to be effective,
@@ -115,10 +176,27 @@ approach is limited by the inabilitiy to take into account goal
 inter-dependencies. Nevertheless, the work represents progress towards
 endowing BDI agents with learning capabilities.}
 
-In response to the challenge of the problem we would like to emphasise that our end goal is to be able to use our learning framework in real applications. Nonetheless, the toy domain used in this paper captures several key issues that must be addressed in a principled way before we may consider more challenging problems. This idealised setting provides a good platform for the extension of our previous work \cite{Airiau:IJAT09,Singh:AAMAS10} that so far has only considered synthetic hierarchies.
+Although the problem may initially appear non-challenging, it indeed is. There
+are many nuances that come up mainly namely due to the fact that \emph{(i)} the
+objects to be learnt (i.e., plan's context conditions) are strongly
+inter-related, what happens in one plan is affected by what happens in the plans
+below; \emph{(ii)} learning and acting happens interleaved; and \emph{(iii)}
+there are typically many more failures than successes.
+
+Providing a \emph{principled} exploration mechanism of the several alternatives
+an agent may have in its know-how structure turns out to be not trivial, which
+explains why almost no work has been done on the topic.
+
+With respect to the issue of inter-deendencies, we point out that this is not a
+limitation of our learning approach itself, but of the overall BDI programming
+paradigm. Addressing this would require a substantial modification in the BDI
+programming style in terms of representation, which is out of the scope of this
+paper. Here we aim to provide a learning account compatible with standard
+existing BDI architectures.
+
  
-\subsection*{There are some parts of the paper where clarity could be
-improved. More detailed comments follow.}
+\subsection*{There are some parts of the paper where clarity could be improved.
+More detailed comments follow.}
 
 \subsection{In sec.3, 1st para., what do you mean by "event-goal type"? just a
 parametrized event-goal?}
@@ -151,11 +229,23 @@ classification..." isn't the tree itself what is being learnt?}
 
 \shout{We have now reworded this.}
 
-\subsection{In sec. 3.2, goals G are sometimes followed by square brackets, as in G[phi1], and sometimes buy angle brackets, G<phi1>, which one may
-guess represent modalities, but the notation has not been defined. So
-the reader is left guessing what the notation means.}
+\newcommand{\tuple}[1]{\langle #1 \rangle}		% tuple
 
-\shout{We have updated the manuscript to be consistent in this use.}
+\subsection{In sec. 3.2, goals G are sometimes followed by square brackets, as in
+$G[\phi]$, and sometimes buy angle brackets, $G\tuple{\phi}$, which one may
+guess represent modalities, but the notation has not been defined. So the reader
+is left guessing what the notation means.}
+
+We apologise for the confusing notation. These are not modalities. $G[P:w]$
+states that plan $P$ is tried on world $w$ to resolve goal $G$. We have changed
+$G\tuple{\phi}$ to $G(\vec{x})$ which denotes goal $G$ with parameters $\vec{x}$
+(e.g., $clean(room1)$).
+
+\shout{We have clarified and fixed the notation in Section 3.2. We now
+just use $G[P:w]$ and $G(\vec{x})$.}
+
+
+
 
 \subsection{Sec 3.4, 1st para., you refer to a "previous definition of the
 learning task (Section 3)", which one can guess refers to the informal
