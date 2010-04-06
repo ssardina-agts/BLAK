@@ -31,7 +31,7 @@
 \begin{frontmatter}
 
 \title{Extending BDI Plan Selection to Incorporate Learning from Experience\\
-(Responses to reviewers)}
+(Responses to Reviewers)}
 
 \author{Dhirendra Singh \& Sebastian Sardina \& Lin Padgham}
 \ead{\{dhirendra.singh,sebastian.sardina,lin.padgham\}@rmit.edu.au}
@@ -93,9 +93,8 @@ $ACL+\Omega$ ``relative'' to the baseline $ACL$.
 
 
 
-\shout{ For that reason we have reworded the paragraph to remove the details of
-the optimisations per se, as they are not relevant to the discussion at hand and
-have no bearing on the relative results. }
+\shout{For that reason we have removed the paragraph on
+optimisations (final paragraph of [Section 4.1 Experimental Setup]), as it is not relevant to the discussion at hand and has no bearing on the relative results.}
 
 
 \subsection{You say on p. 12 that $\delta_{Pt}$ can be computed offline. It is
@@ -134,13 +133,14 @@ that other measures may be used with analogous overall results.}
 
 \subsection{You only compare your new approach to your previous work in the experiments. Why did you not include a comparison with the existing BDI program that comes with JACK? This is all the more surprising since you yourself ask: does our learning framework achieve the performance of the existing system. Does the existing program always do the right thing? In any case, it would be good to compare at least some of the hand-crafted context formulas with those learned by the DT approach.}
 
-The original JACK program has perfectly crafted context conditions that work precisely so that all $Solve$ events are always successfully resolved.
+The original JACK program has perfectly crafted context conditions that work precisely so that all $Solve$ events are always successfully resolved (equivalent to $100\%$ in Figure 6a). While the structured exploration of $ACL+\Omega$ succeeds in resolving the $Solve$ goal for all possible configurations (new Figure 6b crosses) by $12k$ iterations, it nonetheless does not achieve perfect performance (converges to about $95\%$ performance in Figure 6a). The reason is that the decision tree is a compact representation that does not guaranteed 100\% correctness when classifying the training data (we discuss this inherent trade-off in [Section 3.1 Integrating Decision Trees into Context Conditions for Plans]). For instance, a plan that has previously succeeded in a given world may not get selected because the decision tree returns a low probability of success due to misclassification of the related training sample. The only way to guarantee correct selection would be to use the training data directly, for instance using a look-up table. 
 
-The learnt context conditions are weaker than the original conditions. This is evident in Figure 6 a/b where $ACL+\Omega$ achieves about $80\%$ of the original performance. In other words, in $20\%$ of cases a plan is selected (incorrectly) to resolve a goal when it would not have been in the original case.
 
-\shout{We have updated the discussion of results on page 20 to clarify this point.}
+\shout{We have updated the discussion of results on page 19 to clarify this point.}
 
-We would like to point out here that the learnt context conditions do not ``look'' like the original ones. When the learnt decision trees are converted to rules, they are quite complex and perhaps not intuitive as the original conditions are. In general, there is a deeper issue here to do with the fact that often in real programs control knowledge is encoded into the parameters which is not possible to learn. This discussion is not in the scope of this work. Nevertheless, we believe that the important comparison here is the performance of the original and learnt systems, not the internals.
+We would like to point out here that the learnt context conditions do not ``look'' like the original ones. When the learnt decision trees are converted to rules, they are quite complex and perhaps not intuitive as the original conditions are. This is mainly due to representational differences. For instance, the real context conditions are relational while the learnt ones are propositional. 
+
+\shout{We have updated the discussion of results on page 19 to clarify this point. We also highlight this in [Section 5. Discussion and Conclusion] when discussing our general approach using decision trees.}
 
 
 
@@ -354,7 +354,7 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 
 \subsection{At the end of page 18 the authors that the applicability threshold is set to 20\% in the second experiment. It seems to my a little bit artificial and tuned towards an ad-hoc justification for the approach. Please give further information on the performance of the compared algorithms in the context of this threshold.}
 
-Yes, the threshold setting of is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. We do not believe it impacts the justification of the approach. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) will decide how much ``give'' we have in the exploration. If we were to set the threshold to be the same as the default weight then no exploration will result since the selection weight (from Equation 2) will always fail the threshold test. However for the range $0 \leq threshold < 0.5$, the justification holds.
+Yes, the threshold setting of $20\%$ is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. We do not believe it impacts the justification of the approach. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) will decide how much ``give'' we have in the exploration. If we were to set the threshold to be the same as the default weight then no exploration will result since the selection weight (from Equation 2) will always fail the threshold test. However for the range $0 \leq threshold < 0.5$, the justification holds.
 
 \shout{We have updated the related paragraph to help clarify this further.}
 

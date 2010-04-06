@@ -1,5 +1,6 @@
+%!TEX root = ../hycas2010.tex
 % Points in the input file are x-scaled by 0.5 so xval 1000 represents point 2000 in the original results. The reason for scaling was that TeX cannot handle > ~16k numbers
-\begin{tikzpicture}[x=0.0005cm,y=4cm]
+\begin{tikzpicture}[x=0.00049cm,y=4cm]
     % Draw the axes and grid lines
     \draw[-,gray] (0,0) -- (0,1) -- (10000,1) -- (10000,0) -- cycle; 
     \draw[-,gray,thin, dotted, ystep=0.2, xstep=10000] (0,0) grid (10000,1);
@@ -8,9 +9,11 @@
     \foreach \x/\xtext in {2500/5k, 5000/10k, 7500/15k} \node at (\x,0) [below] {$\xtext$};
     \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {$\ytext$};
     \node at (0,1.1) {Success};
-    \node at (8000,0.25) {Iterations};
+    \node at (8000,0.15) {Iterations};
     \draw[-,gray] plot[mark=o,mark size=3,mark options={color=black}] 
 			file {data/hanoi5.CP.tikzdata};
     \draw[-,gray] plot[mark=x,mark size=4,mark options={color=black}] 
 			file {data/hanoi5.CF.tikzdata};
+	\draw [-,dashed](3180,0.0) -- (3180,1.0);
+	\draw [-,dashed](5830,0.0) -- (5830,1.0);
 \end{tikzpicture}
