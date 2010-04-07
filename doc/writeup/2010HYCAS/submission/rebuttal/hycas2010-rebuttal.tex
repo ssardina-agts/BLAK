@@ -133,15 +133,11 @@ that other measures may be used with analogous overall results.}
 
 \subsection{You only compare your new approach to your previous work in the experiments. Why did you not include a comparison with the existing BDI program that comes with JACK? This is all the more surprising since you yourself ask: does our learning framework achieve the performance of the existing system. Does the existing program always do the right thing? In any case, it would be good to compare at least some of the hand-crafted context formulas with those learned by the DT approach.}
 
-The original JACK program has perfectly crafted context conditions that work precisely so that all $Solve$ events are always successfully resolved (equivalent to $100\%$ in Figure 6a). While the structured exploration of $ACL+\Omega$ succeeds in resolving the $Solve$ goal for all possible configurations (new Figure 6b crosses) by $12k$ iterations, it nonetheless does not achieve perfect performance (converges to about $95\%$ performance in Figure 6a). The reason is that the decision tree is a compact representation that does not guaranteed 100\% correctness when classifying the training data (we discuss this inherent trade-off in [Section 3.1 Integrating Decision Trees into Context Conditions for Plans]). For instance, a plan that has previously succeeded in a given world may not get selected because the decision tree returns a low probability of success due to misclassification of the related training sample. The only way to guarantee correct selection would be to use the training data directly, for instance using a look-up table. 
+The original JACK program has perfectly crafted context conditions that work precisely so that all $Solve$ events are always successfully resolved (equivalent to $100\%$ in Figure 6a). While the structured exploration of $ACL+\Omega$ succeeds in resolving the $Solve$ goal for all possible configurations (new Figure 6b crosses) by $12k$ iterations, it nonetheless does not achieve perfect performance (converges to about $90\%$ performance in Figure 6a). The reason is that the decision tree is a compact representation that does not guaranteed 100\% correctness when classifying the training data (we discuss this inherent trade-off in [Section 3.1 Integrating Decision Trees into Context Conditions for Plans]). For instance, a plan that has previously succeeded in a given world may not get selected because the decision tree returns a low probability of success due to misclassification of the related training sample. The only way to guarantee correct selection would be to use the training data directly, for instance using a look-up table. 
 
+We would further like to point out here that the learnt context conditions do not ``look'' like the original ones. When the learnt decision trees are converted to rules, they are quite complex and perhaps not intuitive as the original conditions are. This is mainly due to representational differences. For instance, the real context conditions are relational while the learnt ones are propositional. 
 
 \shout{We have updated the discussion of results on page 19 to clarify this point.}
-
-We would like to point out here that the learnt context conditions do not ``look'' like the original ones. When the learnt decision trees are converted to rules, they are quite complex and perhaps not intuitive as the original conditions are. This is mainly due to representational differences. For instance, the real context conditions are relational while the learnt ones are propositional. 
-
-\shout{We have updated the discussion of results on page 19 to clarify this point. We also highlight this in [Section 5. Discussion and Conclusion] when discussing our general approach using decision trees.}
-
 
 
 \subsection{The paper is well written and the relevant literature is discussed/cited as far as I can tell. (I am no BDI expert.)}
@@ -180,31 +176,27 @@ inter-dependencies. Nevertheless, the work represents progress towards
 endowing BDI agents with learning capabilities.}
 
 Although the problem may initially appear non-challenging, it indeed is. There
-are many nuances that come up mainly namely due to the fact that \emph{(i)} the
+are many nuances that come up mainly due to the fact that \emph{(i)} the
 objects to be learnt (i.e., plan's context conditions) are strongly
 inter-related, what happens in one plan is affected by what happens in the plans
 below; \emph{(ii)} learning and acting happens interleaved; and \emph{(iii)}
 there are typically many more failures than successes.
 
 Providing a \emph{principled} exploration mechanism of the several alternatives
-an agent may have in its know-how structure turns out to be not trivial, which
+an agent may have in its know-how structure turns out to be non trivial, which
 explains why almost no work has been done on the topic.
 
-With respect to the issue of inter-deendencies, we point out that this is not a
+With respect to the issue of inter-dependencies, we point out that this is not a
 limitation of our learning approach itself, but of the overall BDI programming
 paradigm. Addressing this would require a substantial modification in the BDI
 programming style in terms of representation, which is out of the scope of this
 paper. Here we aim to provide a learning account compatible with standard
 existing BDI architectures.
 
- 
-\subsection*{There are some parts of the paper where clarity could be improved.
-More detailed comments follow.}
-
 \subsection{In sec.3, 1st para., what do you mean by "event-goal type"? just a
 parametrized event-goal?}
 
-\shout{That is correct. We have updated to manuscript to be consistent and only use one of these terms.}
+\shout{Yes. We have updated the paper to be consistent and use \textit{parameterised} instead.}
 
 \subsection{The whole section 3.1 is written in a confusing way.}
 
@@ -215,22 +207,21 @@ you mean learning is applyied for each plan in the library. But it
 would be better to make it explicit here, e.g., that you need a
 training data set for each plan in the library.}
 
-\shout{Yes that is the case. This has now been addressed.}
+\shout{We have incorporated your suggestion and updated the paragraph.}
 
 \subsection{At the end of this paragraph, it says that a classification is learnt "based purely on the subset of attributes in w that are relevant to the contex condition of the plan." This is not clear. What 'w' are you referring to here? The next para. starts again talking about "The attributes in w...", what 'w'?}
 
-The previous paragraph explains this. Here $w$ is ``the world state in which the plan was executed'' and is comprised of ``a set of discrete attributes that together represent the state of affairs'' in the environment.
+\shout{We have prefixed ``world state'' to $w$ throughout and ensured that $w$ is explained clearly at the start of the paragraph when we first mention it.}
 
 
 \subsection{Also in the 2nd para. it says "the decision tree will learn a
 classification..." isn't the tree itself what is being learnt?}
 
-\shout{Yes. This has now been addressed.}
-
+\shout{We have reworded this paragraph so it is not confusing to the reader.}
 
 \subsection{In the 3rd para. pg 11, it says that "...we may never find the bottom or leaf nodes. This has implication for any bottom-up strategies." You mean top-down strategies?}
 
-\shout{We have now reworded this.}
+\shout{We have reworded this paragraph so it is not confusing to the reader.}
 
 \newcommand{\tuple}[1]{\langle #1 \rangle}		% tuple
 
@@ -248,14 +239,12 @@ $G\tuple{\phi}$ to $G(\vec{x})$ which denotes goal $G$ with parameters $\vec{x}$
 just use $G[P:w]$ and $G(\vec{x})$.}
 
 
-
-
 \subsection{Sec 3.4, 1st para., you refer to a "previous definition of the
 learning task (Section 3)", which one can guess refers to the informal
 definition at the beginning of Section 3, since there is no definition
 anywhere. Btw, the reference itself is in section 3.}
 
-\shout{We have now reworded this.}
+\shout{We have removed the reference and reworded the paragraph.}
 
 \subsection{Also in sec 3.4, you define the training data set as tuples
 [w U phi, o]. This is strange since I would think the world would be
@@ -272,11 +261,11 @@ clear why you need to make these optimizations (I'd called them
 simplifying assumptions rather than optimizations). What if you don't
 make them?}
 
-We refer the reviewer to the response in \ref{rev1:optimisations} that addressed this concern.
+We refer the reviewer to the response in \ref{rev1:optimisations} that addresses this concern.
 
 \subsection*{Typos etc:}
 
-\subsection{pg 8: "a plans ..." -> "a plan ..." or "a plan's ..." (occurs in many places).}
+\subsection{pg 8: "a plans ..." $\to$ "a plan ..." or "a plan's ..." (occurs in many places).}
 
 \shout{We have reviewed the manuscript and corrected these cases.}
 \subsection{pg 20: "preiously learnt"}

@@ -9,7 +9,7 @@ To evaluate our learning framework we consider an existing BDI program
 from the \JACK\ agent platform
 distribution~\cite{BusettaRHL:AL99-JACK}.
 % %
-The example involves a robot playing the well-known Towers of Hanoi game where the goal is to stack discs of decreasing size onto a single pin. The rules of the game forbid discs to be moved onto smaller discs, however top discs may be moved onto discs of larger size across three pins. The problem is interesting for our purposes since the example solution makes use of event-goal types and recursion. Furthermore, unlike our previous evaluations \cite{Airiau:IJAT:09,Singh:AAMAS10} with synthetic plan libraries, here the evaluation criteria is clear: \emph{does our learning framework achieve the performance of the existing system?}
+The example involves a robot playing the well-known Towers of Hanoi game where the goal is to stack discs of decreasing size onto a single pin. The rules of the game forbid discs to be moved onto smaller discs, however top discs may be moved onto discs of larger size across three pins. The problem is interesting for our purposes since the example solution makes use of parameterised event-goals and recursion. Furthermore, unlike our previous evaluations \cite{Airiau:IJAT:09,Singh:AAMAS10} with synthetic plan libraries, here the evaluation criteria is clear: \emph{does our learning framework achieve the performance of the existing system?}
 
 %Although this is a fairly simple scenario, it is enough to test our overall
 %framework. In particular, the plan library makes uses of (goal) recursion and
@@ -86,7 +86,7 @@ sub-goal of moving \entity{?d} to pin \entity{?p} i.e. event \entity{Solve(?d,?p
 
 
 Figure~\ref{fig:hanoi_goalplan} illustrates the goal-plan hierarchy for the domain. 
-Here we focus on learning the recursive typed \entity{Solve(?d,?p)} event for which we remove the context conditions from the example plans and apply our framework.
+Here we focus on learning the recursive parameterised \entity{Solve(?d,?p)} event for which we remove the context conditions from the example plans and apply our framework.
 % %
 %We only show the structure below a \entity{Solve(?d,?p)} goal event once, for the
 %case when the plan \entity{Disckstacker} is moving the $i$-th disc to destination
@@ -148,7 +148,7 @@ Here we focus on learning the recursive typed \entity{Solve(?d,?p)} event for wh
 
 \subsection{Experimental Setup} \label{sec:setup}
 
-The aim of this study is to evaluate our learning framework for recursive event-types. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \entity{Solve} only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Since the full set of possible \entity{Solve} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
+The aim of this study is to evaluate our learning framework for recursive event-goals. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \entity{Solve} only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Since the full set of possible \entity{Solve} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
 
 We proceed by running the original Hanoi program for a number of randomly generated \entity{Solve} events. For each run we record the \entity{Solve} event, the initial pins configuration, and the maximum recursion encountered for the solution. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
 
@@ -176,7 +176,7 @@ The following results are for a Hanoi problem with $five$ discs\footnote{We use 
 
 To understand how the two approaches perform for solutions of varying difficulty we conducted a set of experiments with solutions at different recursive levels. Each experiment consisted of resolving a known set of \entity{Solve} event configurations, saved earlier as described in Section \ref{sec:setup}, whose solutions all required a given recursive depth. Figure \ref{fig:result-levels} shows that as the solution difficulty increases from one to five recursion levels, \CL\ performance drops much more significantly compared to that of \CL+$\Omega$. For instance, for solutions requiring five levels of recursion, \CL\ achieves only $50\%$ success at $5k$ iterations whereas \CL+$\Omega$ achieves $95\%$ success by $3.5k$ iterations. The poor performance of \CL\ may be attributed to the fact that deeper solutions require more \entity{move(?p2,?p)} steps and where an earlier success does not exist to guide selection at each resulting state the exploration is mostly random. On the other hand, the confidence-based measure of Equation \ref{eqn:weight} takes into account the goal-plan tree complexity and is able to guide the \CL+$\Omega$ exploration towards the deeper solutions.
 
-Next, we conducted an experiment that consisted of resolving the full set of saved \entity{Solve} events i.e. the set had solutions dispersed through all possible recursion levels. Figure \ref{fig:result-fullA} shows the results for the two approaches where as expected \CL+$\Omega$ performs better than \CL\ overall. For the same experiment, we also recorded the number of solutions found. Figure \ref{fig:result-fullB} shows that \CL+$\Omega$ resolves all $52$ goals within $12k$ iterations whereas \CL\ resolves only $47$ by the end of the experiment at $20k$. At a similar point of comparison, to resolve $47$ goals \CL+$\Omega$ takes around $6.4k$ iterations whereas \CL\ takes more than twice as long at $17.7k$. The vertical dashed lines in Figure \ref{fig:result-fullA} and Figure \ref{fig:result-fullB} mark the $47$th and $51$st solutions.
+Next, we conducted an experiment that consisted of resolving the full set of saved \entity{Solve} events i.e. the set contained all solutions for recursion levels one to five. Figure \ref{fig:result-fullA} shows the results for the two approaches where \CL+$\Omega$ performs better than \CL\ as expected. For the same experiment, we also recorded the number of solutions found. Figure \ref{fig:result-fullB} shows that \CL+$\Omega$ resolves all $52$ goals within $12k$ iterations whereas \CL\ resolves only $47$ by the end of the experiment at $20k$. At a similar point of comparison, to resolve $47$ goals \CL+$\Omega$ takes around $6.4k$ iterations whereas \CL\ takes more than twice as long at $17.7k$. The vertical dashed lines in Figure \ref{fig:result-fullA} and Figure \ref{fig:result-fullB} mark the $47$th and $52$nd solutions.
 
 \begin{figure*}[t]
 \begin{center}

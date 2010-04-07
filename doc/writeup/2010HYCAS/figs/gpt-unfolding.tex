@@ -1,3 +1,4 @@
+%!TEX root = ../hycas2010.tex
 \begin{tikzpicture}[scale=0.7]
 \tikzstyle{txt}=[scale=1.0]
 \tikzstyle{succ}=[label=below:$\surd$]
@@ -11,18 +12,18 @@
 \tikzstyle{level 5}=[sibling distance=1.5cm,level distance=1.9cm]
 \tikzstyle{level 6}=[sibling distance=1.3cm,level distance=1.9cm]
 
-\node[goalbox,yshift=1cm] {$G\langle\varphi_1\rangle$}
+\node[goalbox,yshift=1cm] {$G(\vec{x_1})$}
 	child {node[planbox] {$P_1$}}
 	child {node[planbox] {$P_2$}
-		child {node[goalbox] {$G\langle\varphi_2\rangle$}
+		child {node[goalbox] {$G(\vec{x_2})$}
 			child {node[planbox,succ] {$P_1$}}
 			child[dashed] {node[planbox] {$P_2$}
-				child {node[goalbox] {$G\langle\varphi_4\rangle$}
+				child {node[goalbox] {$G(\vec{x_4})$}
 					child {node[planbox] {$P_1$}}
 					child {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
-				child {node[goalbox] {$G\langle\varphi_5\rangle$}
+				child {node[goalbox] {$G(\vec{x_5})$}
 					child {node[planbox] {$P_1$}}
 					child {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
@@ -30,15 +31,15 @@
 			}
 			child {node[planbox] {$P_3$}}
 		}
-		child {node[goalbox] {$G\langle\varphi_3\rangle$}
+		child {node[goalbox] {$G(\vec{x_3})$}
 			child {node[planbox] {$P_1$}}
 			child {node[planbox] {$P_2$}
-				child {node[goalbox] {$G\langle\varphi_6\rangle$}
+				child {node[goalbox] {$G(\vec{x_6})$}
 					child {node[planbox,succ] {$P_1$}}
 					child[dashed] {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
-				child {node[goalbox] {$G\langle\varphi_7\rangle$}
+				child {node[goalbox] {$G(\vec{x_7})$}
 					child {node[planbox] {$P_1$}}
 					child[dashed] {node[planbox] {$P_2$}}
 					child {node[planbox,fail] {$P_3$}}
