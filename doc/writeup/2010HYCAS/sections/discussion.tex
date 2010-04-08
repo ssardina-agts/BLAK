@@ -64,7 +64,7 @@ In contrast, \cite{karim2006plans} take the approach of refining existing BDI pl
 %
 In~\cite{Riedmiller01}, low level robot soccer skills are learnt offline and then used in the deliberative decision making process once deployed.
 %
-Recently, a comprehensive account of integrating learning in BDI deliberation is provided in \cite{lokuge2007impro} for a ship berthing logistics domain. Here a neural network module is first trained offline on the available shipping port data and then used in a deployed BDI system to improve plan selection. Their results show significant improvement in berth productivity over the existing system of human operators.
+More recently, \cite{lokuge2007impro} give a comprehensive account of integrating learning in BDI deliberation for a real world ship berthing logistics domain. Here a neural network module is first trained offline on the available shipping port data and then used in a deployed BDI system to improve plan selection. Their results show significant improvement in berth productivity over the existing system of human operators.
 
 A closely related area to BDI is that of hierarchical task network (HTN)
 systems where task decompositions used are similar to BDI goal-plan hierarchies.
@@ -78,7 +78,7 @@ In contrast, in our work learning and deliberation are fully integrated in a
 way that one impacts the other and the classical
 exploration/exploitation dilemma applies. 
 
-The BDI architecture has also been shown \cite{simari2006on-th} to be related to Markov Decision Processes that are heavily used for solving optimisation problems in reinforcement learning \cite{Mitchell97:ML}. A sub-area of work related to ours is hierarchical reinforcement learning \cite{barto2003recen} where task hierarchies similar to BDI are used. Where the aim is to find locally optimal solutions for each sub-MDP in the hierarchy, similar issues as ours arise --- such as goal inter-dependence. In general global optimality is possible only when information is fed into the sub-task (i.e. value functions uses the entire state space), consistent with our analysis of goal inter-dependence issues. Interestingly, work by Dietterich \cite{dietterich2000hiera} also supports the use of simultaneous learning at all levels (similar to our \CL\ based approaches) instead of waiting for the children to converge (analogous to our conservative  approach \cite{Singh:AAMAS10}).
+The BDI architecture has also been shown \cite{simari2006on-th} to be related to Markov Decision Processes that are heavily used for solving optimisation problems in reinforcement learning \cite{Mitchell97:ML}. A sub-area of work related to ours is hierarchical reinforcement learning \cite{barto2003recen} where task hierarchies similar to BDI are used. When the aim is to find locally optimal solutions for each sub-MDP in the hierarchy, similar issues as ours arise, such as goal inter-dependence. In general, global optimality is possible only when information is fed into the sub-task (i.e. value functions uses the entire state space), consistent with our analysis of goal inter-dependence issues. Interestingly, work by Dietterich \cite{dietterich2000hiera} also supports the use of simultaneous learning at all levels (similar to our \CL\ based approaches) instead of waiting for the children to converge (analogous to our conservative  approach \cite{Singh:AAMAS10}).
 
 % %
 Although there is still work to do before we can expect learning to be

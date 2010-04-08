@@ -86,15 +86,11 @@ motivation for this was to speed-up absolute convergence times for both
 approaches during experimentation allowing us to significantly reduce the
 run-time for our full suite of experiments.
 % %
-The impact of not applying the optimisations is that the graphs of Figure 5 a/b
-and Figure 6 a/b take more absolute iterations to converge to the solutions. This
-however does not impact any of our claims about the effectiveness of the new
-$ACL+\Omega$ ``relative'' to the baseline $ACL$.
-
-
+The impact of not applying the optimisations is that the graphs of Figure 5 and Figure 6 take more iterations to converge to the solutions. This
+however does not impact any of our claims that only focus on the effectiveness of the new $ACL+\Omega$ approach ``relative'' to the baseline $ACL$.
 
 \shout{For that reason we have removed the paragraph on
-optimisations (final paragraph of [Section 4.1 Experimental Setup]), as it is not relevant to the discussion at hand and has no bearing on the relative results.}
+optimisations (final paragraph of [Section 4.1 Experimental Setup] on page 16), as it is not relevant to the discussion does not bear on the relative results.}
 
 
 \subsection{You say on p. 12 that $\delta_{Pt}$ can be computed offline. It is
@@ -137,12 +133,12 @@ The original JACK program has perfectly crafted context conditions that work pre
 
 We would further like to point out here that the learnt context conditions do not ``look'' like the original ones. When the learnt decision trees are converted to rules, they are quite complex and perhaps not intuitive as the original conditions are. This is mainly due to representational differences. For instance, the real context conditions are relational while the learnt ones are propositional. 
 
-\shout{We have updated the discussion of results on page 19 to clarify this point.}
+\shout{We have updated the final paragraph of [Section 4.2 Results] on page 18 to clarify this point.}
 
 
 \subsection{The paper is well written and the relevant literature is discussed/cited as far as I can tell. (I am no BDI expert.)}
 
-\shout{Please note that we have further updated the related work account in [Section 5. Discussion and Conclusion].}
+\shout{Please note that we have further updated and reworked the related work discussion in [Section 5. Discussion and Conclusion] on pages 20 and 21.}
 
 \subsection{Typo: p.20: preiously}
 
@@ -193,7 +189,7 @@ programming style in terms of representation, which is out of the scope of this
 paper. Here we aim to provide a learning account compatible with standard
 existing BDI architectures.
 
-\shout{We have updated the related paragraph on page 20 to clarify this point.}
+\shout{We have updated the first paragraph on page 20 to clarify this point.}
 
 \subsection{In sec.3, 1st para., what do you mean by "event-goal type"? just a
 parametrized event-goal?}
@@ -209,7 +205,7 @@ you mean learning is applyied for each plan in the library. But it
 would be better to make it explicit here, e.g., that you need a
 training data set for each plan in the library.}
 
-\shout{We have incorporated your suggestion and updated the paragraph.}
+\shout{We have incorporated your suggestion and updated paragraph 1 on page 9.}
 
 \subsection{At the end of this paragraph, it says that a classification is learnt "based purely on the subset of attributes in w that are relevant to the contex condition of the plan." This is not clear. What 'w' are you referring to here? The next para. starts again talking about "The attributes in w...", what 'w'?}
 
@@ -219,11 +215,11 @@ training data set for each plan in the library.}
 \subsection{Also in the 2nd para. it says "the decision tree will learn a
 classification..." isn't the tree itself what is being learnt?}
 
-\shout{We have reworded this paragraph so it is not confusing to the reader.}
+\shout{We have reworded paragraph 1 on page 9 so it is not confusing to the reader.}
 
 \subsection{In the 3rd para. pg 11, it says that "...we may never find the bottom or leaf nodes. This has implication for any bottom-up strategies." You mean top-down strategies?}
 
-\shout{We have reworded this paragraph so it is not confusing to the reader.}
+\shout{We have rewritten paragraph 2 on page 11 to remove any confusion.}
 
 \newcommand{\tuple}[1]{\langle #1 \rangle}		% tuple
 
@@ -246,7 +242,7 @@ learning task (Section 3)", which one can guess refers to the informal
 definition at the beginning of Section 3, since there is no definition
 anywhere. Btw, the reference itself is in section 3.}
 
-\shout{We have removed the reference and reworded the paragraph.}
+\shout{We have removed the reference and reworded paragraph 1 of [Section 3.4 Handling Parameterised Event-Goals] on page 12.}
 
 \subsection{Also in sec 3.4, you define the training data set as tuples
 [w U phi, o]. This is strange since I would think the world would be
@@ -255,7 +251,7 @@ first element in a training data tuple as the union of a world and
 the goal's parameters. Why not add a ground goal instead? Or use a
 triple?}
 
-\shout{We have now updated this to use a triple. Thank you.}
+\shout{We have now updated the last paragraph of [Section 3.4 Handling Parameterised Event-Goals] on page 13 to now use a triple.}
 
 \subsection{At the end of sec. 4.1, you discuss some "optimizations" that are
 possible in the case of the towers of hanoi problem. It is not really
@@ -270,6 +266,7 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 \subsection{pg 8: "a plans ..." $\to$ "a plan ..." or "a plan's ..." (occurs in many places).}
 
 \shout{We have reviewed the manuscript and corrected these cases.}
+
 \subsection{pg 20: "preiously learnt"}
 
 \shout{This has now been corrected.}
@@ -280,54 +277,48 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 \section{Reviewer \#3 Comments and Responses}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\em The paper addresses a nice new idea of learning of conditions in the context of bdi plan hierarchy. It claims that with the approach better conditions can be learned based on the success of previous executions plans. The approach is based on previous work of the authors. The paper is well written and is easy to understand but some parts in the sections 2 and 3 would be easier to understand if a good real example would guide the line of argumentation (e.g. an example from the agents or robotics domain). The major weaknesses of the paper is the lack of emperical or formal results and the number of assumptions made which makes the general applicability questionable. detailed remarks:}
+\subsection*{The major weaknesses of the paper is the lack of emperical or formal results and the number of assumptions made which makes the general applicability questionable.}
+
+In general, we believe that while the assumptions means that the current framework is not ready for practical systems, it nonetheless is a significant step forward in our ongoing work to that end. Please refer to our responses in \ref{rev3:assumptions}, \ref{rev3:convincing}, and \ref{rev3:experiments} that address specific questions that are related to this comment.
 
 
-\subsection{A good example of a domain used in the explanation of the background in section 2 and in the development of the approach in section 3 would ease the understanding of the paper and would even non-bdi experts to profit from the paper.}
+\subsection{The paper is well written and is easy to understand but some parts in the sections 2 and 3 would be easier to understand if a good real example would guide the line of argumentation (e.g. an example from the agents or robotics domain). $\ldots$ A good example of a domain used in the explanation of the background in section 2 and in the development of the approach in section 3 would ease the understanding of the paper and would even non-bdi experts to profit from the paper.}
 \label{rev3:recursion_examples}
 
-\shout{TOO: We have now included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
+\shout{SEBASTIAN TODO: We have now included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
 
 
 \subsection{In the middle part of page 7 the authors claim that event types and recursion is important to handle. But it is not very well explained why these constructs are important to handle.} 
 
-\shout{TODO: In procedural languages that do not provide constructs for looping, one mechanism for achieving this behaviour is through recursion. For this reason parameterised events and recursion are essential features that are heavily used in real BDI systems.}
+\shout{SEBASTIAN TODO: In procedural languages that do not provide constructs for looping, one mechanism for achieving this behaviour is through recursion. For this reason parameterised events and recursion are essential features that are heavily used in real BDI systems.}
 
 
 \subsection{Also throughout the paper it is not really point out how the event types are handled in fact.}
 
-We have tried to cover this appropriately in [Section 3.4 Handling Event-Goal Types].
+We handle event types in the learning framework by adding the event parameters as attributes to the decision trees' training data. Please see the last paragraph of [Section 3.4 Handling Parameterised Event-Goals] on page 13 for more information on this.
 
 \subsection{The term "coverage" is used very often starting with page 7. It seems to be an important part in the approach but is neither formally defined nor really explained. A definition and a deeper explanation would help the reader to understand the approach.}
 
-\shout{TODO: We have now clarified this in page 7.}
+\shout{TODO DHIRENDRA: We have now clarified this in paragraph 2 on page 7.}
 
 \subsection{On page 9 the authors introduce decision trees to represent the chance of a plan to be successful which is used later to define if a plan should be used in a certain situation. To me it is not clear as a decision tree covers both the negative and the positive case of the execution how the information on the negative outcome is used.}
+Yes, the decision tree classification is concrete i.e. either {\it success} or {\it failure}. However, since the decision tree induction usually has some trade-off between accuracy of classification and compactness of representation, then some training samples get incorrectly classified in the wrong ``bucket'' (where the bucket name is {\it success} or {\it failure}) when infact the actual outcome class of those training samples is different. So in a given bucket (or class) one may get a total of $m$ training samples out of which $n$ are misclassified. The ratio $1-(n/m)$ gives the likelihood of class membership and is automatically provided by the $weka$ package. This is the fraction we refer to when we talk about the ``chance'' of success (or failure).
 
-REWORD ALL: In a given world state $w$ (i.e. a set of attributes as far as the decision tree is concerned), a plan may fail due to a poor choice of sub-plan but later pass when all correct sub-choices were made. Here, both outcomes will be recorded in the training set against world state $w$ (i.e tuples [w,F] and [w,T]). This  along with outcomes from other world states for which the plan was invoked.
-
-The world (attributes set) and outcome (positive or negative) pairs allow the decision tree induction algorithm ($J48$ from package $weka$) to filter out attributes that carry the least information. The resulting decision tree is essentially an abstract representation to best explains the observations. 
-
-If we were to only use the positive outcomes, we would instead get a look-up table (decision table) for success in given world states. However, using both negative and positive outcomes, we can build an abstract representation (decision tree) that may be used to predict outcomes even for ``as yet unseen'' worlds --- based on the values of only those world attributes that are deemed important by the representation.
-
-
-\shout{We have updated [Section 3.1 Integrating Decision Trees into Context Conditions for Plans] to help clarify this further.}
+\shout{We have updated to last paragraph in [Section 3.1. Integrating Decision Trees into Context Conditions for Plans] on page 9 to make this clear.}
 
 \subsection{On the second half of page 9 the authors claim that the set of attributes used in the learning of a decision tree are selected by the programmer of the domain. This means in the first place additional work for the programmer and might in the second place prevent the system to find a good solution. Would it be feasible to learn the conditions without this artificial limitation of the attributes?}
 
-The reviewer highlights an important issue, that of knowledge representation, that is the focus of ongoing work. To answer your question, one way to automate the attribute set is to parse the plan bodies for this information. However, this may still miss features that are important for success but are never used in the plan body (and would normally be included in the context condition of the plan). An alternative is to include the full set of attributes, however that would entail longer learning periods for collecting sufficient data to filter out the irrelevant attributes. For this work, we suggest the domain expert make the first pass at filtering out the (certainly) irrelevant attributes.
-
-\shout{We have updated the related paragraph on page 9 to address this further.}
+\shout{SEBASTIAN TODO: We have updated the second last paragraph in [Section 3.1. Integrating Decision Trees into Context Conditions for Plans] on page 9 to address this further.}
 
 \subsection{On page 10 the authors explain recursion and the need for. Could you give a proper example for a recursive event goal in a real world domain.}
 
-This is addressed by the response in \ref{rev3:recursion_examples}.
+\shout{SEBASTIAN TODO: This is related to the response in \ref{rev3:recursion_examples}.}
 
 \subsection{In chapter 3.3 the authors explain that the training set is build up incrementally. To my understanding it might be the case that the training set so far and the plan selection learned so far has an influence of the future training data. Therefore, is it possible that a somehow unlucky plan selection and therefore probably bad training set prevent the system to converge to a good or correct set of conditions?}
 
 Yes, this is correct. This very concern has been the subject of our previous work. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to decide how much value we will put in the resulting decision tree. These are two orthogonal approaches i.e. how best to collect training data and how best to use it.
 
-\shout{TODO: We agree this is an important question and have addressed the issue in [Section 2.2 Learning for BDI Plan Selection].}
+\shout{DHIRENDRA TODO: We agree this is an important question and have addressed the issue in [Section 2.2 Learning for BDI Plan Selection]. Para and page?}
 
 \subsection{Formula 2 on page 14. The construction of the formula looks to me a little bit ad-hoc. Is there a better justification for the formula? What are others or maybe better weight functions.}
 
@@ -341,31 +332,31 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 
 \subsection{In 4.2. k is introduced but no real number for it in the experiments is presented nor the influence of this parameter is described. Please give more information on this.}
 
-\shout{TODO: We have updated the related paragraph in [Section 4.2 Results].}
+\shout{DHIRENDRA TODO: We have updated the footnote on page 16 to include this information.}
 
 \subsection{At the end of page 18 the authors that the applicability threshold is set to 20\% in the second experiment. It seems to my a little bit artificial and tuned towards an ad-hoc justification for the approach. Please give further information on the performance of the compared algorithms in the context of this threshold.}
 
 Yes, the threshold setting of $20\%$ is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) determines how much ``give'' we have in the exploration. The closer the threshold is to the default, the higher the likelihood that the agent will give up before achieving the goal. However, we do not believe the chosen threshold impacts the justification of the approach. The main requirement is that it be in the range $0.0 \leq threshold < 0.5$.
 
-\shout{We have updated the related paragraph to help clarify this further.}
+\shout{We have added a footnote on page 18 to help clarify this further.}
 
 \subsection{On the top of page a number of assumptions are stated. These assumption seems to limit the practical general applicability of the approach a lot. Please give a deeper justification for these assumptions and on probably solutions to them.}
-
-\shout{We assume the reviewer is referring to the assumptions on page 20. We have tried to further justify these and emphasise in [Section 5. Discussion and Conclusion] that we are not yet at the stage where our framework may be used in practical systems.}
+\label{rev3:assumptions}
+\shout{We assume the reviewer is referring to the assumptions on page 20. We have improved justification of assumptions in [Section 5. Discussion and Conclusion] on pages 19-20. We have also emphasised that while more work is required before our framework is ready for use in practical systems, this work nonetheless constitutes significant progress in the right direction.}
 
 
 \subsection{The coverage of related research seems to me a bit weak. Only three references on such a topic is not much. I guess there is more related work out there. Please rework these section.}
 
-\shout{We have reworked the entire related work coverage in [Section 5. Discussion and Conclusion] and have provided further related references.}
+\shout{We have reworked the entire related work coverage in [Section 5. Discussion and Conclusion] and have provided further related references on pages 20-21.}
 
 \subsection{The result section is not very much convincing. First to me it is not clear why a simple toy domain like the towers of Hanoi justifies the usefulness of the algorithm.}
+\label{rev3:convincing}
 
-We reiterate that our end goal is to allow use of our learning framework in real applications. Nonetheless, as a first step this toy domain captures several key issues and provides an idealised setting for the extension of our previous work from using synthetic hierarchies \cite{Airiau:IJAT09,Singh:AAMAS10} to ones with real meaning. 
-
-We further refer the reviewer to our response in \ref{rev2:domain_justification}.
+We reiterate that our end goal is to allow use of our learning framework in real applications. Nonetheless, as a first step this toy domain captures several key issues while providing an idealised setting for the extension of our previous work from using synthetic hierarchies \cite{Airiau:IJAT09,Singh:AAMAS10} to ones with real meaning. We further refer the reviewer to our response in \ref{rev2:domain_justification}.
 
 
 \subsection{Even the two experiments in this domain are made in a ad-hoc manner. For a journal this is too weak. I like to see a deeper treatment of the toy domain and to see experiments in a more advanced, more relevant or even real world domain. Otherwise I am not completely convinced about the advantages of the approach.}
+\label{rev3:experiments}
 
 Our experiments were chosen to convey the key benefits of the $ACL+\Omega$ approach using a similar experimental setup as previously \cite{Singh:AAMAS10}.
 
@@ -375,7 +366,7 @@ The first experiment equips us to understand the performance of the two approach
 
 Perhaps it is the choice of the experiment with applicability thresholds that seems ad-hoc to the reader in this context, however it is there to emphasise that the improved $ACL+\Omega$ avoids this issue in a manner  (of experiment) similar to the coverage approach \cite{Singh:AAMAS10} it lends from.
 
-\shout{We have added Figure 6b and reworded [Section 4.2 Results] to further clarity this point.}
+\shout{We have added Figure 6b and significantly reworded [Section 4.2 Results] to strengthen our case.}
 
 
 \begin{thebibliography}{10}

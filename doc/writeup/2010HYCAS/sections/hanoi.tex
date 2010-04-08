@@ -44,17 +44,15 @@ onto pin \entity{?p}. There are four plans that are relevant for this purpose:
 %Event \entity{Solve(?d,?p)} is indeed the most interesting and complex one. To
 %resolve such event, the agent has four plans at disposal that it can use, namely:
 
-\begin{description}
-
-\item[\entity{SolveRight}] This plan solves moving a disc to the pin it is
+{\entity{SolveRight}} This plan solves moving a disc to the pin it is
 already on. Since the goal is already true, the plan does \emph{nothing}.
 
-\item[\entity{SolveTopMove}] This plan moves the disc \entity{?d} to the destination
+{\entity{SolveTopMove}} This plan moves the disc \entity{?d} to the destination
 pin \entity{?p} if the disc is not already there and if the move is legal. The actual move
 is perfomed by the primitive action \entity{move(?p2,?p)}, where \entity{?p2} is the source pin
 of disc \entity{d}.
 
-\item[\entity{SolveTop}] This plan solves for the case when the disc \entity{?d} 
+{\entity{SolveTop}} This plan solves for the case when the disc \entity{?d} 
 may be legally lifted but cannot be legally placed at the destination because the 
 top disc on the destination pin is smaller than \entity{?d}.
 % %
@@ -62,7 +60,7 @@ In this case, the plan first moves all the discs in the destination pin that are
 smaller than disc \entity{?d} to the third (auxiliary) pin, and then
 re-posts the sub-goal to move \entity{?d} to pin \entity{?p} i.e. \entity{Solve(?d,?p)}. 
 
-\item[\entity{SolveMiddle}] This plan solves moving a disc from the
+{\entity{SolveMiddle}} This plan solves moving a disc from the
 \emph{middle} of a stack.
 %%
 In this case, the plan first clears the source pin so
@@ -73,13 +71,13 @@ auxiliary.
 %%
 Subsequently the plan re-posts the
 sub-goal of moving \entity{?d} to pin \entity{?p} i.e. event \entity{Solve(?d,?p)}.
-\end{description}
 
 
 \begin{figure}[t]
 \begin{center}
 \resizebox{.9\textwidth}{!}{\input{figs/gpt-hanoi}}
 \end{center}
+\vskip -0.5cm
 \caption{Goal-plan hierarchy for the Towers of Hanoi domain.}
 \label{fig:hanoi_goalplan}
 \end{figure}
@@ -169,6 +167,7 @@ The following results are for a Hanoi problem with $five$ discs\footnote{We use 
 \subfigure[\CL+$\Omega$]{\label{fig:result-levelsB}
 \input{figs/result-levelsB}
 }
+\vskip -0.2cm
 \caption{Agent performance under \CL\ and \CL+$\Omega$ schemes for solutions at recursion levels one (pluses), three (circles) and five (crosses). Each point represents results from $5$ experiment runs using an averaging window of $100$ samples.}
 \label{fig:result-levels}
 \end{center}
@@ -187,6 +186,7 @@ Next, we conducted an experiment that consisted of resolving the full set of sav
 \subfigure[Solutions Found]{\label{fig:result-fullB}
 \input{figs/result-solutions}
 }
+\vskip -0.2cm
 \caption{Agent performance under \CL\ (circles) and \CL+$\Omega$ (crosses) schemes. Each point represents an average result from $5$ experiment runs.}
 \label{fig:result-full}
 \end{center}

@@ -18,7 +18,8 @@ For each plan, the training set for its \dt\ contains samples of the form $[w,o]
 
 The number of attributes in world state $w$ and their range has a bearing on the size of the training set required to correctly learn the context condition. In general, world state $w$ should be constructed with all attributes that are possibly relevant to the context condition. For instance, for a plan to pick objects using a robotic arm, the attributes \textit{objectSurface} and \textit{gripperWet} are likely relevant and should be included, while the attribute \textit{dayOfWeek} possibly is not and may be exluded. The choice of attributes to include in the world state $w$ is eventually a design decision and dependent on domain knowledge. For our purposes we assume that the designer provides a set of all attributes that are considered \textit{possibly relevant} to the context condition of the plan. In the worst case, this set is the full set of available attributes. 
 
-The decision tree inductive bias is a preference for smaller trees. In other words, the induction of \dt s will trade-off some accuracy in classification for compactness of representation. In fact such inductive bias is necessary if the \dt\ is to generalise to as yet unseen world states. Once a \dt\ is induced from the training set, it may be used to classify any new world state $w$. In the strict sense the classification is an outcome $o$ (failure or success). However, several \dt\ implementations including \propername{J48} in \weka\footnote{In our study we use algorithm \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the \weka\ learning package \cite{weka99}.} annotate a likelihood of class membership (that is indicative of the inductive bias) to the returned classification. For the given world state $w$ then, we treat the returned likelihood of membership to the $success$ class as the expected likelihood of success of the plan.
+The decision tree inductive bias is a preference for smaller trees. In other words, the induction will trade-off some accuracy in classification for compactness of representation. 
+This means that some training samples get incorrectly classified in the wrong ``bucket'' (where the bucket name is {\it success} or {\it failure} in our case) when the actual outcome class of those training samples is different. So in a given bucket (or class) one may get a total of $m$ training samples out of which $n$ are misclassified. The ratio $1-(n/m)$ gives the likelihood of class membership\footnote{In our study we use algorithm \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the \weka\ learning package \cite{weka99} that automatically provides this ratio.} and is the fraction we use as the expected likelihood of success of the plan.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,10 +32,11 @@ In order to understand the impact of recursion on context learning, we use the n
 
 \begin{figure}[t]
 \begin{center}
-\resizebox{0.8\textwidth}{!}{
+\resizebox{0.6\textwidth}{!}{
 \input{figs/gpt-unfolding}
 }
 \end{center}
+\vskip -0.5cm
 \caption{Goal-plan hierarchy containing a parameterised goal $G$ handled by three plans $P_1$, $P_2$ and $P_3$. Here plan $P_2$ posts two instances of $G$ resulting in recursion. Two levels of recursive unfolding are shown. Dashed $P_2$ nodes indicate unexplored recursive sub-trees.}
 \label{fig:unfolding}
 \end{figure}
