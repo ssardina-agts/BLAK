@@ -141,7 +141,6 @@ We would further like to point out here that the learnt context conditions do no
 
 
 \subsection{The paper is well written and the relevant literature is discussed/cited as far as I can tell. (I am no BDI expert.)}
-\label{rev1:related_work}
 
 \shout{Please note that we have further updated the related work account in [Section 5. Discussion and Conclusion].}
 
@@ -174,6 +173,7 @@ although it does not seem to be particularly challenging. The learning
 approach is limited by the inabilitiy to take into account goal
 inter-dependencies. Nevertheless, the work represents progress towards
 endowing BDI agents with learning capabilities.}
+\label{rev2:domain_justification}
 
 Although the problem may initially appear non-challenging, it indeed is. There
 are many nuances that come up mainly due to the fact that \emph{(i)} the
@@ -192,6 +192,8 @@ paradigm. Addressing this would require a substantial modification in the BDI
 programming style in terms of representation, which is out of the scope of this
 paper. Here we aim to provide a learning account compatible with standard
 existing BDI architectures.
+
+\shout{We have updated the related paragraph on page 20 to clarify this point.}
 
 \subsection{In sec.3, 1st para., what do you mean by "event-goal type"? just a
 parametrized event-goal?}
@@ -284,26 +286,25 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 \subsection{A good example of a domain used in the explanation of the background in section 2 and in the development of the approach in section 3 would ease the understanding of the paper and would even non-bdi experts to profit from the paper.}
 \label{rev3:recursion_examples}
 
-\shout{We have now included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
+\shout{TOO: We have now included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
 
 
 \subsection{In the middle part of page 7 the authors claim that event types and recursion is important to handle. But it is not very well explained why these constructs are important to handle.} 
 
-In procedural languages that do not provide constructs for looping (for instance, $for$ and $while$ loops in programming), the basic mechanism for achieving this behaviour is through recursion. Since BDI falls in this category, then parameterised events and recursion become essential features that are heavily used in real systems.
+\shout{TODO: In procedural languages that do not provide constructs for looping, one mechanism for achieving this behaviour is through recursion. For this reason parameterised events and recursion are essential features that are heavily used in real BDI systems.}
 
-\shout{We have added this explanation to ...}
 
 \subsection{Also throughout the paper it is not really point out how the event types are handled in fact.}
 
-We believe this is adequately addressed in the manuscript in [Section 3.4 Handling Event-Goal Types].
+We have tried to cover this appropriately in [Section 3.4 Handling Event-Goal Types].
 
 \subsection{The term "coverage" is used very often starting with page 7. It seems to be an important part in the approach but is neither formally defined nor really explained. A definition and a deeper explanation would help the reader to understand the approach.}
 
-\shout{We have now clarified this in page 7.}
+\shout{TODO: We have now clarified this in page 7.}
 
 \subsection{On page 9 the authors introduce decision trees to represent the chance of a plan to be successful which is used later to define if a plan should be used in a certain situation. To me it is not clear as a decision tree covers both the negative and the positive case of the execution how the information on the negative outcome is used.}
 
-In a given world state $w$ (i.e. a set of attributes as far as the decision tree is concerned), a plan may fail due to a poor choice of sub-plan but later pass when all correct sub-choices were made. Here, both outcomes will be recorded in the training set against world state $w$ (i.e tuples [w,F] and [w,T]). This  along with outcomes from other world states for which the plan was invoked.
+REWORD ALL: In a given world state $w$ (i.e. a set of attributes as far as the decision tree is concerned), a plan may fail due to a poor choice of sub-plan but later pass when all correct sub-choices were made. Here, both outcomes will be recorded in the training set against world state $w$ (i.e tuples [w,F] and [w,T]). This  along with outcomes from other world states for which the plan was invoked.
 
 The world (attributes set) and outcome (positive or negative) pairs allow the decision tree induction algorithm ($J48$ from package $weka$) to filter out attributes that carry the least information. The resulting decision tree is essentially an abstract representation to best explains the observations. 
 
@@ -314,9 +315,9 @@ If we were to only use the positive outcomes, we would instead get a look-up tab
 
 \subsection{On the second half of page 9 the authors claim that the set of attributes used in the learning of a decision tree are selected by the programmer of the domain. This means in the first place additional work for the programmer and might in the second place prevent the system to find a good solution. Would it be feasible to learn the conditions without this artificial limitation of the attributes?}
 
-The reviewer highlights an important issue, that of knowledge representation, that is the focus of ongoing work. Due to lack of space however, we do not delve into this in much detail apart from paragraph 2 on page 9. 
+The reviewer highlights an important issue, that of knowledge representation, that is the focus of ongoing work. To answer your question, one way to automate the attribute set is to parse the plan bodies for this information. However, this may still miss features that are important for success but are never used in the plan body (and would normally be included in the context condition of the plan). An alternative is to include the full set of attributes, however that would entail longer learning periods for collecting sufficient data to filter out the irrelevant attributes. For this work, we suggest the domain expert make the first pass at filtering out the (certainly) irrelevant attributes.
 
-To answer your question, one way to automate the attribute set is to parse the plan bodies for this information. However, this may still miss features that are important for success but are never used in the plan body (and would normally be included in the context condition of the plan). An alternative is to include the full set of attributes, however that would entail longer learning periods for collecting sufficient data to filter out the irrelevant attributes. For this work, we suggest the domain expert make the first pass at filtering out the (certainly) irrelevant attributes.
+\shout{We have updated the related paragraph on page 9 to address this further.}
 
 \subsection{On page 10 the authors explain recursion and the need for. Could you give a proper example for a recursive event goal in a real world domain.}
 
@@ -324,55 +325,57 @@ This is addressed by the response in \ref{rev3:recursion_examples}.
 
 \subsection{In chapter 3.3 the authors explain that the training set is build up incrementally. To my understanding it might be the case that the training set so far and the plan selection learned so far has an influence of the future training data. Therefore, is it possible that a somehow unlucky plan selection and therefore probably bad training set prevent the system to converge to a good or correct set of conditions?}
 
-This very concern has been the subject of our previous works \cite{Airiau:IJAT09,Singh:AAMAS10} to date. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to  decide how much value we will put in the resulting decision tree. These are two orthogonal concerns i.e. how best to collect training data and how best to use it.
+Yes, this is correct. This very concern has been the subject of our previous work. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to decide how much value we will put in the resulting decision tree. These are two orthogonal approaches i.e. how best to collect training data and how best to use it.
 
-We agree this is an important question and have already devoted [Section 2.2 Learning for BDI Plan Selection] to this.
+\shout{TODO: We agree this is an important question and have addressed the issue in [Section 2.2 Learning for BDI Plan Selection].}
 
 \subsection{Formula 2 on page 14. The construction of the formula looks to me a little bit ad-hoc. Is there a better justification for the formula? What are others or maybe better weight functions.}
 
-The formula is the same as described in \cite{Singh:AAMAS10} where we also discuss an alternative weighting and how it may be used to adjust the performance of the system to suit different hierarchies. As \cite{Singh:AAMAS10} is now a peer-reviewed publication (was under review at this of our original submission) we do not believe this should be addressed again in this paper.
+The formula is the same as that described in \cite{Singh:AAMAS10} where we also discuss an alternative weighting and how it may be used to adjust the performance of the system to suit different hierarchies. Considereing that this issue has been previously discussed, and due to lack of space here, we have chosen not to include this justification in this paper.
 
+\shout{We have added a note referring the reader to the origin of the formula.}
 
 \subsection{In the middle part of page 16 the authors state that they do not continuous exploration once a solution is found. Why this is done or why it is sufficient? It seems to me that this assumption is against the authors arguments for the properties of their approach.}
 
-We refer the reviewer to the response in \ref{rev1:optimisations} that addresses this exact concern.
+We refer the reviewer to the response in \ref{rev1:optimisations} that addresses this concern.
 
 \subsection{In 4.2. k is introduced but no real number for it in the experiments is presented nor the influence of this parameter is described. Please give more information on this.}
 
-\shout{We have updated the related paragraph in [Section 4.2 Results].}
+\shout{TODO: We have updated the related paragraph in [Section 4.2 Results].}
 
 \subsection{At the end of page 18 the authors that the applicability threshold is set to 20\% in the second experiment. It seems to my a little bit artificial and tuned towards an ad-hoc justification for the approach. Please give further information on the performance of the compared algorithms in the context of this threshold.}
 
-Yes, the threshold setting of $20\%$ is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. We do not believe it impacts the justification of the approach. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) will decide how much ``give'' we have in the exploration. If we were to set the threshold to be the same as the default weight then no exploration will result since the selection weight (from Equation 2) will always fail the threshold test. However for the range $0 \leq threshold < 0.5$, the justification holds.
+Yes, the threshold setting of $20\%$ is somewhat arbitrary, but consistent with that used in \cite{Singh:AAMAS10}. The difference between the default weight ($0.5$) and the cut-off weight (threshold of $0.2$ in this case) determines how much ``give'' we have in the exploration. The closer the threshold is to the default, the higher the likelihood that the agent will give up before achieving the goal. However, we do not believe the chosen threshold impacts the justification of the approach. The main requirement is that it be in the range $0.0 \leq threshold < 0.5$.
 
 \shout{We have updated the related paragraph to help clarify this further.}
 
 \subsection{On the top of page a number of assumptions are stated. These assumption seems to limit the practical general applicability of the approach a lot. Please give a deeper justification for these assumptions and on probably solutions to them.}
 
-We are unsure which page is being referred to as page 18 has no assumptions. Perhaps the reviewer is referring to the assumptions in [Section 5. Discussion and Conclusion] on page 20? In that instance, we believe the discussion covers the concern appropriately. 
-
+\shout{We assume the reviewer is referring to the assumptions on page 20. We have tried to further justify these and emphasise in [Section 5. Discussion and Conclusion] that we are not yet at the stage where our framework may be used in practical systems.}
 
 
 \subsection{The coverage of related research seems to me a bit weak. Only three references on such a topic is not much. I guess there is more related work out there. Please rework these section.}
 
-Please refer to the response in \ref{rev1:related_work} that addresses this concern.
+\shout{We have reworked the entire related work coverage in [Section 5. Discussion and Conclusion] and have provided further related references.}
 
 \subsection{The result section is not very much convincing. First to me it is not clear why a simple toy domain like the towers of Hanoi justifies the usefulness of the algorithm.}
 
-We reiterate that our end goal is to allow use of our learning framework in real applications. This toy domain captures several key issues in an idealised setting and provides a good platform for the extension of our previous work that used synthetic hierarchies \cite{Airiau:IJAT09,Singh:AAMAS10} to ones with real meaning. 
+We reiterate that our end goal is to allow use of our learning framework in real applications. Nonetheless, as a first step this toy domain captures several key issues and provides an idealised setting for the extension of our previous work from using synthetic hierarchies \cite{Airiau:IJAT09,Singh:AAMAS10} to ones with real meaning. 
 
-\shout{We have adjusted the final paragraph of the paper to reinforce this message.}
+We further refer the reviewer to our response in \ref{rev2:domain_justification}.
+
 
 \subsection{Even the two experiments in this domain are made in a ad-hoc manner. For a journal this is too weak. I like to see a deeper treatment of the toy domain and to see experiments in a more advanced, more relevant or even real world domain. Otherwise I am not completely convinced about the advantages of the approach.}
 
-Our experiments were chosen to highlight the key improvements to our approach using a similar experimental setting as before \cite{Singh:AAMAS10}. 
+Our experiments were chosen to convey the key benefits of the $ACL+\Omega$ approach using a similar experimental setup as previously \cite{Singh:AAMAS10}.
 
-The first experiment (Figure 5) captures several important results that we wish to highlight. Firstly, it shows the benefits of the structured exploration of $ACL+\Omega$ over the original $ACL$ \cite{Airiau:IJAT09} that largely explores randomly when no solution has been found since all plans have an equal likelihood of success (nearly zero). The result further confirms the merits of the coverage-based exploration idea that in it's original form \cite{Singh:AAMAS10} does not scale well to recursive programs and forms motivation for this work. Secondly, the experiment reinforces the intuition that the structured $ACL+\Omega$ approach is likely to show more gains where the solution is more complex. For instance, $ACL$ only discovers $20\%$ of all solutions that require $5$ levels of recursion whereas $ACL+\Omega$ finds all such solutions. For levels $3$ and $1$, the advantages of $ACL+\Omega$ over $ACL$ are progressively less. 
+The first experiment (Figure 5) captures some key points that we wish to highlight. Firstly, it shows the benefits of the structured exploration of $ACL+\Omega$ over the baseline $ACL$ approach \cite{Airiau:IJAT09,Singh:AAMAS10}. The result also confirms the merits of the exploration-based confidence idea that in it's original form \cite{Singh:AAMAS10} did not scale to recursive programs and formed the motivation for this work. Secondly, the experiment reinforces the intuition that the structured $ACL+\Omega$ approach is likely to show more gains where the solution is more complex. For instance, for solutions requiring five levels of recursion, ACL achieves only $50\%$ success by the end of the experiment at $5k$ iterations whereas $ACL+\Omega$ achieves $95\%$ success within $3.5k$ iterations. For levels three and one, the advantages of $ACL+\Omega$ over $ACL$ are progressively less. 
 
-The first experiment equips us to understand the performance of the two approaches in the full experiment (Figure 6a). Perhaps it is the choice of the experiment with applicability thresholds (Figure 6b) that seems ad-hoc to the reader in this context, however it is there to emphasise that the improved $ACL+\Omega$ avoids this issue in a manner  (of experiment) similar to the coverage approach \cite{Singh:AAMAS10} it lends from.
+The first experiment equips us to understand the performance of the two approaches in the full experiment shown in Figure 6a. We have now added a second view of the results of experiment two in Figure 6b that shows the progressive discovery of solutions for each approach. Here the benefit of $ACL+\Omega$ is clear. Figure 6b shows that $ACL+\Omega$ resolves all $52$ goals within $12k$ iterations whereas $ACL$ resolves only $47$ by the end of the experiment at $20k$. At a similar point of comparison, to resolve $47$ goals $ACL+\Omega$ takes around $6.4k$ iterations whereas $ACL$ takes more than twice as long at $17.7k$. 
 
-\shout{We have made changes to the second last paragraph of [Section 4.2 Results ]to help clarify this further.}
-\shout{Page 19: Update paragraph about goal inter-dependence. The reason why we only achieve 80\% success is because in some cases the learnt solution is not optimal and requires more recursion than in the original program. However, since the experiment is run with bounded recursion sometimes this extra recursion results in violation of this limit leading to a forced failure.}
+Perhaps it is the choice of the experiment with applicability thresholds that seems ad-hoc to the reader in this context, however it is there to emphasise that the improved $ACL+\Omega$ avoids this issue in a manner  (of experiment) similar to the coverage approach \cite{Singh:AAMAS10} it lends from.
+
+\shout{We have added Figure 6b and reworded [Section 4.2 Results] to further clarity this point.}
 
 
 \begin{thebibliography}{10}

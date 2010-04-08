@@ -1,3 +1,4 @@
+%!TEX root = ../hycas2010.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Conclusion}\label{sec:discussion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,59 +29,43 @@ also demonstrate that the naive approach to learning, that does not
 account for the BDI program structure fails to learn given
 some program structures and an applicability threshold.
 
-The work still contains a number of simplifying assumptions which will
-need to be addressed before being able to develop {\it practical} on-line
-learning for situated agents. Currently the work has not been
-integrated with standard BDI failure handling and recovery. Clearly
-this will be needed, but we do not expect that it will undermine any
-of our results described here. In fact a careful integration of
+There is still work to be done before our framework may be applied for {\it practical} on-line learning in situated agents. Firstly, the framework has not been integrated with standard BDI failure handling and recovery. Clearly
+this will be needed (and is the subject of ongoing work), but we do not expect this to undermine any results described here. In fact a careful integration of
 failure handling could improve the speed of learning as multiple
-attempts could be made to achieve a (sub)-goal. However care will need
+attempts could be made to achieve a (sub)-goal. However care needs
 to be taken regarding changes to world state and possible interactions
 between failed attempts and eventually successful ones.
 
-%
-Our current approach does not detect and learn interactions between
+Secondly, our use of \dt s is naive. 
+For instance, currently execution data is maintained forever and 
+\dt s re-built after each plan execution. Furthermore, we learn using actual 
+world states, whereas an improvement would be to learn using relational world information.
+While not ideal, our framework nonetheless allows us to focus on 
+the nuances of learning in BDI programs first 
+without worrying about the underlying techniques.
+
+Finally, we do not detect and learn interactions between
 sibling goals in the context of a particular parent; each
 subgoal is treated ``locally.'' To handle such interactions, the
 selection of a plan for resolving a sub-goal should also be predicated
 on the goals higher than the sub-goal, that is, it should take into
-account the ``reasons'' for the sub-goal.
-
-%An issue with our use of a coverage-based confidence measure is
-%that it has a defined end state, namely $c_p=1$. However, in a system
-%where the environment is always changing, re-learning will need to occur 
-%indefinitely and the framework must allow for this.
-% as the agent continually tries to
-%\emph{adapt}. One option is to have an explicit resetting of the
-%confidence factor when the agent is told, or deduces, that the
-%environment has changed. Deduction could use a number of approaches
-%such as noticing a lack of correlation in previously correlated
-%features, 
-%or noticing when a plan that has
-%previously suceeded reliably begins to fail, concluding that the
-%world has changed in a way that is relevant for the achievement of the
-%goal related to that plan.
-
-Finally, we note that our current use of \dt s is naive. 
-For instance, in our framework all execution data is maintained forever and 
-\dt s re-built after each plan execution. Furthermore, we learn using actual 
-world states, whereas an improvement would be to learn using relational world information.
-While not ideal, our approach nevertheless allows us to focus on 
-understanding the complexities of learning in BDI programs first 
-without worrying about the underlying techniques.
+account the ``reasons'' for the sub-goal. Addressing this would require substantial modification to the BDI programming style in terms of representation, which is out of the scope of this work.
 
 The issue of combining learning and deliberative approaches for online 
 decision making in BDI-like systems has not been widely addressed.
-% %
-In~\cite{Riedmiller01}, \textit{preiously learnt} low level robot soccer skills are 
-used in the deliberative decision making process once deployed.
-% %
+%
 Hern\'andez et al. \cite{Hernandez04:Learning} give a preliminary
 account of how decision trees may be induced on plan failures in order
 to find alternative logical context conditions in a deterministic
 paint-world example. 
-% %
+%
+In \cite{nguyen2006an-ad} learnt user preferences are incorporated during BDI plan selection in a dialogue manager application using a decision tree learner. %
+In contrast, \cite{karim2006plans} take the approach of refining existing BDI plans or learning new plans as a sequence of recorded actions based on prescriptions provided by the domain expert.
+%
+In~\cite{Riedmiller01}, low level robot soccer skills are learnt offline and then used in the deliberative decision making process once deployed.
+%
+Recently, a comprehensive account of integrating learning in BDI deliberation is provided in \cite{lokuge2007impro} for a ship berthing logistics domain. Here a neural network module is first trained offline on the available shipping port data and then used in a deployed BDI system to improve plan selection. Their results show significant improvement in berth productivity over the existing system of human operators.
+
 A closely related area to BDI is that of hierarchical task network (HTN)
 systems where task decompositions used are similar to BDI goal-plan hierarchies.
 Recently, in similarly motivated work to ours, \cite{Zhuo09:Learning} 
@@ -88,10 +73,12 @@ proposed a method for learning HTN method preconditions under partial
 observations. There, a set of constraints are constructed from
 observed decomposition trees that are then solved \emph{offline} using
 a constraint solver.
-% %
+%
 In contrast, in our work learning and deliberation are fully integrated in a
 way that one impacts the other and the classical
 exploration/exploitation dilemma applies. 
+
+The BDI architecture has also been shown \cite{simari2006on-th} to be related to Markov Decision Processes that are heavily used for solving optimisation problems in reinforcement learning \cite{Mitchell97:ML}. A sub-area of work related to ours is hierarchical reinforcement learning \cite{barto2003recen} where task hierarchies similar to BDI are used. Where the aim is to find locally optimal solutions for each sub-MDP in the hierarchy, similar issues as ours arise --- such as goal inter-dependence. In general global optimality is possible only when information is fed into the sub-task (i.e. value functions uses the entire state space), consistent with our analysis of goal inter-dependence issues. Interestingly, work by Dietterich \cite{dietterich2000hiera} also supports the use of simultaneous learning at all levels (similar to our \CL\ based approaches) instead of waiting for the children to converge (analogous to our conservative  approach \cite{Singh:AAMAS10}).
 
 % %
 Although there is still work to do before we can expect learning to be
