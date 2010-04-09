@@ -140,6 +140,40 @@
 
 
 
+
+
+% \newcommand{\fontNames}[1]{\mbox{\textsl{#1}}}
+\newcommand{\fontNames}[1]{\mbox{\textit{#1}}}
+
+\newcommand{\fontEvent}[1]{\fontNames{#1}}
+\newcommand{\fontFluent}[1]{\fontNames{#1}}
+\newcommand{\fontAction}[1]{\fontNames{#1}}
+
+
+% Hanoi Towers
+\newcommand{\eSolve}{\fontEvent{Solve}}
+
+\newcommand{\aMove}{\fontFluent{move}}
+
+\newcommand{\pOn}{\fontFluent{on}}
+\newcommand{\pPin}{\fontFluent{pin}}
+
+
+% Eleevator example
+\newcommand{\eServeAll}{\fontEvent{ServeAll}}
+\newcommand{\eServeFloor}{\fontEvent{Serve}}
+\newcommand{\eGoTo}{\fontEvent{GoTo}}
+
+\newcommand{\pServing}{\fontFluent{Serving}}
+\newcommand{\pAt}{\fontFluent{At}}
+
+\newcommand{\aUp}{\fontAction{GoUp}}
+\newcommand{\aOpen}{\fontAction{Open}}
+\newcommand{\aClose}{\fontAction{Close}}
+\newcommand{\aOff}{\fontAction{Off}}
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% END OF MACROS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
