@@ -26,10 +26,12 @@ attribute \textit{dayOfWeek} possibly is not and may be exluded. The choice of
 attributes to include in the world state $w$ is eventually a design decision and
 dependent on domain knowledge. For our purposes we assume that the designer
 provides a set of all attributes that are considered \textit{possibly relevant}
-to the context condition of the plan.\footnote{\textbf{Say something about automatic
-generation of relevant propositions by analysing preconditions/effects of
-actions is available}}. In the worst case, this set is the full set of available
-attributes.
+to the context condition of the plan.\footnote{An automatic compilation of
+potential relevant propositions can be done by analysing, if available, the
+preconditions and effects of actions that might be executed when handling a goal.
+This, however, is out of the scope of this paper.}
+% %
+In the worst case, this set is the full set of available attributes.
 
 The decision tree inductive bias is a preference for smaller trees. In other words, the induction will trade-off some accuracy in classification for compactness of representation. 
 This means that some training samples get incorrectly classified in the wrong ``bucket'' (where the bucket name is {\it success} or {\it failure} in our case) when the actual outcome class of those training samples is different. So in a given bucket (or class) one may get a total of $m$ training samples out of which $n$ are misclassified. The ratio $1-(n/m)$ gives the likelihood of class membership\footnote{In our study we use algorithm \propername{J48}, a version of \propername{c4.5} \cite{Mitchell97:ML}, from the \weka\ learning package \cite{weka99} that automatically provides this ratio.} and is the fraction we use as the expected likelihood of success of the plan.
