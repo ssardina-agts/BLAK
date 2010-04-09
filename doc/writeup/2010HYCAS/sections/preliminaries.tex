@@ -166,14 +166,16 @@ trees~\cite{Mitchell97:ML} that provide a judgement as to whether the
 plan is likely to succeed or fail for the given situation. 
 
 To select plans based on information in the decision trees, we use a
-probabilistic method whereby we choose a plan with
-probability proportional to its believed chance of success in the
+probabilistic method that choosse a plan based on its believed likelihood of success in the
 given situation. This approach provides a balance between
 exploitation (we choose plans with relatively higher success expectations
 more often), and exploration (we sometimes choose plans with lower
 success expectation to get better
 confidence in their believed applicability by trying them in more 
 situations).
+%
+This balance is important because ongoing learning influences future plan selection, and subsequently whether a good solution is learnt.
+
 
 The resolution of goals in BDI execution results in 
 the invocation of plans that in turn may post sub-goals that are further
@@ -230,14 +232,16 @@ completely fail to learn.
 
 Our second approach reported in~\cite{Singh:AAMAS10} was to
 adjust the plan selection probability based on some measure of 
-our confidence in the decision tree classification.
+our confidence in the decision tree.
 %
-We consider the reliability of a \dt\ for a given plan in a given 
+We consider the reliability of a plan's \dt\ in a given 
 world state to be proportional to the number of sub-plan choices (or paths
 below the plan in the goal-plan hierarchy) that have been
-\textit{covered} in that  
-world state. The greater the coverage, the more we have explored and the
-greater the confidence in the resulting \dt.
+explored in that world state. 
+%
+{\it Coverage} refers to the set of explored paths relative to the set of all possible paths.
+%
+The greater the coverage, the more we have explored and the greater the confidence in the resulting \dt.
 %
 By biasing the plan selection probability with a coverage-based confidence
 measure we achieved the same robustness as that of conservative recording of 
@@ -286,9 +290,9 @@ use of (direct or indirect) recursive procedures.
 %- a more complex tree requiring more experience before we should feel
 %confident of learned results.
 
-Furthermore, the coverage approach of~\cite{Singh:AAMAS10} does not scale
-when recursive structures are
-considered. Conceptually we can unfold the recursive structure to a
+Furthermore, the coverage approach \cite{Singh:AAMAS10} does not scale
+to recursive structures. 
+Conceptually we can unfold the recursive structure to a
 specified depth. However, the number of paths is exponential in the
 recursion number and further compounded by parameterised event-goals
 and the number of possible world states.

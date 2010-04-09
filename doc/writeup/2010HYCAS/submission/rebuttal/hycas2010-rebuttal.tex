@@ -299,7 +299,16 @@ We handle event types in the learning framework by adding the event parameters a
 
 \subsection{The term "coverage" is used very often starting with page 7. It seems to be an important part in the approach but is neither formally defined nor really explained. A definition and a deeper explanation would help the reader to understand the approach.}
 
-\shout{TODO DHIRENDRA: We have now clarified this in paragraph 2 on page 7.}
+We consider the reliability of a plan's decision tree in a given 
+world state to be proportional to the number of sub-plan choices (or paths
+below the plan in the goal-plan hierarchy) that have been
+explored in that world state. 
+%
+{\it Coverage} refers to the set of explored paths relative to the set of all possible paths.
+%
+The greater the coverage, the more we have explored and the greater the confidence in the resulting decision tree.
+
+\shout{We have now updated paragraph 2 on page 7 with this definition.}
 
 \subsection{On page 9 the authors introduce decision trees to represent the chance of a plan to be successful which is used later to define if a plan should be used in a certain situation. To me it is not clear as a decision tree covers both the negative and the positive case of the execution how the information on the negative outcome is used.}
 Yes, the decision tree classification is concrete i.e. either {\it success} or {\it failure}. However, since the decision tree induction usually has some trade-off between accuracy of classification and compactness of representation, then some training samples get incorrectly classified in the wrong ``bucket'' (where the bucket name is {\it success} or {\it failure}) when infact the actual outcome class of those training samples is different. So in a given bucket (or class) one may get a total of $m$ training samples out of which $n$ are misclassified. The ratio $1-(n/m)$ gives the likelihood of class membership and is automatically provided by the $weka$ package. This is the fraction we refer to when we talk about the ``chance'' of success (or failure).
@@ -318,7 +327,7 @@ Yes, the decision tree classification is concrete i.e. either {\it success} or {
 
 Yes, this is correct. This very concern has been the subject of our previous work. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to decide how much value we will put in the resulting decision tree. These are two orthogonal approaches i.e. how best to collect training data and how best to use it.
 
-\shout{DHIRENDRA TODO: We agree this is an important question and have addressed the issue in [Section 2.2 Learning for BDI Plan Selection]. Para and page?}
+\shout{We have updated paragraph 2 of [Section 2.2. Learning for BDI Plan Selection] on page 6 to clarify this point just before our previous work is discussed.}
 
 \subsection{Formula 2 on page 14. The construction of the formula looks to me a little bit ad-hoc. Is there a better justification for the formula? What are others or maybe better weight functions.}
 
@@ -332,7 +341,9 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 
 \subsection{In 4.2. k is introduced but no real number for it in the experiments is presented nor the influence of this parameter is described. Please give more information on this.}
 
-\shout{DHIRENDRA TODO: We have updated the footnote on page 16 to include this information.}
+The parameter $k$ controls the rate of change of decay $\delta_{Pt}$ and is currently arbitrarily set to $4.0$. Since the decay $\delta_{Pt}$ determines our confidence in the decision tree, then $k$ determines how quickly or slowly we will get there in terms of the number of steps.
+
+\shout{We have updated paragraph 1 of [Section 4.2 Results] on page 16 with this information.}
 
 \subsection{At the end of page 18 the authors that the applicability threshold is set to 20\% in the second experiment. It seems to my a little bit artificial and tuned towards an ad-hoc justification for the approach. Please give further information on the performance of the compared algorithms in the context of this threshold.}
 
