@@ -315,9 +315,34 @@ Yes, the decision tree classification is concrete i.e. either {\it success} or {
 
 \shout{We have updated to last paragraph in [Section 3.1. Integrating Decision Trees into Context Conditions for Plans] on page 9 to make this clear.}
 
-\subsection{On the second half of page 9 the authors claim that the set of attributes used in the learning of a decision tree are selected by the programmer of the domain. This means in the first place additional work for the programmer and might in the second place prevent the system to find a good solution. Would it be feasible to learn the conditions without this artificial limitation of the attributes?}
+\subsection{ On the second half of page 9 the authors claim that the set of
+attributes used in the learning of a decision tree are selected by the programmer
+of the domain. This means in the first place additional work for the programmer
+and might in the second place prevent the system to find a good solution. Would
+it be feasible to learn the conditions without this artificial limitation of the
+attributes?}
 
-\shout{SEBASTIAN TODO: We have updated the second last paragraph in [Section 3.1. Integrating Decision Trees into Context Conditions for Plans] on page 9 to address this further.}
+We believe the requirement for the user/programmer to state relevant domain
+propositions is a realistic one. It is generally feasible for the domain expert
+to state which features of the world might play some role when solving a given
+goal. For example, in the travelling domain, airlines schedules and location of
+airports are relevant for the goal of buying an airline ticket, whereas domain
+propositions describing the weather or features of car rental companies are
+mostly not relevant. See that the requirement is for the domain expert to
+enumerate the relevant features for each goal; this is generally a feasible
+request and much less demanding than requesting exact plans' preconditions.
+
+Nonetheless, relevant features could be automatically extracted from the plan
+library if domain information is available for primitive actions. For example, if
+in addressing some goal, it might happen that action ``drive(src,dest)'' is
+executed, then the fuel level, being mentioned in the precondition of the action,
+should be considered as ``relevant'' for the goal.
+% %
+Though this automatic extraction is not the subject of this paper, we think that
+in a full-fledged learning BDI system, both automatic analysis and domain expert
+knowledge would be used to estimate the relevant set of propositions for a goal.
+
+\shout{Please see new footnote 4.}
 
 \subsection{On page 10 the authors explain recursion and the need for. Could you give a proper example for a recursive event goal in a real world domain.}
 
