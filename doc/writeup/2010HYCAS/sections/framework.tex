@@ -68,11 +68,49 @@ One way to resolve this issue is to treat all recursive goals simply as sub-tree
 \subsection{Calculating Confidence in the Decision Tree Classification}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The typical use of \dt s lies in the \textit{offline} induction from a complete training set. In that sense, the use of \dt s in our framework is unorthodox since the training set is built incrementally by recording samples after each new execution. This results in the training set being incomplete\footnote{Training data is incomplete in the sense that the agent has only collected a portion of the full data set required to learn the correct classification.} in the early stages of learning leading to misclassification. A confidence measure in the \dt\ classification is therefore desirable to address this issue. Previously \cite{Singh:AAMAS10} we showed how the coverage of possible execution paths below the plan in the goal-plan hierarchy may be used to build such a measure. Here we propose a new confidence measure that builds on the idea but that does not suffer from its limitations (Section \ref{subsec:bdi_learning}).
+The typical use of \dt s lies in the \textit{offline} induction from a complete
+training set. In that sense, the use of \dt s in our framework is unorthodox
+since the training set is built incrementally by recording samples after each new
+execution. This results in the training set being incomplete\footnote{Training
+data is incomplete in the sense that the agent has only collected a portion of
+the full data set required to learn the correct classification.} in the early
+stages of learning leading to misclassification. A confidence measure in the \dt\
+classification is therefore desirable to address this issue. Previously
+\cite{Singh:AAMAS10} we showed how the coverage of possible execution paths below
+the plan in the goal-plan hierarchy may be used to build such a measure. Here we
+propose a new confidence measure that builds on the idea but that does not suffer
+from its limitations (Section \ref{subsec:bdi_learning}).
 
-Our requirement for the confidence measure is that it be a monotonic function whose values transition from no confidence ($0.0$) to full confidence ($1.0$) based on experience. Specifically, the experiences we are interested in should constitute coverage of the plan complexity (number of sub-plan choices) and the domain complexity (number of world states in which the plan applies). Since an exact calculation of such coverage does not scale for all practical purposes then we are interested in an \textit{approximate} coverage that is still representative of the state of affairs but is simpler to compute.
+Our requirement for the confidence measure is that it be a monotonic function
+whose values transition from no confidence ($0.0$) to full confidence ($1.0$)
+based on experience. Specifically, the experiences we are interested in should
+constitute coverage of the plan complexity (number of sub-plan choices) and the
+domain complexity (number of world states in which the plan applies). Since an
+exact calculation of such coverage does not scale for all practical purposes then
+we are interested in an \textit{approximate} coverage that is still
+representative of the state of affairs but is simpler to compute.
 
-One way to achieve this is to use a monotonic decay function\footnote{This technique is frequently applied in machine learning algorithms for balancing between exploration of choices and exploitation of learning.} (for instance $\epsilon_i = \epsilon_{i-i} * \delta$ where $\delta < 1.0$) but where the decay factor $\delta$ is tied to the complexity involved. This way, a plan that has a larger number of sub-plan choices will utilise a slower decay factor $\delta$ taking longer to reach full confidence $(1-\epsilon)$ than another plan that has less choices to make. For goal-plan complexity this decay $\delta_{Pt}$ may be calculated offline by analysing the goal-plan hierarchy. In this work, we have calculated $\delta_{Pt}$ in terms of average breadth and depth of the structure, where depth is the maximum level of recursion in this case, to provide an approximation of the complexity of the structure\footnote{There are other ways of calculating $\delta_{Pt}$ (e.g., in \cite{Singh:AAMAS10} we have used an accurate calculation of the number of choices below plans; however this is not feasible anymore when goals and plans are schemas with possibly infinite instances); the main idea is to somehow measure the complexity of a hierarchical structure, and is the subject of ongoing work.}. A similar treatment is possible for domain complexity although the decay factor in this case cannot be pre-determined since the number of world states is not known upfront and is dependent on the domain. For domain complexity then, it may be reasonable to treat the decay factor $\delta_{Pd}$ as a parameter specified by the domain expert.
+One way to achieve this is to use a monotonic decay function\footnote{This
+technique is frequently applied in machine learning algorithms for balancing
+between exploration of choices and exploitation of learning.} (for instance
+$\epsilon_i = \epsilon_{i-i} * \delta$ where $\delta < 1.0$) but where the decay
+factor $\delta$ is tied to the complexity involved. This way, a plan that has a
+larger number of sub-plan choices will utilise a slower decay factor $\delta$
+taking longer to reach full confidence $(1-\epsilon)$ than another plan that has
+less choices to make. For goal-plan complexity this decay $\delta_{Pt}$ may be
+calculated offline by analysing the goal-plan hierarchy. In this work, we have
+calculated $\delta_{Pt}$ in terms of average breadth and depth of the structure,
+where depth is the maximum level of recursion in this case, to provide an
+approximation of the complexity of the structure\footnote{There are other ways of
+calculating $\delta_{Pt}$ (e.g., in \cite{Singh:AAMAS10} we have used an accurate
+calculation of the number of choices below plans; however this is not feasible
+anymore when goals and plans are schemas with possibly infinite instances); the
+main idea is to somehow measure the complexity of a hierarchical structure, and
+is the subject of ongoing work.}. A similar treatment is possible for domain
+complexity although the decay factor in this case cannot be pre-determined since
+the number of world states is not known upfront and is dependent on the domain.
+For domain complexity then, it may be reasonable to treat the decay factor
+$\delta_{Pd}$ as a parameter specified by the domain expert.
 
 \begin{equation}\label{eqn:confidence}   
 c_P = (1.0 - \epsilon_{Pt}) * (1.0 - \epsilon_{Pd}).

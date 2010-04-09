@@ -281,16 +281,44 @@ We refer the reviewer to the response in \ref{rev1:optimisations} that addresses
 
 In general, we believe that while the assumptions means that the current framework is not ready for practical systems, it nonetheless is a significant step forward in our ongoing work to that end. Please refer to our responses in \ref{rev3:assumptions}, \ref{rev3:convincing}, and \ref{rev3:experiments} that address specific questions that are related to this comment.
 
+\subsection{ The paper is well written and is easy to understand but some parts
+in the sections 2 and 3 would be easier to understand if a good real example
+would guide the line of argumentation (e.g. an example from the agents or
+robotics domain). $\ldots$ A good example of a domain used in the explanation of
+the background in section 2 and in the development of the approach in section 3
+would ease the understanding of the paper and would even non-bdi experts to
+profit from the paper.}
 
-\subsection{The paper is well written and is easy to understand but some parts in the sections 2 and 3 would be easier to understand if a good real example would guide the line of argumentation (e.g. an example from the agents or robotics domain). $\ldots$ A good example of a domain used in the explanation of the background in section 2 and in the development of the approach in section 3 would ease the understanding of the paper and would even non-bdi experts to profit from the paper.}
+\label{rev3:bdibackground}
+
+We take the point and agree it was very hard for non-bdi experts to get a good
+understanding of the BDI approach by reading Section 2. In particular, it was
+difficult to see what plan libraries built from plan-rules, in turn built from
+events and actions, were.
+
+\shout{We have added a short example of plan rules that would arise in an
+elevator controller. Please see second paragraph of Section 2.1. We have also
+rephrased a bit 2nd and 3rd paragraph of that Section 2.1.}
+
+
+\subsection{ In the middle part of page 7 the authors claim that event types and
+recursion is important to handle. But it is not very well explained why these
+constructs are important to handle.}
+
 \label{rev3:recursion_examples}
 
-\shout{SEBASTIAN TODO: We have now included references to several logistics domains used in the planning literature that are also relevant to our discussion. Where?...}
+Event types are necessary to be able to compactly represent the domain know-how
+information by providing ``schemas'' of plans that can be instantiated with
+multiple objects. Recursion is very important as it allows, in these languages,
+to express (unbounded) iteration (as in logic programming, there is in general
+no imperative while or loop constructs, thus recursion becomes the main
+construct for iteration).
 
-
-\subsection{In the middle part of page 7 the authors claim that event types and recursion is important to handle. But it is not very well explained why these constructs are important to handle.} 
-
-\shout{SEBASTIAN TODO: In procedural languages that do not provide constructs for looping, one mechanism for achieving this behaviour is through recursion. For this reason parameterised events and recursion are essential features that are heavily used in real BDI systems.}
+\shout{Hopefully the plan rules example for an elevator controller introduced in
+Section 2.1 will help clarify why schematic plan rules and recursive calls in
+programs are important. We have also third-to-last paragraph of Section 2.2
+(``A limitation...'') to be more clear on the importance of handling these 2
+features.}
 
 
 \subsection{Also throughout the paper it is not really point out how the event types are handled in fact.}
@@ -344,10 +372,15 @@ knowledge would be used to estimate the relevant set of propositions for a goal.
 
 \shout{Please see new footnote 4.}
 
-\subsection{On page 10 the authors explain recursion and the need for. Could you give a proper example for a recursive event goal in a real world domain.}
+\subsection{ On page 10 the authors explain recursion and the need for. Could you
+give a proper example for a recursive event goal in a real world domain.}
 
-\shout{SEBASTIAN TODO: This is related to the response in \ref{rev3:recursion_examples}.}
+As in logic programming, recursive calls (in our context, recursive
+``subgoaling'') is necessary to express iterative procedures.
+%%
+Please see answer to question \ref{rev3:recursion_examples} above.
 
+ 
 \subsection{In chapter 3.3 the authors explain that the training set is build up incrementally. To my understanding it might be the case that the training set so far and the plan selection learned so far has an influence of the future training data. Therefore, is it possible that a somehow unlucky plan selection and therefore probably bad training set prevent the system to converge to a good or correct set of conditions?}
 
 Yes, this is correct. This very concern has been the subject of our previous work. In the first instance \cite{Airiau:IJAT09} we look at how the notion of informed decisions may be used to do selective recording of results in order to filter out misleading training data. In the second \cite{Singh:AAMAS10} we explore a confidence measure that may be used to decide how much value we will put in the resulting decision tree. These are two orthogonal approaches i.e. how best to collect training data and how best to use it.

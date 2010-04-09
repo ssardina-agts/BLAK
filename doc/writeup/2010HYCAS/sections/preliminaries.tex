@@ -53,49 +53,91 @@ represented, updated, and processed to determine the agent's actions.
 \label{fig:bdiarch}
 \end{figure}
 
-A BDI agent consists, basically, of a belief base (akin to a
-database) which stores the agent's knowledge about the world, a set of
-pending event-goals\footnote{In this paper the terms {\em event-goal}, {\em event}, and {\em goal} are used interchangeably.}, which include both external percepts or messages and
-internal goals, a plan library, and an intention structure.
+A BDI agent consists, basically, of a belief base (akin to a database) which
+stores the agent's knowledge about the world, a set of pending
+event-goals\footnote{In this paper the terms {\em event-goal}, {\em event}, and
+{\em goal} are used interchangeably.}, which include both external percepts or
+messages and internal goals, a plan library, and an intention structure.
 % %
 Figure~\ref{fig:bdiarch} depicts a typical BDI architecture.
 % %
-The plan library contains rules of the form $e: \psi \leftarrow
-\delta$ indicating that $\delta$ is a suitable procedure for achieving
-event-goal $e$ when context condition $\psi$ is true.
+The plan library contains rules of the form $e: \psi \leftarrow \delta$
+indicating that $\delta$ is a suitable procedure for achieving event-goal $e$
+when context condition $\psi$ is true.
+%%
+% % \notems{UAV example} For example, a BDI controller for an unmanned aerial
+% vehicle (UAV) \cite{Karim:AAMAS05,Ziming:AAC07} may include a certain procedure
+% $\delta$ for achieving the goal of \emph{landing the aircraft} (the event)
+% under \emph{normal weather conditions} (the context). %
+Among other operations, the plan body procedure $\delta$ will typically include
+the execution of actions ($act$) in the environment and subgoals ($!e$) that are
+in turn resolved by selecting suitable plans for those subgoals.
+%%
+For example, the following plan rules may be part of the plan library of an
+elevator controller:
+\newcommand{\mathname}[1]{\mbox{\textit{#1}}}
+
+% constants
+\newcommand{\eSolve}{\textmath{Solve}}
+\newcommand{\aMove}{\textmath{move}}
+\newcommand{\pOn}{\textmath{on}}
+\newcommand{\pPin}{\textmath{pin}}
+
+\newcommand{\eServeAll}{\textmath{ServeAll}}
+\newcommand{\eServeFloor}{\textmath{Serve}}
+\newcommand{\eGoTo}{\textmath{GoTo}}
+
+\newcommand{\pServing}{\textmath{Serving}}
+\newcommand{\pAt}{\textmath{At}}
+
+\newcommand{\aUp}{\textmath{GoUp}}
+\newcommand{\aOpen}{\textmath{Open}}
+\newcommand{\aClose}{\textmath{Close}}
+\newcommand{\aOff}{\textmath{Off}}
+
+\[
+\begin{array}{rl}\small
+\eServeFloor(floor)  : &  \pServing(floor) \leftarrow 
+	!\eGoTo(floor);\ \aOpen; \aClose; \aOff(floor) \\[1ex] 
+%%
+\eGoTo(floor)  : & \pAt(x) \land x>floor \leftarrow \aUp;\ !\eGoTo(floor)
+% \eServeAll: \pAt(ground) \leftarrow 
+% 	!\eGoTo(floor);\ \aOpen; \aClose; \aOff(floor) \\[1ex]
+% \eSolve(disk,pin): \pOn(disk',disk) \leftarrow 
+% 	?(\pPin(pin') \land pin'\not=pin); !\eSolve(disk',pin'); \aMove(disk,pin)
+\end{array}
+\]
+
+That is, to serve a request from a floor (i.e., event $\eServeFloor(floor)$)
+which the elevator is supposed to serve (i.e., condition $\pServing(floor)$ is
+true), can be achieved by first going to the floor (by solving the
+$!\eGoTo(floor)$ sub-goal), then opening and closing the door, and finally
+turning the floor's request light off.
 % %
-%\notems{UAV example}
-%For example, a BDI controller for an unmanned aerial vehicle (UAV)
-%\cite{Karim:AAMAS05,Ziming:AAC07} may include a certain procedure $\delta$ for
-%achieving the goal of \emph{landing the aircraft} (the event) under \emph{normal
-%weather conditions} (the context).
-% %
-Among other operations, the plan body procedure $\delta$ will
-typically include the 
-execution of actions ($act$) in the environment and subgoals ($!e$) that
-are in turn resolved by selecting suitable plans for those subgoals.
-%
-The intention structure contains the current, partially instantiated,
-plans that the agent has committed to in order to
-achieve some event-goals.
+In turn, to go to a floor that is above the current location of the elevator,
+this needs to go up one floor (i.e., execute primitive action $\aUp$) and then
+post again the (sub)goal of reaching the floor in question.
+
+
+
+
 
 The basic \emph{reactive goal-oriented behavior} of BDI systems involves the
-system responding to events by 
-selecting an appropriate plan from the library, and placing its
-program body into the intention base.
-% %%
-A plan is appropriate if it is designed for the event in question
-(relevant) and its context
-condition is believed true (applicable).
+system responding to events by selecting an appropriate plan from the library,
+and placing its program body into the intention base, a structure containing the
+current, partially instantiated, plans that the agent has committed to in order
+to achieve some event-goals.
+%%
+A plan is appropriate if it is designed for the event in question (relevant) and
+its context condition is believed true (applicable).
 % %
-In contrast with traditional planning, execution happens at each step. The
-use of plans' context-preconditions to make choices as
-late as possible, together with the built-in goal-failure mechanisms, ensures
-that the system is responsive to changes in the environment.
-%\notems{fixes in para}
-In this paper we focus on the plan library to
-investigate ways of learning appropriate or better plan selection
-based on experience. 
+In contrast with traditional planning, execution happens at each step. The use of
+plans' context-preconditions to make choices as late as possible, together with
+the built-in goal-failure mechanisms, ensures that the system is responsive to
+changes in the environment.
+% \notems{fixes in para}
+In this paper we focus on the plan library to investigate ways of learning
+appropriate or better plan selection based on experience.
 
 % %
 By grouping together plans responding to the same
@@ -260,23 +302,26 @@ readily adjusted by parameters in the selection formula.
 %have not allowed for recursion, which again is heavily used in many
 %real applications. 
 
-A limitation with the previous approaches is that 
-events were assumed to be propositional atoms i.e. parameterised event-goals
-were not considered. By \emph{parameterised} we mean an event-goal that may
-contain ``data'' as part of its definition. For instance, event
-$\textmath{travelTo(?dest)}$ may represent the goal to travel to location
-$\textmath{?dest}$. Presumably a goal to move to location $A$ would 
-require different choices than a goal to move to $B$, and the learning
-must account for this.
-% % 
-Another limitation is the assumption that the agent's plan library is
-non-recursive, so that the goal-plan tree structure induced is always
-\emph{finite}.
+A limitation with the previous approaches is that events were assumed to be
+propositional atoms, i.e., parameterised event-goals were not considered. By
+\emph{parameterised} we mean an event-goal that may contain ``data'' as part of
+its definition. For instance, event $\textmath{travelTo(?dest)}$ may represent
+the goal to travel to location $\textmath{?dest}$. In general, a goal to move to
+location $A$ may require different strategies than those for addressing a goal to
+move to location $B$, and the learning must account for this.
 % %
-Clearly both limitations would preclude the applicability of the approach in
-many practical domains where hierarchies are usually expressed
-using parameterised goal events and plans, and often make
-use of (direct or indirect) recursive procedures.
+Another limitation is the assumption that the agent's plan library does not
+include recursive subgoaling, so that the goal-plan tree structure induced is
+always \emph{finite}.
+% %
+For example, the above plan rule in the elevator controller's library for
+handling subgoal $\eGoTo(floor)$ would not be allowed, since its procedure
+involves posting the same subgoal event as the rule's head.
+% %
+Clearly both limitations would preclude the applicability of the approach in many
+practical domains where hierarchies are usually expressed in a compact manner by
+using parameterised goal events and plans, and often make use of (direct or
+indirect) recursive procedures to encode iterative strategies.
 
 
 %Unfortunately, when we applied our previous
