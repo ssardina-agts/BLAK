@@ -44,14 +44,30 @@ represented, updated, and processed to determine the agent's actions.
 %ABOVE SAID IN INTRO
 
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \begin{center}
-\resizebox{.6\textwidth}{!}{\input{figs/figbdiarch}}
+\subfigure[BDI-style architecture.]{\label{fig:bdiarch}
+\resizebox{.5\textwidth}{!}{\input{figs/figbdiarch}}
+}
+%
+\subfigure[A BDI Goal-Plan Hierarchy.]{\label{fig:T3}
+\resizebox{.4\textwidth}{!}{\input{figs/gpt-example}}
+}
+\vskip -0.2cm
+\caption{BDI Architecture and Goal-Plan Hierarchy.}
+\label{fig:BDI-concepts}
 \end{center}
-\vskip -0.5cm
-\caption{A typical BDI-style architecture}
-\label{fig:bdiarch}
-\end{figure}
+\end{figure*}
+
+
+% \begin{figure}[t]
+% \begin{center}
+% \resizebox{.6\textwidth}{!}{\input{figs/figbdiarch}}
+% \end{center}
+% \vskip -0.5cm
+% \caption{A typical BDI-style architecture}
+% \label{fig:bdiarch}
+% \end{figure}
 
 A BDI agent consists, basically, of a belief base (akin to a database) which
 stores the agent's knowledge about the world, a set of pending
@@ -131,14 +147,14 @@ These structures can be seen as AND/OR trees: for a plan to succeed all
 subgoals and actions of the plan must be successful (AND); for a subgoal to
 succeed one of the plans to achieve it must succeed (OR).
 
-\begin{figure}[t]
-\begin{center}
-\resizebox{.6\textwidth}{!}{\input{figs/gpt-example}}
-\end{center}
-\vskip -0.5cm
-\caption{An Example BDI Goal-Plan Hierarchy.}
-\label{fig:T3}
-\end{figure}
+% \begin{figure}[t]
+% \begin{center}
+% \resizebox{.6\textwidth}{!}{\input{figs/gpt-example}}
+% \end{center}
+% \vskip -0.5cm
+% \caption{An Example BDI Goal-Plan Hierarchy.}
+% \label{fig:T3}
+% \end{figure}
 
 Consider, for instance, the hierarachical structure shown in Figure~\ref{fig:T3}.
 % %%
