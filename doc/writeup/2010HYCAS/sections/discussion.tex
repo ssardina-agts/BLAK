@@ -13,7 +13,7 @@ problems in certain situations. In some cases these problems lead to
 failure to learn at all, as we also show here.
 
 In this paper we extend previous work to allow for parameterised
-goals such as {\it Travel(\$from, \$to)} and also for recursion, both
+goals such as \travelTo{dest} and also for recursion, both
 of which are necessary for real applications. In doing this our
 previous confidence measure which relied on a finite goal-plan tree
 did not scale, so we have provided a more approximate measure, relying
@@ -22,9 +22,9 @@ limitations. This paper also takes an existing BDI program involving
 parameterised goals and recursion, and evaluates our approach using
 this program. By removing the existing context conditions, and then
 learning the correct behaviour, we show that we are able to obtain
-good (although not perfect\footnote{We would hope that when learning
+good (although not perfect)\footnote{We would hope that when learning
 is combined with programmer provided context conditions, the problems
-preventing perfect learning here would be avoided.}) performance. We
+preventing perfect learning here would be avoided.} performance. We
 also demonstrate that the naive approach to learning, that does not
 account for the BDI program structure fails to learn given
 some program structures and an applicability threshold.

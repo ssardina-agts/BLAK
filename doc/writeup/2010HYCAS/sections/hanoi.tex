@@ -3,7 +3,7 @@
 \section{A Case Example: The Hanoi Towers Robot}\label{sec:hanoi}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\entity}[1]{\texttt{#1}}
+\newcommand{\entity}[1]{\fontNames{#1}}
 
 To evaluate our learning framework we consider an existing BDI program
 from the \JACK\ agent platform
@@ -29,8 +29,8 @@ The example solution consists of a \entity{Player} agent that solves the game fo
 any given legal initial configuration. The game solving strategy is encoded in plan
 \entity{DiscStacker} that solves for one disc at a time starting from the largest
 and ending with the smallest onto a chosen pin. This in turn is achieved by posting 
-event \entity{Solve(?d,?p)} for solving disc \entity{?d} 
-onto pin \entity{?p}. There are four plans that are relevant for this purpose:
+event \Solve{d}{p} for solving disc \disc{d} 
+onto pin \pin{p}. There are four plans that are relevant for this purpose:
 % %
 %The agent top-level goal is to build the tower of discs in pin number $2$, which
 %is captured by the BDI event \entity{BuildTower}.
@@ -47,44 +47,44 @@ onto pin \entity{?p}. There are four plans that are relevant for this purpose:
 {\entity{SolveRight}} This plan solves moving a disc to the pin it is
 already on. Since the goal is already true, the plan does \emph{nothing}.
 
-{\entity{SolveTopMove}} This plan moves the disc \entity{?d} to the destination
-pin \entity{?p} if the disc is not already there and if the move is legal. The actual move
-is perfomed by the primitive action \entity{move(?p2,?p)}, where \entity{?p2} is the source pin
-of disc \entity{d}.
+{\entity{SolveTopMove}} This plan moves the disc \disc{d} to the destination
+pin \pin{p} if the disc is not already there and if the move is legal. The actual move
+is perfomed by the primitive action \move{p2}{p}, where \pin{p2} is the source pin
+of disc \disc{d}.
 
-{\entity{SolveTop}} This plan solves for the case when the disc \entity{?d} 
+{\entity{SolveTop}} This plan solves for the case when the disc \disc{d} 
 may be legally lifted but cannot be legally placed at the destination because the 
-top disc on the destination pin is smaller than \entity{?d}.
+top disc on the destination pin is smaller than \disc{d}.
 % %
 In this case, the plan first moves all the discs in the destination pin that are
-smaller than disc \entity{?d} to the third (auxiliary) pin, and then
-re-posts the sub-goal to move \entity{?d} to pin \entity{?p} i.e. \entity{Solve(?d,?p)}. 
+smaller than disc \disc{d} to the third (auxiliary) pin, and then
+re-posts the sub-goal to move \disc{d} to pin \pin{p} i.e. \Solve{d}{p}. 
 
 {\entity{SolveMiddle}} This plan solves moving a disc from the
 \emph{middle} of a stack.
 %%
 In this case, the plan first clears the source pin so
-that disc \entity{?d} becomes the new top of the pin. This is done by
-solving for sub-goal \entity{Solve(?d2,?p2)} where disc \entity{?d2} is the
-disc currently on top of \entity{?d} and \entity{?p2} is the
+that disc \disc{d} becomes the new top of the pin. This is done by
+solving for sub-goal \Solve{d2}{p2} where disc \disc{d2} is the
+disc currently on top of \disc{d} and \pin{p2} is the
 auxiliary.
 %%
 Subsequently the plan re-posts the
-sub-goal of moving \entity{?d} to pin \entity{?p} i.e. event \entity{Solve(?d,?p)}.
+sub-goal of moving \disc{d} to pin \pin{p} i.e. event \Solve{d}{p}.
 
 
 \begin{figure}[t]
 \begin{center}
 \resizebox{.9\textwidth}{!}{\input{figs/gpt-hanoi}}
 \end{center}
-\vskip -0.5cm
+%\vskip -0.5cm
 \caption{Goal-plan hierarchy for the Towers of Hanoi domain.}
 \label{fig:hanoi_goalplan}
 \end{figure}
 
 
 Figure~\ref{fig:hanoi_goalplan} illustrates the goal-plan hierarchy for the domain. 
-Here we focus on learning the recursive parameterised \entity{Solve(?d,?p)} event for which we remove the context conditions from the example plans and apply our framework.
+Here we focus on learning the recursive parameterised \Solve{d}{p} event for which we remove the context conditions from the example plans and apply our framework.
 % %
 %We only show the structure below a \entity{Solve(?d,?p)} goal event once, for the
 %case when the plan \entity{Disckstacker} is moving the $i$-th disc to destination
@@ -146,55 +146,55 @@ Here we focus on learning the recursive parameterised \entity{Solve(?d,?p)} even
 
 \subsection{Experimental Setup} \label{sec:setup}
 
-The aim of this study is to evaluate our learning framework for recursive event-goals. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \entity{Solve} only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(?p)}). Since the full set of possible \entity{Solve} events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
+The aim of this study is to evaluate our learning framework for recursive event-goals. For this reason our experimentation with the Hanoi problem focusses on learning to resolve the recursive event \eSolve\ only and not on learning the strategy that solves the full Hanoi towers problem (this is done by \entity{DiscStacker(\pin{p})}). Since the full set of possible \eSolve\  events and initial pin configurations is large, our first step is to construct a sufficiently rich subset that we will use to evaluate our learning approaches. 
+nd then re-po
+We proceed by running the original Hanoi program for a number of randomly generated \eSolve\  events. For each run we record the \eSolve\  event, the initial pins configuration, and the maximum recursion encountered for the solution. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
 
-We proceed by running the original Hanoi program for a number of randomly generated \entity{Solve} events. For each run we record the \entity{Solve} event, the initial pins configuration, and the maximum recursion encountered for the solution. This gives us a bag of several initial configurations for each recursion level that is a subset of all possible configurations. 
-
-Next, we run each candidate approach on the set of saved configurations for a given recursion level. i.e. where all solutions lie exactly at the specified recursion number. We use a fixed random generation seed for each experiment so that the same sequence of \entity{Solve} events is generated for each learning approach. This isolates any environmental factors and allows us to attribute any differences in performance to the learning approaches alone.
+Next, we run each candidate approach on the set of saved configurations for a given recursion level. i.e. where all solutions lie exactly at the specified recursion number. We use a fixed random generation seed for each experiment so that the same sequence of \eSolve\  events is generated for each learning approach. This isolates any environmental factors and allows us to attribute any differences in performance to the learning approaches alone.
 
 %Finally, since in the Hanoi case we do not care about continuing exploration once a solution is found (optimality of solution is not a requirement), we have implemented two optimisations to the plan selection that boost the selection of plans with known solutions. Firstly, for a given plan, the confidence calculation of Equation \ref{eqn:confidence} is performed only when no solution has previously been found for the given world state, otherwise full confidence is temporarily assumed for that plan. In addition, the plan selection mechanism of Equation \ref{eqn:weight} uses confidence only when no plan has a high expectation of success ($\kappa_P(w) > 0.95$) with high confidence ($c_P(w) > 0.95$), otherwise full confidence is temporarily assumed for \textit{all} plans. 
 
 \subsection{Results}
 
-The following results are for a Hanoi problem with $five$ discs\footnote{We use five discs in order to keep the state space rich enough yet sufficiently small to allow learning runs to be completed and evaluated in reasonable time.}. Each plans domain complexity decay factor for the confidence calculation of Equation \ref{eqn:confidence} are set to $\delta_{Pd} = 0.9$. For goal-plan tree complexity, we use $\delta_{Pt} =1$ for non-recursive plans and $\delta_{Pt} =\left[1-(1/r^k)\right]$ for recursive plans. Here $r$ is the run-time recursion level and $k$ is arbitrarily set to $4.0$\footnote{In future work we hope to establish principles for determining general parameters.} and controls the rate of change of decay i.e. the number of steps to reach full confidence. In all experiments, the recursion is bound to a maximum of $eight$ levels that is sufficient to solve all configurations for a five-disc Hanoi problem. The performance of two learning configurations is contrasted. The baseline learning algorithm \CL\ refers to the original aggressive learning approach of \cite{Airiau:IJAT:09} and \cite{Singh:AAMAS10} using the original probabilistic plan selection function that has no confidence-based bias (uses \dt\ expectation of success only). The new algorithm is referred to as \CL+$\Omega$ and uses the same aggressive learning approach as the former but combined with the new confidence-based probabilistic selection function (Equation \ref{eqn:weight}) presented in this study.
+The following results are for a Hanoi problem with $five$ discs.\footnote{We use five discs in order to keep the state space rich enough yet sufficiently small to allow learning runs to be completed and evaluated in reasonable time.} Each plans domain complexity decay factor for the confidence calculation of Equation \ref{eqn:confidence} are set to $\delta_{Pd} = 0.9$. For goal-plan tree complexity, we use $\delta_{Pt} =1$ for non-recursive plans and $\delta_{Pt} =\left[1-(1/r^k)\right]$ for recursive plans. Here $r$ is the run-time recursion level and $k$ is arbitrarily set to $4.0$,\footnote{In future work we hope to establish principles for determining general parameters.} and controls the rate of change of decay i.e. the number of steps to reach full confidence. In all experiments, the recursion is bound to a maximum of $eight$ levels that is sufficient to solve all configurations for a five-disc Hanoi problem. The performance of two learning configurations is contrasted. The baseline learning algorithm \CL\ refers to the original aggressive learning approach of \cite{Airiau:IJAT:09} and \cite{Singh:AAMAS10} using the original probabilistic plan selection function that has no confidence-based bias (uses \dt\ expectation of success only). The new algorithm is referred to as \CL+$\Omega$ and uses the same aggressive learning approach as the former but combined with the new confidence-based probabilistic selection function (Equation \ref{eqn:weight}) presented in this study.
 
 \begin{figure*}[t]
 \begin{center}
 \subfigure[\CL]{\label{fig:result-levelsA}
-\input{figs/result-levelsA}
+\resizebox{.35\textwidth}{!}{\input{figs/result-levelsA}}
 }
 \qquad
 \subfigure[\CL+$\Omega$]{\label{fig:result-levelsB}
-\input{figs/result-levelsB}
+\resizebox{.35\textwidth}{!}{\input{figs/result-levelsB}}
 }
-\vskip -0.2cm
+%\vskip -0.2cm
 \caption{Agent performance under \CL\ and \CL+$\Omega$ schemes for solutions at recursion levels one (pluses), three (circles) and five (crosses). Each point represents results from $5$ experiment runs using an averaging window of $100$ samples.}
 \label{fig:result-levels}
 \end{center}
 \end{figure*}
 
-To understand how the two approaches perform for solutions of varying difficulty we conducted a set of experiments with solutions at different recursive levels. Each experiment consisted of resolving a known set of \entity{Solve} event configurations, saved earlier as described in Section \ref{sec:setup}, whose solutions all required a given recursive depth. Figure \ref{fig:result-levels} shows that as the solution difficulty increases from one to five recursion levels, \CL\ performance drops much more significantly compared to that of \CL+$\Omega$. For instance, for solutions requiring five levels of recursion, \CL\ achieves only $50\%$ success at $5k$ iterations whereas \CL+$\Omega$ achieves $95\%$ success by $3.5k$ iterations. The poor performance of \CL\ may be attributed to the fact that deeper solutions require more \entity{move(?p2,?p)} steps and where an earlier success does not exist to guide selection at each resulting state the exploration is mostly random. On the other hand, the confidence-based measure of Equation \ref{eqn:weight} takes into account the goal-plan tree complexity and is able to guide the \CL+$\Omega$ exploration towards the deeper solutions.
+\paragraph{Experiment 1} To understand how the two approaches perform for solutions of varying difficulty we conducted a set of experiments with solutions at different recursive levels. Each experiment consisted of resolving a known set of \eSolve\  event configurations, saved earlier as described in Section \ref{sec:setup}, whose solutions all required a given recursive depth. Figure \ref{fig:result-levels} shows that as the solution difficulty increases from one to five recursion levels, \CL\ performance drops much more significantly compared to that of \CL+$\Omega$. For instance, for solutions requiring five levels of recursion, \CL\ achieves only $50\%$ success at $5k$ iterations whereas \CL+$\Omega$ achieves $95\%$ success by $3.5k$ iterations. The poor performance of \CL\ may be attributed to the fact that deeper solutions require more \move{p2}{p} steps and where an earlier success does not exist to guide selection at each resulting state the exploration is mostly random. On the other hand, the confidence-based measure of Equation \ref{eqn:weight} takes into account the goal-plan tree complexity and is able to guide the \CL+$\Omega$ exploration towards the deeper solutions.
 
-Next, we conducted an experiment that consisted of resolving the full set of saved \entity{Solve} events i.e. the set contained all solutions for recursion levels one to five. Figure \ref{fig:result-fullA} shows the results for the two approaches where \CL+$\Omega$ performs better than \CL\ as expected. For the same experiment, we also recorded the number of solutions found. Figure \ref{fig:result-fullB} shows that \CL+$\Omega$ resolves all $52$ goals within $12k$ iterations whereas \CL\ resolves only $47$ by the end of the experiment at $20k$. At a similar point of comparison, to resolve $47$ goals \CL+$\Omega$ takes around $6.4k$ iterations whereas \CL\ takes more than twice as long at $17.7k$. The vertical dashed lines in Figure \ref{fig:result-fullA} and Figure \ref{fig:result-fullB} mark the $47$th and $52$nd solutions.
+\paragraph{Experiment 2} Next, we conducted an experiment that consisted of resolving the full set of saved \eSolve\  events i.e. the set contained all solutions for recursion levels one to five. Figure \ref{fig:result-fullA} shows the results for the two approaches where \CL+$\Omega$ performs better than \CL\ as expected. For the same experiment, we also recorded the number of solutions found. Figure \ref{fig:result-fullB} shows that \CL+$\Omega$ resolves all $52$ goals within $12k$ iterations whereas \CL\ resolves only $47$ by the end of the experiment at $20k$. At a similar point of comparison, to resolve $47$ goals \CL+$\Omega$ takes around $6.4k$ iterations whereas \CL\ takes more than twice as long at $17.7k$. The vertical dashed lines in Figure \ref{fig:result-fullA} and Figure \ref{fig:result-fullB} mark the $47$th and $52$nd solutions.
 
 \begin{figure*}[t]
 \begin{center}
 \subfigure[Success Rate]{\label{fig:result-fullA}
-\input{figs/result-fullA}
+\resizebox{.34\textwidth}{!}{\input{figs/result-fullA}}
 }
 \qquad
 \subfigure[Solutions Found]{\label{fig:result-fullB}
-\input{figs/result-solutions}
+\resizebox{.36\textwidth}{!}{\input{figs/result-solutions}}
 }
-\vskip -0.2cm
+%\vskip -0.2cm
 \caption{Agent performance under \CL\ (circles) and \CL+$\Omega$ (crosses) schemes. Each point represents an average result from $5$ experiment runs.}
 \label{fig:result-full}
 \end{center}
 \end{figure*}
 
-Finally, we ran a third experiment to understand the impact of applicability thresholds. In the classical BDI framework plans are either applicable or not in a boolean decision. However, in our modified framework plans are applicable according to the selection weight given by Equation \ref{eqn:weight}. Since plan execution is often not cost-free in real systems, it is likely that an adequate plan selection scheme would not select \textit{any} plan if they all have too low an expectation of success, and an agent may fail a plan without even trying. To represent this scenario we setup an applicability threshold of $20\%$ whereby plans with expectations of success less than this threshold would not be selected. In this case \CL\ shows a complete inability to learn as reported earlier \cite{Singh:AAMAS10}. In contrast \CL+$\Omega$ benefits from the adjusted selection weights of Equation \ref{eqn:weight} and shows similar performance as before (Figure \ref{fig:result-fullA})\footnote{The threshold of $0.2$ while somewhat arbitrary is consistent with that used earlier \cite{Singh:AAMAS10}. The difference between the default weight ($0.5$) and the threshold weight ($0.2$ in this case) decides how much ``give'' we have in the exploration. The closer the threshold is to $0.5$ the greater the chance that the plan will be aborted before a solution is found.}.
+\paragraph{Experiment 3} Finally, we ran a third experiment to understand the impact of applicability thresholds. In the classical BDI framework plans are either applicable or not in a boolean decision. However, in our modified framework plans are applicable according to the selection weight given by Equation \ref{eqn:weight}. Since plan execution is often not cost-free in real systems, it is likely that an adequate plan selection scheme would not select \textit{any} plan if they all have too low an expectation of success, and an agent may fail a plan without even trying. To represent this scenario we setup an applicability threshold of $20\%$ whereby plans with expectations of success less than this threshold would not be selected. In this case \CL\ shows a complete inability to learn as reported earlier \cite{Singh:AAMAS10}. In contrast \CL+$\Omega$ benefits from the adjusted selection weights of Equation \ref{eqn:weight} and shows similar performance as before (Figure \ref{fig:result-fullA}).\footnote{The threshold of $0.2$ while somewhat arbitrary is consistent with that used earlier \cite{Singh:AAMAS10}. The difference between the default weight ($0.5$) and the threshold weight ($0.2$ in this case) decides how much ``give'' we have in the exploration. The closer the threshold is to $0.5$ the greater the chance that the plan will be aborted before a solution is found.}
 
 %A final observation in Figure \ref{fig:result-full} is that neither approach converges to $1.0$. This is because the Hanoi domain is not free from goal inter-dependence. So if a plan learns to solve a sub-goal in two ways that each lead to different end states, then depending on the way the sub-goal was resolved the top level goal may pass or fail. Indeed, when we analyse the result log we find that \CL+$\Omega$ finds all solutions as expected, but even so fails now and then for some of these because of the way a sub-goal was realised. Our learning framework does not currently support goal inter-dependence.
 
-A final observation in Figure \ref{fig:result-fullA} is that \CL+$\Omega$ does not reach the performance of the hand-crafted JACK program and converges to about $90\%$ success even though it successfully discovers all solutions.
+\paragraph{Analysis} Observe in Figure \ref{fig:result-fullA} that \CL+$\Omega$ does not reach the performance of the hand-crafted JACK program and converges to about $90\%$ success even though it successfully discovers all solutions.
 This is because the decision tree representation does not guarantee that the training data will always be correctly classified (we discuss this accuracy versus compactness trade-off in Section \ref{sec:decision_trees}). For instance, a decision tree may report a poor likelihood of success for a given state even when the associated training sample indicates success, due to the sample being misclassified in the failure ``class''. The only way to guarantee correctness would be to use the training data directly, for instance using a look-up table. Furthermore, when the learnt decision trees are converted to rules they do not ``look'' like the original ones but are far more complex. This is mainly due to representational differences as our simple representation is propositional whereas the original conditions are relational.

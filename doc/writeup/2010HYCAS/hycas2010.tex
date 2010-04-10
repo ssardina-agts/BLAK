@@ -74,7 +74,7 @@
 
 
 
-% \renewcommand{\baselinestretch}{.96}
+\renewcommand{\baselinestretch}{.96}
 
 
 
@@ -144,8 +144,6 @@
 
 
 
-
-
 % \newcommand{\fontNames}[1]{\mbox{\textsl{#1}}}
 \newcommand{\fontNames}[1]{\mbox{\textit{#1}}}
 
@@ -162,6 +160,11 @@
 \newcommand{\pOn}{\fontFluent{on}}
 \newcommand{\pPin}{\fontFluent{pin}}
 
+\newcommand{\disc}[1]{\fontFluent{#1}}
+\newcommand{\pin}[1]{\fontFluent{#1}}
+\newcommand{\Solve}[2]{\eSolve(\disc{#1},\pin{#2})}
+\newcommand{\move}[2]{\aMove(\pin{#1},\pin{#2})}
+
 
 % Eleevator example
 \newcommand{\eServeAll}{\fontEvent{ServeAll}}
@@ -175,6 +178,10 @@
 \newcommand{\aOpen}{\fontAction{Open}}
 \newcommand{\aClose}{\fontAction{Close}}
 \newcommand{\aOff}{\fontAction{Off}}
+
+% Othe examples
+\newcommand{\travelTo}[1]{\fontEvent{travelTo}(\fontFluent{#1})}
+\newcommand{\dest}[1]{\fontFluent{#1}}
 
 
 

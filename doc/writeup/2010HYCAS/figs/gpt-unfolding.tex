@@ -5,11 +5,11 @@
 \tikzstyle{fail}=[label=below:$\times$]
 \tikzstyle{planbox}=[draw,minimum height=0.9cm,minimum width=0.9cm]
 \tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.9cm,minimum width=1.0cm]
-\tikzstyle{level 1}=[sibling distance=4.5cm,level distance=1.9cm] 
-\tikzstyle{level 2}=[sibling distance=9.0cm,level distance=1.9cm] 
+\tikzstyle{level 1}=[sibling distance=5.0cm,level distance=1.9cm] 
+\tikzstyle{level 2}=[sibling distance=10.0cm,level distance=1.9cm] 
 \tikzstyle{level 3}=[sibling distance=3.0cm,level distance=1.9cm]
-\tikzstyle{level 4}=[sibling distance=4.5cm,level distance=2.3cm]
-\tikzstyle{level 5}=[sibling distance=1.5cm,level distance=1.9cm]
+\tikzstyle{level 4}=[sibling distance=5.0cm,level distance=2.3cm]
+\tikzstyle{level 5}=[sibling distance=1.6cm,level distance=1.9cm]
 \tikzstyle{level 6}=[sibling distance=1.3cm,level distance=1.9cm]
 
 \node[goalbox,yshift=1cm] {$G(\vec{x_1})$}
@@ -17,7 +17,7 @@
 	child {node[planbox] {$P_2$}
 		child {node[goalbox] {$G(\vec{x_2})$}
 			child {node[planbox,succ] {$P_1$}}
-			child[dashed] {node[planbox] {$P_2$}
+			child[densely dashed] {node[planbox] {$P_2$}
 				child {node[goalbox] {$G(\vec{x_4})$}
 					child {node[planbox] {$P_1$}}
 					child {node[planbox] {$P_2$}}
@@ -36,12 +36,12 @@
 			child {node[planbox] {$P_2$}
 				child {node[goalbox] {$G(\vec{x_6})$}
 					child {node[planbox,succ] {$P_1$}}
-					child[dashed] {node[planbox] {$P_2$}}
+					child[densely dashed] {node[planbox] {$P_2$}}
 					child {node[planbox] {$P_3$}}
 				}
 				child {node[goalbox] {$G(\vec{x_7})$}
 					child {node[planbox] {$P_1$}}
-					child[dashed] {node[planbox] {$P_2$}}
+					child[densely dashed] {node[planbox] {$P_2$}}
 					child {node[planbox,fail] {$P_3$}}
 				}
 			}

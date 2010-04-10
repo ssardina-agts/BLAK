@@ -1,3 +1,4 @@
+%!TEX root = ../hycas2010.tex
 \begin{tikzpicture}[scale=0.8,level distance=1.1cm]
 \tikzstyle{txt}=[scale=.9]
 \tikzstyle{succ}=[label=below:$\surd$]
@@ -15,22 +16,22 @@
 
 
 
-\node[goalbox,yshift=1cm,solid] (T) {\entity{BuildTower(?p)}}
-	child[solid] {node[planbox] {\entity{DiscStacker(?p)}}
-		child {node[goalbox] (G1) {\entity{Solve(1,?p)}}}
-		child {node[goalbox] (Gi) {\entity{Solve(i,?p)}}
+\node[goalbox,yshift=1cm,solid] (T) {\entity{BuildTower(p)}}
+	child[solid] {node[planbox] {\entity{DiscStacker(p)}}
+		child {node[goalbox] (G1) {\entity{Solve(1,p)}}}
+		child {node[goalbox] (Gi) {\entity{Solve(i,p)}}
 			child {node[planbox] {\entity{SolveMiddle}}
-				child {node[goalbox] {\entity{Solve(?d2,?p3)}} }
-				child {node[goalbox] (Pi) {\entity{Solve(?i,?p)}} }
+				child {node[goalbox] {\entity{Solve(d2,p3)}} }
+				child {node[goalbox] (Pi) {\entity{Solve(i,p)}} }
 			}
 			child {node[planbox] {\entity{SolveRight}}}
 			child {node[planbox] {\entity{SolveTopMove}}}
 			child {node[planbox] {\entity{SolveTop}}
-				child {node[goalbox] {\entity{Solve(?d2,?p3)}} }
-				child {node[goalbox] {\entity{Solve(?i,?p)}} }
+				child {node[goalbox] {\entity{Solve(d2,p3)}} }
+				child {node[goalbox] {\entity{Solve(i,p)}} }
 			}
 		}
-		child {node[goalbox] (Gn) {\entity{Solve(n,?p)}}}
+		child {node[goalbox] (Gn) {\entity{Solve(n,p)}}}
 	};
 \node[txt] at ($ (G1)!.5!(Gi) $) {$\ldots$};
 \node[txt] at ($ (Gi)!.5!(Gn) $) {$\ldots$};

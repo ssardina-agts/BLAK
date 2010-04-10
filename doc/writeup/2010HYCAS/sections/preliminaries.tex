@@ -47,13 +47,14 @@ represented, updated, and processed to determine the agent's actions.
 \begin{figure*}[t]
 \begin{center}
 \subfigure[BDI-style architecture.]{\label{fig:bdiarch}
-\resizebox{.5\textwidth}{!}{\input{figs/figbdiarch}}
+\resizebox{.45\textwidth}{!}{\input{figs/figbdiarch}}
 }
 %
+\qquad
 \subfigure[A BDI Goal-Plan Hierarchy.]{\label{fig:T3}
-\resizebox{.4\textwidth}{!}{\input{figs/gpt-example}}
+\resizebox{.40\textwidth}{!}{\input{figs/gpt-example}}
 }
-\vskip -0.2cm
+%\vskip -0.2cm
 \caption{BDI Architecture and Goal-Plan Hierarchy.}
 \label{fig:BDI-concepts}
 \end{center}
@@ -71,8 +72,8 @@ represented, updated, and processed to determine the agent's actions.
 
 A BDI agent consists, basically, of a belief base (akin to a database) which
 stores the agent's knowledge about the world, a set of pending
-event-goals\footnote{In this paper the terms {\em event-goal}, {\em event}, and
-{\em goal} are used interchangeably.}, which include both external percepts or
+event-goals,\footnote{In this paper the terms {\em event-goal}, {\em event}, and
+{\em goal} are used interchangeably.} which include both external percepts or
 messages and internal goals, a plan library, and an intention structure.
 % %
 Figure~\ref{fig:bdiarch} depicts a typical BDI architecture.
@@ -93,7 +94,7 @@ For example, the following plan rules may be part of the plan library of an
 elevator controller:
 
 \[
-\begin{array}{rl}\small
+\begin{array}{rl}
 \eServeFloor(floor)  : &  \pServing(floor) \leftarrow 
 	!\eGoTo(floor);\ \aOpen; \aClose; \aOff(floor) \\[1ex] 
 %%
@@ -302,8 +303,8 @@ readily adjusted by parameters in the selection formula.
 A limitation with the previous approaches is that events were assumed to be
 propositional atoms, i.e., parameterised event-goals were not considered. By
 \emph{parameterised} we mean an event-goal that may contain ``data'' as part of
-its definition. For instance, event $\textmath{travelTo(?dest)}$ may represent
-the goal to travel to location $\textmath{?dest}$. In general, a goal to move to
+its definition. For instance, event $\travelTo{dest}$ may represent
+the goal to travel to location $\dest{dest}$. In general, a goal to move to
 location $A$ may require different strategies than those for addressing a goal to
 move to location $B$, and the learning must account for this.
 % %
