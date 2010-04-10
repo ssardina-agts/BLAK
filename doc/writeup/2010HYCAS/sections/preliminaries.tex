@@ -113,7 +113,7 @@ $!\eGoTo(floor)$ sub-goal), then opening and closing the door, and finally
 turning the floor's request light off.
 % %
 In turn, to go to a floor that is above the current location of the elevator,
-this needs to go up one floor (i.e., execute primitive action $\aUp$) and then
+it needs to go up one floor (i.e., execute primitive action $\aUp$) and then
 post again the (sub)goal of reaching the floor in question.
 
 
@@ -181,7 +181,7 @@ successful execution though, if the agent decides to carry on any of the three
 plans labelled $P_{B2}'$ for achieving the low-level goal $G_{B2}$.
 
 
-As can be seen \textit{plan-selection} is critically important.
+As can be seen, \textit{plan-selection} is critically important.
 Standard BDI systems leverage domain
 expertise by means of the context conditions of plans.
 % However, crafting fully
@@ -199,14 +199,14 @@ achievement.
 \subsection{Learning for BDI Plan Selection} \label{subsec:bdi_learning}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In order to facilitate learning regarding which plan should be
-executed for a given goal in a particular world state, we first replace the
-boolean formulae that are the standard representation for context
-conditions in BDI programming languages, with decision
-trees~\cite{Mitchell97:ML} that provide a judgement as to whether the
+executed for a given goal in a particular world state, we first replace each plan's
+boolean formula that is the standard representation for context
+conditions in BDI programming languages, with a decision
+tree~\cite{Mitchell97:ML} that provides a judgement as to whether the
 plan is likely to succeed or fail for the given situation. 
 
 To select plans based on information in the decision trees, we use a
-probabilistic method that choosse a plan based on its believed likelihood of success in the
+probabilistic method that chooses a plan based on its believed likelihood of success in the
 given situation. This approach provides a balance between
 exploitation (we choose plans with relatively higher success expectations
 more often), and exploration (we sometimes choose plans with lower
@@ -259,14 +259,14 @@ run-time choice of sub-plans was incorrect for the situation.
 %can lead the agent to be unable to ever learn the successful
 %execution. 
 
-Our first approach~\cite{Airiau:IJAT:09} to address this problem was that 
+Our first approach~\cite{Airiau:IJAT:09} to address the learning problem was that 
 of careful consideration whereby failures are recorded for learning purposes 
 only when we are sufficiently sure that the failure was not due to poor
 sub-plan choices. 
 %This requires recording which choices we have made at each
 %point, for every world situation. 
 We have shown that this conservative approach is more robust, 
-though often slower, than a more agressive
+though often slower, than a more aggressive
 approach which records all experiences, but can in some particular cases
 completely fail to learn.
 
@@ -277,9 +277,9 @@ our confidence in the decision tree.
 We consider the reliability of a plan's \dt\ in a given 
 world state to be proportional to the number of sub-plan choices (or paths
 below the plan in the goal-plan hierarchy) that have been
-explored in that world state. 
+covered in that world state. 
 %
-{\it Coverage} refers to the set of explored paths relative to the set of all possible paths.
+Here {\it coverage}~\cite{Singh:AAMAS10} refers to the set of explored paths relative to the set of all possible paths.
 %
 The greater the coverage, the more we have explored and the greater the confidence in the resulting \dt.
 %
