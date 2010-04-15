@@ -1,0 +1,33 @@
+%!TEX root = ../dsingh-aamas10.tex
+\begin{tikzpicture}[level distance=1.1cm]
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+
+\tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{planbox2}=[planbox,fill=blue!30]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox2}=[planbox,fill=blue!30]
+
+\tikzstyle{level 1}=[sibling distance=4.0cm] 
+\tikzstyle{level 2}=[sibling distance=5cm] 
+\tikzstyle{level 3}=[sibling distance=1cm]
+\tikzstyle{level 4}=[sibling distance=2.5cm]
+\tikzstyle{level 5}=[sibling distance=1.3cm]
+
+\node[goalbox,yshift=1cm,solid] (T) {$G$}
+	child[solid] {node[planbox2] (Pi) {$P_i$}
+		child {node[goalbox2] {$G_A$}
+			child {node[planbox,fail] {$\phantom{P}$}} 
+			child {node[planbox2,succ] {$\phantom{P}$}} 
+			child {node[planbox,fail] {$\phantom{P}$}} 
+		}
+		child {node[goalbox2] {$G_{B}$}
+			child {node[planbox,succ] {$\phantom{P}$}} 
+			child {node[planbox,fail] {$\phantom{P}$}} 
+			child {node[planbox2,fail] {$\phantom{P}$}} 
+		}
+	}
+;
+
+\end{tikzpicture}

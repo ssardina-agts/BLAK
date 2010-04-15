@@ -1,0 +1,80 @@
+%!TEX root = ../dsingh-aamas10.tex
+\begin{tikzpicture}[level distance=1.1cm]
+\tikzstyle{txt}=[scale=.9]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{trace}=[solid,style=circle,fill=green!30,above left=0.3cm,scale=.7]
+
+\tikzstyle{planbox}=[draw,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{planbox2}=[planbox,fill=blue!30]
+\tikzstyle{planbox3}=[planbox,fill=black!20]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=0.55cm,minimum width=0.55cm]
+\tikzstyle{goalbox2}=[goalbox,fill=blue!30]
+\tikzstyle{goalbox3}=[goalbox,fill=black!20]
+
+	
+\tikzstyle{level 1}=[sibling distance=4.0cm] 
+\tikzstyle{level 2}=[sibling distance=4cm] 
+\tikzstyle{level 3}=[sibling distance=2cm]
+\tikzstyle{level 4}=[sibling distance=2.5cm]
+\tikzstyle{level 5}=[sibling distance=1.3cm]
+
+\node[goalbox,yshift=1cm,solid] (T) {$G$}
+	child[dashed] {node[planbox] (P1) {$P_1$}}
+	child[solid] {node[planbox2] (Pi) {$P_i$}
+		child {node[goalbox3] {$G_A$}
+			child {node[planbox3] {$P_{A}$}
+				child {node[goalbox3] {$G_{A1}$}
+					child {node[planbox3,succ] {$\phantom{P}$}
+						node[trace]{$3$}
+					}
+					child {node[planbox,fail] {$\phantom{P}$} 
+					edge from parent node[txt,right,near start] {}
+					}
+				}
+				child {node[goalbox3] {$G_{A2}$}
+					child {node[planbox3,succ] {$\phantom{P}$}
+						node[trace]{$4$}
+					}
+					child {node[planbox,fail] {$\phantom{P}$} 
+						edge from parent node[txt,right,near start] {}
+					}
+				}
+				node[trace]{$2$}
+			}
+			child {node[planbox,fail] {$\phantom{P}$} 
+				edge from parent node[txt,right,near start] {}
+			}
+		}
+		child {node[goalbox2] {$G_{B}$}
+			child {node[planbox,fail] {$\phantom{P}$}
+				edge from parent node[txt,left,near start] {}
+			}
+			child {node[planbox2] {$P_B$}
+				child {node[goalbox3] {$G_{B1}$}
+					child {node[planbox3,succ] {$\phantom{P}$}
+						node[trace]{$6$}
+					}
+					child {node[planbox,fail] {$\phantom{P}$}
+						edge from parent node[txt,right,near start] {}
+					}
+				}
+				child {node[goalbox2] {$G_{B2}$}
+					child {node[planbox2,succ] {$P_{B2}$}
+						node[trace]{$7$}
+					}
+					child {node[planbox,fail] {$P_{B2}'$}
+						edge from parent node[txt,right,near start] {}
+					}
+				}
+			node[trace]{$5$}
+			}
+		}
+		node[trace]{$1$}
+	}
+	child[dashed] {node[planbox] (Pn) {$P_n$}}
+;
+\node[txt] at ($ (P1)!.5!(Pi) $) {$\ldots$};
+\node[txt] at ($ (Pi)!.5!(Pn) $) {$\ldots$};
+
+\end{tikzpicture}

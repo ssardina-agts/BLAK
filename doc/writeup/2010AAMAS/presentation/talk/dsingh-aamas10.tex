@@ -1,0 +1,349 @@
+%%% Uncomment for presentation mode
+\documentclass[]{beamer}
+
+%%% Uncomment for article mode
+%\documentclass{article} 
+%\usepackage{beamerarticle} 
+
+
+\mode<presentation>
+{
+  \usetheme[]{Madrid}
+  \useinnertheme{circles}
+  \setbeamercovered{transparent=10}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{frametitle continuation}[from second][\insertcontinuationtext]
+}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{pgf}
+\usepackage{color}
+\usepackage{latexsym}
+\usepackage[boxed,linesnumbered]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{colortbl}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations,backgrounds,matrix,automata,trees,shapes,shadows,plotmarks,calc,positioning}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+%\AtBeginSection[]
+%{
+%  \begin{frame}<beamer>{Outline}
+%    \tableofcontents[currentsection]
+%  \end{frame}
+%}
+
+
+%%%%%
+\title[Learning BDI Plan Selection]{Learning Context Conditions for BDI Plan Selection}
+\author[Singh et al.]{D.~Singh\inst{1} \and S.~Sardina\inst{1} \and L.~Padgham\inst{1} \and S.~Airiau\inst{2}}
+
+\institute[RMIT \& UvA]{
+\inst{1}School of Computer Science \& Information Technology\\RMIT University, Australia
+\and
+\inst{2}Institute for Logic, Language and Computation\\University of Amsterdam, The Netherlands
+}
+
+\date[AAMAS 2010]{Autonomous Agents and Multiagent Systems\\May 2010}
+%%%%%
+
+
+\begin{document}
+
+\section{Presentation}
+
+\begin{frame}[plain]
+\setcounter{framenumber}{0}
+\titlepage
+\end{frame}
+
+%
+%\begin{frame}{Outline}
+%\tableofcontents
+%\end{frame}
+
+
+%%%
+\begin{frame}{Learning BDI Plan Selection}
+\begin{center}
+\resizebox{.7\paperwidth}{!}{\input{figs/figbdiarch}}\\
+Plan \alert{$\delta$} is a strategy to resolve event \alert{$e$} whenever context \alert{$\psi$} holds.\\ Our focus is the \alert{plan selection problem} i.e. to learn \alert{$\psi$}.
+\end{center}
+\end{frame}
+
+%%%
+\begin{frame}{Motivation for Learning}
+\onslide+<+->
+\begin{block}{The Belief-Desire-Intention (BDI) model of agency}
+\begin{itemize}
+\item<+-> Is robust and well suited for dynamic environments.
+\item<+-> Has inspired several development platforms \\(PRS, AgentSpeak(L), JACK, JASON, SPARK, 3APL and others).
+\item<+-> Has been deployed in practical systems like UAVs.
+\end{itemize}
+\end{block}
+\onslide+<+->
+\begin{block}{Nonetheless}
+\begin{itemize}
+\item<+-> Behaviours (plans) and the situations where they apply (context) are \alert{fixed at design time}.
+\item<+-> For complex domain, it is difficult to specify \alert{complete} context conditions upfront.
+\item<+-> Once deployed, the agent has no means to \alert{adapt} to changes in the initial environment.
+\end{itemize}
+\end{block}
+\end{frame}
+
+%%%
+\begin{frame}{Learning From Plan Choices}
+\begin{center}
+\only<1>{\resizebox{.7\paperwidth}{!}{\input{figs/GPtree-T3p}}\\
+Execution trace for successful resolution of goal $G$ given world state $w$. Success means that all correct choices were made.}
+\only<2>{\resizebox{.7\paperwidth}{!}{\input{figs/GPtree-T3f}}\\
+Possible execution trace where goal $G$ is not resolved for $w$.\\ Should non-leaf plans consider this failure meaningful?}
+\end{center}
+\note{
+The figure shows an example BDI plan library represented as a tree. Here plans nodes are suffixed with the label $P$ and goals with $G$. The parent of a plan is the goal type it was designed to handle. The children are sub-goals that must succeed in a sequential manner in order for the plan to succeed. Leaf plans interact directly with the environment by performing actions that may succeed (ticks) or fail (crosses) for a given world state. 
+
+Here the successful resolution of the top-level goal $G$ requires 4 sequential actions to be performed.}
+\end{frame}
+
+%%%
+\begin{frame}{BDI Learning Framework}
+\onslide+<+->
+\begin{block}{Previous work (Airiau~et~al. 2009)}
+\begin{itemize}
+\item<+-> Augment static logical context conditions of plans with dynamic \alert{decision trees}.
+\item<+-> Select plans \alert{probabilistically} based on their ongoing expectation of success.
+\item<+-> \alert{Learn context conditions} over time by training decision trees using success/failure outcomes under various situations.
+\end{itemize}
+\end{block}
+\onslide+<+->
+\begin{block}{Contributions of this paper}
+\begin{itemize}
+\item<+-> A more principled analysis of the work in [Airiau~et~al. 2009].
+\item<+-> Learning with \alert{plan applicability} (using thresholds to filter plans that do not apply in a given situation).
+\end{itemize}
+\end{block}
+\note{In tradition BDI, applicability is determined by whether the propositional context condition holds or not (boolean). A similar account using our framework then could be taken using a threshold. Plans with expectations of success below this threshold would thereby be considered not applicable.}
+\end{frame}
+
+%%%
+\begin{frame}{Learning Considerations}
+\onslide+<+->
+\begin{block}{Collecting training data (building DTs)}
+\begin{itemize}
+\item<+-> \alert{ACL}: Aggressive approach that considers all failures as meaningful.
+\item<+-> \alert{BUL}: Conservative approach that records failures selectively when choices were well-informed.
+\item<+-> Success is always recorded for both approaches.
+\end{itemize}
+\end{block}
+\onslide+<+->
+\begin{block}{Improving plan selection (using DTs)}
+\begin{itemize}
+\item<+-> Obtain a numeric measure of \alert{confidence} in the ongoing decision tree classification.
+\item<+-> Use the confidence measure to \alert{adjust selection weights} during probabilistic plan selection. 
+\end{itemize}
+\end{block}
+\note{This gives us four configurations. Aggressive or conservative sampling with or without the confidence measure. However we do not present an account of the conservative recording scheme with the coverage measure since the stability notion in effect implies full coverage.}
+\end{frame}
+
+%%%
+\begin{frame}{Assumptions}
+\begin{block}{}
+We explore how best to learn under an \alert{imposed goal-plan hierarchy} in an idealised setting.
+\end{block}
+\onslide+<+->
+\begin{block}{}
+\begin{itemize}
+\item<+-> Recursive/parameterised events or relational beliefsets not addressed.
+\item<+-> BDI failure recovery mechanism disabled during learning.
+\item<+-> Synthetic plan library with empty initial context conditions used.
+\item<+-> Simple account of non-determinism: successful actions have a $10\%$ probability of failure.
+\end{itemize}
+\end{block}
+\onslide+<+->
+\begin{block}{}
+Ongoing work aims to relax these constraints towards a more practical system.
+\end{block}
+
+
+\end{frame}
+
+%%%
+\begin{frame}[allowframebreaks]{Results: Does Selective Recording Matter?}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/GPtree-T3}}
+
+Structure where both schemes show \alert{comparable performance}.
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T3-result}}
+
+Performance of ACL (crosses) vs. BUL (circles). \\Dashed line shows optimal performance.
+
+\end{frame}
+
+%%%
+\begin{frame}{Results: Learning with Applicability Filtering}
+
+\onslide+<+->
+
+\begin{block}{}
+Plan execution is generally not cost-free, so agent may fail a goal \alert{without even trying} if it is unlikely to succeed.
+\end{block}
+\onslide+<+->
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T4-result}}
+
+Performance of ACL (crosses) vs. BUL (circles). \\Dashed line shows optimal performance.
+
+\end{frame}
+
+%%%
+\begin{frame}[allowframebreaks]{Improving Plan Selection}
+
+\onslide+<+->
+\begin{block}{Coverage-based confidence measure}
+Idea is that confidence in a plan's decision tree increases as more choices below the plan are \alert{covered}.
+\end{block}
+
+\centering\resizebox{.6\paperwidth}{!}{\input{figs/GPtree-T3small}}
+
+Highlighted path shows $1/9$ possible choices under $P_i$.
+
+\begin{block}{How confidence influences plan selection}
+\begin{itemize}
+\item When the plan has not been tried before (zero coverage) we bias towards the default weight of $0.5$.
+\item As more options are tried (approaching full coverage), we progressively bias towards the decision tree probability $p_T(w)$.
+\end{itemize}
+\end{block}
+\begin{block}{Plan selection weight calculation}
+\begin{equation*}
+\Omega'_T(w) = 0.5 + \left[  c_T(w) *  \left( p_T(w) - 0.5 \right)  \right].
+\end{equation*}
+\end{block}
+\end{frame}
+
+%%%
+\begin{frame}[allowframebreaks]{Results: Goal-Plan Hierarchy B}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T2-result2}}
+
+Performance of ACL+$\Omega'_T$ (red crosses) vs. previous results\\ in structure that suits the conservative \alert{BUL} approach. Dashed line shows optimal performance.
+
+\end{frame}
+
+%%%
+\begin{frame}[allowframebreaks]{Results: Learning with Applicability Filtering}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T4-result2}}
+
+Performance of ACL+$\Omega'_T$ (red crosses) vs. previous results
+
+\end{frame}
+
+%%%
+\begin{frame}{Learning Context Conditions for BDI Plan Selection}
+\begin{itemize}
+\item<+-> Learning BDI plan selection is desirable since designing exact \alert{context conditions} for practical systems is non-trivial.
+\end{itemize}
+\begin{itemize}
+\item<+-> Our approach uses decision trees to learn the context condition of plans.
+\end{itemize}
+\begin{itemize}
+\item<+-> We suggest that an \alert{aggressive sampling scheme} combined with a \alert{coverage-based confidence measure} is a good candidate approach for the general hierarchical setting.
+\end{itemize}
+\end{frame}
+
+%%%--SECTION
+\newcounter{finalframe}
+\setcounter{finalframe}{\value{framenumber}}
+\appendix
+
+%%%
+\begin{frame}
+\setcounter{framenumber}{\value{finalframe}}
+  \frametitle<presentation>{References}
+  \begin{thebibliography}{10}
+  \beamertemplatearticlebibitems
+  \bibitem{Bratman88}
+	M.~Bratman, D.~Israel, and M.~Pollack.
+	\newblock Plans and resource-bounded practical reasoning.
+	\newblock {\em Computational Intelligence}, 4(4):349--355, 1988.
+  \bibitem{Rao96}
+    A.S.~Rao
+	\newblock AgentSpeak (L): BDI agents speak out in a logical computable language.
+	\newblock {\em Lecture Notes in Computer Science}, 1038:42--55, 1996.
+  \bibitem{Airiau:IJAT09}
+	S.~Airiau, L.~Padgham, S.~Sardina, and S.~Sen.
+	\newblock Enhancing Adaptation in {BDI} Agents Using Learning Techniques.
+	\newblock {\em International Journal of Agent Technologies and Systems}, 2009.
+  \end{thebibliography}
+\end{frame}
+
+%%%
+\begin{frame}{Goal-Plan Structure T1}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/GPtree-T1}}
+
+Structure where one of many complex options has a solution. This configuration suits the aggressive \alert{ACL} approach.
+
+\end{frame}
+
+%%%
+\begin{frame}{Results: Goal-Plan Structure T1}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T1-result}}
+
+Performance of ACL (crosses) vs. BUL (circles). \\Dashed line shows optimal performance.
+
+\end{frame}
+
+%%%
+\begin{frame}{Goal-Plan Structure T2}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.55\paperwidth}{!}{\input{figs/GPtree-T2}}
+
+Structure has solution in one complex option. \\ This configuration suits the conservative \alert{BUL} approach.
+
+\end{frame}
+
+%%%
+\begin{frame}{Results: Goal-Plan Structure T2}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T2-result}}
+
+Performance of ACL (crosses) vs. BUL (circles). \\Dashed line shows optimal performance.
+
+\end{frame}
+
+%%%
+\begin{frame}{Goal-Plan Structure T3}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/GPtree-T3}}
+
+Structure where both schemes show \alert{comparable performance}.
+
+\end{frame}
+
+%%%
+\begin{frame}{Results: Goal-Plan Structure T3}
+\setcounter{framenumber}{\value{finalframe}}
+
+\centering\resizebox{.7\paperwidth}{!}{\input{figs/T3-result}}
+
+Performance of ACL (crosses) vs. BUL (circles). \\Dashed line shows optimal performance.
+
+\end{frame}
+
+
+\end{document}
+%%%
