@@ -9,11 +9,11 @@
     \foreach \y/\ytext in {0.00,0.25,0.50,0.75,1.00}  \node at (0,\y) [left] {\ytext};
     \node at (-70,1.45) {Success};
     \node at (2500,-0.1) {Iterations};
-    \draw[-,red] plot[mark=x,mark size=4,mark options={color=red}] 
+    \draw[-,red] plot[mark=x,mark size=10,mark options={color=red}] 
 			file {figs/data/test05v3gmt.CC.tikzdata};
-    \draw[-,thin,densely dashed,black] plot[mark=x,mark size=4,mark options={color=black}] 
+    \draw[-,thin,densely dashed,black] plot[mark=x,mark size=10,mark options={color=black}] 
 			file {figs/data/test05v3gmt.CP.tikzdata};
-    \draw[-,thin,densely dashed,black] plot[mark=o,mark size=2,mark options={color=black}] 
+    \draw[-,thin,densely dashed,black] plot[mark=o,mark size=6,mark options={color=black}] 
 			file {figs/data/test05v3gmt.SP.tikzdata};
     % Also draw the expected convergence: 0.9^8 actions=0.43046
     \draw[dashed,-,yshift=0](0,1.0) -- (3000,1.0);
