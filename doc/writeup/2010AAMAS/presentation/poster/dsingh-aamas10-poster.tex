@@ -66,17 +66,7 @@
 \pgfsetlayers{background,main,foreground}
 %\usetikzlibrary{,decorations,backgrounds,matrix,automata,trees,shapes,}
 
-
-%\title[Learning BDI Plan Selection]{Learning Context Conditions for BDI Plan Selection}
-%\author[Singh et al.]{Dhirendra~Singh\inst{1}, Sebastian~Sardina\inst{1}, Lin~Padgham\inst{1}, and St\'ephane~Airiau\inst{2}}
-
-%\institute[RMIT \& UvA]{
-%\inst{1}School of Computer Science \& Information Technology, RMIT University, Australia \\
-%\inst{2}Institute for Logic, Language and Computation, University of Amsterdam, The Netherlands
-%}
-
-%\date[AAMAS 2010]{Autonomous Agents and Multiagent Systems\\May 2010}
-
+%%%%%
 \newcommand{\posterheading}[1]{
 	\begin{center}
 	  \begin{tikzpicture}
@@ -111,7 +101,7 @@
 
 \newcommand{\alert}[1]{{\color{darkred}{#1}}}
 \renewcommand{\normalsize}{\Large}
-
+%%%%%
 
 \begin{document}
 
@@ -214,15 +204,22 @@ A \alert{probabilistic plan selection function} balances exploitation of ongoing
 \begin{textblock}{4.6}(10.2,4)
 \posterheading{Experimentation}
 
-We look at two aspects of learning.
+We experiment with a range of \alert{synthetic hierarchies} to see how each learning approach is impacted by the goal-plan structure. We look at two aspects of learning.
 
 \alert{How to record training set}: We compare two approaches, a conservative BUL scheme that uses only failures where all plan choices were considered well-informed, and the alternative ACL that uses every outcome for learning.
 
 \alert{How to use decision trees}: We present a confidence measure that is applied to the decision tree prediction to calculate final plan selection weights. Confidence is proportional to the \alert{coverage} of paths below a plan.
 
-We experiment with a range of \alert{synthetic hierarchies} to see how each learning approach is impacted by the goal-plan structure.
 
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+\vskip 1.0em
+\begin{center}
+\input{figs/T1-result}
+\input{figs/T2-result}
+\input{figs/T3-result}
+\input{figs/T4-result2}
+\end{center}
+\vskip 0.5em
+
 
 
 \end{textblock}
