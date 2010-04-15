@@ -17,13 +17,13 @@
 
 
 %%% Beliefs
-\node (database) at (-3,10)  (B)
+\node (database) at (-2,10)  (B)
 	[draw=black,top color=blue2!70, bottom color=blue2,cylinder,shape border rotate=90,minimum width=5em,shape aspect=.3]
-	{\textbf{Beliefs}};
+	{{Beliefs}};
 
 
 %%% Pending Events
-\node at (7,15) (eventQueue) {{\bf Pending Events}};
+\node at (7,15) (eventQueue) {{Pending Events}};
 \begin{pgfonlayer}{foreground}
 \foreach \x in {5,6,...,9}
 \draw [draw=blue4,top color=blue3!70, bottom color=blue3](\x,13) circle (.7em);
@@ -32,28 +32,28 @@
 	[draw=black,top color=blue4!70, bottom color=blue4,text width=5em, minimum height=2em] {};
 
 %%% Plan Library
-\node at (15,6)(P) 
+\node at (14,6)(P) 
 	[draw=black,top color=blue1!70, bottom color=blue1,
 	rounded corners, double copy
 	shadow={fill=blue1},text centered, 
 	minimum height=6em] 
 	{	\begin{tabular}{c} 
-          \textbf{Plan} \\[1ex]
-          \textbf{library}
+         {Plan} \\[1ex]
+         {library}
          \end{tabular}	};
 \node[anchor=west] at (13,1) {static};
 
 %%% Intention Stacks
 \foreach \x in {4,3,2,1}
-\draw (-5,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+\draw (-4,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
 	minimum height=\x em]{};
 \foreach \x in {3,2,1}
-\draw (-3,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+\draw (-2,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
 	minimum height=\x em]{};
 \foreach \x in {5,4,3,2,1}
-\draw (-1,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+\draw (0,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
 	minimum height=\x em]{};
-\node at (-3,-1) (Intentions) {{\bf  Intention Stacks}};
+\node at (-1,-1) (Intentions) {{Intention Stacks}};
 
 %%% BDI Engine
 \foreach \x in {0,18,...,360}
@@ -75,7 +75,7 @@
 \begin{pgfonlayer}{foreground}
 \node[anchor=center] at (7,6)  (deli) 
 	{\begin{tabular}{c}
-     	\textbf{BDI engine} t
+     	{BDI engine}
      \end{tabular}};
 \node at (7,-4) (actions) {{\bf actions}};
 \draw[thick,->] (deli) -- (actions) ; 
@@ -89,7 +89,7 @@
 
 %%% Encapuslating box
 \begin{pgfonlayer}{background}
-\node[draw,dashed,rectangle,minimum height=15em,minimum width=21em ] at (5.5,7){};
+\node[draw,dashed,rectangle,minimum height=15em,minimum width=18em] at (6,7){};
 \end{pgfonlayer}
 
 
