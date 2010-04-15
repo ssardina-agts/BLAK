@@ -1,0 +1,19 @@
+%!TEX root = ../dsingh-aamas10-poster.tex
+\begin{tikzpicture}[x= 0.008cm,y=9cm]
+    % Draw the axes and grid lines
+    \draw[-] (0,0) -- (0,1) -- (2000,1) -- (2000,0) -- cycle; 
+    \draw[-,thin, dotted, ystep=0.2, xstep=2000] (0,0) grid (2000,1);
+    \foreach \x in {500, 1000, 1500}  \draw [-,xshift=0](\x,4pt) -- (\x,-1pt);
+    \foreach \y in {0.0,0.2,0.4,0.6,0.8,1.0}  \draw [-,yshift=0](4pt,\y) -- (-1pt,\y);
+    \foreach \x/\xtext in {500/500, 1000/1000, 1500/1500} \node at (\x,0) [below] {\xtext};
+    \foreach \y/\ytext in {0.0,0.2,0.4,0.6,0.8,1.0}  \node at (0,\y) [left] {\ytext};
+    \node at (0,1.15) {Success};
+    \node at (1650,0.1) {Iterations};
+    \draw[-,red] plot[mark=x,mark size=10,mark options={color=red}] 
+			file {figs/data/test01v3gm.CP.tikzdata};
+    \draw[-,blue] plot[mark=o,mark size=6,mark options={color=blue}] 
+			file {figs/data/test01v3gm.SP.tikzdata};
+    % Also draw the expected convergence: 0.9^4 actions=0.6561
+    \draw[dashed,-,yshift=0](0,0.81) -- (2000,0.81);
+	\node at (2300,0.5) {$\mathcal{T}1$};
+\end{tikzpicture}
