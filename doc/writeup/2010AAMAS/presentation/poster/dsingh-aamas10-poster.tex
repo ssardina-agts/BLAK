@@ -44,8 +44,8 @@
 
 % Mess with these as you like
 \parindent=0pt
-\parskip=0.8\baselineskip
-\renewcommand{\baselinestretch}{0.95}
+\parskip=1.0\baselineskip
+%\renewcommand{\baselinestretch}{0.95}
 
 
 %\usepackage{amsmath,amsthm, amssymb, latexsym}
@@ -72,7 +72,7 @@
 	  \begin{tikzpicture}
 		\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
 		\node [draw=none,rounded corners=1ex, 
-			minimum height=8ex, minimum width=\columnwidth, 
+			minimum height=7ex, minimum width=0.95\columnwidth, 
 			top color= darkblue!40, bottom color= darkblue!70]
 			%top color= black!40, bottom color=black!70]
 			{
@@ -106,7 +106,7 @@
 \begin{document}
 
 %%%%% Header
-\begin{textblock}{15}(0,-0.7)
+\begin{textblock}{15}(0,-0.5)
 \postertitle
 {Learning Context Conditions for BDI Plan Selection}
 {Dhirendra~Singh$^1$~~~
@@ -124,32 +124,36 @@ St\'ephane~Airiau$^2$}
 
 %%%%% Introduction
 \begin{textblock}{4.6}(0.2,4)
-\posterheading{Introduction}
+\posterheading{Summary}
 We address the \alert{plan selection problem} in Belief, Desire, Intentions (BDI) Ag\-ent Systems.
 
-An important drawback in BDI is the lack of a learning ability. \alert{Context conditions} of plans 
-\begin{wrapfigure}{l}{0.5 \columnwidth}
+%An important drawback in BDI is the lack of a learning ability. 
+\alert{Context conditions} of plans determine
+applicability in given situations, and must be specified
+\begin{wrapfigure}{l}{0.48 \columnwidth}
+  \vspace{-0.2em}
   \begin{center}
     \includegraphics[width=0.45\columnwidth]{figs/mars_rover.jpg}
   \end{center}
+  \vspace{-0.5em}
 \end{wrapfigure}
-that determine applicability in given situations,
-must be specified upfront. However, new environments often require learning changes to selection conditions.
+upfront. However, new environments often require learning changes to selection conditions.
 
 
-Easing this constraint would allow conditions to be \alert{refined} over time, improving adaptability. 
+Easing this constraint would allow conditions to be \alert{refined} once deployed, improving adaptability. 
 
-Our learning framework models context conditions as \alert{decision trees}, and allow agents to \alert{learn plan applicability} from ongoing experiences. 
+Our learning framework augments plan's context conditions with \alert{decision trees}, allowing \alert{plan applicability} to be learnt from experience.
 
-Using a \alert{probabilistic plan selection} function, agents can balance exploration and exploitation of their plans, and learn as they go. 
-
+Using a \alert{probabilistic plan selection} function, the agent balances exploration and exploitation of plans, while learning online.
 \end{textblock}
 
 %%%%% BDI Plan Library
-\begin{textblock}{4.6}(0.2,13.4)
-\posterheading{BDI Plan Library}
+\begin{textblock}{4.6}(0.2,13)
+\posterheading{BDI Architecture}
 
-The BDI \alert{plan library} contains plans that each resolve a goal either through primitive actions in the environment or posting sub-goals to be resolved first in a \alert{hierarchical manner}.
+A \alert{plan} is a rule of the form $e: \psi \leftarrow \delta$; program $\delta$ is a strategy for goal $e$ when context $\psi$ holds.
+
+The burden for the programmer is to perfectly design the logical formula $\psi$.
 
 \vskip 1.0em
 \begin{center}
@@ -157,7 +161,9 @@ The BDI \alert{plan library} contains plans that each resolve a goal either thro
 \end{center}
 \vskip -0.3em
 
-A plan is \alert{relevant} for the goal it was written to handle. It is also \alert{applicable} if it's context condition are satisfied at run-time. 
+Plans performs primitive actions or post sub-goals that are handled in a \alert{hierarchical} manner.
+
+
 
 \end{textblock}
 
@@ -174,13 +180,16 @@ A plan is \alert{relevant} for the goal it was written to handle. It is also \al
 \end{center}
 \vskip 0.5em
 
-First, the imposed BDI hierarchy implies that high level plans may fail not because they were poor choices in the given situation but because poor choices were made further below in the hierarchy. This is the \alert{credit assignment problem} in hierarchical learning.
+\begin{enumerate}
+\item The imposed BDI hierarchy implies that high level plans may fail not because they were poor choices for the situation but due to poor choices further below. 
+\item Learning is performed \alert{online} while acting in the environment, so care must be taken in how much \alert{confidence} to put in each decision tree on an ongoing basis.
 
-Second, and regardless of the above, since learning is performed while acting in the environment, then care must be taken in how much \alert{confidence} to put in the decision tree on an ongoing basis.
+\end{enumerate}
+
 \end{textblock}
 
 %%%%% BDI Learning Framework
-\begin{textblock}{4.6}(5.2,15)
+\begin{textblock}{4.6}(5.2,14)
 \posterheading{BDI Learning Framework}
 
 Each plan's logical formula context condition is augmented with a \alert{decision tree}.
@@ -217,11 +226,13 @@ A \alert{probabilistic plan selection function} balances exploitation of ongoing
 \begin{textblock}{4.6}(10.2,4)
 \posterheading{Experimentation}
 
-We experiment with a range of \alert{synthetic hierarchies} to see how each learning approach is impacted by the goal-plan structure. We look at two aspects of learning.
+%We experiment with a range of \alert{synthetic hierarchies} to see how each learning approach is impacted by the goal-plan structure. We look at two aspects of learning.
 
-\alert{How to record training set}: We compare two approaches, a conservative BUL scheme that only records failures when all plan choices are considered well-informed, and an alternative ACL that records every outcome for learning.
+We study the impact of goal-plan structures on learning performance. We use \alert{synthetic hierarchies} that model some features of real BDI programs.
 
-\alert{How to use decision trees}: A confidence measure is applied to the decision tree prediction to calculate final plan selection weights. Confidence is proportional to the \alert{coverage} of paths below a plan.
+\alert{How to record training set}: We compare two approaches, a conservative one (BUL) that only records failures when all plan choices are considered well-informed, and an aggressive one (ACL) that records all outcomes.
+
+\alert{How to use decision trees}: A confidence measure is applied to the decision tree prediction to calculate plan selection weights. Confidence is related to the \alert{coverage} of paths below a plan.
 
 \vskip 1.0em
 \begin{center}
@@ -232,7 +243,7 @@ We experiment with a range of \alert{synthetic hierarchies} to see how each lear
 \end{center}
 \vskip -0.5em
 
-The above results compare performance of\\ ACL+coverage (crosses) against BUL (circles) for various goal-plan hierarchies.
+The above results compare performance of\\ {\color{darkred}ACL+coverage (crosses)} and {\color{darkblue}BUL (circles)}\\ for various goal-plan hierarchies.
 
 \end{textblock}
 

@@ -1,5 +1,7 @@
 %!TEX root = ../dsingh-aamas10-poster.tex
 \begin{tikzpicture}[x=0.00533cm,y=6cm]
+	\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+	\definecolor{darkred}{rgb}{0.8,0.0,0.1}
     % Draw the axes and grid lines
     \draw[-] (0,-0.25) -- (0,1.25) -- (3000,1.25) -- (3000,-0.25) -- cycle; 
     \draw[-,thin, dotted, ystep=0.25, xstep=3000] (0,-0.25) grid (3000,1.25);
@@ -9,7 +11,7 @@
     \foreach \y/\ytext in {0.00,0.25,0.50,0.75,1.00}  \node at (0,\y) [left] {\ytext};
     \node at (-70,1.45) {Success};
     \node at (2500,-0.1) {Iterations};
-    \draw[-,red] plot[mark=x,mark size=10,mark options={color=red}] 
+    \draw[-,darkred] plot[mark=x,mark size=10,mark options={color=darkred}] 
 			file {figs/data/test05v3gmt.CC.tikzdata};
     \draw[-,thin,densely dashed,black] plot[mark=x,mark size=10,mark options={color=black}] 
 			file {figs/data/test05v3gmt.CP.tikzdata};
