@@ -151,7 +151,7 @@ Using a \alert{probabilistic plan selection} function, the agent balances explor
 \begin{textblock}{4.6}(0.2,13)
 \posterheading{BDI Architecture}
 
-A \alert{plan} is a rule of the form $e: \psi \leftarrow \delta$; program $\delta$ is a strategy for goal $e$ when context $\psi$ holds.
+A \alert{plan} is a rule $e: \psi \leftarrow \delta$; program $\delta$ is a strategy for goal $e$ when condition $\psi$ holds.
 
 The burden for the programmer is to perfectly design the logical formula $\psi$.
 
@@ -161,7 +161,7 @@ The burden for the programmer is to perfectly design the logical formula $\psi$.
 \end{center}
 \vskip -0.3em
 
-Plans perform primitive actions or post sub-goals that are handled in a \alert{hierarchical} manner.
+Plans perform primitive actions or post sub-goals to be handled in a \alert{hierarchical} manner.
 
 
 
@@ -237,13 +237,13 @@ We study the impact of goal-plan structures on learning performance. We use \ale
 \vskip 1.0em
 \begin{center}
 \input{figs/T1-result}
-\input{figs/T2-result}
+\input{figs/T2-result2}
 \input{figs/T3-result}
 \input{figs/T4-result2}
 \end{center}
 \vskip -0.5em
 
-The above results compare performance of\\ {\color{darkred}ACL+coverage (crosses)} and {\color{darkblue}BUL (circles)}\\ for various goal-plan hierarchies.
+Results comparing {\color{darkred}ACL+coverage (crosses)} and {\color{darkblue}BUL (circles)} for various goal-plan hierarchies.
 
 \end{textblock}
 
