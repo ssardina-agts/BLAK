@@ -28,7 +28,7 @@ public class PlanNode extends Node{
     private FastVector atts;
     private Instances data;
     private int countdownToRebuild;
-    private final int buildThreshold = 1;
+    private final int buildThreshold = 2;
     
     /* Stores the world state for when this plan was called last */
     private String[] lastState;
@@ -152,6 +152,7 @@ public class PlanNode extends Node{
 
     private void buildDataset() {
         int added = 0;
+        String str = "";
         /* Delete previous entries, we will recreate the dataset now */
         data.delete();
         /* Add each experience to the dataset */
@@ -181,19 +182,23 @@ public class PlanNode extends Node{
                 instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
                 instance2.setWeight(successes);
                 data.add(instance2);
-                logger.writeLog("Plan "+name()+" added training instance: "+instance2);
+                //str += "Plan "+name()+" added training instance: "+instance2+ "\n";
                 added++;
             }  
             if ((failures > 0) && thisMemory.useForLearning()) {
                 instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
                 instance.setWeight(failures);
                 data.add(instance);
-                logger.writeLog("Plan "+name()+" added training instance: "+instance);
+                //str += "Plan "+name()+" added training instance: "+instance+ "\n";
                 added++;
             }
         }
         if (added > 0) {
-            logger.writeLog("Plan "+name()+" built training data set with "+added+" samples");
+            str += "Plan "+name()+" built training data set with "+added+" samples";
+            /* Note: Logging out the training samples takes a lot of time and 
+             * log space. Commenting them out above speeds things up significantly.
+             */
+            logger.writeLog(str);
         }
     }
 
@@ -277,9 +282,15 @@ public class PlanNode extends Node{
      * print the decision tree and info about it.
      */
     public void printDT(){
-        System.out.println("************> Outcomes for plan "+ name());
-        System.out.println("number of instances : " + data.numInstances());
-        System.out.println(decisionTree);
+        System.out.println(getDT());
+    }
+    
+    public String getDT() {
+        String str = "";
+        str += "************> Outcomes for plan "+ name() + "\n";
+        str += "number of instances : " + data.numInstances() + "\n";
+        str += decisionTree;
+        return str;
     }
 
     /* Caller responsibilities:
@@ -326,6 +337,10 @@ public class PlanNode extends Node{
         } else {
             thisMemory = new Experience(logger);
             newold = "NEW";
+        }
+        if(res && (thisMemory.getNumberOfSuccesses() == 0) && isRoot) {
+            /* This is the first time we resolved the top level goal */
+            logger.writeLog("Agent recorded first success for top level goal (state "+this.stringOfLastState()+", plan "+this.name()+")");
         }
         thisMemory.setState(lastState);
         thisMemory.setHasStableChildren(isStableBelow);

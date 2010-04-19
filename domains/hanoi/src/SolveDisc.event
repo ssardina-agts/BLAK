@@ -62,10 +62,11 @@ public event SolveDisc extends BDIGoalEvent {
 
     public String[] state() {
         int i = 0;
-        String[] state = new String[2+discsOnTop.length+places.length];
+        String[] state = new String[3+discsOnTop.length+places.length];
         try {
             state[i++] = Integer.toString(disc.getValue());
             state[i++] = Integer.toString(pin.getValue());
+            state[i++] = Integer.toString(level);
         } catch (LogicException e) {
             System.err.println("Error parsing logical variables\n"+e);
             System.exit(9);

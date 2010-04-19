@@ -47,6 +47,8 @@
 
 <target name="aamas2010" description="Build, run and plot all tests used for the AAMAS2010 submission" depends="test01v3gm,test01v3gmt,test05v3gm,test05v3gmt,testImpactvars2,testMultiSolutionsR"/>
 
+<target name="hycas2010" description="Build, run and plot all tests used for the HYCAS2010 submission" depends="hanoid5s1r8,hanoid5s3r8,hanoid5s5r8,hanoi5"/>
+
 <target name="misc" description="Build, run and plot all miscellaneous tests" depends="testMultiSolutions,testEcai,testImpactvars,testImpactvars3,testDummyvars,test02v10gm,test03v5gm,test04v5gm,test01v1,test02v1,test03v1,test04v1,test05v1"/>
 
 <target name="testMultiSolutionsR" description="Build, run and plot testMultiSolutionsR (Multiple Solutions with Goal Reuse)" depends="buildtestMultiSolutionsR,graphtestMultiSolutionsR,runtestMultiSolutionsR,plottestMultiSolutionsR"/>
@@ -294,8 +296,8 @@
 		</classpath>
 	</java>
 	<mkdir dir="${results.all.dir}"/>
-	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}-episodes.csv" todir="${results.all.dir}" flatten="true"/>
-	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}-topgoal.csv" todir="${results.all.dir}" flatten="true"/>
+	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}-episodes.csv" todir="${results.all.dir}" flatten="true" failonerror="false"/>
+	<copy file="${results.dir}/@{test.name}/@{run.mode}-@{run.select}-@{run.id}/@{test.name}-@{run.mode}-@{run.select}-@{run.id}-topgoal.csv" todir="${results.all.dir}" flatten="true"  failonerror="false"/>
   </sequential>
 </macrodef>
 

@@ -18,6 +18,7 @@ import agents.PlanNode;
 import agents.GoalNode;
 import agents.Config.PlanSelectMode;
 import agents.Config.UpdateMode;
+import agents.Config.RunMode;
 
 import weka.core.FastVector;
 import weka.core.Attribute;
@@ -112,7 +113,7 @@ public agent Player extends Agent implements Logger{
         
         try{
             writerOut = new PrintWriter(targetDir + "/player.out");
-            writerRes = new PrintWriter(targetDir + "/" + filename);
+            writerRes = new PrintWriter(targetDir + "/" + filename + "-episodes.csv");
         }catch(IOException e){
             System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
@@ -231,10 +232,10 @@ public agent Player extends Agent implements Logger{
         if (!res && failureNode == null) {
             failureNode = planNodes[pid];
             failureNodeDepth = depth;
-            writeLog("Episode "+episode+" first failure node was "+failureNode.getItem()+" at depth "+failureNodeDepth+" with complexity="+failureNode.getComplexity(failureNodeDepth));
+            writeLog("Episode "+episode+" first failure node was "+failureNode.name()+" at depth "+failureNodeDepth+" with complexity="+failureNode.getComplexity(failureNodeDepth));
         }
         planNodes[pid].setLastInstance(state);
-        planNodes[pid].record(res, depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
+        planNodes[pid].record(res, true/*isStableBelow: don't care*/, depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
     }
 
     public void finishEpisode() {
@@ -366,12 +367,8 @@ public agent Player extends Agent implements Logger{
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
             double confidence = thisNode.getConfidence(level,state);
-            if (thisNode.useDT(1/*Iteration: not used*/)){
-                double[] ps = thisNode.getProbability(state);
-                return new PlanIdInfo(pid, ps[0], confidence, thisNode.isFailedThresholdHandler);
-            } else{
-                return new PlanIdInfo(pid, 0.5, confidence, thisNode.isFailedThresholdHandler);
-            }
+            double[] ps = thisNode.getProbability(state);
+            return new PlanIdInfo(pid, ps[0], confidence, thisNode.isFailedThresholdHandler());
         } else {
             return new PlanIdInfo(pid, 0.5, 1.0, false);
         }
@@ -447,14 +444,14 @@ public agent Player extends Agent implements Logger{
         }
 
         FastVector rval = new FastVector();
-        for (int i = 0; i < recursion; i++) {
+        for (int i = 0; i <= recursion; i++) {
             rval.addElement(Integer.toString(i));
         }
         
         FastVector atts = new FastVector();
         atts.addElement(new Attribute("disc"));
         atts.addElement(new Attribute("pin",pval));
-        //atts.addElement(new Attribute("recursionLevel",rval));
+        atts.addElement(new Attribute("recursionLevel"));
         
         //for (int i = 0; i < nPins; i++) {
         //    atts.addElement(new Attribute("topDiscOnPin"+i));
@@ -470,12 +467,12 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[6];
-        planNodes[0] = new PlanNode(new Integer(0),"P0", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[1] = new PlanNode(new Integer(1),"P1", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[2] = new PlanNode(new Integer(2),"P2", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[3] = new PlanNode(new Integer(3),"P3", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[4] = new PlanNode(new Integer(4),"P4", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, false, logger);
-        planNodes[5] = new PlanNode(new Integer(4),"PF", atts, classVal, dval, minInstances, uselect, pselect, stableE, stableK, true, logger);
+        planNodes[0] = new PlanNode("P0", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, false, logger);
+        planNodes[1] = new PlanNode("P1", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, false, logger);
+        planNodes[2] = new PlanNode("P2", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, false, logger);
+        planNodes[3] = new PlanNode("P3", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, false, logger);
+        planNodes[4] = new PlanNode("P4", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, false, logger);
+        planNodes[5] = new PlanNode("PF", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, true, logger);
 
         planNodes[0].setDecayMultiplier(domainDecay);
         planNodes[1].setDecayMultiplier(domainDecay);
@@ -484,7 +481,7 @@ public agent Player extends Agent implements Logger{
         planNodes[4].setDecayMultiplier(domainDecay);
 
         Node[] goalNodes = new Node[1];
-        goalNodes[0] = new GoalNode(0,"G", logger);
+        goalNodes[0] = new GoalNode("G", logger);
         goalNodes[0].addChild(planNodes[0]);
         goalNodes[0].addChild(planNodes[1]);
         goalNodes[0].addChild(planNodes[2]);
