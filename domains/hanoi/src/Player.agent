@@ -16,6 +16,7 @@ import trees.Node;
 
 import agents.PlanNode;
 import agents.GoalNode;
+import agents.ExecutionTrace;
 import agents.Config.PlanSelectMode;
 import agents.Config.UpdateMode;
 import agents.Config.RunMode;
@@ -89,6 +90,8 @@ public agent Player extends Agent implements Logger{
     private PlanNode failureNode;
     private int failureNodeDepth;
 
+    private ExecutionTrace activeExecutionTrace; 
+
     // Constructor
     Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
         super("player");
@@ -111,6 +114,7 @@ public agent Player extends Agent implements Logger{
         
         this.applicabilityThreshold = threshold;
         
+        this.activeExecutionTrace = new ExecutionTrace();
         try{
             writerOut = new PrintWriter(targetDir + "/player.out");
             writerRes = new PrintWriter(targetDir + "/" + filename + "-episodes.csv");
@@ -145,7 +149,7 @@ public agent Player extends Agent implements Logger{
                 System.err.println("Error loading initial states: "+e);
             }
         }
-                
+            
         episode = 0;
         maxEpisodes = episodes;
         learningMode = learning;
@@ -210,6 +214,10 @@ public agent Player extends Agent implements Logger{
         return pselect;
     }
 
+    public ExecutionTrace activeExecutionTrace() {
+        return activeExecutionTrace;
+    }
+    
     public String getGoalKeyThisEpisode() {
         return episodeGoalKey;
     }
@@ -235,11 +243,16 @@ public agent Player extends Agent implements Logger{
             writeLog("Episode "+episode+" first failure node was "+failureNode.name()+" at depth "+failureNodeDepth+" with complexity="+failureNode.getComplexity(failureNodeDepth));
         }
         planNodes[pid].setLastInstance(state);
-        planNodes[pid].record(res, true/*isStableBelow: don't care*/, depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
+        planNodes[pid].record(res, res ? 1.0 : activeExecutionTrace.poppedTraceStability(), depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
+        
+        /* Finished recording so pop this plan off the active execution trace */
+        activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
+        writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
     }
 
     public void finishEpisode() {
         indentReset();
+        activeExecutionTrace.reset();
         if (saveInitStates) {
             saveInitState();
         }
@@ -366,11 +379,12 @@ public agent Player extends Agent implements Logger{
     public PlanIdInfo planInfo(int pid, String[] state, int level, int rec) {
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
-            double confidence = thisNode.getConfidence(level,state);
+            //double confidence = thisNode.getConfidence(level,state);
+            double confidence = ((level==0)||thisNode.isLeaf()) ? (thisNode.isStable(state)?1.0:0.0) : thisNode.averageExperiencedStability(state,3/*window*/);
             double[] ps = thisNode.getProbability(state);
-            return new PlanIdInfo(pid, ps[0], confidence, thisNode.isFailedThresholdHandler());
+            return new PlanIdInfo(state, pid, ps[0], confidence, thisNode.isFailedThresholdHandler());
         } else {
-            return new PlanIdInfo(pid, 0.5, 1.0, false);
+            return new PlanIdInfo(state, pid, 0.5, 1.0, false);
         }
     }
 

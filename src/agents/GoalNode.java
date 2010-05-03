@@ -20,23 +20,34 @@ public class GoalNode extends Node{
     /*-----------------------------------------------------------------------*/
     /* MARK: Access Members */
     /*-----------------------------------------------------------------------*/
-
+	public int numberOfChildren() {
+        int n = 0;
+        for (int i = 0; i < children.size(); i++) {
+            PlanNode thisNode = (PlanNode)this.children.elementAt(i);
+            if(!thisNode.isFailedThresholdHandler()) {
+                n++;
+            }
+        }
+		return n;
+	}
     
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
-    
     public boolean isStable(String[] checkState) {
-        boolean stable = true;
+        return (stability(checkState) == numberOfChildren());
+    }
+    
+    public int stability(String[] checkState) {
+        int stable = 0;
         if(this.children.size() > 0) {
     		logger.writeLog("Goal "+name()+" is checking stability for state "+
                             this.stringOfState(checkState));
             logger.indentRight();
     		for(int i = 0; this.children.size()>i;i++) {
     			PlanNode thisNode = (PlanNode)this.children.elementAt(i);
-    			if(!thisNode.isFailedThresholdHandler() && !thisNode.isStable(checkState)) {
-    				stable = false;
-                    break;
+    			if(!thisNode.isFailedThresholdHandler() && thisNode.isStable(checkState)) {
+    				stable++;
     			}
     		}	
             logger.indentLeft();

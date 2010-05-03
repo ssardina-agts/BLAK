@@ -1,4 +1,5 @@
 import agents.Config.PlanSelectMode;
+import agents.ExecutionTrace;
 import java.util.Hashtable;
 
 public plan MetaPlan extends Plan {
@@ -94,6 +95,9 @@ public plan MetaPlan extends Plan {
                 choice++;
             }
             pc.chosen = sigs[choice];
+            PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
+            ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
+            ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
 
             if (ag.learningMode()) {
                 String str = "[";

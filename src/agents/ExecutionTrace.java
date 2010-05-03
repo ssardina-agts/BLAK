@@ -22,6 +22,8 @@ public class ExecutionTrace {
     /*-----------------------------------------------------------------------*/
 	private Vector<TraceNode> trace;
     private boolean werePoppedTracesStable;
+    private double nTotal;
+    private double nStable;
 	
     /*-----------------------------------------------------------------------*/
     /* MARK: Constructors */
@@ -29,6 +31,8 @@ public class ExecutionTrace {
 	public ExecutionTrace() {
         trace = new Vector<TraceNode>();
         werePoppedTracesStable = true;
+        nTotal = 0.0;
+        nStable = 0.0;
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -45,6 +49,8 @@ public class ExecutionTrace {
             TraceNode n = trace.remove(trace.indexOf(trace.lastElement()));
             if (updateStable) {
                 werePoppedTracesStable &= n.goal.isStable(n.state);
+                nStable += (double)(n.goal.stability(n.state))/n.goal.numberOfChildren();
+                nTotal += 1.0;
             }
         }
     }
@@ -53,8 +59,8 @@ public class ExecutionTrace {
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
     
-    public boolean werePoppedTracesStable() {
-        return werePoppedTracesStable;
+    public double poppedTraceStability() {
+        return (nTotal==nStable) ? 1.0 : (nStable/nTotal);
     }
     
     
@@ -65,6 +71,8 @@ public class ExecutionTrace {
     public void reset() {
         trace.removeAllElements();
         werePoppedTracesStable = true;
+        nTotal = 0.0;
+        nStable = 0.0;
     }
     
     public String toString() {

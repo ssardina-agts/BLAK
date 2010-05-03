@@ -1404,7 +1404,7 @@ public class ExpGenerator {
 		+"\tString strres=(res) ? \"(+)\" : \"(-)\";\n"
 		+"\tenv.writeLog(\"Refiner Agent: Recording \"+strres+\" result in state \"+planNodes[plan_id].stringOfLastState()+\" for plan \"+planNodes[plan_id].name()+\" on iteration \"+env.it);\n"
         
-        +"\tif (planNodes[plan_id].numberOfChildren() == 0) {\n"
+        +"\tif (planNodes[plan_id].isLeaf()) {\n"
         +"\t\tstepsToAchieveTopGoal++;\n"
         +"\t\tenv.writeLog(\"Refiner Agent: Tried \"+stepsToAchieveTopGoal+\" actions so far to achieve top goal.\");\n"
         +"\t}\n"
@@ -1417,7 +1417,7 @@ public class ExpGenerator {
 		
         +"\t/* Now record the experience */\n"
         +"\tenv.indentRight();\n"
-		+"\tplanNodes[plan_id].record(res, (res || activeExecutionTrace.werePoppedTracesStable()));\n"
+		+"\tplanNodes[plan_id].record(res, res ? 1.0 : activeExecutionTrace.poppedTraceStability());\n"
         +"\tenv.indentLeft();\n"
         
         +"\t/* Finished recording so pop this plan off the active execution trace */\n"

@@ -54,7 +54,7 @@
     }
 
     /* If pMax is less than the threshold and not a leaf plan then always select the failed threshold handler plan */
-    if ((pMax < ag.planSelectThreshold) && (thandler != null) && (ag.planNodes[pMaxId].numberOfChildren() > 0) ) {
+    if ((pMax < ag.planSelectThreshold) && (thandler != null) && !ag.planNodes[pMaxId].isLeaf() ) {
 	    pc.chosen = thandler;
 	    ag.env.writeLog("MetaPlan: Using failed threshold plan since " +
 		"p("+(((double) ((int) (pMax * 10000))) / 10000)+")<threshold("+

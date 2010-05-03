@@ -299,17 +299,19 @@ public class PlanNode extends Node{
      *    below this plan is stable.
      */
     public void record(boolean res) {   
-        record(res, true/*isStableBelow*/);
+        record(res, 1.0/*traceStability*/);
     }
-    public void record(boolean res, boolean isStableBelow) {   
-        record(res, isStableBelow, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
+    public void record(boolean res, double traceStability) {   
+        record(res, traceStability, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
     }
     public void record(boolean res,
-                       boolean isStableBelow,
+                       double traceStability,
                        int depth, 
                        boolean isRoot, 
                        double failureNodeComplexity)
     {
+        boolean isStableBelow = (traceStability == 1.0);
+        
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
         /* In failure recovery mode, if a subplan at any level below handled a 
@@ -317,7 +319,7 @@ public class PlanNode extends Node{
          * so for this parent the only sensible choice is to record a failure.
          * Do this only for non-leaf plans.
          */
-        if ((run_mode == RunMode.FAILURE_RECOVERY) && this.isPropagatingFailure() && (this.numberOfChildren() > 0)) {
+        if ((run_mode == RunMode.FAILURE_RECOVERY) && this.isPropagatingFailure() && !isLeaf()) {
             logger.writeLog("Forced result to (-) for plan "+name()+" since a subgoal initially failed and was reposted." );
             res = false;
         }
@@ -343,18 +345,15 @@ public class PlanNode extends Node{
             logger.writeLog("Agent recorded first success for top level goal (state "+this.stringOfLastState()+", plan "+this.name()+")");
         }
         thisMemory.setState(lastState);
-        thisMemory.setHasStableChildren(isStableBelow);
         thisMemory.incrementAttempts();
         if(res) {
             thisMemory.incrementSuccesses();
         }
-        
-        /* BUL: Check if this experience should be used in learning */
-        if ((update_mode == UpdateMode.STABLE) && !res && (!isStableBelow || !isStable())) {
-            thisMemory.setUseForLearning(false);
-        } else {
-            thisMemory.setUseForLearning(true);
-        }
+                
+        /* Set if the trace was stable below.
+         * Done for all modes since we use this info for 
+         * stability-based confidence calculation. */
+        thisMemory.setHasStableChildren(isStableBelow);
 
         /* Reset failures on first success */
         if(res && (thisMemory.getNumberOfSuccesses() == 1)) {
@@ -367,11 +366,33 @@ public class PlanNode extends Node{
             logger.writeLog("Plan "+name()+" had success in state "+memoryKey+" so will reset all previous failures now.");
         }
         
-        /* BUL: Now update the rate of change of success */
+        /* Now update the rate of change of success.
+         * Done for all modes since we use this info for 
+         * stability-based confidence calculation. 
+         */
         thisMemory.updateProbability();
         
-        
         /* Finally, save this experience */
+        this.experiences.put(memoryKey, thisMemory);
+        
+        /* BUL: Check if this experience should be used in learning and store back */
+        if ((update_mode == UpdateMode.STABLE) && !res && (!isStableBelow || !isStable())) {
+            thisMemory.setUseForLearning(false);
+        } else {
+            thisMemory.setUseForLearning(true);
+        }
+        this.experiences.put(memoryKey, thisMemory);
+        
+        /* Now calculate experience stability and store back.
+         * This is done for all modes.
+         */
+        double stability = (traceStability != 1.0) ? traceStability : 
+        res ? 1.0 : 
+        isStable() ? 1.0 : 
+        0.0;
+        thisMemory.addStableHistory(stability);
+        logger.writeLog("Plan "+name()+" recorded stability "+stability+" for state "+this.stringOfLastState());
+        logger.writeLog("Plan "+name()+" has average stability "+thisMemory.averageStability(10)+" over the last 10 executions for state "+this.stringOfLastState());
         this.experiences.put(memoryKey, thisMemory);
         
         /* Coverage related updates */
@@ -397,7 +418,6 @@ public class PlanNode extends Node{
         
         /* Confidence related updates */
         if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
-            //double f = (this.numberOfChildren() == 0) ? getComplexity(depth) : Math.max(1,getComplexity(depth)-failureNodeComplexity);
             double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
             setComplexityDecay(memoryKey, depth, getComplexityDecay(memoryKey,depth) * (1.0 - (1.0/(Math.log(f)/Math.log(2.0)))));
             setDomainDecay(depth, getDomainDecay(depth) * domainComplexityDecayMultiplier);
@@ -465,7 +485,27 @@ public class PlanNode extends Node{
         }
         return stable;
     }
-
+    
+    public double averageExperiencedStability(String[] state, int window)
+    {
+        double stable = 0.0;
+        String lastStateReference = this.stringOfState(state);
+        
+        if(isFailedThresholdHandler) {
+            logger.writeLog("Plan "+name()+" assumes average experience stability 1.0 for state "+lastStateReference+": It is a dummy plan");
+            stable = 1.0;
+        } else if(experiences.containsKey(lastStateReference)) {
+            /*We have a record of this state being used before */
+            Experience thisRecord  = (Experience)experiences.get(lastStateReference);
+            stable = thisRecord.averageStability(window);
+            logger.writeLog("Plan "+name()+" has average experience stability "+stable+" for state "+lastStateReference);
+        } else {
+            logger.writeLog("Plan "+name()+" assumes average experience stability 0.0 for state "+lastStateReference+": has never witnessed this state before");
+            stable = 0.0;
+        }
+        return stable;
+    }
+    
     
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - Coverage related */

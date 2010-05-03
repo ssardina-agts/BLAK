@@ -199,5 +199,9 @@ public abstract class Node{
     /* MARK: Member Functions - Abstract */
     /*-----------------------------------------------------------------------*/
     public abstract boolean isStable(String[] state);
+
+    public int stability(String[] state) {
+        return isStable(state) ? 1 : 0;
+    };
     
 }

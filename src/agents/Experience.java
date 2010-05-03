@@ -4,6 +4,7 @@ import trees.*;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import weka.core.*;
 
@@ -23,7 +24,10 @@ public class Experience
     private Hashtable decay;
     private boolean useForLearning;
     private boolean hasStableChildren;
+    private Vector<Double> stableHistory;
 	
+    public static final int STABLE_HISTORY_CAPACITY = 100;
+    
     /*-----------------------------------------------------------------------*/
     /* MARK: Constructors */
     /*-----------------------------------------------------------------------*/
@@ -39,6 +43,7 @@ public class Experience
         decay = new Hashtable();
         useForLearning = true;
         hasStableChildren = false;
+        stableHistory = new Vector<Double>();
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -170,6 +175,26 @@ public class Experience
 		this.setDeltaProbability(newDelta);
 	}
 	
+    public void addStableHistory(double stability) {
+        stableHistory.add(new Double(stability));
+        if (stableHistory.size() > STABLE_HISTORY_CAPACITY) {
+            /* Pop the oldest element if we have exceeded capacity */
+            stableHistory.remove(0);
+        }
+    }
+    
+    public double averageStability(int window) {
+        /* Returns the average of last 'window' samples from stableHistory */
+        if (window < 1) { return 0.0;}
+        double sum = 0.0;
+        int len = (window < stableHistory.size()) ? window : stableHistory.size();
+        Double[] hist = stableHistory.toArray(new Double[0]);
+        for (int i = hist.length-1; i > hist.length-1-len; i--) {
+            sum += hist[i].doubleValue();
+        }
+        return sum/window;
+    }
+    
 	public String toString()
 	{
 		String returnString = "previous probability:"+previousProbability+
