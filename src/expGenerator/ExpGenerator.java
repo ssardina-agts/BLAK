@@ -456,16 +456,18 @@ public class ExpGenerator {
 		+"\tpublic double pSuccess;\n"
 		+"\tpublic double coverage;\n"
 		+"\tpublic double coverageWeight;\n"
+		+"\tpublic double confidence;\n"
 		+"\tpublic boolean isFailedThresholdHandler;\n\n"
 		+"\tpublic PlanIdInfo(int id ,int pre, double prob){\n"
-		+"\t\tthis(id ,pre, prob, 0.0, 1.0, false);\n"
+		+"\t\tthis(id ,pre, prob, 0.0, 1.0, 1.0, false);\n"
         +"\t}\n\n"
-		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, double weight, boolean isFTH){\n"
+		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, double weight, double conf, boolean isFTH){\n"
 		+"\t\tsuper(pre);\n"
 		+"\t\tplan_id = id;\n"
 		+"\t\tpSuccess = prob;\n"
 		+"\t\tcoverage = cov;\n"
 		+"\t\tcoverageWeight = weight;\n"
+		+"\t\tconfidence = conf;\n"
 		+"\t\tisFailedThresholdHandler = isFTH;\n"
 		+"\t}\n}";
 		try{	
@@ -518,7 +520,8 @@ public class ExpGenerator {
 		+"\tag.setLastInstance(plan_id);\n"
 		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
 		+"\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, false);\n"
+		+"\tdouble confidence = ag.averageExperiencedStability(plan_id);\n"
+		+"\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, confidence, false);\n"
 		+"}\n\n";
 	}
 	
@@ -810,7 +813,7 @@ public class ExpGenerator {
         
         code +=	"\tpublic PlanInstanceInfo getInstanceInfo(){\n"
 		+"\t\tag.setLastInstance(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, 1.0, true);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, 1.0, 1.0, true);\n"
 		+"\t}\n\n";
         
 		if (isTopLevelPlan) {
@@ -1512,6 +1515,12 @@ public class ExpGenerator {
 		// getCoverage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code+="public double getCoverage(int plan_id){\n"
 		+"\treturn (double)(planNodes[plan_id].getCoverage(planNodes[plan_id].lastState()))/planNodes[plan_id].getPaths();\n"
+		+"}\n\n";
+
+        // averageExperiencedStability~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		code+="public double averageExperiencedStability(int plan_id){\n"
+        +"\tPlanNode thisNode = planNodes[plan_id];\n"
+		+"\treturn (thisNode.isLeaf() ? (thisNode.isStable()?1.0:0.0) : thisNode.averageExperiencedStability(1/*window*/));\n"
 		+"}\n\n";
         
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

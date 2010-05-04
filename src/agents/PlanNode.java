@@ -417,7 +417,7 @@ public class PlanNode extends Node{
         }
         
         /* Confidence related updates */
-        if ((select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
+        if (false/*superceded by stability-based confidence*/ && (select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
             double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
             setComplexityDecay(memoryKey, depth, getComplexityDecay(memoryKey,depth) * (1.0 - (1.0/(Math.log(f)/Math.log(2.0)))));
             setDomainDecay(depth, getDomainDecay(depth) * domainComplexityDecayMultiplier);
@@ -485,9 +485,12 @@ public class PlanNode extends Node{
         }
         return stable;
     }
+
+    public double averageExperiencedStability(int window) {
+        return averageExperiencedStability(lastState,window);
+    }
     
-    public double averageExperiencedStability(String[] state, int window)
-    {
+    public double averageExperiencedStability(String[] state, int window) {
         double stable = 0.0;
         String lastStateReference = this.stringOfState(state);
         

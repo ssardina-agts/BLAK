@@ -68,7 +68,7 @@ public static void main(String[] args)
 	            System.out.println("Coverage-based Plan Selection");
                 } else if (psmode.equals("confidence")) {
                     plan_selection = PlanSelectMode.CONFIDENCE;
-	            System.out.println("Coverage-based Plan Selection");
+	            System.out.println("Confidence-based Plan Selection");
 		}
                 break;
             case 't':
