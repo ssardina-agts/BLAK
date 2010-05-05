@@ -1120,6 +1120,7 @@ public class ExpGenerator {
 		+"\ttriggerNewIteration = false;\n"
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
+		+"\tstableW = 1;\n"
         +"\tplanSelectThreshold = 0.0;\n"
         +"\tcoverageWeight = 1.0;\n"
         
@@ -1187,6 +1188,7 @@ public class ExpGenerator {
 		+"\tprivate boolean triggerNewIteration;\n"
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
+		+"\tpublic int stableW;\n"
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
@@ -1230,9 +1232,17 @@ public class ExpGenerator {
 		+"\t{\n"
 		+"\t\tthis.stableK = value;\n"
 		+"\t}\n\n"
+		+"\tpublic int getStableW()\n"
+		+"\t{\n"
+		+"\t\treturn this.stableW;\n"
+		+"\t}\n\n"
+		+"\tpublic void setStableW(int value)\n"
+		+"\t{\n"
+		+"\t\tthis.stableW = value;\n"
+		+"\t}\n\n"
 		+"\tpublic double getStableE()\n"
 		+"\t{\n"
-		+"\t\treturn this.stableE;\n"
+		+"\t\treturn this.stableW;\n"
 		+"\t}\n\n"
 		+"\tpublic void setStableE(double value)\n"
 		+"\t{\n"
@@ -1283,7 +1293,7 @@ public class ExpGenerator {
 			code+="\tplanNodes["+p.index+"] = new PlanNode("
 			+ "\"" + p.getId()+ "\", atts, "
 			+ "update_mode, select_mode, run_mode, "
-            + "stableE, stableK, "
+            + "stableE, stableK, stableW, "
             + (p.isFailedThresholdHandler()?"true":"false")
             + ", (trees.Logger)env);\n";
 		}	
@@ -1420,7 +1430,10 @@ public class ExpGenerator {
 		
         +"\t/* Now record the experience */\n"
         +"\tenv.indentRight();\n"
-		+"\tplanNodes[plan_id].record(res, res ? 1.0 : activeExecutionTrace.poppedTraceStability());\n"
+        +"\tint[] val = new int[2];\n"
+        +"\tval[0] = 1;\n"
+        +"\tval[1] = 1;\n"
+		+"\tplanNodes[plan_id].record(res, res ? val : activeExecutionTrace.poppedTraceStability());\n"
         +"\tenv.indentLeft();\n"
         
         +"\t/* Finished recording so pop this plan off the active execution trace */\n"
@@ -1520,7 +1533,7 @@ public class ExpGenerator {
         // averageExperiencedStability~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		code+="public double averageExperiencedStability(int plan_id){\n"
         +"\tPlanNode thisNode = planNodes[plan_id];\n"
-		+"\treturn (thisNode.isLeaf() ? (thisNode.isStable()?1.0:0.0) : thisNode.averageExperiencedStability(1/*window*/));\n"
+		+"\treturn (thisNode.isLeaf() ? (thisNode.isStable()?1.0:0.0) : thisNode.averageExperiencedStability());\n"
 		+"}\n\n";
         
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -22,8 +22,8 @@ public class ExecutionTrace {
     /*-----------------------------------------------------------------------*/
 	private Vector<TraceNode> trace;
     private boolean werePoppedTracesStable;
-    private double nTotal;
-    private double nStable;
+    private int nTotal;
+    private int nStable;
 	
     /*-----------------------------------------------------------------------*/
     /* MARK: Constructors */
@@ -31,8 +31,8 @@ public class ExecutionTrace {
 	public ExecutionTrace() {
         trace = new Vector<TraceNode>();
         werePoppedTracesStable = true;
-        nTotal = 0.0;
-        nStable = 0.0;
+        nTotal = 0;
+        nStable = 0;
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -49,8 +49,9 @@ public class ExecutionTrace {
             TraceNode n = trace.remove(trace.indexOf(trace.lastElement()));
             if (updateStable) {
                 werePoppedTracesStable &= n.goal.isStable(n.state);
-                nStable += (double)(n.goal.stability(n.state))/n.goal.numberOfChildren();
-                nTotal += 1.0;
+                int[] stability = n.goal.stability(n.state);
+                nStable += stability[0];
+                nTotal += stability[1];
             }
         }
     }
@@ -59,8 +60,15 @@ public class ExecutionTrace {
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
     
-    public double poppedTraceStability() {
-        return (nTotal==nStable) ? 1.0 : (nStable/nTotal);
+    public int[] poppedTraceStability() {
+        int[] val = new int[2];
+        val[0] = 1;
+        val[1] = 1;
+        if (nTotal > 0) {
+            val[0] = nStable;
+            val[1] = nTotal;
+        }
+        return val;
     }
     
     
@@ -71,8 +79,8 @@ public class ExecutionTrace {
     public void reset() {
         trace.removeAllElements();
         werePoppedTracesStable = true;
-        nTotal = 0.0;
-        nStable = 0.0;
+        nTotal = 0;
+        nStable = 0;
     }
     
     public String toString() {

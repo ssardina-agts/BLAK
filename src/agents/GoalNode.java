@@ -35,10 +35,12 @@ public class GoalNode extends Node{
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
     public boolean isStable(String[] checkState) {
-        return (stability(checkState) == numberOfChildren());
+        int[] val = stability(checkState);
+        return ((val[0] != 0) && (val[0] == val[1]));
     }
     
-    public int stability(String[] checkState) {
+    public int[] stability(String[] checkState) {
+        int[] val = new int[2];
         int stable = 0;
         if(this.children.size() > 0) {
     		logger.writeLog("Goal "+name()+" is checking stability for state "+
@@ -52,7 +54,9 @@ public class GoalNode extends Node{
     		}	
             logger.indentLeft();
     	}
-        return stable;
+        val[0] = stable;
+        val[1] = numberOfChildren();
+        return val;
     }
 
     

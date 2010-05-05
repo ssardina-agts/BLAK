@@ -8,6 +8,15 @@ import java.util.Vector;
 
 import weka.core.*;
 
+class StabilityInfo {
+    public int nStable;
+    public int nTotal;
+    public StabilityInfo(int stable, int total) {
+        nStable = stable;
+        nTotal = total;
+    }
+}
+
 public class Experience 
 {
     /*-----------------------------------------------------------------------*/
@@ -24,7 +33,7 @@ public class Experience
     private Hashtable decay;
     private boolean useForLearning;
     private boolean hasStableChildren;
-    private Vector<Double> stableHistory;
+    private Vector<StabilityInfo> stableHistory;
 	
     public static final int STABLE_HISTORY_CAPACITY = 100;
     
@@ -43,7 +52,7 @@ public class Experience
         decay = new Hashtable();
         useForLearning = true;
         hasStableChildren = false;
-        stableHistory = new Vector<Double>();
+        stableHistory = new Vector<StabilityInfo>();
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -175,8 +184,8 @@ public class Experience
 		this.setDeltaProbability(newDelta);
 	}
 	
-    public void addStableHistory(double stability) {
-        stableHistory.add(new Double(stability));
+    public void addStableHistory(int stable, int total) {
+        stableHistory.add(new StabilityInfo(stable,total));
         if (stableHistory.size() > STABLE_HISTORY_CAPACITY) {
             /* Pop the oldest element if we have exceeded capacity */
             stableHistory.remove(0);
@@ -187,12 +196,14 @@ public class Experience
         /* Returns the average of last 'window' samples from stableHistory */
         if (window < 1) { return 0.0;}
         double sum = 0.0;
+        double total = 0.0;
         int len = (window < stableHistory.size()) ? window : stableHistory.size();
-        Double[] hist = stableHistory.toArray(new Double[0]);
+        StabilityInfo[] hist = stableHistory.toArray(new StabilityInfo[0]);
         for (int i = hist.length-1; i > hist.length-1-len; i--) {
-            sum += hist[i].doubleValue();
+            sum += hist[i].nStable;
+            total += hist[i].nTotal;
         }
-        return sum/window;
+        return sum/(total+(window-len));
     }
     
 	public String toString()

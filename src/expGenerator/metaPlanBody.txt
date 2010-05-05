@@ -39,12 +39,13 @@
 		    "^" + ((double) ((int) ((1/info.coverageWeight) * 10000))) / 10000;
 		    ag.env.writeLog(str);
 		} else if (ag.env.plan_selection == PlanSelectMode.CONFIDENCE) {
-		    p = 0.5 + (info.confidence * (p - 0.5));
+		    p = 0.5 + (Math.pow(info. confidence, 1/info.coverageWeight) * (p - 0.5));
 		    String str =
 		    "Plan " + ag.planNodes[info.plan_id].name() +
 		    " REVISED the probability in state " + ag.planNodes[info.plan_id].stringOfLastState() +
 		    " to p=" + ((double) ((int) (p * 10000))) / 10000 +
-		    " based on confidence c=" + ((double) ((int) (info.confidence * 10000))) / 10000;
+		    " based on confidence c=" + ((double) ((int) (info.confidence * 10000))) / 10000 +
+		    "^" + ((double) ((int) ((1/info.coverageWeight) * 10000))) / 10000;
 		    ag.env.writeLog(str);
 		}
 		if (p < 0.0001) {
@@ -83,7 +84,7 @@
 			if (ag.env.plan_selection == PlanSelectMode.COVERAGE) {
 			    p = 0.5 + (Math.pow(info.coverage, 1/info.coverageWeight) * (p - 0.5));
 			} else if (ag.env.plan_selection == PlanSelectMode.CONFIDENCE) {
-			    p = 0.5 + (info.confidence * (p - 0.5));
+			    p = 0.5 + (Math.pow(info.confidence, 1/info.coverageWeight) * (p - 0.5));
 			}
 			str += "(" + ag.planNodes[info.plan_id].name() + ") for state " +
 			    ag.planNodes[info.plan_id].stringOfLastState() + " is ";

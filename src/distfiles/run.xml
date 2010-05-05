@@ -393,7 +393,7 @@
 	<runTestRepeats test.name="test01v3gm" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 3500"/>
 	<runTestRepeats test.name="test01v3gm" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 3500 -k 3 -e 0.3"/>
 	<runTestRepeats test.name="test01v3gm" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 3500 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test01v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 3500 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test01v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 3500 -k 3 -e 0.3 -w 5"/>
 </target>
 <target name="plottest01v3gm" description="Plot test01v3gm" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01v3gm"/>
@@ -415,7 +415,7 @@
 	<runTestRepeats test.name="test01v3gmt" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.0 -i 3500 -t 0.2"/>
 	<runTestRepeats test.name="test01v3gmt" run.mode="stable"     run.select="coverage"      run.params="-n 0.0 -i 3500 -k 3 -e 0.3 -t 0.2"/>
 	<runTestRepeats test.name="test01v3gmt" run.mode="stable"     run.select="probabilistic" run.params="-n 0.0 -i 3500 -k 3 -e 0.3 -t 0.2"/>
-	<runTestRepeats test.name="test01v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.0 -i 3500 -k 3 -e 0.3 -t 0.2"/>
+	<runTestRepeats test.name="test01v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.0 -i 3500 -k 3 -e 0.3 -t 0.2 -w 5"/>
 </target>
 <target name="plottest01v3gmt" description="Plot test01v3gmt" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test01v3gmt"/>
@@ -676,7 +676,7 @@
 	<runTestRepeats test.name="test05v3gm" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 3000"/>
 	<runTestRepeats test.name="test05v3gm" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 3000 -k 3 -e 0.3"/>
 	<runTestRepeats test.name="test05v3gm" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 3000 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="test05v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 3000 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="test05v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 3000 -k 3 -e 0.3 -w 5"/>
 </target>
 <target name="plottest05v3gm" description="Plot test05v3gm" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05v3gm"/>
@@ -698,7 +698,7 @@
 	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.0 -i 3000 -t 0.2"/>
 	<runTestRepeats test.name="test05v3gmt" run.mode="stable"     run.select="coverage"      run.params="-n 0.0 -i 3000 -k 3 -e 0.1 -t 0.2 -b 0.01"/>
 	<runTestRepeats test.name="test05v3gmt" run.mode="stable"     run.select="probabilistic" run.params="-n 0.0 -i 3000 -k 3 -e 0.1 -t 0.2"/>
-	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 3000 -k 3 -e 0.1 -t 0.2"/>
+	<runTestRepeats test.name="test05v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.0 -i 3000 -k 3 -e 0.1 -t 0.2 -b 0.01 -w 5"/>
 </target>
 <target name="plottest05v3gmt" description="Plot test05v3gmt" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="test05v3gmt"/>
@@ -789,7 +789,7 @@
 	<runTestRepeats test.name="testImpactvars2" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 5000"/>
 	<runTestRepeats test.name="testImpactvars2" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 5000 -k 3 -e 0.3"/>
 	<runTestRepeats test.name="testImpactvars2" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 5000 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="testImpactvars2" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testImpactvars2" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -w 5"/>
 </target>
 <target name="plottestImpactvars2" description="Plot testImpactvars2" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testImpactvars2"/>
@@ -855,14 +855,12 @@
 	<runTestRepeats test.name="testMultiSolutionsR" run.mode="concurrent" run.select="probabilistic" run.params="-n 0.1 -i 10000"/>
 	<runTestRepeats test.name="testMultiSolutionsR" run.mode="stable"     run.select="coverage"      run.params="-n 0.1 -i 10000 -k 3 -e 0.3"/>
 	<runTestRepeats test.name="testMultiSolutionsR" run.mode="stable"     run.select="probabilistic" run.params="-n 0.1 -i 10000 -k 3 -e 0.3"/>
-	<runTestRepeats test.name="testMultiSolutionsR" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 10000 -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testMultiSolutionsR" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 10000 -k 3 -e 0.3 -w 5"/>
 </target>
 <target name="plottestMultiSolutionsR" description="Plot testMultiSolutionsR" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testMultiSolutionsR"/>
 	<plotResult test.name="testMultiSolutionsR" every="1000" label="testMultiSolutionsR:n=0.1,m=1,k=3,e=0.3:testMultiSolutionsR.txt"/>
 </target>
-
-
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -878,8 +876,8 @@
 </target>
 <target name="runhanoid5s5r8" description="Run hanoid5s5r8">
     <failIfBuildNotFound test.name="hanoid5s5r8"/>
-	<runTest        test.name="hanoid5s5r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 5"/>
+	<runTestRepeats test.name="hanoid5s5r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
+	<runTestRepeats test.name="hanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 5 -w 5"/>
 	<runTestRepeats test.name="hanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 5"/>
 </target>
 <target name="plothanoid5s5r8" description="Plot hanoid5s5r8" if="available.plotDependencies" depends="plotDependencies">
@@ -901,7 +899,7 @@
 <target name="runhanoid5s4r8" description="Run hanoid5s4r8">
     <failIfBuildNotFound test.name="hanoid5s4r8"/>
 	<runTest        test.name="hanoid5s4r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 4"/>
+	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 4 -w 5"/>
 	<runTestRepeats test.name="hanoid5s4r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 4"/>
 </target>
 <target name="plothanoid5s4r8" description="Plot hanoid5s4r8" if="available.plotDependencies" depends="plotDependencies">
@@ -923,7 +921,7 @@
 <target name="runhanoid5s3r8" description="Run hanoid5s3r8">
     <failIfBuildNotFound test.name="hanoid5s3r8"/>
 	<runTest        test.name="hanoid5s3r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 3"/>
+	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 3 -w 5"/>
 	<runTestRepeats test.name="hanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 3"/>
 </target>
 <target name="plothanoid5s3r8" description="Plot hanoid5s3r8" if="available.plotDependencies" depends="plotDependencies">
@@ -945,7 +943,7 @@
 <target name="runhanoid5s2r8" description="Run hanoid5s2r8">
     <failIfBuildNotFound test.name="hanoid5s2r8"/>
 	<runTest        test.name="hanoid5s2r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 2"/>
+	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 2 -w 5"/>
 	<runTestRepeats test.name="hanoid5s2r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 2"/>
 </target>
 <target name="plothanoid5s2r8" description="Plot hanoid5s2r8" if="available.plotDependencies" depends="plotDependencies">
@@ -967,7 +965,7 @@
 <target name="runhanoid5s1r8" description="Run hanoid5s1r8">
     <failIfBuildNotFound test.name="hanoid5s1r8"/>
 	<runTest        test.name="hanoid5s1r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 1"/>
+	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 1 -w 5"/>
 	<runTestRepeats test.name="hanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/hanoi.init -p 1"/>
 </target>
 <target name="plothanoid5s1r8" description="Plot hanoid5s1r8" if="available.plotDependencies" depends="plotDependencies">
@@ -989,7 +987,7 @@
 <target name="runhanoi5" description="Run hanoi5">
     <failIfBuildNotFound test.name="hanoi5"/>
 	<runTest        test.name="hanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 20000 -j 5 -y ../init-x-1/hanoi.init -p -1"/>
+	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 20000 -j 5 -y ../init-x-1/hanoi.init -p -1 -w 5"/>
 	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 20000 -j 5 -y ../init-x-1/hanoi.init -p -1"/>
 </target>
 <target name="plothanoi5" description="Plot hanoi5" if="available.plotDependencies" depends="plotDependencies">
@@ -1011,7 +1009,7 @@
 <target name="runhanoi5t" description="Run hanoi5t">
     <failIfBuildNotFound test.name="hanoi5t"/>
 	<runTest        test.name="hanoi5t" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 30000 -j 5 -y ../init-x-1/hanoi.init -p -1 -t 0.2"/>
+	<runTestRepeats test.name="hanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 30000 -j 5 -y ../init-x-1/hanoi.init -p -1 -t 0.2 -w 5"/>
 	<runTestRepeats test.name="hanoi5t" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 30000 -j 5 -y ../init-x-1/hanoi.init -p -1 -t 0.2"/>
 </target>
 <target name="plothanoi5t" description="Plot hanoi5t" if="available.plotDependencies" depends="plotDependencies">

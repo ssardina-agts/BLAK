@@ -200,8 +200,13 @@ public abstract class Node{
     /*-----------------------------------------------------------------------*/
     public abstract boolean isStable(String[] state);
 
-    public int stability(String[] state) {
-        return isStable(state) ? 1 : 0;
+    public int[] stability(String[] state) {
+        /* Returns an array of two values.
+         * The first is the number of stable plans.
+         * The second is the number of total plans
+         */
+        int[] val = new int[2];
+        return val;
     };
     
 }

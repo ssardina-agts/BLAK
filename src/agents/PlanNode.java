@@ -44,6 +44,7 @@ public class PlanNode extends Node{
     /* BUL related parameters */
     private int stableK;
     private double stableE;
+    private int stableW;
 
     /* Used to indicate that this is a "dummy" plan that should be selected
      * when no other plans apply, for instance, if all plans have an 
@@ -81,6 +82,7 @@ public class PlanNode extends Node{
                     RunMode run_mode,
                     double epsilion, 
                     int kStable, 
+                    int wStable, 
                     boolean isFTH, 
                     Logger logger){
         super(pname, logger);
@@ -93,6 +95,7 @@ public class PlanNode extends Node{
         this.run_mode = run_mode;
         stableK = kStable;
         stableE = epsilion;
+        stableW = wStable;
         topGoal = null;
         isDirty = new Hashtable();
         decay = new Hashtable();
@@ -134,6 +137,9 @@ public class PlanNode extends Node{
     
     public int stableK() { return stableK; }
     public void setStableK(int k) { stableK = k; }
+
+    public int stableW() { return stableW; }
+    public void setStableW(int w) { stableW = w; }
 
     public boolean handledRepostedGoal() { return handledRepostedGoal; }
     public void setHandledRepostedGoal(boolean v) { handledRepostedGoal = v; }
@@ -298,19 +304,22 @@ public class PlanNode extends Node{
      * 2. If using BUL recording, to ensure that active execution trace
      *    below this plan is stable.
      */
-    public void record(boolean res) {   
-        record(res, 1.0/*traceStability*/);
+    public void record(boolean res) {
+        int[] val = new int[2];
+        val[0] = 1;
+        val[1] = 1;
+        record(res, val/*traceStability*/);
     }
-    public void record(boolean res, double traceStability) {   
+    public void record(boolean res, int[] traceStability) {   
         record(res, traceStability, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
     }
     public void record(boolean res,
-                       double traceStability,
+                       int[] traceStability,
                        int depth, 
                        boolean isRoot, 
                        double failureNodeComplexity)
     {
-        boolean isStableBelow = (traceStability == 1.0);
+        boolean isStableBelow = (traceStability[0] != 0) && (traceStability[0] == traceStability[1]);
         
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
@@ -386,13 +395,20 @@ public class PlanNode extends Node{
         /* Now calculate experience stability and store back.
          * This is done for all modes.
          */
-        double stability = (traceStability != 1.0) ? traceStability : 
-        res ? 1.0 : 
-        isStable() ? 1.0 : 
-        0.0;
-        thisMemory.addStableHistory(stability);
-        logger.writeLog("Plan "+name()+" recorded stability "+stability+" for state "+this.stringOfLastState());
-        logger.writeLog("Plan "+name()+" has average stability "+thisMemory.averageStability(10)+" over the last 10 executions for state "+this.stringOfLastState());
+        //int stability = (traceStability[0] != traceStability[1]) ? traceStability[0] : 
+        //res ? 1 : 
+        //isStable() ? 1 : 
+        //0;
+        
+        int nStable = 0;
+        if (isLeaf()) {
+            nStable = res ? 1 : isStable() ? 1 : 0;
+        } else {
+            nStable = res ? traceStability[1]+1 : isStableBelow ? traceStability[1]+1 : traceStability[0];
+        }
+        int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
+        thisMemory.addStableHistory(nStable, nTotal);
+        logger.writeLog("Plan "+name()+" recorded stability "+nStable+"/"+nTotal+" for state "+this.stringOfLastState());
         this.experiences.put(memoryKey, thisMemory);
         
         /* Coverage related updates */
@@ -486,8 +502,12 @@ public class PlanNode extends Node{
         return stable;
     }
 
-    public double averageExperiencedStability(int window) {
-        return averageExperiencedStability(lastState,window);
+    public double averageExperiencedStability() {
+        return averageExperiencedStability(lastState,stableW);
+    }
+
+    public double averageExperiencedStability(String[] state) {
+        return averageExperiencedStability(state,stableW);
     }
     
     public double averageExperiencedStability(String[] state, int window) {
@@ -501,7 +521,7 @@ public class PlanNode extends Node{
             /*We have a record of this state being used before */
             Experience thisRecord  = (Experience)experiences.get(lastStateReference);
             stable = thisRecord.averageStability(window);
-            logger.writeLog("Plan "+name()+" has average experience stability "+stable+" for state "+lastStateReference);
+            logger.writeLog("Plan "+name()+" has average stability "+stable+" over last "+window+" experiences for state "+lastStateReference);
         } else {
             logger.writeLog("Plan "+name()+" assumes average experience stability 0.0 for state "+lastStateReference+": has never witnessed this state before");
             stable = 0.0;

@@ -4,6 +4,7 @@ public static void main(String[] args)
     String targetDir = ".";
     int staK;
     double staE;
+    int staW;
     double noise;
     double threshold;
     double coverageWeightB;
@@ -13,6 +14,7 @@ public static void main(String[] args)
     coverageWeightB = 1.0;
     staK = 3;
     staE = 0.05;
+    staW = 1;
 
     if (args.length > 0) {
         int index = 0;
@@ -86,6 +88,10 @@ public static void main(String[] args)
 	            System.out.println("BUL Learning");
                 }
                 break;
+            case 'w':
+                staW = Integer.parseInt(args[index]);
+                index++;
+                break;
             }
         }
 
@@ -98,11 +104,10 @@ public static void main(String[] args)
 	} else {
 	    agent.setTriggerNewIteration(true);
 	}
-        if (update_mode == UpdateMode.STABLE) {
-            agent.setStableK(staK);
-            agent.setStableE(staE);
-            System.out.println("K: " + staK + ", e: " + staE);
-        }
+        agent.setStableK(staK);
+        agent.setStableE(staE);
+        agent.setStableW(staW);
+        System.out.println("K: " + staK + ", e: " + staE + ", w:"+staW);
         Environment env = new Environment("Environment", targetDir, filename);
         env.noise = noise;
 
