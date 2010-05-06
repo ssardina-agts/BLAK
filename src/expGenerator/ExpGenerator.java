@@ -456,18 +456,20 @@ public class ExpGenerator {
 		+"\tpublic double pSuccess;\n"
 		+"\tpublic double coverage;\n"
 		+"\tpublic double coverageWeight;\n"
-		+"\tpublic double confidence;\n"
+		+"\tpublic double planConfidence;\n"
+		+"\tpublic double stateConfidence;\n"
 		+"\tpublic boolean isFailedThresholdHandler;\n\n"
 		+"\tpublic PlanIdInfo(int id ,int pre, double prob){\n"
-		+"\t\tthis(id ,pre, prob, 0.0, 1.0, 1.0, false);\n"
+		+"\t\tthis(id ,pre, prob, 0.0, 1.0, 1.0, 1.0, false);\n"
         +"\t}\n\n"
-		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, double weight, double conf, boolean isFTH){\n"
+		+"\tpublic PlanIdInfo(int id ,int pre, double prob, double cov, double weight, double pconf, double sconf, boolean isFTH){\n"
 		+"\t\tsuper(pre);\n"
 		+"\t\tplan_id = id;\n"
 		+"\t\tpSuccess = prob;\n"
 		+"\t\tcoverage = cov;\n"
 		+"\t\tcoverageWeight = weight;\n"
-		+"\t\tconfidence = conf;\n"
+		+"\t\tplanConfidence = pconf;\n"
+		+"\t\tstateConfidence = sconf;\n"
 		+"\t\tisFailedThresholdHandler = isFTH;\n"
 		+"\t}\n}";
 		try{	
@@ -520,8 +522,9 @@ public class ExpGenerator {
 		+"\tag.setLastInstance(plan_id);\n"
 		+"\tdouble coverage = ag.getCoverage(plan_id);\n"
 		+"\tdouble[] ps = ag.getProbability(plan_id);\n"
-		+"\tdouble confidence = ag.averageExperiencedStability(plan_id);\n"
-		+"\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, confidence, false);\n"
+		+"\tdouble planConfidence = ag.averageExperiencedStability(plan_id);\n"
+		+"\tdouble stateConfidence = ag.stateConfidence(plan_id);\n"
+		+"\treturn new PlanIdInfo(plan_id, 9, ps[0], coverage, ag.coverageWeight, planConfidence, stateConfidence, false);\n"
 		+"}\n\n";
 	}
 	
@@ -813,7 +816,7 @@ public class ExpGenerator {
         
         code +=	"\tpublic PlanInstanceInfo getInstanceInfo(){\n"
 		+"\t\tag.setLastInstance(plan_id);\n"
-		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, 1.0, 1.0, true);\n"
+		+"\t\treturn new PlanIdInfo(plan_id, 9, 0.0, 1.0, 1.0, 1.0, 1.0, true);\n"
 		+"\t}\n\n";
         
 		if (isTopLevelPlan) {
@@ -1121,6 +1124,8 @@ public class ExpGenerator {
 		+"\tstableK = 3;\n"
 		+"\tstableE = 0.05;\n"
 		+"\tstableW = 1;\n"
+		+"\tstateHistoryWindow = 0;\n"
+		+"\tconfidenceAlpha = 0.95;\n"
         +"\tplanSelectThreshold = 0.0;\n"
         +"\tcoverageWeight = 1.0;\n"
         
@@ -1189,6 +1194,8 @@ public class ExpGenerator {
 		+"\tpublic int stableK;\n"
 		+"\tpublic double stableE;\n"
 		+"\tpublic int stableW;\n"
+		+"\tpublic int stateHistoryWindow;\n"
+		+"\tpublic double confidenceAlpha;\n"
 		+"\tint[] startToUseDT;\n"	
 		+"\tpublic boolean probSelect = false;\n"
 		+"\tTree gpTree;\n"
@@ -1239,6 +1246,22 @@ public class ExpGenerator {
 		+"\tpublic void setStableW(int value)\n"
 		+"\t{\n"
 		+"\t\tthis.stableW = value;\n"
+		+"\t}\n\n"
+		+"\tpublic int getStateHistoryWindow()\n"
+		+"\t{\n"
+		+"\t\treturn this.stateHistoryWindow;\n"
+		+"\t}\n\n"
+		+"\tpublic void setStateHistoryWindow(int value)\n"
+		+"\t{\n"
+		+"\t\tthis.stateHistoryWindow = value;\n"
+		+"\t}\n\n"
+		+"\tpublic double getConfidenceAlpha()\n"
+		+"\t{\n"
+		+"\t\treturn this.confidenceAlpha;\n"
+		+"\t}\n\n"
+		+"\tpublic void setConfidenceAlpha(double value)\n"
+		+"\t{\n"
+		+"\t\tthis.confidenceAlpha = value;\n"
 		+"\t}\n\n"
 		+"\tpublic double getStableE()\n"
 		+"\t{\n"
@@ -1293,7 +1316,7 @@ public class ExpGenerator {
 			code+="\tplanNodes["+p.index+"] = new PlanNode("
 			+ "\"" + p.getId()+ "\", atts, "
 			+ "update_mode, select_mode, run_mode, "
-            + "stableE, stableK, stableW, "
+            + "stableE, stableK, stableW, stateHistoryWindow, "
             + (p.isFailedThresholdHandler()?"true":"false")
             + ", (trees.Logger)env);\n";
 		}	
@@ -1534,6 +1557,12 @@ public class ExpGenerator {
 		code+="public double averageExperiencedStability(int plan_id){\n"
         +"\tPlanNode thisNode = planNodes[plan_id];\n"
 		+"\treturn (thisNode.isLeaf() ? (thisNode.isStable()?1.0:0.0) : thisNode.averageExperiencedStability());\n"
+		+"}\n\n";
+
+        // stateConfidence~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		code+="public double stateConfidence(int plan_id){\n"
+        +"\tPlanNode thisNode = planNodes[plan_id];\n"
+		+"\treturn thisNode.stateExperienceConfidence();\n"
 		+"}\n\n";
         
 		// notify method  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

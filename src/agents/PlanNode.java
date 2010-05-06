@@ -41,6 +41,10 @@ public class PlanNode extends Node{
     /* Stores information about each success/fail experience */
     private Hashtable experiences;
 
+    private Vector<String> stateHistory;
+    private Hashtable stateHash;
+    private int stateHistoryWindow = 0;
+
     /* BUL related parameters */
     private int stableK;
     private double stableE;
@@ -83,12 +87,15 @@ public class PlanNode extends Node{
                     double epsilion, 
                     int kStable, 
                     int wStable, 
+                    int wStateHistory,
                     boolean isFTH, 
                     Logger logger){
         super(pname, logger);
         atts = attributes;
         lastState = null;
         experiences = new Hashtable();
+        stateHistory = new Vector<String>();
+        stateHash = new Hashtable();
         countdownToRebuild = buildThreshold;
         this.update_mode = update_mode;
         this.select_mode = select_mode;
@@ -96,6 +103,7 @@ public class PlanNode extends Node{
         stableK = kStable;
         stableE = epsilion;
         stableW = wStable;
+        stateHistoryWindow = wStateHistory;
         topGoal = null;
         isDirty = new Hashtable();
         decay = new Hashtable();
@@ -140,6 +148,9 @@ public class PlanNode extends Node{
 
     public int stableW() { return stableW; }
     public void setStableW(int w) { stableW = w; }
+
+    public int stateHistoryWindow() { return stateHistoryWindow; }
+    public void setStateHistoryWindow(int w) { stateHistoryWindow = w; }
 
     public boolean handledRepostedGoal() { return handledRepostedGoal; }
     public void setHandledRepostedGoal(boolean v) { handledRepostedGoal = v; }
@@ -433,6 +444,7 @@ public class PlanNode extends Node{
         }
         
         /* Confidence related updates */
+        addStateHistory(memoryKey);
         if (false/*superceded by stability-based confidence*/ && (select_mode == PlanSelectMode.CONFIDENCE) && (getConfidence(depth,lastState) != 1.0)/*stop decay when full confidence*/) {
             double f = Math.max(2,getComplexity(depth)-failureNodeComplexity);
             setComplexityDecay(memoryKey, depth, getComplexityDecay(memoryKey,depth) * (1.0 - (1.0/(Math.log(f)/Math.log(2.0)))));
@@ -815,6 +827,45 @@ public class PlanNode extends Node{
         }
         return handledRepostedGoal;
     }
+    
+    /*-----------------------------------------------------------------------*/
+    /* MARK: Member Functions - Domain Confidence related */
+    /*-----------------------------------------------------------------------*/
+    
+    public void addStateHistory(String state) {
+        stateHistory.add(state);
+        if (stateHistory.size() > stateHistoryWindow) {
+            /* Pop the oldest element if we have exceeded window size 
+             * and store it in the hash of old states. */
+            String removed = stateHistory.remove(0);
+            stateHash.put(removed, new Boolean(true));
+        }
+    }
+    
+    public double stateExperienceConfidence() {
+        return stateExperienceConfidence(lastState);
+    }
+    public double stateExperienceConfidence(String[] state) {
+        /* Param 'window' should not exceed stateHistory.size().
+         * Returns the fraction of last 'window' states that have also
+         * been witnessed prior to that.
+         */
+        String lastStateReference = this.stringOfState(state);
+        if (this.experiences.containsKey(lastStateReference)) { return 1.0;}
+        int sz = stateHistory.size();
+        if (stateHistoryWindow < 1) { return 1.0;}
+        if (stateHash.size() < 1) { return 0.0;}
+        double sum = 0.0;
+        int n = (sz < stateHistoryWindow) ? sz : stateHistoryWindow;
+        String[] hist = stateHistory.toArray(new String[0]);
+        for (int i = hist.length-1; i > hist.length-1-n; i--) {
+            if (stateHash.containsKey(hist[i])) {
+                sum ++;
+            }
+        }
+        return sum/stateHistoryWindow;
+    }
+    
     
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - Misc */

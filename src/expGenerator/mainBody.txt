@@ -8,6 +8,8 @@ public static void main(String[] args)
     double noise;
     double threshold;
     double coverageWeightB;
+    int stateW;
+    double alpha;
 
     noise = 0.1;
     threshold = 0.0;
@@ -15,6 +17,8 @@ public static void main(String[] args)
     staK = 3;
     staE = 0.05;
     staW = 1;
+    stateW = 0;
+    alpha = 0.95;
 
     if (args.length > 0) {
         int index = 0;
@@ -23,6 +27,10 @@ public static void main(String[] args)
             index++;
             char option = arg.charAt(1);
             switch (option) {
+            case 'a':
+                alpha = Double.parseDouble(args[index]);
+                index++;
+                break;
             case 'b':
                 coverageWeightB = Double.parseDouble(args[index]);
                 index++;
@@ -88,8 +96,12 @@ public static void main(String[] args)
 	            System.out.println("BUL Learning");
                 }
                 break;
-            case 'w':
+            case 'v':
                 staW = Integer.parseInt(args[index]);
+                index++;
+                break;
+            case 'w':
+                stateW = Integer.parseInt(args[index]);
                 index++;
                 break;
             }
@@ -107,7 +119,9 @@ public static void main(String[] args)
         agent.setStableK(staK);
         agent.setStableE(staE);
         agent.setStableW(staW);
-        System.out.println("K: " + staK + ", e: " + staE + ", w:"+staW);
+	agent.setStateHistoryWindow(stateW);
+	agent.setConfidenceAlpha(alpha);
+        System.out.println("K: " + staK + ", e: " + staE + ", w: " +staW+ ", a: "+alpha);
         Environment env = new Environment("Environment", targetDir, filename);
         env.noise = noise;
 

@@ -38,12 +38,13 @@ public plan MetaPlan extends Plan {
             if (s.getInfo() instanceof PlanIdInfo) {
                 PlanIdInfo info = (PlanIdInfo) s.getInfo();
                 double p = info.pSuccess;
+                double c = (info.planConfidence * ag.confidenceAlpha()) + (info.stateConfidence * (1.0-ag.confidenceAlpha()));
                 if (ag.pselect() == PlanSelectMode.CONFIDENCE) { 
-                    p = 0.5 + (info.confidence * (p - 0.5));
+                    p = 0.5 + (c * (p - 0.5));
                 }
                 if (info.isFailedThresholdHandler) {
                     thandler = s;
-                } else if ((info.confidence > 0.95) && (info.pSuccess > 0.95)) {
+                } else if ((c > 0.95) && (info.pSuccess > 0.95)) {
                     fullConfidencePlans.put(new Integer(i), s);
                 } else if (p >= ag.applicabilityThreshold()) {
                     applicablePlans.put(new Integer(i), s);
@@ -68,14 +69,18 @@ public plan MetaPlan extends Plan {
                 Signature s = sigs[i];
                 PlanIdInfo info = (PlanIdInfo) s.getInfo();
                 double p = info.pSuccess;
+                double c = (info.planConfidence * ag.confidenceAlpha()) + (info.stateConfidence * (1.0-ag.confidenceAlpha()));
                 if (ag.pselect() == PlanSelectMode.CONFIDENCE) { 
-                    p = 0.5 + (info.confidence * (p - 0.5));
+                    p = 0.5 + (c * (p - 0.5));
                     if (ag.learningMode()) {
                         String str =
                             "MetaPlan: P" + info.plan_id +
                             " REVISED probability" +
                             " to p=" + ((double) ((int) (p * 10000))) / 10000 +
-                            " based on confidence c=" + ((double) ((int) (info.confidence * 10000))) / 10000;
+                            " based on confidence c=" + ((double) ((int) (c * 10000))) / 10000 +
+                            ". (pConf="+((double) ((int) (info.planConfidence * 10000))) / 10000 +
+                            " sConf="+((double) ((int) (info.stateConfidence * 10000))) / 10000 +
+                            " alpha="+ag.confidenceAlpha()+")";
                         ag.writeLog(str);
                     }
                 }
