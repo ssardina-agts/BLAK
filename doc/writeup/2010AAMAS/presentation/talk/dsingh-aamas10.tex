@@ -112,6 +112,26 @@ Here the successful resolution of the top-level goal $G$ requires 4 sequential a
 \end{frame}
 
 %%%
+\begin{frame}{Learning Considerations}
+\onslide+<+->
+\begin{block}{1. Collecting training data for learning}
+\begin{itemize}
+\item<+-> \alert{ACL}: Aggressive approach that considers all failures as meaningful.
+\item<+-> \alert{BUL}: Conservative approach that records failures only when choices below are considered to be well-informed.
+\item<+-> Success is always recorded for both approaches.
+\end{itemize}
+\end{block}
+\onslide+<+->
+\begin{block}{2. Using ongoing learning for plan selection}
+\begin{itemize}
+\item<+-> Obtain a numeric measure of \alert{confidence} in the ongoing learning output (i.e. a plan's likelihood of success in the situation).
+\item<+-> Use the confidence measure to \alert{adjust selection weights} during probabilistic plan selection. 
+\end{itemize}
+\end{block}
+\note{This gives us four configurations. Aggressive or conservative sampling with or without the confidence measure. However we do not present an account of the conservative recording scheme with the coverage measure since the stability notion in effect implies full coverage.}
+\end{frame}
+
+%%%
 \begin{frame}{BDI Learning Framework}
 \onslide+<+->
 \begin{block}{Previous work (Airiau~et~al. 2009)}
@@ -125,36 +145,16 @@ Here the successful resolution of the top-level goal $G$ requires 4 sequential a
 \begin{block}{Contributions of this paper}
 \begin{itemize}
 \item<+-> A more principled analysis of the work in [Airiau~et~al. 2009].
-\item<+-> Learning with \alert{plan applicability} (using thresholds to filter plans that do not apply in a given situation).
+\item<+-> Learning with \alert{applicability filtering} (using thresholds to filter plans that do not apply in a given situation).
 \end{itemize}
 \end{block}
 \note{In tradition BDI, applicability is determined by whether the propositional context condition holds or not (boolean). A similar account using our framework then could be taken using a threshold. Plans with expectations of success below this threshold would thereby be considered not applicable.}
 \end{frame}
 
 %%%
-\begin{frame}{Learning Considerations}
-\onslide+<+->
-\begin{block}{Collecting training data (building DTs)}
-\begin{itemize}
-\item<+-> \alert{ACL}: Aggressive approach that considers all failures as meaningful.
-\item<+-> \alert{BUL}: Conservative approach that records failures selectively when choices were well-informed.
-\item<+-> Success is always recorded for both approaches.
-\end{itemize}
-\end{block}
-\onslide+<+->
-\begin{block}{Improving plan selection (using DTs)}
-\begin{itemize}
-\item<+-> Obtain a numeric measure of \alert{confidence} in the ongoing decision tree classification.
-\item<+-> Use the confidence measure to \alert{adjust selection weights} during probabilistic plan selection. 
-\end{itemize}
-\end{block}
-\note{This gives us four configurations. Aggressive or conservative sampling with or without the confidence measure. However we do not present an account of the conservative recording scheme with the coverage measure since the stability notion in effect implies full coverage.}
-\end{frame}
-
-%%%
 \begin{frame}{Assumptions}
 \begin{block}{}
-We explore how best to learn under an \alert{imposed goal-plan hierarchy} in an idealised setting.
+Aim is to understand the nuances of learning under different goal-plan hierarchies using a simplified setting:
 \end{block}
 \onslide+<+->
 \begin{block}{}
