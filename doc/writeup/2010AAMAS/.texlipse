@@ -1,13 +1,13 @@
 #TeXlipse project settings
-#Sat May 22 19:29:22 EST 2010
+#Mon May 24 09:40:00 EST 2010
 builderNum=2
 outputDir=
 makeIndSty=
 bibrefDir=
 outputFormat=pdf
 tempDir=tmp/
-mainTexFile=dsingh-aamas10.tex
-outputFile=dsingh-aamas10.pdf
+mainTexFile=dsingh-aamas10-poster.tex
+outputFile=dsingh-aamas10-poster.pdf
 langSpell=
 markDer=true
-srcDir=presentation/talk
+srcDir=presentation/poster
