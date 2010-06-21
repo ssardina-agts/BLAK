@@ -13,7 +13,7 @@
 
 % MODIFIED TEXT
 %
-One way to achieve this is to use a monotonic decay function tied to the problem complexity. We use the function $\epsilon_i = \epsilon_{i-i} * \delta$ to progressively update values at each step $i$ using decay $\delta <= 1.0$. We further separate $\epsilon$ into two parts: $\epsilon_{Pt}$ that has decay $\delta_{Pt}$ and addresses goal-plan complexity, and $\epsilon_{Pd}$ with decay $\delta_{Pt}$ that captures domain complexity.
+One way to achieve this is to use a monotonic decay function tied to the problem complexity. We use the general function $\epsilon_i = \epsilon_{i-i} * \delta$ to progressively update values at each step using decay $\delta <= 1.0$. In particular, we use two functions: $\epsilon_{Pt}$ with decay $\delta_{Pt}$ that addresses goal-plan complexity, and $\epsilon_{Pd}$ with decay $\delta_{Pt}$ that captures domain complexity.
 %
 Specified this way, a plan with more sub-plan choices will utilise a slower decay factor $\delta_{Pt}$ taking longer to reach full confidence $(1-\epsilon)$ than another plan with less choices to make. 
 %
@@ -21,4 +21,4 @@ The decay $\delta_{Pt}$ may be calculated offline by analysing the goal-plan hie
 %
 Decay $\delta_{Pd}$, however, cannot be pre-determined since the number of world states is not known upfront and is dependent on the domain. 
 %
-Here, it may be reasonable to treat the decay factor $\delta_{Pd}$ as a parameter specified by the domain expert.
+Therefore, we treat the decay factor $\delta_{Pd}$ as a parameter specified by the domain expert.
