@@ -1,0 +1,24 @@
+% ORIGINAL TEXT (footnotes not shown here, but no change made to them)
+%
+%One way to achieve this is to use a monotonic decay function (for instance $\epsilon_i = \epsilon_{i-i} * \delta$ where $\delta < 1.0$) but where the decay factor $\delta$ is tied to the complexity involved. 
+%
+%This way, a plan that has a larger number of sub-plan choices will utilise a slower decay factor $\delta$ taking longer to reach full confidence $(1-\epsilon)$ than another plan that has less choices to make. 
+%
+%For goal-plan complexity this decay $\delta_{Pt}$ may be calculated offline by analysing the goal-plan hierarchy. In this work, we have calculated $\delta_{Pt}$ in terms of average breadth and depth of the structure, where depth is the maximum level of recursion in this case, to provide an approximation of the complexity of the structure. 
+%
+%A similar treatment is possible for domain complexity although the decay factor in this case cannot be pre-determined since the number of world states is not known upfront and is dependent on the domain. 
+%
+%For domain complexity then, it may be reasonable to treat the decay factor $\delta_{Pd}$ as a parameter specified by the domain expert.
+
+
+% MODIFIED TEXT
+%
+One way to achieve this is to use a monotonic decay function tied to the problem complexity. We use the function $\epsilon_i = \epsilon_{i-i} * \delta$ to progressively update values at each step $i$ using decay $\delta <= 1.0$. We further separate $\epsilon$ into two parts: $\epsilon_{Pt}$ that has decay $\delta_{Pt}$ and addresses goal-plan complexity, and $\epsilon_{Pd}$ with decay $\delta_{Pt}$ that captures domain complexity.
+%
+Specified this way, a plan with more sub-plan choices will utilise a slower decay factor $\delta_{Pt}$ taking longer to reach full confidence $(1-\epsilon)$ than another plan with less choices to make. 
+%
+The decay $\delta_{Pt}$ may be calculated offline by analysing the goal-plan hierarchy. In this work, we have calculated $\delta_{Pt}$ in terms of average breadth and depth of the structure, where depth is the maximum level of recursion in this case, to provide an approximation of the complexity of the structure.
+%
+Decay $\delta_{Pd}$, however, cannot be pre-determined since the number of world states is not known upfront and is dependent on the domain. 
+%
+Here, it may be reasonable to treat the decay factor $\delta_{Pd}$ as a parameter specified by the domain expert.
