@@ -6,27 +6,62 @@
 
 @topgoal TopGoal repost
 
-@goal Ga repost
-@goal Gaa repost
-@goal Gab repost
-@goal Gaaa repost
-@goal Gaab repost
+@goal xGa repost
+@goal xGaa repost
+@goal xGab repost
+@goal xGaaa repost
+@goal xGaab repost
+@goal xGb repost
+@goal xGba repost
+@goal xGbb repost
+@goal xGbaa repost
+@goal xGbab repost
+@goal xGc repost
+@goal xGca repost
+@goal xGcb repost
+@goal xGcaa repost
+@goal xGcab repost
 
-@goal Gb repost
-@goal Gba repost
-@goal Gbb repost
-@goal Gbaa repost
-@goal Gbab repost
+@goal yGa repost
+@goal yGaa repost
+@goal yGab repost
+@goal yGaaa repost
+@goal yGaab repost
+@goal yGb repost
+@goal yGba repost
+@goal yGbb repost
+@goal yGbaa repost
+@goal yGbab repost
+@goal yGc repost
+@goal yGca repost
+@goal yGcb repost
+@goal yGcaa repost
+@goal yGcab repost
 
-@goal Gc repost
-@goal Gca repost
-@goal Gcb repost
-@goal Gcaa repost
-@goal Gcab repost
+@goal zGa repost
+@goal zGaa repost
+@goal zGab repost
+@goal zGaaa repost
+@goal zGaab repost
+@goal zGb repost
+@goal zGba repost
+@goal zGbb repost
+@goal zGbaa repost
+@goal zGbab repost
+@goal zGc repost
+@goal zGca repost
+@goal zGcb repost
+@goal zGcaa repost
+@goal zGcab repost
+
+@action Af
+	@pre  (true)
+	@post
 
 @action A0
-	@pre  (false)
-	@post 
+	@pre  (true)
+	@post switch(generator.nextInt(5)){ case 0: if (a==true) { a=false; } else { a=true; } break; case 1: if (b==true) { b=false; } else { b=true; } break; case 2: if (c==true) { c=false; } else { c=true; } break; case 3: if (d==true) { d=false; } else { d=true; } break; default: if (e==true) { e=false; } else { e=true; } break; } if(a || !a) {learningAgent.notify(a, b, c, d, e); return false;}
+
 
 @action A1
 	@pre  (true)
@@ -57,340 +92,969 @@
 	@post b=false;
 
 
-@plan P1
+@plan xP1
     @handles TopGoal
     @initPre true;
  	@pre true;
-    @body Ga Gb Gc
-@plan P2
-    @handles TopGoal
+    @body xGa xGb xGc
+@plan xPa1
+    @handles xGa
+    @initPre true;
+ 	@pre true;
+    @body xGaa xGab
+@plan xPa2
+    @handles xGa
     @initPre true;
  	@pre true;
     @body A0
-@plan P3
-    @handles TopGoal
+@plan xPa3
+    @handles xGa
     @initPre true;
  	@pre true;
     @body A0
-@plan P4
-    @handles TopGoal
+@plan xPa4
+    @handles xGa
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pa1
-    @handles Ga
+@plan xPaa1
+    @handles xGaa
     @initPre true;
  	@pre true;
-    @body Gaa Gab
-@plan Pa2
-    @handles Ga
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pa3
-    @handles Ga
+    @body xGaaa xGaab
+@plan xPaa2
+    @handles xGaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Pa4
-    @handles Ga
+@plan xPaa3
+    @handles xGaa
     @initPre true;
  	@pre true;
     @body A0
-
-@plan Paa1
-    @handles Gaa
-    @initPre true;
- 	@pre true;
-    @body Gaaa Gaab
-@plan Paa2
-    @handles Gaa
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Paa3
-    @handles Gaa
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Paa4
-    @handles Gaa
+@plan xPaa4
+    @handles xGaa
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pab1
-    @handles Gab
+@plan xPab1
+    @handles xGab
     @initPre true;
  	@pre true;
     @body A3
-@plan Pab2
-    @handles Gab
+@plan xPab2
+    @handles xGab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pab3
-    @handles Gab
+@plan xPab3
+    @handles xGab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pab4
-    @handles Gab
+@plan xPab4
+    @handles xGab
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Paaa1
-    @handles Gaaa
+@plan xPaaa1
+    @handles xGaaa
     @initPre true;
  	@pre true;
     @body A1
-@plan Paaa2
-    @handles Gaaa
+@plan xPaaa2
+    @handles xGaaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Paaa3
-    @handles Gaaa
+@plan xPaaa3
+    @handles xGaaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Paaa4
-    @handles Gaaa
+@plan xPaaa4
+    @handles xGaaa
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Paab1
-    @handles Gaab
+@plan xPaab1
+    @handles xGaab
     @initPre true;
  	@pre true;
     @body A2
-@plan Paab2
-    @handles Gaab
+@plan xPaab2
+    @handles xGaab
     @initPre true;
  	@pre true;
     @body A0
-@plan Paab3
-    @handles Gaab
+@plan xPaab3
+    @handles xGaab
     @initPre true;
  	@pre true;
     @body A0
-@plan Paab4
-    @handles Gaab
-    @initPre true;
- 	@pre true;
-    @body A0
-
-
-@plan Pb1
-    @handles Gb
-    @initPre true;
- 	@pre true;
-    @body Gba Gbb
-@plan Pb2
-    @handles Gb
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pb3
-    @handles Gb
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pb4
-    @handles Gb
+@plan xPaab4
+    @handles xGaab
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pba1
-    @handles Gba
+
+@plan xPb1
+    @handles xGb
     @initPre true;
  	@pre true;
-    @body Gbaa Gbab
-@plan Pba2
-    @handles Gba
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pba3
-    @handles Gba
+    @body xGba xGbb
+@plan xPb2
+    @handles xGb
     @initPre true;
  	@pre true;
     @body A0
-@plan Pba4
-    @handles Gba
+@plan xPb3
+    @handles xGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPb4
+    @handles xGb
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pbb1
-    @handles Gbb
+@plan xPba1
+    @handles xGba
+    @initPre true;
+ 	@pre true;
+    @body xGbaa xGbab
+@plan xPba2
+    @handles xGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPba3
+    @handles xGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPba4
+    @handles xGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan xPbb1
+    @handles xGbb
     @initPre true;
  	@pre true;
     @body A6
-@plan Pbb2
-    @handles Gbb
+@plan xPbb2
+    @handles xGbb
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbb3
-    @handles Gbb
+@plan xPbb3
+    @handles xGbb
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbb4
-    @handles Gbb
+@plan xPbb4
+    @handles xGbb
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pbaa1
-    @handles Gbaa
+@plan xPbaa1
+    @handles xGbaa
     @initPre true;
  	@pre true;
     @body A4
-@plan Pbaa2
-    @handles Gbaa
+@plan xPbaa2
+    @handles xGbaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbaa3
-    @handles Gbaa
+@plan xPbaa3
+    @handles xGbaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbaa4
-    @handles Gbaa
+@plan xPbaa4
+    @handles xGbaa
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pbab1
-    @handles Gbab
+@plan xPbab1
+    @handles xGbab
     @initPre true;
  	@pre true;
     @body A5
-@plan Pbab2
-    @handles Gbab
+@plan xPbab2
+    @handles xGbab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbab3
-    @handles Gbab
+@plan xPbab3
+    @handles xGbab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pbab4
-    @handles Gbab
-    @initPre true;
- 	@pre true;
-    @body A0
-
-
-@plan Pc1
-    @handles Gc
-    @initPre true;
- 	@pre true;
-    @body Gca Gcb
-@plan Pc2
-    @handles Gc
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pc3
-    @handles Gc
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pc4
-    @handles Gc
+@plan xPbab4
+    @handles xGbab
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pca1
-    @handles Gca
+
+@plan xPc1
+    @handles xGc
     @initPre true;
  	@pre true;
-    @body Gcaa Gcab
-@plan Pca2
-    @handles Gca
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pca3
-    @handles Gca
+    @body xGca xGcb
+@plan xPc2
+    @handles xGc
     @initPre true;
  	@pre true;
     @body A0
-@plan Pca4
-    @handles Gca
+@plan xPc3
+    @handles xGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPc4
+    @handles xGc
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pcb1
-    @handles Gcb
+@plan xPca1
+    @handles xGca
     @initPre true;
  	@pre true;
-    @body A9
-@plan Pcb2
-    @handles Gcb
-    @initPre true;
- 	@pre true;
-    @body A0
-@plan Pcb3
-    @handles Gcb
+    @body xGcaa xGcab
+@plan xPca2
+    @handles xGca
     @initPre true;
  	@pre true;
     @body A0
-@plan Pcb4
-    @handles Gcb
+@plan xPca3
+    @handles xGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPca4
+    @handles xGca
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pcaa1
-    @handles Gcaa
+@plan xPcb1
+    @handles xGcb
+    @initPre true;
+ 	@pre true;
+    @body Af
+@plan xPcb2
+    @handles xGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPcb3
+    @handles xGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan xPcb4
+    @handles xGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan xPcaa1
+    @handles xGcaa
     @initPre true;
  	@pre true;
     @body A7
-@plan Pcaa2
-    @handles Gcaa
+@plan xPcaa2
+    @handles xGcaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Pcaa3
-    @handles Gcaa
+@plan xPcaa3
+    @handles xGcaa
     @initPre true;
  	@pre true;
     @body A0
-@plan Pcaa4
-    @handles Gcaa
+@plan xPcaa4
+    @handles xGcaa
     @initPre true;
  	@pre true;
     @body A0
 
-@plan Pcab1
-    @handles Gcab
+@plan xPcab1
+    @handles xGcab
     @initPre true;
  	@pre true;
     @body A8
-@plan Pcab2
-    @handles Gcab
+@plan xPcab2
+    @handles xGcab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pcab3
-    @handles Gcab
+@plan xPcab3
+    @handles xGcab
     @initPre true;
  	@pre true;
     @body A0
-@plan Pcab4
-    @handles Gcab
+@plan xPcab4
+    @handles xGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan yP1
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body yGa yGb yGc
+@plan yPa1
+    @handles yGa
+    @initPre true;
+ 	@pre true;
+    @body yGaa yGab
+@plan yPa2
+    @handles yGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPa3
+    @handles yGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPa4
+    @handles yGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPaa1
+    @handles yGaa
+    @initPre true;
+ 	@pre true;
+    @body yGaaa yGaab
+@plan yPaa2
+    @handles yGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaa3
+    @handles yGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaa4
+    @handles yGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPab1
+    @handles yGab
+    @initPre true;
+ 	@pre true;
+    @body A3
+@plan yPab2
+    @handles yGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPab3
+    @handles yGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPab4
+    @handles yGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPaaa1
+    @handles yGaaa
+    @initPre true;
+ 	@pre true;
+    @body A1
+@plan yPaaa2
+    @handles yGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaaa3
+    @handles yGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaaa4
+    @handles yGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPaab1
+    @handles yGaab
+    @initPre true;
+ 	@pre true;
+    @body A2
+@plan yPaab2
+    @handles yGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaab3
+    @handles yGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPaab4
+    @handles yGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan yPb1
+    @handles yGb
+    @initPre true;
+ 	@pre true;
+    @body yGba yGbb
+@plan yPb2
+    @handles yGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPb3
+    @handles yGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPb4
+    @handles yGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPba1
+    @handles yGba
+    @initPre true;
+ 	@pre true;
+    @body yGbaa yGbab
+@plan yPba2
+    @handles yGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPba3
+    @handles yGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPba4
+    @handles yGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPbb1
+    @handles yGbb
+    @initPre true;
+ 	@pre true;
+    @body A6
+@plan yPbb2
+    @handles yGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbb3
+    @handles yGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbb4
+    @handles yGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPbaa1
+    @handles yGbaa
+    @initPre true;
+ 	@pre true;
+    @body A4
+@plan yPbaa2
+    @handles yGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbaa3
+    @handles yGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbaa4
+    @handles yGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPbab1
+    @handles yGbab
+    @initPre true;
+ 	@pre true;
+    @body A5
+@plan yPbab2
+    @handles yGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbab3
+    @handles yGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPbab4
+    @handles yGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan yPc1
+    @handles yGc
+    @initPre true;
+ 	@pre true;
+    @body yGca yGcb
+@plan yPc2
+    @handles yGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPc3
+    @handles yGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPc4
+    @handles yGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPca1
+    @handles yGca
+    @initPre true;
+ 	@pre true;
+    @body yGcaa yGcab
+@plan yPca2
+    @handles yGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPca3
+    @handles yGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPca4
+    @handles yGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPcb1
+    @handles yGcb
+    @initPre true;
+ 	@pre true;
+    @body A9
+@plan yPcb2
+    @handles yGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcb3
+    @handles yGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcb4
+    @handles yGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPcaa1
+    @handles yGcaa
+    @initPre true;
+ 	@pre true;
+    @body A7
+@plan yPcaa2
+    @handles yGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcaa3
+    @handles yGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcaa4
+    @handles yGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan yPcab1
+    @handles yGcab
+    @initPre true;
+ 	@pre true;
+    @body A8
+@plan yPcab2
+    @handles yGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcab3
+    @handles yGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan yPcab4
+    @handles yGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zP1
+    @handles TopGoal
+    @initPre true;
+ 	@pre true;
+    @body zGa zGb zGc
+@plan zPa1
+    @handles zGa
+    @initPre true;
+ 	@pre true;
+    @body zGaa zGab
+@plan zPa2
+    @handles zGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPa3
+    @handles zGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPa4
+    @handles zGa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPaa1
+    @handles zGaa
+    @initPre true;
+ 	@pre true;
+    @body zGaaa zGaab
+@plan zPaa2
+    @handles zGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaa3
+    @handles zGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaa4
+    @handles zGaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPab1
+    @handles zGab
+    @initPre true;
+ 	@pre true;
+    @body A3
+@plan zPab2
+    @handles zGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPab3
+    @handles zGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPab4
+    @handles zGab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPaaa1
+    @handles zGaaa
+    @initPre true;
+ 	@pre true;
+    @body A1
+@plan zPaaa2
+    @handles zGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaaa3
+    @handles zGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaaa4
+    @handles zGaaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPaab1
+    @handles zGaab
+    @initPre true;
+ 	@pre true;
+    @body A2
+@plan zPaab2
+    @handles zGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaab3
+    @handles zGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPaab4
+    @handles zGaab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan zPb1
+    @handles zGb
+    @initPre true;
+ 	@pre true;
+    @body zGba zGbb
+@plan zPb2
+    @handles zGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPb3
+    @handles zGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPb4
+    @handles zGb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPba1
+    @handles zGba
+    @initPre true;
+ 	@pre true;
+    @body zGbaa zGbab
+@plan zPba2
+    @handles zGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPba3
+    @handles zGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPba4
+    @handles zGba
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPbb1
+    @handles zGbb
+    @initPre true;
+ 	@pre true;
+    @body A6
+@plan zPbb2
+    @handles zGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbb3
+    @handles zGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbb4
+    @handles zGbb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPbaa1
+    @handles zGbaa
+    @initPre true;
+ 	@pre true;
+    @body A4
+@plan zPbaa2
+    @handles zGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbaa3
+    @handles zGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbaa4
+    @handles zGbaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPbab1
+    @handles zGbab
+    @initPre true;
+ 	@pre true;
+    @body A5
+@plan zPbab2
+    @handles zGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbab3
+    @handles zGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPbab4
+    @handles zGbab
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+
+@plan zPc1
+    @handles zGc
+    @initPre true;
+ 	@pre true;
+    @body zGca zGcb
+@plan zPc2
+    @handles zGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPc3
+    @handles zGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPc4
+    @handles zGc
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPca1
+    @handles zGca
+    @initPre true;
+ 	@pre true;
+    @body zGcaa zGcab
+@plan zPca2
+    @handles zGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPca3
+    @handles zGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPca4
+    @handles zGca
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPcb1
+    @handles zGcb
+    @initPre true;
+ 	@pre true;
+    @body Af
+@plan zPcb2
+    @handles zGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcb3
+    @handles zGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcb4
+    @handles zGcb
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPcaa1
+    @handles zGcaa
+    @initPre true;
+ 	@pre true;
+    @body A7
+@plan zPcaa2
+    @handles zGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcaa3
+    @handles zGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcaa4
+    @handles zGcaa
+    @initPre true;
+ 	@pre true;
+    @body A0
+
+@plan zPcab1
+    @handles zGcab
+    @initPre true;
+ 	@pre true;
+    @body A8
+@plan zPcab2
+    @handles zGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcab3
+    @handles zGcab
+    @initPre true;
+ 	@pre true;
+    @body A0
+@plan zPcab4
+    @handles zGcab
     @initPre true;
  	@pre true;
     @body A0
