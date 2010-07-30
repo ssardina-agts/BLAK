@@ -1,0 +1,167 @@
+@attribute a observable boolean
+@attribute b observable boolean
+@attribute c observable boolean
+@attribute z observable boolean
+
+@topgoal TopGoal repost
+
+@goal Ga1 repost
+@goal Gc1 repost
+@goal Gc2 repost
+@goal Gc3 repost
+@goal Gc4 repost
+@goal Gc5 repost
+@goal Gc6 repost
+
+
+@action x
+	@pre  (true)
+	@post if (z==true) { z=false; } else { z=true; } if(z || !z) {learningAgent.notify(a, b, c, z); return false;}
+@action pa1
+	@pre  (!a && !b && !z)
+	@post 
+@action pb
+	@pre  (!a && b && !z)
+	@post 
+@action pz
+	@pre  (z)
+	@post 
+@action pc9
+	@pre  (a && !z)
+	@post a=false;
+@action pc18
+	@pre  (!a && !z)
+	@post 
+
+
+
+
+@plan Pa
+    @handles TopGoal
+    @initPre true;
+    @pre true;
+    @body Ga1
+@plan Pa1
+    @handles Ga1
+    @initPre true;
+    @pre true;
+    @body pa1
+@plan Pa2
+    @handles Ga1
+    @initPre true;
+ 	@pre true;
+    @body x
+@plan Pa3
+    @handles Ga1
+    @initPre true;
+    @pre true;
+    @body x
+
+@plan Pb
+    @handles TopGoal
+    @initPre true;
+    @pre true;
+    @body pb
+
+@plan Pz
+    @handles TopGoal
+    @initPre true;
+    @pre true;
+    @body pz
+
+@plan Pc
+    @handles TopGoal
+    @initPre true;
+    @pre true;
+    @body Gc1 Gc4 
+@plan Pc1
+    @handles Gc1
+    @initPre true;
+    @pre true;
+    @body Gc2
+@plan Pc2
+    @handles Gc1
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc3
+    @handles Gc1
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc4
+    @handles Gc2
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc5
+    @handles Gc2
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc6
+    @handles Gc2
+    @initPre true;
+    @pre true;
+    @body Gc3
+@plan Pc7
+    @handles Gc3
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc8
+    @handles Gc3
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc9
+    @handles Gc3
+    @initPre true;
+    @pre true;
+    @body pc9
+@plan Pc10
+    @handles Gc4
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc11
+    @handles Gc4
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc12
+    @handles Gc4
+    @initPre true;
+    @pre true;
+    @body Gc5
+@plan Pc13
+    @handles Gc5
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc14
+    @handles Gc5
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc15
+    @handles Gc5
+    @initPre true;
+    @pre true;
+    @body Gc6
+@plan Pc16
+    @handles Gc6
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc17
+    @handles Gc6
+    @initPre true;
+    @pre true;
+    @body x
+@plan Pc18
+    @handles Gc6
+    @initPre true;
+    @pre true;
+    @body pc18
+

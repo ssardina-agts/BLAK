@@ -1,0 +1,143 @@
+%%%% Document setup
+\documentclass[a4paper,landscape,title page]{article}
+\setlength{\oddsidemargin}{-0.65in}	% default=0in
+\setlength{\textwidth}{11in}		% default=9in
+\setlength{\textheight}{6.85in}		% default=5.15in
+\setlength{\topmargin}{-1.0in}		% default=0.20in
+\setlength{\headsep}{0.35in}		% default=0.35in
+\setlength{\parskip}{1.2ex}
+\setlength{\parindent}{0mm}
+
+%%%% Use packages
+\usepackage{times}
+\usepackage{tikz,pgf}
+\usetikzlibrary{arrows,automata,trees,plotmarks,calc}
+
+
+%%%%
+\title{Goal-Plan hierarchy for test \textit{testfr01}}
+\author{
+Dhirendra Singh\\
+dhirendra.singh@rmit.edu.au}
+\begin{document}
+\maketitle
+
+\begin{figure*}[t]
+\begin{center}
+
+\begin{tikzpicture}[scale=1.0,level distance=4.0em]
+\tikzstyle{txt}=[scale=1.1]
+\tikzstyle{planbox}=[draw,minimum height=2.0em,minimum width=2.5em]
+\tikzstyle{goalbox}=[draw,rounded corners,minimum height=2.0em,minimum width=2.5em]
+\tikzstyle{level 1}=[sibling distance=10.0em] 
+\tikzstyle{level 2}=[sibling distance=12.0em] 
+\tikzstyle{level 3}=[sibling distance=4.0em]
+\tikzstyle{level 4}=[sibling distance=3.0cm]
+\tikzstyle{level 5}=[sibling distance=1.5cm]
+\tikzstyle{level 6}=[sibling distance=3.0cm]
+\tikzstyle{level 7}=[sibling distance=1.5cm]
+
+\node[goalbox,yshift=1cm,solid] (T) {$G$}
+	child[solid] {node[planbox] {$P_a$}
+		child {node[goalbox] {$G_{a1}$}
+			child {node[planbox] {$P_{a1}$}
+				node[txt,below=1.0em] {$\surd$}
+				node[txt,above=1.0em]
+				{$\bar{a} \cdot \bar{b} \cdot \bar{z}$}
+			}
+			child {node[planbox] {$P_{a2}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+			child {node[planbox] {$P_{a3}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+		}
+	}
+	child[solid] {node[planbox] {$P_b$}
+		node[txt,below=1.0em] {$\surd$}
+		node[txt,above=1.0em] {$\bar{a} \cdot b \cdot \bar{z}$}
+	}
+	child[solid] {node[planbox] {$P_z$}
+		node[txt,below=1.0em] {$\surd$}
+		node[txt,above=1.0em] {$z$}
+	}
+	child[solid] {node[planbox] {$P_c$}
+		child {node[goalbox] {$G_{c1}$}
+			child {node[planbox] {$P_{c1}$}
+				child {node[goalbox] {$G_{c2}$}
+					child {node[planbox] {$P_{c4}$}
+						node[txt,below=1.0em] {$\times$}
+					}
+					child {node[planbox] {$P_{c5}$}
+						node[txt,below=1.0em] {$\times$}
+					}
+					child {node[planbox] {$P_{c6}$}
+						child {node[goalbox] {$G_{c3}$}
+							child {node[planbox] {$P_{c7}$}
+								node[txt,below=1.0em] {$\times$}
+							}
+							child {node[planbox] {$P_{c8}$}
+								node[txt,below=1.0em] {$\times$}
+							}
+							child {node[planbox] {$P_{c9}$} 
+								node[txt,below=2.0em] {$\surd$}
+								node[txt,below=1.0em] {$\bar{a}$}
+								node[txt,above=1.0em]
+								{$a \cdot \bar{z}$}
+							}
+						}
+					}
+				}
+			}
+			child {node[planbox] {$P_{c2}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+			child {node[planbox] {$P_{c3}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+		}
+		child {node[goalbox] {$G_{c4}$}
+			child {node[planbox] {$P_{c10}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+			child {node[planbox] {$P_{c11}$}
+				node[txt,below=1.0em] {$\times$}
+			}
+			child {node[planbox] {$P_{c12}$}
+				child {node[goalbox] {$G_{c5}$}
+					child {node[planbox] {$P_{c13}$}
+						node[txt,below=1.0em] {$\times$}
+					}
+					child {node[planbox] {$P_{c14}$}
+						node[txt,below=1.0em] {$\times$}
+					}
+					child {node[planbox] {$P_{c15}$}
+						child {node[goalbox] {$G_{c6}$}
+							child {node[planbox] {$P_{c16}$}
+								node[txt,below=1.0em] {$\times$}
+							}
+							child {node[planbox] {$P_{c17}$}
+								node[txt,below=1.0em] {$\times$}
+							}
+							child {node[planbox] {$P_{c18}$} 
+								node[txt,below=1.0em] {$\surd$}
+								node[txt,above=1.0em] 
+								{$\bar{a} \cdot \bar{z}$}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+;
+
+\end{tikzpicture}
+
+\vskip 1.5cm
+\caption{All leaf plans marked $\times$, for instance plan $P_a3$, will fail under normal operation but have the side-effect of toggling $z$. This means that two successive failures will change the world in no noticeable way. The task is to learn the correct plan selection in the plan sub-tree $P_c$ without being adversely impacted by $z$.}
+\end{center}
+\end{figure*}
+
+\end{document}
+%%%%
