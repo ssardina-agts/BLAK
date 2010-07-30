@@ -818,6 +818,9 @@ public class PlanNode extends Node{
     /*-----------------------------------------------------------------------*/
 
     public boolean isPropagatingFailure() {
+        if (isLeaf()) {
+            return handledRepostedGoal;
+        }
         int nChildren = this.children.size();
         for(int j = 0; nChildren > j; j++) {
             GoalNode thisNode = (GoalNode)this.children.elementAt(j);
@@ -825,7 +828,7 @@ public class PlanNode extends Node{
                 return true;
             }
         }
-        return handledRepostedGoal;
+        return false;
     }
     
     /*-----------------------------------------------------------------------*/
