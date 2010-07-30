@@ -83,8 +83,9 @@
 
 <target name="testfr01a" description="Build, run and plot testfr01a" depends="buildtestfr01a,graphtestfr01a,runtestfr01a,plottestfr01a"/>
 <target name="testfr01b" description="Build, run and plot testfr01b" depends="buildtestfr01b,graphtestfr01b,runtestfr01b,plottestfr01b"/>
-<target name="testfr01na" description="Build, run and plot testfr01na" depends="buildtestfr01na,graphtestfr01na,runtestfr01na,plottestfr01na"/>
-<target name="testfr01nb" description="Build, run and plot testfr01nb" depends="buildtestfr01nb,graphtestfr01nb,runtestfr01nb,plottestfr01nb"/>
+
+<target name="testfr02" description="Build, run and plot testfr02" depends="buildtestfr02,graphtestfr02,runtestfr02,plottestfr02"/>
+<target name="testfr02b" description="Build, run and plot testfr02b" depends="buildtestfr02b,graphtestfr02b,runtestfr02b,plottestfr02b"/>
 
 <target name="hanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s5r8, runhanoid5s5r8, plothanoid5s5r8"/>
 <target name="hanoid5s4r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s4r8, runhanoid5s4r8, plothanoid5s4r8"/>
@@ -1030,12 +1031,12 @@
 </target>
 <target name="runtestfr01a" description="Run testfr01a">
     <failIfBuildNotFound test.name="testfr01a"/>
-	<runTestRepeats test.name="testfr01a" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery"/>
-	<runTestRepeats test.name="testfr01a" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3"/>
+	<runTestRepeats test.name="testfr01a" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 2000 -p failure_recovery"/>
+	<runTestRepeats test.name="testfr01a" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 2000 -p failure_recovery -k 3 -e 0.3"/>
 </target>
 <target name="plottestfr01a" description="Plot testfr01a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01a"/>
-	<plotResult test.name="testfr01a" every="500" key1="center" key2="right" label="testfr01a:n=0.0,failure_recovery:testfr01a.txt"/>
+	<plotResult test.name="testfr01a" every="200" key1="center" key2="right" label="testfr01a:n=0.0,failure_recovery:testfr01a.txt"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1050,53 +1051,56 @@
 </target>
 <target name="runtestfr01b" description="Run testfr01b">
     <failIfBuildNotFound test.name="testfr01b"/>
-	<runTestRepeats test.name="testfr01b" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000"/>
-	<runTestRepeats test.name="testfr01b" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000"/>
+	<runTestRepeats test.name="testfr01b" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 2000"/>
+	<runTestRepeats test.name="testfr01b" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 2000"/>
 </target>
 <target name="plottestfr01b" description="Plot testfr01b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="testfr01b"/>
-	<plotResult test.name="testfr01b" every="500" key1="center" key2="right" label="testfr01b:n=0.0,m=1:testfr01b.txt"/>
+	<plotResult test.name="testfr01b" every="200" key1="center" key2="right" label="testfr01b:n=0.0,m=1:testfr01b.txt"/>
 </target>
 
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr01na ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr01na" description="Build testfr01na" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr01na"/>
-	<buildTest test.name="testfr01na" specs.file="${specs.dir}/testFailureRecovery/testfr01a.txt"/>
-</target>
-<target name="graphtestfr01na" description="Graph testfr01na" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr01na"/>
-</target>
-<target name="runtestfr01na" description="Run testfr01na">
-    <failIfBuildNotFound test.name="testfr01na"/>
-	<runTestRepeats test.name="testfr01na" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.1 -i 10000 -p failure_recovery"/>
-	<runTestRepeats test.name="testfr01na" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.1 -i 10000 -p failure_recovery -k 3 -e 0.3"/>
-</target>
-<target name="plottestfr01na" description="Plot testfr01na" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr01na"/>
-	<plotResult test.name="testfr01na" every="1000" key1="center" key2="right" label="testfr01na:n=0.1,failure_recovery:testfr01a.txt"/>
-</target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr01nb ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testfr02a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr01nb" description="Build testfr01nb" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr01nb"/>
-	<buildTest test.name="testfr01nb" specs.file="${specs.dir}/testFailureRecovery/testfr01b.txt"/>
+<target name="buildtestfr02a" description="Build testfr02a" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testfr02a"/>
+	<buildTest test.name="testfr02a" specs.file="${specs.dir}/testFailureRecovery/testfr02a.txt"/>
 </target>
-<target name="graphtestfr01nb" description="Graph testfr01nb" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr01nb"/>
+<target name="graphtestfr02a" description="Graph testfr02a" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testfr02a"/>
 </target>
-<target name="runtestfr01nb" description="Run testfr01nb">
-    <failIfBuildNotFound test.name="testfr01nb"/>
-	<runTestRepeats test.name="testfr01nb" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.1 -i 10000"/>
-	<runTestRepeats test.name="testfr01nb" run.mode="stable" run.select="probabilistic"          run.params="-n 0.1 -i 10000"/>
+<target name="runtestfr02a" description="Run testfr02a">
+    <failIfBuildNotFound test.name="testfr02a"/>
+	<runTestRepeats test.name="testfr02a" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery"/>
+	<runTestRepeats test.name="testfr02a" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3"/>
 </target>
-<target name="plottestfr01nb" description="Plot testfr01nb" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr01nb"/>
-	<plotResult test.name="testfr01nb" every="1000" key1="center" key2="right" label="testfr01nb:n=0.1,m=1:testfr01b.txt"/>
+<target name="plottestfr02a" description="Plot testfr02a" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testfr02a"/>
+	<plotResult test.name="testfr02a" every="500" key1="center" key2="right" label="testfr02a:n=0.0,failure_recovery:testfr02a.txt"/>
 </target>
+
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- testfr02b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildtestfr02b" description="Build testfr02b" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="testfr02b"/>
+	<buildTest test.name="testfr02b" specs.file="${specs.dir}/testFailureRecovery/testfr02b.txt"/>
+</target>
+<target name="graphtestfr02b" description="Graph testfr02b" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="testfr02b"/>
+</target>
+<target name="runtestfr02b" description="Run testfr02b">
+    <failIfBuildNotFound test.name="testfr02b"/>
+	<runTestRepeats test.name="testfr02b" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000"/>
+	<runTestRepeats test.name="testfr02b" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000 -k 3 -e 0.3"/>
+</target>
+<target name="plottestfr02b" description="Plot testfr02b" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="testfr02b"/>
+	<plotResult test.name="testfr02b" every="500" key1="center" key2="right" label="testfr02b:n=0.0,failure_recovery:testfr02b.txt"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- END TESTS TARGETS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
