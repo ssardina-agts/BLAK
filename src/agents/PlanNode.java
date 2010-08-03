@@ -65,9 +65,6 @@ public class PlanNode extends Node{
     private Hashtable domainDecay;
     private double domainComplexityDecayMultiplier;
 
-    /* Failure-recovery related */
-    private boolean handledRepostedGoal;
-
     /* !!!: Vars to sort out */
 
     /* Triggers cleanup operations if this is a root level plan.
@@ -113,7 +110,6 @@ public class PlanNode extends Node{
         data = new Instances(pname, atts, 0);
         data.setClassIndex(atts.size()-1);
         domainComplexityDecayMultiplier = 0.0;
-        handledRepostedGoal = false;
         try{
             decisionTree = new J48();
             String[] options = new String[1];
@@ -151,9 +147,6 @@ public class PlanNode extends Node{
 
     public int stateHistoryWindow() { return stateHistoryWindow; }
     public void setStateHistoryWindow(int w) { stateHistoryWindow = w; }
-
-    public boolean handledRepostedGoal() { return handledRepostedGoal; }
-    public void setHandledRepostedGoal(boolean v) { handledRepostedGoal = v; }
 
     public GoalNode topGoal() { return topGoal; }
     public void setTopGoal(GoalNode val) { topGoal = val; }
@@ -334,16 +327,6 @@ public class PlanNode extends Node{
         
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
-        /* In failure recovery mode, if a subplan at any level below handled a 
-         * reposted subgoal then that means that the initial choice had failed
-         * so for this parent the only sensible choice is to record a failure.
-         * Do this only for non-leaf plans.
-         */
-        if ((run_mode == RunMode.FAILURE_RECOVERY) && this.isPropagatingFailure() && !isLeaf()) {
-            logger.writeLog("Forced result to (-) for plan "+name()+" since a subgoal initially failed and was reposted." );
-            res = false;
-        }
-        
         /* !!!: Coverage calculation for reposted goals is very tricky. 
          * does not work as it is now.
          * Needs more working out.
@@ -424,7 +407,7 @@ public class PlanNode extends Node{
         
         /* Coverage related updates */
         if (select_mode == PlanSelectMode.COVERAGE) {
-            if (!this.handledRepostedGoal || (topGoal() != null)) {
+            if (topGoal() != null) {
                 /* Mark only the first tried plans as dirty for coverage calculation */
                 isDirty.put(depth,true);
             }
@@ -692,7 +675,6 @@ public class PlanNode extends Node{
             }
         }
         isDirty.remove(depth);
-        handledRepostedGoal = false;
     }
     
     public String[] deadPaths(String prefix, int depth) {
@@ -811,24 +793,6 @@ public class PlanNode extends Node{
         /* Otherwise confidence is a decaying proposition */
         logger.writeLog("Plan "+name()+" using confidence c="+(1 - cdecay)+"*"+(1 - getDomainDecay(depth)));
         return (1 - cdecay) * (1 - getDomainDecay(depth));
-    }
-    
-    /*-----------------------------------------------------------------------*/
-    /* MARK: Member Functions - Failure Recovery related */
-    /*-----------------------------------------------------------------------*/
-
-    public boolean isPropagatingFailure() {
-        if (isLeaf()) {
-            return handledRepostedGoal;
-        }
-        int nChildren = this.children.size();
-        for(int j = 0; nChildren > j; j++) {
-            GoalNode thisNode = (GoalNode)this.children.elementAt(j);
-            if (thisNode.isPropagatingFailure()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     /*-----------------------------------------------------------------------*/

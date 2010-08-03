@@ -2,17 +2,24 @@ package agents;
 
 import java.lang.String;
 import java.util.Vector;
+import java.util.Iterator;
 import trees.Node;
 
 class TraceNode {
     public Node goal;
     public Node plan;
     public String[] state;
+    public boolean shouldRecordFailure;
     
     public TraceNode(Node g, Node p, String[] s) {
+        this(g,p,s,false);
+    }
+    
+    public TraceNode(Node g, Node p, String[] s, boolean b) {
         goal = g;
         plan = p;
         state = s;
+        shouldRecordFailure = b;
     }
 }
 
@@ -76,6 +83,29 @@ public class ExecutionTrace {
     /* MARK: Member Functions - Misc */
     /*-----------------------------------------------------------------------*/
 
+    /* Sets shouldRecordFailure flags for all nodes in the trace */
+    public void setShouldRecordFailure(boolean val) {
+        Iterator iterator = trace.iterator(); 
+        while (iterator.hasNext()) { 
+            TraceNode p = (TraceNode) iterator.next(); 
+            p.shouldRecordFailure = val;
+        }
+    }
+
+    /* Returns shouldRecordFailure flag for the last node in the trace */
+    public boolean shouldRecordFailure() {
+        boolean val = false;
+        if (!trace.isEmpty()) {
+            TraceNode p = (TraceNode)(trace.lastElement());
+            val = p.shouldRecordFailure;
+        }
+        return val;
+    }
+    
+    public boolean isEmpty() {
+        return trace.isEmpty();
+    }
+    
     public void reset() {
         trace.removeAllElements();
         werePoppedTracesStable = true;

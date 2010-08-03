@@ -141,21 +141,6 @@ public class GoalNode extends Node{
     }
     
     /*-----------------------------------------------------------------------*/
-    /* MARK: Member Functions - Failure Recovery related */
-    /*-----------------------------------------------------------------------*/
-
-    public boolean isPropagatingFailure() {
-        int nChildren = this.children.size();
-        for(int j = 0; nChildren > j; j++) {
-            PlanNode thisNode = (PlanNode)this.children.elementAt(j);
-            if (thisNode.isPropagatingFailure()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - Misc */
     /*-----------------------------------------------------------------------*/
     

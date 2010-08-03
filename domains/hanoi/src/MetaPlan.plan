@@ -1,4 +1,5 @@
 import agents.Config.PlanSelectMode;
+import agents.Config.RunMode;
 import agents.ExecutionTrace;
 import java.util.Hashtable;
 
@@ -21,11 +22,18 @@ public plan MetaPlan extends Plan {
         Signature thandler = null;
         Hashtable fullConfidencePlans = new Hashtable();
         Hashtable applicablePlans = new Hashtable();
+        boolean isReposted = false;
 
         /* No special processing if not in learning mode */
         if (!ag.learningMode()) {
             pc.chosen = pc.applicable.first();
             return true;
+        }
+
+        if (pc.failure.size() > 0) {
+            /* This is a re-posted goal */
+            ag.writeLog("MetaPlan: Choosing for reposted event " + pc.event.getEventName());
+            isReposted = true;
         }
 
         /* First separate out the plans in the following bags:
@@ -101,6 +109,16 @@ public plan MetaPlan extends Plan {
             }
             pc.chosen = sigs[choice];
             PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
+            if(isReposted) {
+                /* Handling reposted goal, so force all parent nodes in the active trace 
+                * to record failure, regardless of the actual result.
+                */
+                ag.activeExecutionTrace().setShouldRecordFailure(isReposted);
+                ag.writeLog("MetaPlan: Plan "+ag.planNodes[info.plan_id].name()
+                +" is handling reposted goal, so will record failure for all parents in: "
+                +ag.activeExecutionTrace());
+
+            }
             ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
             ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
 

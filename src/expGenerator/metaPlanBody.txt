@@ -126,7 +126,13 @@
 	    }
 	    pc.chosen = s;
 	    PlanIdInfo info = (PlanIdInfo) s.getInfo();
-	    ag.planNodes[info.plan_id].setHandledRepostedGoal(isReposted);
+	    if(isReposted) {
+		/* Handling reposted goal, so force all parent nodes in the active trace 
+		 * to record failure, regardless of the actual result.
+		 */
+		ag.activeExecutionTrace.setShouldRecordFailure(isReposted);
+		ag.env.writeLog("MetaPlan: Plan "+ag.planNodes[info.plan_id].name()+" is handling reposted goal, so will record failure for all parents in: "+ag.activeExecutionTrace);
+	    }
 	    ag.activeExecutionTrace.pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],ag.state());
 	    ag.env.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace);
 	}

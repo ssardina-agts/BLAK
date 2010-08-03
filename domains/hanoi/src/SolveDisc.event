@@ -18,7 +18,8 @@ public event SolveDisc extends BDIGoalEvent {
 	#set behavior PostPlanChoice one_applicable;
 	#set behavior PostPlanChoice multiple_applicable;
 	#set behavior ApplicableChoice random;
-	#set behavior Recover never;
+	#set behavior Recover repost; 
+	#set behavior ApplicableSet new; 
 
     #posted as
     solve(logical int d, logical int p, int lvl, Integer[] t, Integer[] pl)

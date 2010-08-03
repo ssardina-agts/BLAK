@@ -61,6 +61,7 @@ public agent Player extends Agent implements Logger{
     private int maxRecursion = 0;
     
     private PlanSelectMode pselect;
+    private RunMode rselect;
     
     private String targetDir;
     private String filename;
@@ -95,7 +96,7 @@ public agent Player extends Agent implements Logger{
     private ExecutionTrace activeExecutionTrace; 
 
     // Constructor
-    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double alpha, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
+    Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double alpha, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
         super("player");
         
         this.init = new HanoiState(nDiscs);
@@ -107,6 +108,7 @@ public agent Player extends Agent implements Logger{
         this.numPins = 3;
         
         this.pselect = pselect;
+        this.rselect = rselect;
         this.maxRecursion = recursion;
         generator = (seed == 0) ? new Random() : new Random(seed);
         selector = new Random();
@@ -160,7 +162,7 @@ public agent Player extends Agent implements Logger{
         failureNode = null;
         failureNodeDepth = 0;
         if (learningMode) {
-            initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, minInstances, stableK, stableE, stableW, stateW, domainDecay, threshold);
+            initLearning((trees.Logger)this, numDiscs, numPins, recursion, pselect, uselect, rselect, minInstances, stableK, stableE, stableW, stateW, domainDecay, threshold);
         }
 
         episodeGoalKey = loadNewState();
@@ -218,6 +220,10 @@ public agent Player extends Agent implements Logger{
         return pselect;
     }
 
+    public RunMode rselect() {
+        return rselect;
+    }
+
     public ExecutionTrace activeExecutionTrace() {
         return activeExecutionTrace;
     }
@@ -254,6 +260,10 @@ public agent Player extends Agent implements Logger{
         int[] val = new int[2];
         val[0] = 1;
         val[1] = 1;
+        if (activeExecutionTrace.shouldRecordFailure()) {
+            res = false;
+            writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+" since a subgoal initially failed and was reposted." );
+        }
         planNodes[pid].record(res, res ? val : activeExecutionTrace.poppedTraceStability(), depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
         
         /* Finished recording so pop this plan off the active execution trace */
@@ -450,7 +460,7 @@ public agent Player extends Agent implements Logger{
         writerRes.flush();
     }
     
-    public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double domainDecay, double threshold) {
+    public void initLearning(Logger logger, int nDiscs, int nPins, int recursion, PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double domainDecay, double threshold) {
         FastVector classVal = new FastVector();
         classVal.addElement("+");
         classVal.addElement("-");
@@ -493,12 +503,12 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[6];
-        planNodes[0] = new PlanNode("P0", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, false, logger);
-        planNodes[1] = new PlanNode("P1", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, false, logger);
-        planNodes[2] = new PlanNode("P2", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, false, logger);
-        planNodes[3] = new PlanNode("P3", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, false, logger);
-        planNodes[4] = new PlanNode("P4", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, false, logger);
-        planNodes[5] = new PlanNode("PF", atts, uselect, pselect, RunMode.DEFAULT, stableE, stableK, stableW, stateW, true, logger);
+        planNodes[0] = new PlanNode("P0", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, logger);
+        planNodes[1] = new PlanNode("P1", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, logger);
+        planNodes[2] = new PlanNode("P2", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, logger);
+        planNodes[3] = new PlanNode("P3", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, logger);
+        planNodes[4] = new PlanNode("P4", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, logger);
+        planNodes[5] = new PlanNode("PF", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, logger);
 
         planNodes[0].setDecayMultiplier(domainDecay);
         planNodes[1].setDecayMultiplier(domainDecay);
@@ -552,6 +562,7 @@ public agent Player extends Agent implements Logger{
         boolean learningMode = false;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
         UpdateMode uselect = UpdateMode.CONCURRENT;
+        RunMode rselect = RunMode.DEFAULT;
         int minInstances = 1;
         int stableK = 1;
         double stableE = 0.5;
@@ -595,6 +606,13 @@ public agent Player extends Agent implements Logger{
                 case 'e':
                     stableE = Double.parseDouble(args[index]);
                     index++;
+                    break;
+                case 'f':
+                    String run_mode = args[index];
+                    index++;
+                    if (run_mode.equals("failure_recovery")) {
+                        rselect = RunMode.FAILURE_RECOVERY;
+                    }
                     break;
                 case 'g':
                     seed = Long.parseLong(args[index]);
@@ -679,7 +697,7 @@ public agent Player extends Agent implements Logger{
             }
         }
         System.out.println("Using random generator seed: "+seed);
-        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, minInstances, stableK, stableE, stableW, stateW, alpha, targetDir, filename, seed, loadInit, generateSolutionsAtLevel, saveInit, domainDecayMultiplier, threshold);
+        Player p = new Player(numDiscs, visible, learningMode, episodes, recursion, pselect, uselect, rselect, minInstances, stableK, stableE, stableW, stateW, alpha, targetDir, filename, seed, loadInit, generateSolutionsAtLevel, saveInit, domainDecayMultiplier, threshold);
         p.go();
     }
 }

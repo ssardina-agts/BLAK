@@ -84,7 +84,7 @@
 <target name="testfr01a" description="Build, run and plot testfr01a" depends="buildtestfr01a,graphtestfr01a,runtestfr01a,plottestfr01a"/>
 <target name="testfr01b" description="Build, run and plot testfr01b" depends="buildtestfr01b,graphtestfr01b,runtestfr01b,plottestfr01b"/>
 
-<target name="testfr02" description="Build, run and plot testfr02" depends="buildtestfr02,graphtestfr02,runtestfr02,plottestfr02"/>
+<target name="testfr02a" description="Build, run and plot testfr02a" depends="buildtestfr02a,graphtestfr02a,runtestfr02a,plottestfr02a"/>
 <target name="testfr02b" description="Build, run and plot testfr02b" depends="buildtestfr02b,graphtestfr02b,runtestfr02b,plottestfr02b"/>
 
 <target name="hanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s5r8, runhanoid5s5r8, plothanoid5s5r8"/>

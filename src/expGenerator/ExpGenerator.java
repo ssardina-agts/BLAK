@@ -1456,6 +1456,10 @@ public class ExpGenerator {
         +"\tint[] val = new int[2];\n"
         +"\tval[0] = 1;\n"
         +"\tval[1] = 1;\n"
+        +"\tif (activeExecutionTrace.shouldRecordFailure()) {\n"
+        +"\t\tres = false;\n"
+        +"\t\tenv.writeLog(\"Refiner Agent: Forced result to (-) for Plan \"+planNodes[plan_id].name()+\" since a subgoal initially failed and was reposted.\" );\n"
+        +"\t}\n"
 		+"\tplanNodes[plan_id].record(res, res ? val : activeExecutionTrace.poppedTraceStability());\n"
         +"\tenv.indentLeft();\n"
         
