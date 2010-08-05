@@ -74,6 +74,7 @@ public agent Player extends Agent implements Logger{
     private HanoiState init;
     private String episodeGoalKey;
     private Integer[] episodeStartState;
+    private String episodeStartStateString;
     private int maxDepthThisEpisode;
 
     private boolean saveInitStates;
@@ -95,12 +96,16 @@ public agent Player extends Agent implements Logger{
 
     private ExecutionTrace activeExecutionTrace; 
 
+    private Hashtable nPlansTried;
+    private Hashtable nLeafPlansTried;
+
     // Constructor
     Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double alpha, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
         super("player");
         
         this.init = new HanoiState(nDiscs);
         this.episodeStartState = null;
+        this.episodeStartStateString = "";
         this.episodeGoalKey = "";
         this.maxDepthThisEpisode = 0;
         
@@ -121,6 +126,10 @@ public agent Player extends Agent implements Logger{
         this.confidenceAlpha = alpha;
         
         this.activeExecutionTrace = new ExecutionTrace();
+        
+        this.nPlansTried = new Hashtable();
+        this.nLeafPlansTried = new Hashtable();
+        
         try{
             writerOut = new PrintWriter(targetDir + "/player.out");
             writerRes = new PrintWriter(targetDir + "/" + filename + "-episodes.csv");
@@ -247,6 +256,16 @@ public agent Player extends Agent implements Logger{
     public double confidenceAlpha() {
         return confidenceAlpha;
     }
+
+    public void incrementPlansTried() {
+        Integer n = (nPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeStartStateString)) : new Integer(0);
+        nPlansTried.put(episodeStartStateString, new Integer(n.intValue()+1));
+    }
+
+    public void incrementLeafPlansTried() {
+        Integer n = (nLeafPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeStartStateString)) : new Integer(0);
+        nLeafPlansTried.put(episodeStartStateString, new Integer(n.intValue()+1));
+    }
     
     public void record(int pid, boolean res, String[] state, int depth) {
         boolean isRoot = (depth == maxRecursion);
@@ -269,6 +288,15 @@ public agent Player extends Agent implements Logger{
         /* Finished recording so pop this plan off the active execution trace */
         activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
         writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
+
+        /* If success then print stats for top level plan*/
+        if (res && isRoot) {
+            Integer np = (nPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeStartStateString)) : new Integer(0);
+            Integer nl = (nLeafPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeStartStateString)) : new Integer(0);
+            writeLog("Recorded success for goal["+episodeGoalKey+"] and starting order["+episodeStartStateString+"]. Total plans tried "+np+". Leaf plans tried "+nl+".");
+            nPlansTried.put(episodeStartStateString, new Integer(0));
+            nLeafPlansTried.put(episodeStartStateString, new Integer(0));
+        } 
     }
 
     public void finishEpisode() {
@@ -286,11 +314,7 @@ public agent Player extends Agent implements Logger{
     public void saveInitState() {
         String depthKey = Integer.toString(maxDepthThisEpisode);
         init.set(depthKey, episodeGoalKey, episodeStartState);
-        String ess = "";
-        for (int i = 0; i < episodeStartState.length; i++) {
-            ess += episodeStartState[i].toString();
-        }
-        writeLog("Stored state depthKey["+depthKey+"], goalKey["+episodeGoalKey+"], val["+ess+"]");
+        writeLog("Stored state depthKey["+depthKey+"], goalKey["+episodeGoalKey+"], val["+episodeStartStateString+"]");
     }
     
     public String loadNewState() {
@@ -326,6 +350,10 @@ public agent Player extends Agent implements Logger{
             episodeStartState = new Integer[numDiscs];
             for (int i = 0; i < numDiscs; i++) {
                 episodeStartState[i]=new Integer(order.getBelow(i+1));
+            }
+            episodeStartStateString = "";
+            for (int i = 0; i < episodeStartState.length; i++) {
+                episodeStartStateString += episodeStartState[i].toString();
             }
         } catch (Exception e) {
             System.err.println("Error initialising start state order\n"+e);

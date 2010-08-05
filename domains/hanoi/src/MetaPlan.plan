@@ -108,20 +108,6 @@ public plan MetaPlan extends Plan {
                 choice++;
             }
             pc.chosen = sigs[choice];
-            PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
-            if(isReposted) {
-                /* Handling reposted goal, so force all parent nodes in the active trace 
-                * to record failure, regardless of the actual result.
-                */
-                ag.activeExecutionTrace().setShouldRecordFailure(isReposted);
-                ag.writeLog("MetaPlan: Plan "+ag.planNodes[info.plan_id].name()
-                +" is handling reposted goal, so will record failure for all parents in: "
-                +ag.activeExecutionTrace());
-
-            }
-            ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
-            ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
-
             if (ag.learningMode()) {
                 String str = "[";
                 for (i = 0; i < prob.length; i++) {
@@ -136,7 +122,26 @@ public plan MetaPlan extends Plan {
             /* Else assign the failed threshold handler since no other option applies */
             //ag.writeLog("MetaPlan: ag.applicabilityThreshold = " + ag.applicabilityThreshold() + " pMax = " + pMax + " thandler = " + thandler);
             pc.chosen = thandler;
-            ag.writeLog("MetaPlan: No plan selected since all weights fall below the applicability threshold of "+ag.applicabilityThreshold());
+            ag.writeLog("MetaPlan: Choosing dummy plan.");
+            return true;
+        }
+
+        PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
+        if(isReposted) {
+            /* Handling reposted goal, so force all parent nodes in the active trace 
+            * to record failure, regardless of the actual result.
+            */
+            ag.activeExecutionTrace().setShouldRecordFailure(isReposted);
+            ag.writeLog("MetaPlan: Plan "+ag.planNodes[info.plan_id].name()
+            +" is handling reposted goal, so will record failure for all parents in: "
+            +ag.activeExecutionTrace());
+
+        }
+        ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
+        ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
+        ag.incrementPlansTried();
+        if (ag.planNodes[info.plan_id].isLeaf()) {
+            ag.incrementLeafPlansTried();
         }
     }
 }

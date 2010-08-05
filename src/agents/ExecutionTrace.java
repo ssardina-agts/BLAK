@@ -49,6 +49,9 @@ public class ExecutionTrace {
         /* FIFO */
         TraceNode n = new TraceNode(g,p,s);
         trace.add(n);
+        /* Reset the popped trace counters each time you push */
+        nTotal = 0;
+        nStable = 0;
     }
     public void popTrace(boolean updateStable) {
         /* FIFO - Pop the most recent instance from the trace */

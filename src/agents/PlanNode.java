@@ -366,7 +366,8 @@ public class PlanNode extends Node{
              */
             thisMemory.setNumberOfSuccesses(1);
             thisMemory.setNumberOfAttempts(1);
-            logger.writeLog("Plan "+name()+" had success in state "+memoryKey+" so will reset all previous failures now.");
+            thisMemory.clearStableHistory();
+            logger.writeLog("Plan "+name()+" had success in state "+memoryKey+" so will reset experience history now.");
         }
         
         /* Now update the rate of change of success.
@@ -402,7 +403,7 @@ public class PlanNode extends Node{
         }
         int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         thisMemory.addStableHistory(nStable, nTotal);
-        logger.writeLog("Plan "+name()+" recorded stability "+nStable+"/"+nTotal+" for state "+this.stringOfLastState());
+        logger.writeLog("Plan "+name()+" in state "+this.stringOfLastState()+" recorded stability "+nStable+"/"+nTotal);
         this.experiences.put(memoryKey, thisMemory);
         
         /* Coverage related updates */

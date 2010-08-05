@@ -184,6 +184,10 @@ public class Experience
 		this.setDeltaProbability(newDelta);
 	}
 	
+    public void clearStableHistory() {
+        stableHistory.clear();
+    }
+
     public void addStableHistory(int stable, int total) {
         stableHistory.add(new StabilityInfo(stable,total));
         if (stableHistory.size() > STABLE_HISTORY_CAPACITY) {
