@@ -907,11 +907,14 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildhanoid5s5r8fr" description="Build hanoid5s5r8fr" if="available.buildDependencies" depends="buildDependencies">
 	<delete dir="${results.dir}/hanoid5s5r8fr/build"/>
+	<mkdir dir="${results.dir}/hanoid5s5r8fr/src"/>
+	<copy todir="${results.dir}/hanoid5s5r8fr/src">
+		<fileset dir="${hanoi.dir}/src"/>
+	</copy>
 	<mkdir dir="${results.dir}/hanoid5s5r8fr/build"/>
 	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid5s5r8fr/build/gui/Towers.java"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="repost"/>
-	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid5s5r8fr"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="never"/>
+	<setFailureRecovery srcfile="${results.dir}/hanoid5s5r8fr/src/SolveDisc.event" value="repost"/>
+	<compileJACK in.dir="${results.dir}/hanoid5s5r8fr/src" make.dir="${results.dir}/hanoid5s5r8fr"/>
 	<makeJAR test.name="hanoid5s5r8fr" make.dir="${results.dir}/hanoid5s5r8fr"/>
 	<jar destfile="${results.dir}/hanoid5s5r8fr/build/hanoid5s5r8fr.jar" basedir="${results.dir}/hanoid5s5r8fr/build" includes="*.class gui/*.class"/>
 </target>
@@ -953,11 +956,14 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildhanoid5s3r8fr" description="Build hanoid5s3r8fr" if="available.buildDependencies" depends="buildDependencies">
 	<delete dir="${results.dir}/hanoid5s3r8fr/build"/>
+	<mkdir dir="${results.dir}/hanoid5s3r8fr/src"/>
+	<copy todir="${results.dir}/hanoid5s3r8fr/src">
+		<fileset dir="${hanoi.dir}/src"/>
+	</copy>
 	<mkdir dir="${results.dir}/hanoid5s3r8fr/build"/>
 	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid5s3r8fr/build/gui/Towers.java"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="repost"/>
-	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid5s3r8fr"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="never"/>
+	<setFailureRecovery srcfile="${results.dir}/hanoid5s3r8fr/src/SolveDisc.event" value="repost"/>
+	<compileJACK in.dir="${results.dir}/hanoid5s3r8fr/src" make.dir="${results.dir}/hanoid5s3r8fr"/>
 	<makeJAR test.name="hanoid5s3r8fr" make.dir="${results.dir}/hanoid5s3r8fr"/>
 	<jar destfile="${results.dir}/hanoid5s3r8fr/build/hanoid5s3r8fr.jar" basedir="${results.dir}/hanoid5s3r8fr/build" includes="*.class gui/*.class"/>
 </target>
@@ -999,11 +1005,14 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildhanoid5s1r8fr" description="Build hanoid5s1r8fr" if="available.buildDependencies" depends="buildDependencies">
 	<delete dir="${results.dir}/hanoid5s1r8fr/build"/>
+	<mkdir dir="${results.dir}/hanoid5s1r8fr/src"/>
+	<copy todir="${results.dir}/hanoid5s1r8fr/src">
+		<fileset dir="${hanoi.dir}/src"/>
+	</copy>
 	<mkdir dir="${results.dir}/hanoid5s1r8fr/build"/>
 	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoid5s1r8fr/build/gui/Towers.java"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="repost"/>
-	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoid5s1r8fr"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="never"/>
+	<setFailureRecovery srcfile="${results.dir}/hanoid5s1r8fr/src/SolveDisc.event" value="repost"/>
+	<compileJACK in.dir="${results.dir}/hanoid5s1r8fr/src" make.dir="${results.dir}/hanoid5s1r8fr"/>
 	<makeJAR test.name="hanoid5s1r8fr" make.dir="${results.dir}/hanoid5s1r8fr"/>
 	<jar destfile="${results.dir}/hanoid5s1r8fr/build/hanoid5s1r8fr.jar" basedir="${results.dir}/hanoid5s1r8fr/build" includes="*.class gui/*.class"/>
 </target>
@@ -1045,11 +1054,14 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildhanoi5fr" description="Build hanoi5fr" if="available.buildDependencies" depends="buildDependencies">
 	<delete dir="${results.dir}/hanoi5fr/build"/>
+	<mkdir dir="${results.dir}/hanoi5fr/src"/>
+	<copy todir="${results.dir}/hanoi5fr/src">
+		<fileset dir="${hanoi.dir}/src"/>
+	</copy>
 	<mkdir dir="${results.dir}/hanoi5fr/build"/>
 	<copy file="${hanoi.dir}/src/gui/Towers.java" tofile="${results.dir}/hanoi5fr/build/gui/Towers.java"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="repost"/>
-	<compileJACK in.dir="${hanoi.dir}" make.dir="${results.dir}/hanoi5fr"/>
-	<setFailureRecovery srcfile="${hanoi.dir}/src/SolveDisc.event" value="never"/>
+	<setFailureRecovery srcfile="${results.dir}/hanoi5fr/src/SolveDisc.event" value="repost"/>
+	<compileJACK in.dir="${results.dir}/hanoi5fr/src" make.dir="${results.dir}/hanoi5fr"/>
 	<makeJAR test.name="hanoi5fr" make.dir="${results.dir}/hanoi5fr"/>
 	<jar destfile="${results.dir}/hanoi5fr/build/hanoi5fr.jar" basedir="${results.dir}/hanoi5fr/build" includes="*.class gui/*.class"/>
 </target>
