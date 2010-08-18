@@ -34,6 +34,11 @@ public plan MetaPlan extends Plan {
             /* This is a re-posted goal */
             ag.writeLog("MetaPlan: Choosing for reposted event " + pc.event.getEventName());
             isReposted = true;
+            /* World state may have changed from the failure so update state data in the event */
+            if (pc.event instanceof SolveDisc) {
+                ag.writeLog("MetaPlan: Updating state information for reposted event " + pc.event.getEventName());
+                ((SolveDisc)(pc.event)).updateState();
+            }
         }
 
         /* First separate out the plans in the following bags:
@@ -123,7 +128,7 @@ public plan MetaPlan extends Plan {
             //ag.writeLog("MetaPlan: ag.applicabilityThreshold = " + ag.applicabilityThreshold() + " pMax = " + pMax + " thandler = " + thandler);
             pc.chosen = thandler;
             ag.writeLog("MetaPlan: Choosing dummy plan.");
-            return true;
+            //return true;
         }
 
         PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();

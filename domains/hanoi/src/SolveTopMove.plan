@@ -47,7 +47,8 @@ public plan SolveTopMove extends Plan {
     #reasoning method
     body()
     {
-        top.get(pin,ev.disc);
+        place.get(pin,ev.disc);
+        ag.writeLog("Plan "+pid+" will attempt a move from pin "+pin+" to pin "+ev.pin);
         @subtask(md.move(pin,ev.pin));
         @test(place.get(ev.pin,ev.disc),null);
     }

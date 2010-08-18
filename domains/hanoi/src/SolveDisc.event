@@ -61,6 +61,12 @@ public event SolveDisc extends BDIGoalEvent {
     Integer[] discsOnTop;
     Integer[] places;
 
+    public void updateState() {
+        Player ag = ((Player)getAgent());
+        discsOnTop = ag.discsOnTop();
+        places = ag.places();
+    }
+
     public String[] state() {
         int i = 0;
         String[] state = new String[3+discsOnTop.length+places.length];

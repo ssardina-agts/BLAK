@@ -98,7 +98,8 @@ public agent Player extends Agent implements Logger{
 
     private Hashtable nPlansTried;
     private Hashtable nLeafPlansTried;
-
+    private Hashtable nGoalReposted;
+    
     // Constructor
     Player(int nDiscs, boolean visible, boolean learning, int episodes, int recursion, PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int minInstances, int stableK, double stableE, int stableW, int stateW, double alpha, String targetDir, String filename, long seed, String loadInit, int solutionLevel, String saveInit, double domainDecay, double threshold) {
         super("player");
@@ -129,6 +130,7 @@ public agent Player extends Agent implements Logger{
         
         this.nPlansTried = new Hashtable();
         this.nLeafPlansTried = new Hashtable();
+        this.nGoalReposted = new Hashtable();
         
         try{
             writerOut = new PrintWriter(targetDir + "/player.out");
@@ -258,13 +260,18 @@ public agent Player extends Agent implements Logger{
     }
 
     public void incrementPlansTried() {
-        Integer n = (nPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeStartStateString)) : new Integer(0);
-        nPlansTried.put(episodeStartStateString, new Integer(n.intValue()+1));
+        Integer n = (nPlansTried.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+        nPlansTried.put(episodeGoalKey+episodeStartStateString, new Integer(n.intValue()+1));
+    }
+
+    public void incrementGoalReposted() {
+        Integer n = (nGoalReposted.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nGoalReposted.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+        nGoalReposted.put(episodeGoalKey+episodeStartStateString, new Integer(n.intValue()+1));
     }
 
     public void incrementLeafPlansTried() {
-        Integer n = (nLeafPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeStartStateString)) : new Integer(0);
-        nLeafPlansTried.put(episodeStartStateString, new Integer(n.intValue()+1));
+        Integer n = (nLeafPlansTried.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+        nLeafPlansTried.put(episodeGoalKey+episodeStartStateString, new Integer(n.intValue()+1));
     }
     
     public void record(int pid, boolean res, String[] state, int depth) {
@@ -291,11 +298,14 @@ public agent Player extends Agent implements Logger{
 
         /* If success then print stats for top level plan*/
         if (res && isRoot) {
-            Integer np = (nPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeStartStateString)) : new Integer(0);
-            Integer nl = (nLeafPlansTried.containsKey(episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeStartStateString)) : new Integer(0);
-            writeLog("Recorded success for goal["+episodeGoalKey+"] and starting order["+episodeStartStateString+"]. Total plans tried "+np+". Leaf plans tried "+nl+".");
-            nPlansTried.put(episodeStartStateString, new Integer(0));
-            nLeafPlansTried.put(episodeStartStateString, new Integer(0));
+            Integer np = (nPlansTried.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nPlansTried.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+            Integer nl = (nLeafPlansTried.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nLeafPlansTried.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+            Integer ng = (nGoalReposted.containsKey(episodeGoalKey+episodeStartStateString)) ? (Integer)(nGoalReposted.get(episodeGoalKey+episodeStartStateString)) : new Integer(0);
+            writeLog("Recorded success for goal["+episodeGoalKey+"] and starting order["+episodeStartStateString+"]. Top goal reposted "+ng+" times. Total plans tried "+np+". Leaf plans tried "+nl+".");
+            /* Reset the counters */
+            nPlansTried.put(episodeGoalKey+episodeStartStateString, new Integer(0));
+            nLeafPlansTried.put(episodeGoalKey+episodeStartStateString, new Integer(0));
+            nGoalReposted.put(episodeGoalKey+episodeStartStateString, new Integer(0));
         } 
     }
 
@@ -306,6 +316,7 @@ public agent Player extends Agent implements Logger{
             saveInitState();
         }
         episodeGoalKey = loadNewState();
+        incrementGoalReposted();
         failureNode = null;
         episode++;
         maxDepthThisEpisode = 0;
@@ -394,6 +405,7 @@ public agent Player extends Agent implements Logger{
     }
 
     Integer[] places() {
+        /* Returns the pin number for each disc */
         Integer[] p = new Integer[numDiscs];
         for (int i = 1; i <= p.length; i++) {
             try{
@@ -407,6 +419,7 @@ public agent Player extends Agent implements Logger{
     }
 
     Integer[] discsOnTop() {
+        /* Returns 1 if a disc has one or more discs on top, otherwise 0 */
         Integer[] n = new Integer[numDiscs];
         for (int i = 1; i <= n.length; i++) {
             try{
