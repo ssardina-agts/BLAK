@@ -1,0 +1,75 @@
+%!TEX root = ./dp7-application.tex
+\begin{tikzpicture} [scale=0.7,level distance=4.0em]
+\tikzstyle{planbox}=[scale=0.8,draw,minimum height=2.2em,minimum width=2.5em]
+\tikzstyle{goalbox}=[scale=0.8,draw,rounded corners=0.75em,minimum height=2.2em,minimum width=2.5em]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+
+	
+\tikzstyle{level 1}=[sibling distance=15.0em] 
+\tikzstyle{level 2}=[sibling distance=20.0em] 
+\tikzstyle{level 3}=[sibling distance=5.0em] 
+\tikzstyle{level 4}=[sibling distance=3.3em] 
+
+\node[goalbox,solid] {$G$}
+	child {node[planbox] {$P^+_{}$}
+		child {node[goalbox] {$G^+_{A}$}
+			child {node[planbox] {$P^+_{A1}$}
+				child {node[goalbox] {$G^+_{A1}$}
+					child {node[planbox] {$P^+_{a}$}}
+					child {node[planbox] {$P^+_{b}$}}
+					child {node[planbox] {$P^+_{c}$}}
+				}
+			}
+			child {node[planbox] {$P^+_{abc}$}}
+			child {node[planbox] {$P^+_{A2}$}
+				child {node[goalbox] {$G^+_{A2}$}
+					child {node[planbox] {$P^+_{ab}$}}
+					child {node[planbox] {$P^+_{bc}$}}
+					child {node[planbox] {$P^+_{ca}$}}
+				}
+			}
+			child {node[planbox] {$Nop$}}
+		}
+		child {node[goalbox] {$G^+_{B}$}
+			child {node[planbox] {$P^+_{B1}$}
+				child {node[goalbox] {$G^+_{B1}$}
+					child {node[planbox] {$P^+_{d}$}}
+					child {node[planbox] {$P^+_{e}$}}
+					child {node[planbox] {$P^+_{f}$}}
+				}
+			}
+			child {node[planbox] {$P^+_{def}$}}
+			child {node[planbox] {$P^+_{B2}$}
+				child {node[goalbox] {$G^+_{B2}$}
+					child {node[planbox] {$P^+_{de}$}}
+					child {node[planbox] {$P^+_{ef}$}}
+					child {node[planbox] {$P^+_{fd}$}}
+				}
+			}
+			child {node[planbox] {$Nop$}}
+		}
+		child {node[goalbox] {$G^+_{C}$}
+			child {node[planbox] {$P^+_{C1}$}
+				child {node[goalbox] {$G^+_{C1}$}
+					child {node[planbox] {$P^+_{g}$}}
+					child {node[planbox] {$P^+_{h}$}}
+					child {node[planbox] {$P^+_{i}$}}
+				}
+			}
+			child {node[planbox] {$P^+_{ghi}$}}
+			child {node[planbox] {$P^+_{C2}$}
+				child {node[goalbox] {$G^+_{C2}$}
+					child {node[planbox] {$P^+_{gh}$}}
+					child {node[planbox] {$P^+_{hi}$}}
+					child {node[planbox] {$P^+_{ig}$}}
+				}
+			}
+			child {node[planbox] {$Nop$}}
+		}
+	}
+	child {node[planbox] {$Nop$}}
+	child[densely dashed] {node[planbox] {$P^-$}}
+;
+
+\end{tikzpicture}
