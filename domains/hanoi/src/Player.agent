@@ -331,7 +331,7 @@ public agent Player extends Agent implements Logger{
     public String loadNewState() {
         String depthKey = Integer.toString(generateSolutionsAtLevel);
         if (generateSolutionsAtLevel == -1) {
-            depthKey = Integer.toString(selector.nextInt(init.size()));
+            depthKey = Integer.toString(generator.nextInt(init.size()));
         }
         String goalKey = init.getRandomSecondKey(generator,depthKey);
 
