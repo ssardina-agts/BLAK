@@ -76,8 +76,6 @@ $SetCharge$: Plan to set the operational state of module $k$ to {\em Charge} for
 
 $SetDischarge$: Plan to set the operational state of module $k$ to {\em Discharge} for this period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is aborted, otherwise the state is updated and Goal $G$ reposted for module $k-1$.
 
-$SetPrevious$: Plan to keep the operational state of module $k$ unchanged from the previous period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is aborted, otherwise Goal $G$ is reposted for module $k-1$.
-
 $SetNotUsed$: Plan to set the operational state of module $k$ to {\em NotUsed} for this period. This means that the module will remain disconnected from use for this period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is aborted, otherwise the state is updated and the Goal $G$ reposted for module $k-1$.
 
 $Execute$: The leaf plan that actually performs the operations on the battery modules. The plan operates only when $k=0$ which implies that all modules have been configured. The battery modules are then operated for this period according to their assigned states. At the end of the period, the plan will evaluate the battery response against the goal and determine the $Pass$ or $Fail$ status. Normally, a pass would mean that the actual battery response was within tolerance of the desired response. 
@@ -97,12 +95,7 @@ Finally, the system only learns a response to the immediate request i.e. how to 
 
 The system is (purposely) similar in design to the Towers of Hanoi problem of \cite{Singh:RAS10}. In some respects, it is simpler because the solutions are always at recursive depth $k$. Moreover, the non-leaf $Set*$ plans do not have side-effects when they fail and leave the initial state unaltered. Finally, a solution always consists of a single $Execute$ action whereas in the Hanoi problem it consists of possibly several $Move$ actions\footnote{One point of difference is that this is not a universal library where a solution can always be found. For some requests, no solution will be possible given the internal state of the modules.}.
 
-Nonetheless, the problem captures a real world problem where it is not straightforward to hand-craft a functional hierarchy and where learning is justified. We do not have a solution to begin with. Then, the size of the problem is still significant - the flow battery in CSIRO Newcastle has $10$ internal modules, so with three possible module states that represents $3^{10}=59049$ possible solutions for a given request. Finally, it offers a realistic scenario for re-learning a solution due to significant changes in the environment. For instance, if an internal module were to fail and had to be replaced, then prior learning may no longer work effectively, and the system will have to adjust and re-learn it's response based on the new characteristics of the updated module.
-
-\section{Assumptions}
-
-Geoff, you mentioned earlier that we want to be able to rotate modules around so that they don't develop a bias. I can't remember what the exact problem was. Does that still apply to this solution? Perhaps it is something that can be captured as an internal constraints per module? Or for simplicity we might defer this to future work. In any case, we will likely start with no constraints to make sure we can get the system working first.
-
+Nonetheless, the problem captures a real world problem where it is not straightforward to hand-craft a functional hierarchy and where learning is justified. We do not have a solution to begin with. Then, the size of the problem is still significant - the flow battery in CSIRO Newcastle has $10$ internal modules, so with three possible module states that represents $3^{10}=59049$ possible configurations for a given request. Finally, it offers a realistic scenario for re-learning a solution due to significant changes in the environment. For instance, if an internal module were to fail and had to be replaced, then prior learning may no longer work effectively, and the system will have to adjust and re-learn it's response based on the new characteristics of the updated module.
 
 %%
 \begin{thebibliography}{10}

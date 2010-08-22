@@ -4,7 +4,7 @@
 \tikzstyle{goalbox}=[draw,rounded corners=2em,minimum height=4em,minimum width=4.5em]
 
 	
-\tikzstyle{level 1}=[sibling distance=8.5em] 
+\tikzstyle{level 1}=[sibling distance=10.0em] 
 \tikzstyle{level 2}=[level distance=7.0em] 
 
 \node[goalbox,solid] {$G($k,s$)$}
@@ -24,13 +24,6 @@
 	child {node[planbox] {$SetDischarge$ \nodepart{second}
 			test module $k$ contraints;
 			mark for discharging;
-			repost goal
-		}
-		child {node[goalbox] {$G($k-1,s$)$}}
-	}
-	child {node[planbox] {$SetPrevious$ \nodepart{second}
-			test module $k$ contraints;
-			maintain previous state;
 			repost goal
 		}
 		child {node[goalbox] {$G($k-1,s$)$}}
