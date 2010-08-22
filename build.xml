@@ -80,6 +80,8 @@
 	<chmod file="${dist.dir}/scripts/movingAvg.pl" perm="755"/>
 	<copy file="${src.scripts.dir}/setFailureRecovery.sh" tofile="${dist.dir}/scripts/setFailureRecovery.sh" />
 	<chmod file="${dist.dir}/scripts/setFailureRecovery.sh" perm="755"/>
+	<copy file="${src.scripts.dir}/resultSummary.sh" tofile="${dist.dir}/scripts/resultSummary.sh" />
+	<chmod file="${dist.dir}/scripts/resultSummary.sh" perm="755"/>
 	<copy file="${src.expGenerator.dir}/metaPlanBody.txt" tofile="${build.classes.dir}/expGenerator/metaPlanBody.txt" />
 	<copy file="${src.expGenerator.dir}/mainBody.txt" tofile="${build.classes.dir}/expGenerator/mainBody.txt" />
 	<jar destfile="${dist.dir}/lib/${package.dist}" basedir="${build.classes.dir}"/>

@@ -18,7 +18,7 @@ tail -10000 $infile | egrep "number of instances|Number of Leaves|Size of the tr
 getTries()
 {
 infile=$1
-tmpfile=tmpfile$RANDOM.txt
+tmpfile=/tmp/tmpfile$RANDOM.txt
 grep "Recorded success for goal" $1 | cut -f1 -d'.' | sort | uniq  > $tmpfile
 cat $tmpfile | while read line; do 
 line2=`echo $line | sed -e 's/\[/\\\[/g' | sed -e 's/\]/\\\]/g'`
