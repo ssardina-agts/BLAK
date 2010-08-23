@@ -6,6 +6,13 @@
 \usepackage{amssymb,amsmath}
 \usepackage{tikz,pgfplots}
 \usetikzlibrary{calc,arrows,shapes,plotmarks}
+% Add SVN tags to files for drafts
+% Replace fancyhdr with nofancy for final version
+\usepackage[fancyhdr]{svninfo}
+\usepackage{fancyhdr}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
 \parindent 0pt
 \parskip 1.25em
 %\linespread{1.25}
@@ -23,8 +30,9 @@ geoff.james@csiro.au
 }
 
 \begin{document}
+\svnInfo $Id$ 
 
-%\date{7 July 2009}
+\date{}
 
 \maketitle
 
