@@ -1,0 +1,39 @@
+public event Solve extends BDIGoalEvent {
+
+	#set behavior PostPlanChoice one_applicable;
+	#set behavior PostPlanChoice multiple_applicable;
+	#set behavior ApplicableChoice random;
+	#set behavior Recover never; 
+	#set behavior ApplicableSet new; 
+
+    int request;
+    int module;
+    String[] state;
+    String statestr;
+
+    #posted as
+    solve(int r, int m, String[] s)
+    {
+        BatteryManager ag = ((BatteryManager)getAgent());
+        request = r;
+        module = m;
+        state = new String[2+s.length];
+        statestr = "";
+        int i = 0;
+        state[i] = Integer.toString(r);
+        statestr += state[i++];
+        state[i] = Integer.toString(m);
+        statestr += state[i++];
+        for (int j=0; j<s.length; j++) {
+            state[i] = s[j];
+            statestr += state[i++];
+        } 
+        ag.writeLog("Posted Solve(module="+module+" state=["+statestr+"])");
+    }
+
+    public String[] state() {
+        return state;
+    }
+    
+}
+

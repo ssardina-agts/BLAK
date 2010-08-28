@@ -1,0 +1,137 @@
+import agents.Config.PlanSelectMode;
+import agents.Config.RunMode;
+import agents.ExecutionTrace;
+import java.util.Hashtable;
+
+public plan MetaPlan extends Plan {
+    #chooses for event Solve;
+	#handles event PlanChoice pc;
+	#uses interface BatteryManager ag;
+
+	static boolean relevant(PlanChoice pc){
+		return true;
+	}
+
+	context(){
+		true;
+	}
+
+	#reasoning method
+	body(){
+
+        Signature thandler = null;
+        Hashtable fullConfidencePlans = new Hashtable();
+        Hashtable applicablePlans = new Hashtable();
+        boolean isReposted = false;
+
+        if (pc.failure.size() > 0) {
+            /* This is a re-posted goal */
+            ag.writeLog("MetaPlan: Choosing for reposted event " + pc.event.getEventName());
+            isReposted = true;
+        }
+
+        /* First separate out the plans in the following bags:
+         * thandler: threshold handler (dummy) plan
+         * fullConfidencePlans: plans with high success expectation with high confidence
+         * applicablePlans: all remaining plans
+         */
+        int i = 0;
+        for (Signature s = pc.applicable.first(); s != null; s = pc.applicable.next(s), i++) {
+            if (s.getInfo() instanceof PlanIdInfo) {
+                PlanIdInfo info = (PlanIdInfo) s.getInfo();
+                double p = info.pSuccess;
+                double c = (info.planConfidence * ag.confidenceAlpha()) + (info.stateConfidence * (1.0-ag.confidenceAlpha()));
+                if (ag.pselect() == PlanSelectMode.CONFIDENCE) { 
+                    p = 0.5 + (c * (p - 0.5));
+                }
+                if (info.isFailedThresholdHandler) {
+                    thandler = s;
+                } else if ((c > 0.95) && (info.pSuccess > 0.95)) {
+                    fullConfidencePlans.put(new Integer(i), s);
+                } else if (p >= ag.applicabilityThreshold()) {
+                    applicablePlans.put(new Integer(i), s);
+                }
+            }
+        }
+        
+        if (fullConfidencePlans.size() > 0) {
+            /* If we have fullConfidencePlans then always choose randomly from them */
+            Signature[] sigs = (Signature[])(fullConfidencePlans.values().toArray(new Signature[0]));
+            pc.chosen = sigs[ag.selector().nextInt(sigs.length)];
+            ag.writeLog("MetaPlan: Choosing randomly from "+sigs.length+" plans with full confidence");
+
+        } else if (applicablePlans.size() > 0){
+            /* Else choose probabilistically from applicablePlans.
+             * Plans with p < 0.0001 will get at least 0.0001 selection weight.
+             */
+            Signature[] sigs = (Signature[])(applicablePlans.values().toArray(new Signature[0]));
+            double[] prob = new double[sigs.length];
+            double acc = 0;
+            for (i = 0; i < sigs.length; i++) {
+                Signature s = sigs[i];
+                PlanIdInfo info = (PlanIdInfo) s.getInfo();
+                double p = info.pSuccess;
+                double c = (info.planConfidence * ag.confidenceAlpha()) + (info.stateConfidence * (1.0-ag.confidenceAlpha()));
+                if (ag.pselect() == PlanSelectMode.CONFIDENCE) { 
+                    p = 0.5 + (c * (p - 0.5));
+                    String str =
+                        "MetaPlan: Plan " + ag.planNodes[info.plan_id].name() +
+                        " REVISED probability" +
+                        " to p=" + ((double) ((int) (p * 10000))) / 10000 +
+                        " based on confidence c=" + ((double) ((int) (c * 10000))) / 10000 +
+                        ". (pConf="+((double) ((int) (info.planConfidence * 10000))) / 10000 +
+                        " sConf="+((double) ((int) (info.stateConfidence * 10000))) / 10000 +
+                        " alpha="+ag.confidenceAlpha()+")";
+                    ag.writeLog(str);
+                }
+                acc += (p < 0.0001) ? 0.0001 : p;
+                prob[i] = acc;
+            }
+
+            /* Normalise the accumulated probabilities to 1.0 */
+            for (i = 0; i < prob.length; i++) {
+                prob[i] = prob[i] / prob[prob.length-1];
+            }
+            
+            /* Make a probabilistic selection */
+            double rnd = ag.selector().nextDouble();
+            int choice = 0;
+            while ((choice < prob.length) && prob[choice] < rnd) {
+                choice++;
+            }
+            pc.chosen = sigs[choice];
+            String str = "[";
+            for (i = 0; i < prob.length; i++) {
+                str += " " + ((double) ((int) (prob[i] * 10000))) / 10000;
+            }
+            str += " ]";
+            ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities " +
+                str + ". Chosen plan at index " + choice);
+            
+        } else {
+            /* Else assign the failed threshold handler since no other option applies */
+            //ag.writeLog("MetaPlan: ag.applicabilityThreshold = " + ag.applicabilityThreshold() + " pMax = " + pMax + " thandler = " + thandler);
+            pc.chosen = thandler;
+            ag.writeLog("MetaPlan: Choosing dummy plan.");
+            //return true;
+        }
+
+        PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
+        if(isReposted) {
+            /* Handling reposted goal, so force all parent nodes in the active trace 
+            * to record failure, regardless of the actual result.
+            */
+            ag.activeExecutionTrace().setShouldRecordFailure(isReposted);
+            ag.writeLog("MetaPlan: Plan "+ag.planNodes[info.plan_id].name()
+            +" is handling reposted goal, so will record failure for all parents in: "
+            +ag.activeExecutionTrace());
+
+        }
+        ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
+        ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
+        //ag.incrementPlansTried();
+        //if (ag.planNodes[info.plan_id].isLeaf()) {
+        //    ag.incrementLeafPlansTried();
+        //}
+    }
+}

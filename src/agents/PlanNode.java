@@ -112,12 +112,12 @@ public class PlanNode extends Node{
         domainComplexityDecayMultiplier = 0.0;
         try{
             decisionTree = new J48();
-            String[] options = new String[1];
+            String[] options = new String[3];
             options[0] = "-U";
+            options[1] = "-M";
+            options[2] = "1";
             //options[0] = "-C";
             //options[1] = "0.5";
-            //options[2] = "-M";
-            //options[3] = "1";
             decisionTree.setOptions(options);
         }
         catch(Exception e){
@@ -316,6 +316,9 @@ public class PlanNode extends Node{
     }
     public void record(boolean res, int[] traceStability) {   
         record(res, traceStability, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
+    }
+    public void record(boolean res, int[] traceStability, boolean isRoot) {   
+        record(res, traceStability, 0 /*depth*/, isRoot, 1.0/*failureNodeComplexity*/);
     }
     public void record(boolean res,
                        int[] traceStability,

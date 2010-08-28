@@ -1,0 +1,51 @@
+import agents.PlanNode;
+import PlanIdInfo;
+
+public plan SetDischarge extends Plan {
+
+    #handles event Solve ev;
+    #uses interface BatteryManager ag;
+    #posts event Solve sd;
+    #modifies data ModuleConfig configs;
+
+
+    public static final int pid = 1;
+    public static final String pname = "SetDischarge";
+        
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return ag.planInfo(pid, ev.state());
+    }
+
+    static boolean relevant(Solve ev) {
+        return (ev.module > 0);
+    }    
+    
+    context() {
+        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_DISCHARGE);
+    }
+    
+    
+    #reasoning method
+    body() {
+        try{
+            configs.add(ev.module,ag.CONFIG_DISCHARGE);
+            ag.writeLog("Plan "+pname+" configured module "+ev.module+" to Discharge.");
+        } catch (Exception e) {
+            ag.writeLog("Exception in Plan "+pname+" while configuring module "+ev.module+" to Discharge.");
+        }
+        @subtask(sd.solve(ev.request, ev.module-1, ag.batteryState()));
+      }
+    
+
+    #reasoning method
+    pass() {
+        ag.record(pid, true, ev.state(), ev.module);
+    }
+
+    #reasoning method
+    fail() {
+        ag.record(pid, false, ev.state(), ev.module);
+    }
+}
+

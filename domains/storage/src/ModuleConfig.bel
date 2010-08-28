@@ -1,0 +1,19 @@
+/**
+   The Place ModuleConfig is used for keeping track of the current 
+   configuration of the battery module.
+   Its fields are (module,config), where module is the key and 
+   config is one of 1(Charging), -1(Discharging),or 0(Not in use).
+*/
+
+public beliefset ModuleConfig extends ClosedWorld {
+    #key field int module;
+    #value field int config;
+    #indexed query get(int module, logical int config);
+
+    #function query int get(int module) {
+        logical int config;
+        get(module,config).next();
+        return config.as_int();
+    }
+}
+

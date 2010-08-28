@@ -1,0 +1,18 @@
+/**
+   The Place ModuleState is used for keeping track of the remaining charge
+   in the battery module. 
+   Its fields are (module,charge), where module is the key.
+*/
+
+public beliefset ModuleState extends ClosedWorld {
+    #key field int module;
+    #value field int charge;
+    #indexed query get(int pin, logical int charge);
+
+    #function query int get(int module) {
+        logical int charge;
+        get(module,charge).next();
+        return charge.as_int();
+    }
+}
+

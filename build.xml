@@ -97,6 +97,15 @@
 	</copy>
 	<copy file="${basedir}/domains/hanoi/README" tofile="${dist.dir}/domains/hanoi/README"/>
 	<copy file="${basedir}/domains/hanoi/Makefile" tofile="${dist.dir}/domains/hanoi/Makefile"/>
+
+	<mkdir dir="${dist.dir}/domains/storage/lib"/>
+	<mkdir dir="${dist.dir}/domains/storage/src"/>
+	<copy todir="${dist.dir}/domains/storage/src">
+		<fileset dir="${basedir}/domains/storage/src"/>
+	</copy>
+	<copy file="${basedir}/domains/storage/README" tofile="${dist.dir}/domains/storage/README"/>
+	<copy file="${basedir}/domains/storage/Makefile" tofile="${dist.dir}/domains/storage/Makefile"/>
+
 </target>
 
 <target name="release" description="Build a release package" depends="dist">

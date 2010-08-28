@@ -1,0 +1,48 @@
+import agents.PlanNode;
+import PlanIdInfo;
+
+public plan Execute extends Plan {
+
+    #handles event Solve ev;
+    #uses interface BatteryManager ag;
+    #reads data ModuleState states;
+    #reads data ModuleConfig configs;
+
+
+    public static final int pid = 3;
+    public static final String pname = "Execute";
+        
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return new PlanIdInfo(ev.state(), pid, 1.0/*prob*/, 1.0/*pconf*/, 1.0/*sconf*/, false/*isFTH*/);
+    }
+
+    static boolean relevant(Solve ev) {
+        return (ev.module <= 0);
+    }    
+    
+    context() {
+        true;
+    }
+    
+    
+    #reasoning method
+    body() {
+        ag.writeLog("Plan "+pname+" is operating the configured modules for one period.");
+        return ag.operateBattery(1,ev.request);
+    }
+    
+
+    #reasoning method
+    pass() {
+        ag.writeLog("Plan "+pname+" successfully operated the battery configuration for one period.");
+        // No need to record this since this plan is fully defined and does not require learning
+    }
+
+    #reasoning method
+    fail() {
+        ag.writeLog("Plan "+pname+" failed while operating the battery configuration for one period.");
+        // No need to record this since this plan is fully defined and does not require learning
+    }
+}
+
