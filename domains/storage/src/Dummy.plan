@@ -1,0 +1,44 @@
+import agents.PlanNode;
+import agents.Config.RunMode;
+import PlanIdInfo;
+
+public plan Dummy extends Plan {
+
+    #handles event Solve ev;
+    #uses interface BatteryManager ag;
+    #reads data ModuleState states;
+    #reads data ModuleConfig configs;
+
+    public static final int pid = 4;
+    public static final String pname = "Dummy";
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return ag.planInfo(pid, ev.state());
+    }
+
+    static boolean relevant(Solve ev) {
+        return (ev.module > 0);
+    }    
+    
+    context() {
+        true;
+    }
+
+    #reasoning method
+    body()
+    {
+        @test(false,null);
+    }
+
+    #reasoning method
+    pass() {
+        ag.writeLog("Plan "+pname+" passed. Should never happen!");
+        System.exit(9);
+    }
+
+    #reasoning method
+    fail() {
+        ag.record(pid, false, ev.state(), ev.module);
+    }
+}
+
