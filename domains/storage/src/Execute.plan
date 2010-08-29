@@ -32,17 +32,16 @@ public plan Execute extends Plan {
         return ag.operateBattery(1,ev.request);
     }
     
-
     #reasoning method
     pass() {
         ag.writeLog("Plan "+pname+" successfully operated the battery configuration for one period.");
-        // No need to record this since this plan is fully defined and does not require learning
+        ag.record(pid, true, ev.state(), ev.module);
     }
 
     #reasoning method
     fail() {
         ag.writeLog("Plan "+pname+" failed while operating the battery configuration for one period.");
-        // No need to record this since this plan is fully defined and does not require learning
+        ag.record(pid, false, ev.state(), ev.module);
     }
 }
 

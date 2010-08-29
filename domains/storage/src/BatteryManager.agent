@@ -28,6 +28,7 @@ public agent BatteryManager extends Agent implements Logger {
 	#uses plan SetDischarge;
 	#uses plan SetNotInUse;
 	#uses plan Execute;
+	#uses plan Dummy;
 	#uses plan MetaPlan;
 	#handles event PlanChoice;
 
@@ -54,6 +55,7 @@ public agent BatteryManager extends Agent implements Logger {
     private RunMode rselect;
     private double applicabilityThreshold;
     private double confidenceAlpha;
+    private boolean startNewEpisode;
 
     
     //--- Logger related
@@ -81,6 +83,7 @@ public agent BatteryManager extends Agent implements Logger {
         this.uselect = uselect;
         this.rselect = rselect;
         this.confidenceAlpha = alpha;
+        this.startNewEpisode = (rselect == RunMode.FAILURE_RECOVERY) ? false : true;
         
         //--- Logger related
         this.targetDir = ".";
@@ -130,7 +133,7 @@ public agent BatteryManager extends Agent implements Logger {
     public RunMode rselect() {
         return rselect;
     }
-    
+
     /*** BDI Learning Framework related ***/
     
     public PlanIdInfo planInfo(int pid, String[] state) {
@@ -185,6 +188,9 @@ public agent BatteryManager extends Agent implements Logger {
     
     public void startEpisode() {
         writeLog("EPISODE "+episode+" --------------------------------------");
+        
+        /* Initialisations */
+        startNewEpisode = (rselect == RunMode.FAILURE_RECOVERY) ? false : true;
 
         /* Generate the request */
         int request = generator.nextInt(9)-4;
@@ -227,56 +233,21 @@ public agent BatteryManager extends Agent implements Logger {
             return false;
         }
 
-        if ((request-request)==0) {
-            return true;
-        }
-        
         /* Check that the proposed config will not choke the solution */
-        if (request >= 0 /* A charge request */) {
-            /* Module deterioration over time impacts charge in such a 
-             * way that modules charge slower than expected.
-             * So to meet a +r reqest, we need AT LEAST r modules to charge.
-             * Check that the proposed config will not violate this.
-             */ 
-             int alreadyCharging = 0;  /* total rate so far */
-             for (int i = nModules; i > module; i--) {
-                try{
-                    alreadyCharging += configs.get(i);
-                } catch (BeliefSetException e) {
-                    writeLog("BatteryManager: BeliefSetException while checking if module "+i+" is set to Charge.");
-                    System.exit(9);
-                }
-             }
-            int modulesLeftToConfigure = module-1; /* Since we start configuring from nModules down */
-            int additionalRequired = request - alreadyCharging; /* At least this many more should charge to have a hope of meeting the request */
-            int thisModuleCharging = (proposedConfig==CONFIG_CHARGE) ? CONFIG_CHARGE : 0;
-            if ((additionalRequired-thisModuleCharging) > modulesLeftToConfigure) {
-                writeLog("BatteryManager: Module "+module+" constraint failed. Proposed config will cause output to fall short of global charge request.");
-                return false;
+        int configSoFar = 0;  /* total rate so far */
+        for (int i = nModules; i > module; i--) {
+            try{
+                configSoFar += configs.get(i);
+            } catch (BeliefSetException e) {
+                writeLog("BatteryManager: BeliefSetException while checking config for module "+i);
+                System.exit(9);
             }
-        } else /* A discharge request */ {
-            /* Module deterioration over time impacts discharge in such a 
-             * way that modules discharge faster than expected.
-             * So to meet a -r reqest, we need AT MOST r modules to discharge.
-             * Check that the proposed config will not violate this.
-             */ 
-            int alreadyDischarging = 0;
-            for (int i = nModules; i > module; i--) {
-                try{
-                    alreadyDischarging += configs.get(i);
-                } catch (BeliefSetException e) {
-                    writeLog("BatteryManager: BeliefSetException while checking if module "+i+" is set to Discharge.");
-                    System.exit(9);
-                }
-            }
-            int modulesLeftToConfigure = module-1; /* Since we start configuring from nModules down */
-            int additionalRequired = request - alreadyDischarging; /* At least this many more should discharge to have a hope of meeting the request */
-            int thisModuleDischarging = (proposedConfig==CONFIG_DISCHARGE) ? CONFIG_DISCHARGE : 0;
-            if ((additionalRequired-thisModuleDischarging) < (modulesLeftToConfigure*CONFIG_DISCHARGE)) {
-            //if ((alreadyDischarging+thisModuleDischarging) < request) {
-                writeLog("BatteryManager: Module "+module+" constraint failed. Proposed config will cause output to overshoot discharge request.");
-                return false;
-            }
+        }
+        int modulesLeftToConfigure = module-1; /* Since we start configuring from nModules down */
+        int configRequired = request - configSoFar - proposedConfig; /* At least this many more should charge to have a hope of meeting the request */
+        if (Math.abs(configRequired) > modulesLeftToConfigure) {
+            writeLog("BatteryManager: Module "+module+" constraint failed. Proposed config will cause output to fall short of global request.");
+            return false;
         }
         return true;
     }
@@ -311,7 +282,7 @@ public agent BatteryManager extends Agent implements Logger {
         
         /* Now evaluate the reading against the request */
         boolean eval = (reading >= (request - tolerance)) && (reading <= (request + tolerance));
-        String estr = eval ? "SUCCESS" : "FAIL";
+        String estr = eval ? "PASS" : "FAIL";
         writeLog("BatteryManager: Finished operating the battery for "+period+" periods. "+
             "Request was "+request+" (+/- tolerance of "+tolerance+"). "+
             "Final Reading is "+reading+". Evaluated as "+estr+".");
@@ -349,12 +320,21 @@ public agent BatteryManager extends Agent implements Logger {
         activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
         writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
         
+        /* In failure recovery mode, a new episode is started only if the
+         * Execute plan was run, or when a top level dummy plan was
+         * run (which means that all options were exhaused).
+         */
+        if ((rselect==RunMode.FAILURE_RECOVERY) && ((pid==3/*Execute*/) || (isRoot && pid==4/*Dummy*/))) {
+            startNewEpisode = true;
+        }
+        
         /* If finished recording then start a new episode */
-        if (isRoot) {
+        if (isRoot && startNewEpisode) {
             writeResult(episode,res);
             finishEpisode();
             startEpisode();
         }
+        writeLog("Finished recording for plan "+planNodes[pid].name());
     }
     
     public void initLearning(Logger logger, int nModules, 
@@ -375,7 +355,7 @@ public agent BatteryManager extends Agent implements Logger {
         
         /* Module Ids */
         FastVector modules = new FastVector();
-        for (int i = 1; i <= nModules; i++) {
+        for (int i = 0; i <= nModules; i++) {
             modules.addElement(Integer.toString(i));
         }
         
@@ -420,6 +400,7 @@ public agent BatteryManager extends Agent implements Logger {
         goalNodes[0].addChild(planNodes[1]);
         goalNodes[0].addChild(planNodes[2]);
         goalNodes[0].addChild(planNodes[3]);
+        goalNodes[0].addChild(planNodes[4]);
 
         planNodes[0].addChild(goalNodes[0]);
         planNodes[1].addChild(goalNodes[0]);
@@ -459,7 +440,7 @@ public agent BatteryManager extends Agent implements Logger {
         int nModules = 5;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
         UpdateMode uselect = UpdateMode.CONCURRENT;
-        RunMode rselect = RunMode.DEFAULT;
+        RunMode rselect = RunMode.FAILURE_RECOVERY;
         int stableK = 1;
         double stableE = 0.5;
         int stableW = 5;

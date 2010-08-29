@@ -3,37 +3,51 @@ public event Solve extends BDIGoalEvent {
 	#set behavior PostPlanChoice one_applicable;
 	#set behavior PostPlanChoice multiple_applicable;
 	#set behavior ApplicableChoice random;
-	#set behavior Recover never; 
+	#set behavior Recover repost; 
 	#set behavior ApplicableSet new; 
 
     int request;
     int module;
     String[] state;
-    String statestr;
 
     #posted as
     solve(int r, int m, String[] s)
     {
+        buildState(r,m,s);
         BatteryManager ag = ((BatteryManager)getAgent());
-        request = r;
-        module = m;
-        state = new String[2+s.length];
-        statestr = "";
-        int i = 0;
-        state[i] = Integer.toString(r);
-        statestr += state[i++];
-        state[i] = Integer.toString(m);
-        statestr += state[i++];
-        for (int j=0; j<s.length; j++) {
-            state[i] = s[j];
-            statestr += state[i++];
-        } 
-        ag.writeLog("Posted Solve(module="+module+" state=["+statestr+"])");
+        ag.writeLog("Posted Solve(module="+module+" state=["+stateString()+"])");
     }
 
     public String[] state() {
         return state;
     }
     
+    public boolean updateState() {
+        String old = stateString();
+        BatteryManager ag = ((BatteryManager)getAgent());
+        buildState(request,module,ag.batteryState());
+        return (old == stateString());
+    }
+    
+    private void buildState(int r, int m, String[] s) {
+        BatteryManager ag = ((BatteryManager)getAgent());
+        request = r;
+        module = m;
+        state = new String[2+s.length];
+        int i = 0;
+        state[i++] = Integer.toString(r);
+        state[i++] = Integer.toString(m);
+        for (int j=0; j<s.length; j++) {
+            state[i++] = s[j];
+        }
+    }
+    
+    private String stateString() {
+        String str = "";
+        for (int i=0; i<state.length; i++) {
+            str += state[i];
+        }
+        return str; 
+    }
 }
 
