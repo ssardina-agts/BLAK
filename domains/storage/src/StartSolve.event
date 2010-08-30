@@ -1,0 +1,8 @@
+public event StartSolve extends Event {
+
+    boolean doInit;
+
+    #posted as
+    start() {}
+}
+

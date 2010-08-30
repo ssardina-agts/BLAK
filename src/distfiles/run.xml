@@ -1075,7 +1075,7 @@
 </target>
 <target name="plothanoi5fr" description="Plot hanoi5fr" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoi5fr"/>
-	<plotResult test.name="hanoi5fr" every="2000" window="200" label="hanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
+	<plotResult test.name="hanoi5fr" every="250" window="200" label="hanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1196,12 +1196,12 @@
 </target>
 <target name="runstorage1" description="Run storage1">
     <failIfBuildNotFound test.name="storage1"/>
-	<runTest test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 2000 -k 1 -e 0.5"/>
-	<runTest test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 2000 -k 1 -e 0.5"/>
+	<runTest test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 10000 -k 1 -e 0.5"/>
+	<runTest test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 10000 -k 1 -e 0.5"/>
 </target>
 <target name="plotstorage1" description="Plot storage1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1"/>
-	<plotResult test.name="storage1" every="200" window="200" label="storage:modules=5"/>
+	<plotResult test.name="storage1" every="500" window="200" label="storage:modules=5"/>
 </target>
 
 

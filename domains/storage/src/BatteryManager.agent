@@ -24,16 +24,20 @@ public agent BatteryManager extends Agent implements Logger {
     #private data ModuleConfig configs();
     #posts event Solve ss;
     #handles event Solve;
+    #posts event StartSolve sts;
+    #handles event StartSolve;
+
 	#uses plan SetCharge;
 	#uses plan SetDischarge;
 	#uses plan SetNotInUse;
 	#uses plan Execute;
 	#uses plan Dummy;
 	#uses plan MetaPlan;
+    #uses plan StartSolver;
 	#handles event PlanChoice;
 
     public static final int HEALTH_MIN = 0;
-    public static final int HEALTH_RANGE = 3;
+    public static final int HEALTH_RANGE = 4;
     public static final int CONFIG_MIN = -1;
     public static final int CONFIG_RANGE = 3;
     public static final int CONFIG_DISCHARGE = -1;
@@ -55,8 +59,7 @@ public agent BatteryManager extends Agent implements Logger {
     private RunMode rselect;
     private double applicabilityThreshold;
     private double confidenceAlpha;
-    private boolean startNewEpisode;
-
+    private boolean lastResult;
     
     //--- Logger related
     private int indent = 0;
@@ -83,7 +86,7 @@ public agent BatteryManager extends Agent implements Logger {
         this.uselect = uselect;
         this.rselect = rselect;
         this.confidenceAlpha = alpha;
-        this.startNewEpisode = (rselect == RunMode.FAILURE_RECOVERY) ? false : true;
+        this.lastResult = false;
         
         //--- Logger related
         this.targetDir = ".";
@@ -100,6 +103,14 @@ public agent BatteryManager extends Agent implements Logger {
         
         //--- Initialise the system
         episode = 1;
+    }
+
+    public int nModules() {
+        return nModules;
+    }
+
+    public int episode() {
+        return episode;
     }
     
     public ExecutionTrace activeExecutionTrace() {
@@ -183,34 +194,9 @@ public agent BatteryManager extends Agent implements Logger {
     }
     
     public void go() {
-        startEpisode();
+        postEvent(sts.start());
     }
     
-    public void startEpisode() {
-        writeLog("EPISODE "+episode+" --------------------------------------");
-        
-        /* Initialisations */
-        startNewEpisode = (rselect == RunMode.FAILURE_RECOVERY) ? false : true;
-
-        /* Generate the request */
-        int request = generator.nextInt(9)-4;
-
-        /* Set all modules to NOTINUSE, with random initial health */
-        for (int m = 1; m <= nModules; m++) {
-            try{
-                states.add(m,generator.nextInt(HEALTH_RANGE+1)+HEALTH_MIN);
-                configs.add(m,CONFIG_NOTINUSE);
-            } catch (Exception e) {
-                writeLog("BatteryManager: Exception while resetting battery module "+m+".");
-                System.exit(9);
-            }
-        }
-        
-        /* Now start solving */
-        postEvent(ss.solve(request,nModules,batteryState()));
-        
-    }
-
     public boolean meetsConstraints(int request, int module, int proposedConfig) {
     
         int mstate=0;
@@ -264,13 +250,25 @@ public agent BatteryManager extends Agent implements Logger {
                 try{
                     int mstate = states.get(m);
                     int mconfig = configs.get(m);
+                    
+                    /* Modelling degradation in module capacity over time. 
+                     * After N episodes, the module capacity drops by 1.
+                     * So charging past MAX-1 has no effect.
+                     * TODO: Should instead be determined by module charge cycles.
+                     */
+                    int detpoint = 5000;
+                    if ((episode > detpoint) && (mstate == HEALTH_MIN+HEALTH_RANGE-1) && (mconfig==CONFIG_CHARGE)) {
+                        writeLog("BatteryManager: Module capacity has deteriorated after "+detpoint+" episodes. Charging past "+mstate+" will have no effect.");
+                        mconfig = CONFIG_NOTINUSE;
+                    }
+                        
                     int nstate = mstate + mconfig;
                     nstate = (nstate<HEALTH_MIN) ? HEALTH_MIN : 
                         (nstate>(HEALTH_MIN+HEALTH_RANGE)) ? HEALTH_MIN+HEALTH_RANGE : nstate;
                     states.add(m,nstate);
                     writeLog("BatteryManager: Module "+m+" changed states from "+mstate+"->"+nstate+".");
                     if (nstate != mstate) {
-                        // Append measured rate of charge/discharge
+                        /* Append measured rate of charge/discharge */
                         reading +=mconfig;
                     }
                 } catch (BeliefSetException e) {
@@ -282,14 +280,16 @@ public agent BatteryManager extends Agent implements Logger {
         
         /* Now evaluate the reading against the request */
         boolean eval = (reading >= (request - tolerance)) && (reading <= (request + tolerance));
-        String estr = eval ? "PASS" : "FAIL";
-        writeLog("BatteryManager: Finished operating the battery for "+period+" periods. "+
-            "Request was "+request+" (+/- tolerance of "+tolerance+"). "+
-            "Final Reading is "+reading+". Evaluated as "+estr+".");
+        writeLog("BatteryManager: Request was "+request+" (+/- tolerance of "+tolerance+"). "+
+            "Final Reading is "+reading+".");
         return eval;
     }
     
     public void finishEpisode() {
+        /* Record the result for plotting */
+        writeResult(episode,lastResult);
+
+        /* Finish up */
         indentReset();
         activeExecutionTrace.reset();
         episode++;
@@ -312,29 +312,16 @@ public agent BatteryManager extends Agent implements Logger {
         val[1] = 1;
         if (activeExecutionTrace.shouldRecordFailure()) {
             res = false;
-            writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+" since a subgoal initially failed and was reposted." );
+            writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+"." );
         }
         planNodes[pid].record(res, res ? val : activeExecutionTrace.poppedTraceStability(), isRoot);
+        
+        /* Save this result */
+        lastResult = res;
         
         /* Finished recording so pop this plan off the active execution trace */
         activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
         writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
-        
-        /* In failure recovery mode, a new episode is started only if the
-         * Execute plan was run, or when a top level dummy plan was
-         * run (which means that all options were exhaused).
-         */
-        if ((rselect==RunMode.FAILURE_RECOVERY) && ((pid==3/*Execute*/) || (isRoot && pid==4/*Dummy*/))) {
-            startNewEpisode = true;
-        }
-        
-        /* If finished recording then start a new episode */
-        if (isRoot && startNewEpisode) {
-            writeResult(episode,res);
-            finishEpisode();
-            startEpisode();
-        }
-        writeLog("Finished recording for plan "+planNodes[pid].name());
     }
     
     public void initLearning(Logger logger, int nModules, 

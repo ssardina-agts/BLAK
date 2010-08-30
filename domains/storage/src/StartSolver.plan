@@ -1,0 +1,67 @@
+public plan StartSolver extends Plan {
+    
+    #handles event StartSolve ev;
+    #uses interface BatteryManager ag;
+
+    #posts event Solve sd;
+    #posts event StartSolve evt;
+    #modifies data ModuleState states;
+    #modifies data ModuleConfig configs;
+
+    static boolean
+    relevant(StartSolve ev) {
+        return true;
+    }
+
+    context() {
+        true;
+    }
+
+    #reasoning method
+    body()
+    {
+        ag.writeLog("EPISODE "+ag.episode()+" --------------------------------------");        
+
+        /* Initialise all modules to NOTINUSE, with random initial health */
+        int nMax = 0;
+        int nMin = 0;
+        for (int m = 1; m <= ag.nModules(); m++) {
+            try{
+                int health = ag.generator().nextInt(ag.HEALTH_RANGE+1)+ag.HEALTH_MIN;
+                nMax += (health==(ag.HEALTH_MIN+ag.HEALTH_RANGE)) ? 1 : 0;
+                nMin += (health==ag.HEALTH_MIN) ? 1 : 0;
+                states.add(m,health);
+                configs.add(m,ag.CONFIG_NOTINUSE);
+            } catch (Exception e) {
+                ag.writeLog("BatteryManager: Exception while resetting battery module "+m+".");
+                System.exit(9);
+            }
+        }
+        
+        /* Generate a satisfiable request */
+        int minLimit = ag.nModules() - nMin;
+        int maxLimit = ag.nModules() - nMax;
+        int request = ag.generator().nextInt(minLimit+maxLimit+1)-minLimit;
+
+        /* Solve it */
+        @subtask(sd.solve(request,ag.nModules(),ag.batteryState()));
+    }
+    
+    #reasoning method
+    pass() {
+        /* Finish the episode */
+        ag.finishEpisode();
+        /* If we haven't finished all episodes then start again */
+        @post(evt.start());
+    }
+
+    #reasoning method
+    fail()
+    {
+        /* Finish the episode */
+        ag.finishEpisode();
+        /* If we haven't finished all episodes then start again */
+        @post(evt.start());
+    }
+
+}

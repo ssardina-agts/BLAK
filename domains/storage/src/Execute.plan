@@ -11,7 +11,7 @@ public plan Execute extends Plan {
 
     public static final int pid = 3;
     public static final String pname = "Execute";
-        
+    private boolean eval;
 
     public PlanInstanceInfo getInstanceInfo(){
         return new PlanIdInfo(ev.state(), pid, 1.0/*prob*/, 1.0/*pconf*/, 1.0/*sconf*/, false/*isFTH*/);
@@ -29,19 +29,25 @@ public plan Execute extends Plan {
     #reasoning method
     body() {
         ag.writeLog("Plan "+pname+" is operating the configured modules for one period.");
-        return ag.operateBattery(1,ev.request);
+        eval = ag.operateBattery(1,ev.request);
     }
     
     #reasoning method
     pass() {
-        ag.writeLog("Plan "+pname+" successfully operated the battery configuration for one period.");
+        String estr = eval ? "PASS" : "FAIL";
+        ag.writeLog("Plan "+pname+" finished operating the battery configuration for one period. Evaluation was "+estr+".");
+        if (!eval) {
+            /* The evaluation was FAIL so all plans in the trace should actually record a failure. */
+            ag.activeExecutionTrace().setShouldRecordFailure(true);
+            ag.writeLog("Plan "+pname+" will force all plans in the active execution trace to treat this result as a failure.");
+        }
         ag.record(pid, true, ev.state(), ev.module);
     }
 
     #reasoning method
     fail() {
-        ag.writeLog("Plan "+pname+" failed while operating the battery configuration for one period.");
-        ag.record(pid, false, ev.state(), ev.module);
+        ag.writeLog("Plan "+pname+" failed. Should never happen!");
+        System.exit(9);
     }
 }
 
