@@ -37,15 +37,18 @@ public agent BatteryManager extends Agent implements Logger {
 	#handles event PlanChoice;
 
     public static final int HEALTH_MIN = 0;
-    public static final int HEALTH_RANGE = 4;
+    public static final int HEALTH_RANGE = 3;
     public static final int CONFIG_MIN = -1;
     public static final int CONFIG_RANGE = 3;
     public static final int CONFIG_DISCHARGE = -1;
     public static final int CONFIG_NOTINUSE = 0;
     public static final int CONFIG_CHARGE = 1;
+    public static final int CAPACITY_DETERIORATION = 1;
 
     private int nModules;
     private int tolerance;
+    private int[] discharges;
+    private int capacity_deterioration_cycle;
 
     //--- BDI Learning Framework related
     private int episode;
@@ -67,7 +70,7 @@ public agent BatteryManager extends Agent implements Logger {
     private PrintWriter writerRes;
     private String targetDir;
     
-    BatteryManager(int episodes, int modules, int tolerance,
+    BatteryManager(int episodes, int modules, int tolerance, int detcycle,
             PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
@@ -77,6 +80,8 @@ public agent BatteryManager extends Agent implements Logger {
         this.nEpisodes = episodes;
         this.nModules = modules;
         this.tolerance = tolerance;
+        discharges = new int[nModules];
+        capacity_deterioration_cycle = detcycle;
         
         //--- BDI Learning Framework related
         this.activeExecutionTrace = new ExecutionTrace();
@@ -157,11 +162,11 @@ public agent BatteryManager extends Agent implements Logger {
 
     public String[] batteryState() {
         /* Return a concat of module health and config */
-        //String[] s = new String[nModules*2];
+        String[] s = new String[nModules*2];
         //String[] s = new String[nModules+1/*for config*/];
         //String[] s = new String[2];
         //String[] s = new String[1];
-        String[] s = new String[nModules];
+        //String[] s = new String[nModules];
         String sstr = "";
         String cstr = "";
         int c = 0;
@@ -179,9 +184,9 @@ public agent BatteryManager extends Agent implements Logger {
                 writeLog("BatteryManager: BeliefSetException while retrieving state information for module "+module+".");
                 System.exit(9);
             }
-            //s[m] = Integer.toString(mstate);
-            //s[m+nModules] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
-            s[m] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
+            s[m] = Integer.toString(mstate);
+            s[m+nModules] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
+            //s[m] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
             h += mstate;
             c += mconfig;
         }
@@ -252,21 +257,22 @@ public agent BatteryManager extends Agent implements Logger {
                     int mconfig = configs.get(m);
                     
                     /* Modelling degradation in module capacity over time. 
-                     * After N episodes, the module capacity drops by 1.
+                     * After N cycles, the module capacity drops by 1.
                      * So charging past MAX-1 has no effect.
-                     * TODO: Should instead be determined by module charge cycles.
                      */
-                    int detpoint = 5000;
-                    if ((episode > detpoint) && (mstate == HEALTH_MIN+HEALTH_RANGE-1) && (mconfig==CONFIG_CHARGE)) {
-                        writeLog("BatteryManager: Module capacity has deteriorated after "+detpoint+" episodes. Charging past "+mstate+" will have no effect.");
+                    if ((cycles(m) > capacity_deterioration_cycle) && (mstate >= HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION) && (mconfig==CONFIG_CHARGE)) {
+                        mstate = HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION;
                         mconfig = CONFIG_NOTINUSE;
+                        writeLog("BatteryManager: Module "+m+" capacity has deteriorated after "+capacity_deterioration_cycle+" cycles. Charging past "+mstate+" will have no effect.");
                     }
-                        
+                    
+                    discharges[m-1] += (mconfig==CONFIG_DISCHARGE) ? 1 : 0;
+
                     int nstate = mstate + mconfig;
                     nstate = (nstate<HEALTH_MIN) ? HEALTH_MIN : 
                         (nstate>(HEALTH_MIN+HEALTH_RANGE)) ? HEALTH_MIN+HEALTH_RANGE : nstate;
                     states.add(m,nstate);
-                    writeLog("BatteryManager: Module "+m+" changed states from "+mstate+"->"+nstate+".");
+                    writeLog("BatteryManager: Module "+m+" changed states from "+mstate+"->"+nstate+". Cycle number "+cycles(m)+".");
                     if (nstate != mstate) {
                         /* Append measured rate of charge/discharge */
                         reading +=mconfig;
@@ -283,6 +289,11 @@ public agent BatteryManager extends Agent implements Logger {
         writeLog("BatteryManager: Request was "+request+" (+/- tolerance of "+tolerance+"). "+
             "Final Reading is "+reading+".");
         return eval;
+    }
+    
+    public int cycles(int m) {
+        int cycleRange = HEALTH_RANGE-CAPACITY_DETERIORATION; /* pessimistic count */
+        return (discharges[m-1]/cycleRange);
     }
     
     public void finishEpisode() {
@@ -336,7 +347,7 @@ public agent BatteryManager extends Agent implements Logger {
          * where n is the number of battery modules.
          */
         FastVector request = new FastVector();
-        for (int i = -nModules; i < nModules+1; i++) {
+        for (int i = -nModules; i < nModules-CAPACITY_DETERIORATION+1; i++) {
             request.addElement(Integer.toString(i));
         }
         
@@ -362,9 +373,9 @@ public agent BatteryManager extends Agent implements Logger {
         FastVector atts = new FastVector();
         atts.addElement(new Attribute("request",request));
         atts.addElement(new Attribute("module",modules));
-        //for (int i = 1; i <= nModules; i++) {
-        //    atts.addElement(new Attribute("health"+i/*,charge*/));
-        //}
+        for (int i = 1; i <= nModules; i++) {
+            atts.addElement(new Attribute("health"+i/*,charge*/));
+        }
         //atts.addElement(new Attribute("health"));
         for (int i = 1; i <= nModules; i++) {
             atts.addElement(new Attribute("config"+i,config));
@@ -425,6 +436,7 @@ public agent BatteryManager extends Agent implements Logger {
 
         // Default Config
         int nModules = 5;
+        int detcycle = 500;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
         UpdateMode uselect = UpdateMode.CONCURRENT;
         RunMode rselect = RunMode.FAILURE_RECOVERY;
@@ -442,6 +454,7 @@ public agent BatteryManager extends Agent implements Logger {
         int tolerance = 1;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
+        help += " -c: Number of cycles after which module capacity deteriorates (default: "+detcycle+")\n";
         help += " -d: Target directory for output files (default: "+targetDir+")\n";
         help += " -e: Stability e value (default: "+stableE+")\n";
         help += " -g: Random generator seed value (default: "+seed+")\n";
@@ -468,6 +481,10 @@ public agent BatteryManager extends Agent implements Logger {
                 switch (option) {
                 case 'a':
                     alpha = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'c':
+                    detcycle = Integer.parseInt(args[index]);
                     index++;
                     break;
                 case 'd':
@@ -546,7 +563,7 @@ public agent BatteryManager extends Agent implements Logger {
             }
         }
         System.out.println("Using random generator seed: "+seed);
-        BatteryManager p = new BatteryManager(episodes, nModules, tolerance,
+        BatteryManager p = new BatteryManager(episodes, nModules, tolerance, detcycle,
             pselect, uselect, rselect, 
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 

@@ -22,16 +22,20 @@ public plan StartSolver extends Plan {
     {
         ag.writeLog("EPISODE "+ag.episode()+" --------------------------------------");        
 
-        /* Initialise all modules to NOTINUSE, with random initial health */
+        /* Initialise all modules to NOTINUSE at the start of each episode.
+         * Start with all modules discharged in episode 1.
+         */
         int nMax = 0;
         int nMin = 0;
         for (int m = 1; m <= ag.nModules(); m++) {
             try{
-                int health = ag.generator().nextInt(ag.HEALTH_RANGE+1)+ag.HEALTH_MIN;
-                nMax += (health==(ag.HEALTH_MIN+ag.HEALTH_RANGE)) ? 1 : 0;
-                nMin += (health==ag.HEALTH_MIN) ? 1 : 0;
-                states.add(m,health);
+                if (ag.episode() == 1) {
+                    states.add(m,ag.HEALTH_MIN);
+                }
                 configs.add(m,ag.CONFIG_NOTINUSE);
+                int health = states.get(m);
+                nMax += (health>=(ag.HEALTH_MIN+ag.HEALTH_RANGE-ag.CAPACITY_DETERIORATION)) ? 1 : 0;
+                nMin += (health<=ag.HEALTH_MIN) ? 1 : 0;
             } catch (Exception e) {
                 ag.writeLog("BatteryManager: Exception while resetting battery module "+m+".");
                 System.exit(9);
@@ -40,7 +44,7 @@ public plan StartSolver extends Plan {
         
         /* Generate a satisfiable request */
         int minLimit = ag.nModules() - nMin;
-        int maxLimit = ag.nModules() - nMax;
+        int maxLimit = ag.nModules() - nMax - ag.CAPACITY_DETERIORATION;
         int request = ag.generator().nextInt(minLimit+maxLimit+1)-minLimit;
 
         /* Solve it */
