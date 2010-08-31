@@ -52,8 +52,8 @@ public plan MetaPlan extends Plan {
                 }
                 if (info.isFailedThresholdHandler) {
                     thandler = s;
-                } else if ((c > 0.95) && (info.pSuccess > 0.95)) {
-                    fullConfidencePlans.put(new Integer(i), s);
+                //} else if ((c > 0.95) && (info.pSuccess > 0.95)) {
+                //    fullConfidencePlans.put(new Integer(i), s);
                 } else if (p >= ag.applicabilityThreshold()) {
                     applicablePlans.put(new Integer(i), s);
                 }

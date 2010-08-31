@@ -1196,8 +1196,8 @@
 </target>
 <target name="runstorage1" description="Run storage1">
     <failIfBuildNotFound test.name="storage1"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 10000 -c 1000 -k 1 -e 0.5"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 10000 -c 1000 -k 1 -e 0.5"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 15000 -c 1000 -k 1 -e 0.5"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 15000 -c 1000 -k 1 -e 0.5"/>
 </target>
 <target name="plotstorage1" description="Plot storage1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1"/>

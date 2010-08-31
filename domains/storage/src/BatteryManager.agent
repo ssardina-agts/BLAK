@@ -63,6 +63,8 @@ public agent BatteryManager extends Agent implements Logger {
     private double applicabilityThreshold;
     private double confidenceAlpha;
     private boolean lastResult;
+    private int lastRequest;
+    private int lastResponse;
     
     //--- Logger related
     private int indent = 0;
@@ -92,6 +94,8 @@ public agent BatteryManager extends Agent implements Logger {
         this.rselect = rselect;
         this.confidenceAlpha = alpha;
         this.lastResult = false;
+        this.lastRequest = 0;
+        this.lastResponse = 0;
         
         //--- Logger related
         this.targetDir = ".";
@@ -288,6 +292,11 @@ public agent BatteryManager extends Agent implements Logger {
         boolean eval = (reading >= (request - tolerance)) && (reading <= (request + tolerance));
         writeLog("BatteryManager: Request was "+request+" (+/- tolerance of "+tolerance+"). "+
             "Final Reading is "+reading+".");
+
+        /* Record for logging */
+        lastRequest = request;
+        lastResponse = reading;
+
         return eval;
     }
     
@@ -298,7 +307,7 @@ public agent BatteryManager extends Agent implements Logger {
     
     public void finishEpisode() {
         /* Record the result for plotting */
-        writeResult(episode,lastResult);
+        writeResult(episode,lastResult,lastRequest,lastResponse);
 
         /* Finish up */
         indentReset();
@@ -425,8 +434,10 @@ public agent BatteryManager extends Agent implements Logger {
         writerOut.flush();
     }
 
-    public void writeResult(int episode, boolean result) {
-        String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0");
+    public void writeResult(int episode, boolean result, int request, int response) {
+        String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0") +
+            " " + ((request<0) ? "" : "+") + Integer.toString(request) +
+            " " + ((response<0) ? "" : "+") + Integer.toString(response);
         writerRes.println(str);
         writerRes.flush();
     }
@@ -451,7 +462,7 @@ public agent BatteryManager extends Agent implements Logger {
         String saveInit = filename+".init";
         String loadInit = saveInit;
         double alpha = 0.5;
-        int tolerance = 1;
+        int tolerance = 0;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -c: Number of cycles after which module capacity deteriorates (default: "+detcycle+")\n";
