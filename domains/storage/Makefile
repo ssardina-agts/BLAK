@@ -22,5 +22,5 @@ help: lib/batterymanager.jar
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/batterymanager.jar BatteryManager -h
 
 run: lib/batterymanager.jar
-	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/batterymanager.jar BatteryManager -u concurrent -s confidence -o bm -n 5 -k 3 -e 0.3 -a 0.5 -v 5 -w 5 -i 1000
+	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/batterymanager.jar BatteryManager -u concurrent -s confidence -o bm -n 5 -k 3 -e 0.3 -a 0.5 -v 5 -w 5 -l 20 -i 1000 
 

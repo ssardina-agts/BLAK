@@ -28,7 +28,7 @@ public class PlanNode extends Node{
     private FastVector atts;
     private Instances data;
     private int countdownToRebuild;
-    private final int buildThreshold = 2;
+    private int buildThreshold = 2;
     
     /* Stores the world state for when this plan was called last */
     private String[] lastState;
@@ -86,6 +86,7 @@ public class PlanNode extends Node{
                     int wStable, 
                     int wStateHistory,
                     boolean isFTH, 
+                    int bt,
                     Logger logger){
         super(pname, logger);
         atts = attributes;
@@ -93,6 +94,7 @@ public class PlanNode extends Node{
         experiences = new Hashtable();
         stateHistory = new Vector<String>();
         stateHash = new Hashtable();
+        buildThreshold = bt;
         countdownToRebuild = buildThreshold;
         this.update_mode = update_mode;
         this.select_mode = select_mode;

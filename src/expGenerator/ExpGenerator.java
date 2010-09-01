@@ -1318,7 +1318,7 @@ public class ExpGenerator {
 			+ "update_mode, select_mode, run_mode, "
             + "stableE, stableK, stableW, stateHistoryWindow, "
             + (p.isFailedThresholdHandler()?"true":"false")
-            + ", (trees.Logger)env);\n";
+            + ", (trees.Logger)env, 2/*buildThreshold*/);\n";
 		}	
 		//~~~ generate all the goal nodes
 		code += "\tNode[] goalNodes = new GoalNode["+goals.size()+"];\n";
