@@ -1196,12 +1196,12 @@
 </target>
 <target name="runstorage1" description="Run storage1">
     <failIfBuildNotFound test.name="storage1"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 25000 -c 2000 -k 1 -e 0.5 -l 20"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 25000 -c 2000 -k 1 -e 0.5 -l 20"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -c 1000 -k 1 -e 0.5 -l 200"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -c 1000 -k 1 -e 0.5 -l 200"/>
 </target>
 <target name="plotstorage1" description="Plot storage1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1"/>
-	<plotResult test.name="storage1" every="1000" window="200" label="storage:modules=5"/>
+	<plotResult test.name="storage1" every="2500" window="200" label="storage:modules=5"/>
 </target>
 
 

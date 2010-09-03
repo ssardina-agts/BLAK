@@ -31,7 +31,6 @@ public agent BatteryManager extends Agent implements Logger {
 	#uses plan SetDischarge;
 	#uses plan SetNotInUse;
 	#uses plan Execute;
-	#uses plan Dummy;
 	#uses plan MetaPlan;
     #uses plan StartSolver;
 	#handles event PlanChoice;
@@ -165,12 +164,8 @@ public agent BatteryManager extends Agent implements Logger {
     }
 
     public String[] batteryState() {
-        /* Return a concat of module health and config */
+        // Return a concat of module health and config
         String[] s = new String[nModules*2];
-        //String[] s = new String[nModules+1/*for config*/];
-        //String[] s = new String[2];
-        //String[] s = new String[1];
-        //String[] s = new String[nModules];
         String sstr = "";
         String cstr = "";
         int c = 0;
@@ -190,14 +185,9 @@ public agent BatteryManager extends Agent implements Logger {
             }
             s[m] = Integer.toString(mstate);
             s[m+nModules] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
-            //s[m] = (mconfig==CONFIG_DISCHARGE) ? "D" : (mconfig==CONFIG_CHARGE) ? "C" : "N" ;
             h += mstate;
             c += mconfig;
         }
-        //s[0] = Integer.toString(h);
-        //s[1] = Integer.toString(c);
-        //s[nModules] = Integer.toString(c);
-        //s[0] = Integer.toString(c);
         writeLog("BatteryManager: health=["+sstr+"] config=["+cstr+"]");
         return s;
     }
@@ -334,7 +324,7 @@ public agent BatteryManager extends Agent implements Logger {
             res = false;
             writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+"." );
         }
-        planNodes[pid].record(res, res ? val : activeExecutionTrace.poppedTraceStability(), isRoot);
+        planNodes[pid].record(res, res ? val : (module<=1) ? val : activeExecutionTrace.poppedTraceStability(), isRoot);
         
         /* Save this result */
         lastResult = res;

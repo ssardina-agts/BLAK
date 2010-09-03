@@ -36,6 +36,9 @@ public plan MetaPlan extends Plan {
             }
         }
 
+        ag.writeLog("MetaPlan: Number of plans to choose from is " + pc.applicable.size()+".");
+
+
         /* First separate out the plans in the following bags:
          * thandler: threshold handler (dummy) plan
          * fullConfidencePlans: plans with high success expectation with high confidence
@@ -52,8 +55,16 @@ public plan MetaPlan extends Plan {
                 }
                 if (info.isFailedThresholdHandler) {
                     thandler = s;
-                //} else if ((c > 0.95) && (info.pSuccess > 0.95)) {
-                //    fullConfidencePlans.put(new Integer(i), s);
+                    ag.writeLog("MetaPlan: Found dummy plan "+ag.planNodes[info.plan_id].name()+".");
+                } else if ((c > 0.95) && (info.pSuccess > 0.95)) {
+                    fullConfidencePlans.put(new Integer(i), s);
+                } else if ((ag.pselect() == PlanSelectMode.CONFIDENCE) && ((c > 0.95) && (info.pSuccess <= 0.0))) {
+                    /* We have full confidence that these plans don't work so
+                     * we will just remove them from the set.
+                     * If all plans fall in this category then we will
+                     * inevitably select the dummy plan.
+                     */
+                    ag.writeLog("MetaPlan: Discarding plan "+ag.planNodes[info.plan_id].name()+" since we have full confidence it will fail.");
                 } else if (p >= ag.applicabilityThreshold()) {
                     applicablePlans.put(new Integer(i), s);
                 }
@@ -114,6 +125,11 @@ public plan MetaPlan extends Plan {
             ag.writeLog("MetaPlan: Choosing from applicable plans with cumulative probabilities " +
                 str + ". Chosen plan at index " + choice);
             
+        } else if (thandler == null){
+            /* Nothing left to choose from so return */
+            ag.writeLog("MetaPlan: Nothing left to choose from.");
+            pc.chosen = null;
+            return true;
         } else {
             /* Else assign the failed threshold handler since no other option applies */
             //ag.writeLog("MetaPlan: ag.applicabilityThreshold = " + ag.applicabilityThreshold() + " pMax = " + pMax + " thandler = " + thandler);
