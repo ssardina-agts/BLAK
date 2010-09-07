@@ -44,7 +44,7 @@ public plan StartSolver extends Plan {
         
         /* Generate a satisfiable request */
         int minLimit = ag.nModules() - nMin;
-        int maxLimit = ag.nModules() - nMax - ag.CAPACITY_DETERIORATION;
+        int maxLimit = ag.nModules() - nMax;
         int request = ag.generator().nextInt(minLimit+maxLimit+1)-minLimit;
 
         /* Solve it */

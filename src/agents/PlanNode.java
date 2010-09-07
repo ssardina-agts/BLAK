@@ -64,6 +64,12 @@ public class PlanNode extends Node{
     private Hashtable decay;
     private Hashtable domainDecay;
     private double domainComplexityDecayMultiplier;
+    
+    /* Window to use for experiences. Any experience with timestamp less than
+     * current-window will be discarded.
+     */
+    private int experienceWindow;
+    private int lastTimestamp;
 
     /* !!!: Vars to sort out */
 
@@ -87,6 +93,7 @@ public class PlanNode extends Node{
                     int wStateHistory,
                     boolean isFTH, 
                     int bt,
+                    int wExperience,
                     Logger logger){
         super(pname, logger);
         atts = attributes;
@@ -109,6 +116,8 @@ public class PlanNode extends Node{
         domainDecay = new Hashtable();
         complexity = new Hashtable();
         isFailedThresholdHandler = isFTH;
+        experienceWindow = wExperience;
+        lastTimestamp = 0;
         data = new Instances(pname, atts, 0);
         data.setClassIndex(atts.size()-1);
         domainComplexityDecayMultiplier = 0.0;
@@ -164,49 +173,54 @@ public class PlanNode extends Node{
 
     private void buildDataset() {
         int added = 0;
+        int discarded = 0;
         String str = "";
         /* Delete previous entries, we will recreate the dataset now */
         data.delete();
         /* Add each experience to the dataset */
         for (Object val : experiences.values() ) {
             Experience thisMemory = (Experience)val;
-            Instance instance = new Instance(atts.size());
-            instance.setDataset(data);
-            String[] state = thisMemory.getState();
-            for (int i=0;i<state.length;i++){
-                if (state[i].equals("true"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"T");
-                else if (state[i].equals("false"))
-                    instance.setValue(((Attribute) atts.elementAt(i)),"F");
-                else {
-                    Attribute att = (Attribute) atts.elementAt(i);
-                    if (att.isNumeric()) {
-                        instance.setValue(att,Double.parseDouble(state[i]));
-                    } else {
-                        instance.setValue(att,state[i]);
+            boolean isAdmittable = (experienceWindow <= 0) ? true : (thisMemory.timestamp() > (lastTimestamp-experienceWindow)) ? true : false;
+            discarded += (isAdmittable) ? 0 : 1;
+            if (isAdmittable) {
+                Instance instance = new Instance(atts.size());
+                instance.setDataset(data);
+                String[] state = thisMemory.getState();
+                for (int i=0;i<state.length;i++){
+                    if (state[i].equals("true"))
+                        instance.setValue(((Attribute) atts.elementAt(i)),"T");
+                    else if (state[i].equals("false"))
+                        instance.setValue(((Attribute) atts.elementAt(i)),"F");
+                    else {
+                        Attribute att = (Attribute) atts.elementAt(i);
+                        if (att.isNumeric()) {
+                            instance.setValue(att,Double.parseDouble(state[i]));
+                        } else {
+                            instance.setValue(att,state[i]);
+                        }
                     }
                 }
-            }
-            int successes = thisMemory.getNumberOfSuccesses();
-            int failures = thisMemory.getNumberOfFailures();
-            if (successes > 0) {
-                Instance instance2 = (Instance)(instance.copy());
-                instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                instance2.setWeight(successes);
-                data.add(instance2);
-                //str += "Plan "+name()+" added training instance: "+instance2+ "\n";
-                added++;
-            }  
-            if ((failures > 0) && thisMemory.useForLearning()) {
-                instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                instance.setWeight(failures);
-                data.add(instance);
-                //str += "Plan "+name()+" added training instance: "+instance+ "\n";
-                added++;
+                int successes = thisMemory.getNumberOfSuccesses();
+                int failures = thisMemory.getNumberOfFailures();
+                if (successes > 0) {
+                    Instance instance2 = (Instance)(instance.copy());
+                    instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
+                    instance2.setWeight(1+(1.0*successes/(successes+failures)));
+                    data.add(instance2);
+                    //str += "Plan "+name()+" added training instance: "+instance2+ "\n";
+                    added++;
+                }  
+                if ((failures > 0) && thisMemory.useForLearning()) {
+                    instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
+                    instance.setWeight(1+(1.0*failures/(successes+failures)));
+                    data.add(instance);
+                    //str += "Plan "+name()+" added training instance: "+instance+ "\n";
+                    added++;
+                }
             }
         }
         if (added > 0) {
-            str += "Plan "+name()+" built training data set with "+added+" samples";
+            str += "Plan "+name()+" built training data set with "+added+" samples. Discarded "+discarded+" other samples.";
             /* Note: Logging out the training samples takes a lot of time and 
              * log space. Commenting them out above speeds things up significantly.
              */
@@ -317,16 +331,30 @@ public class PlanNode extends Node{
         record(res, val/*traceStability*/);
     }
     public void record(boolean res, int[] traceStability) {   
-        record(res, traceStability, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/);
+        record(res, traceStability, 0 /*depth*/, (topGoal!=null) /*isRoot*/, 1.0/*failureNodeComplexity*/, -1/*timestamp*/);
     }
     public void record(boolean res, int[] traceStability, boolean isRoot) {   
-        record(res, traceStability, 0 /*depth*/, isRoot, 1.0/*failureNodeComplexity*/);
+        record(res, traceStability, 0 /*depth*/, isRoot, 1.0/*failureNodeComplexity*/, -1/*timestamp*/);
+    }
+    public void record(boolean res,
+                       int[] traceStability,
+                       boolean isRoot, 
+                       int ts) {
+        record(res, traceStability, 0/*depth*/, isRoot, 1.0/*failureNodeComplexity*/, ts);
     }
     public void record(boolean res,
                        int[] traceStability,
                        int depth, 
                        boolean isRoot, 
-                       double failureNodeComplexity)
+                       double failureNodeComplexity) {
+        record(res, traceStability, depth, isRoot, failureNodeComplexity, -1/*timestamp*/);
+    }
+        public void record(boolean res,
+                       int[] traceStability,
+                       int depth, 
+                       boolean isRoot, 
+                       double failureNodeComplexity,
+                       int ts)
     {
         boolean isStableBelow = (traceStability[0] != 0) && (traceStability[0] == traceStability[1]);
         
@@ -357,6 +385,10 @@ public class PlanNode extends Node{
         if(res) {
             thisMemory.incrementSuccesses();
         }
+        
+        /* Set the timestamp for this access */
+        thisMemory.setTimestamp(ts);
+        lastTimestamp = ts;
                 
         /* Set if the trace was stable below.
          * Done for all modes since we use this info for 

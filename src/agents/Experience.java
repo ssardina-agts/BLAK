@@ -34,7 +34,8 @@ public class Experience
     private boolean useForLearning;
     private boolean hasStableChildren;
     private Vector<StabilityInfo> stableHistory;
-	
+	private int timestamp;
+    
     public static final int STABLE_HISTORY_CAPACITY = 100;
     
     /*-----------------------------------------------------------------------*/
@@ -53,6 +54,7 @@ public class Experience
         useForLearning = true;
         hasStableChildren = false;
         stableHistory = new Vector<StabilityInfo>();
+        timestamp = -1;
 	}
 
     /*-----------------------------------------------------------------------*/
@@ -166,6 +168,14 @@ public class Experience
 	{
 		this.numberOfAttempts++;
 	}
+    
+    public void setTimestamp(int ts) {
+        timestamp = ts;
+    }
+    
+    public int timestamp() {
+        return timestamp;
+    }
 	
 	public double calculateCurrentProbability()
 	{

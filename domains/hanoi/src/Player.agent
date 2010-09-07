@@ -544,12 +544,12 @@ public agent Player extends Agent implements Logger{
     
 
         planNodes = new PlanNode[6];
-        planNodes[0] = new PlanNode("P0", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[1] = new PlanNode("P1", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[2] = new PlanNode("P2", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[3] = new PlanNode("P3", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[4] = new PlanNode("P4", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[5] = new PlanNode("PF", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, logger);
+        planNodes[0] = new PlanNode("P0", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, 0/*wExperience not used*/, logger);
+        planNodes[1] = new PlanNode("P1", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, 0/*wExperience not used*/, logger);
+        planNodes[2] = new PlanNode("P2", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, 0/*wExperience not used*/, logger);
+        planNodes[3] = new PlanNode("P3", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, 0/*wExperience not used*/, logger);
+        planNodes[4] = new PlanNode("P4", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, 0/*wExperience not used*/, logger);
+        planNodes[5] = new PlanNode("PF", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, 0/*wExperience not used*/, logger);
 
         planNodes[0].setDecayMultiplier(domainDecay);
         planNodes[1].setDecayMultiplier(domainDecay);

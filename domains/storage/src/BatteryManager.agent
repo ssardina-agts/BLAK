@@ -48,6 +48,7 @@ public agent BatteryManager extends Agent implements Logger {
     private int tolerance;
     private int[] discharges;
     private int capacity_deterioration_cycle;
+    private int module2_fail_cycle;
 
     //--- BDI Learning Framework related
     private int episode;
@@ -71,8 +72,10 @@ public agent BatteryManager extends Agent implements Logger {
     private PrintWriter writerRes;
     private String targetDir;
     
-    BatteryManager(int episodes, int modules, int tolerance, int detcycle,
-            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int buildThreshold,
+    BatteryManager(int episodes, int modules, int tolerance, 
+            int detcycle, int m2failcycle,
+            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
+            int buildThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
             long seed, String loadInit, String saveInit) {
@@ -83,6 +86,7 @@ public agent BatteryManager extends Agent implements Logger {
         this.tolerance = tolerance;
         discharges = new int[nModules];
         capacity_deterioration_cycle = detcycle;
+        module2_fail_cycle = m2failcycle;
         
         //--- BDI Learning Framework related
         this.activeExecutionTrace = new ExecutionTrace();
@@ -107,7 +111,7 @@ public agent BatteryManager extends Agent implements Logger {
         }
 
         //--- Initialise Learning Framework
-        initLearning((Logger)this, nModules, pselect, uselect, rselect, buildThreshold, stableK, stableE, stableW, stateW);
+        initLearning((Logger)this, nModules, pselect, uselect, rselect, buildThreshold, wExperience, stableK, stableE, stableW, stateW);
         
         //--- Initialise the system
         episode = 1;
@@ -254,10 +258,20 @@ public agent BatteryManager extends Agent implements Logger {
                      * After N cycles, the module capacity drops by 1.
                      * So charging past MAX-1 has no effect.
                      */
-                    if ((cycles(m) > capacity_deterioration_cycle) && (mstate >= HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION) && (mconfig==CONFIG_CHARGE)) {
+                    if ((capacity_deterioration_cycle>0) && (cycles(m) > capacity_deterioration_cycle) && (mstate >= HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION) && (mconfig==CONFIG_CHARGE)) {
                         mstate = HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION;
                         mconfig = CONFIG_NOTINUSE;
                         writeLog("BatteryManager: Module "+m+" capacity has deteriorated after "+capacity_deterioration_cycle+" cycles. Charging past "+mstate+" will have no effect.");
+                    }
+                    
+                    /* Modelling module failure.
+                     * After N cycles, module 2 fails.
+                     * So charge/discharge has no effect.
+                     */
+                    if ((m==2) && (module2_fail_cycle>0) && (cycles(m) > module2_fail_cycle)) {
+                        mstate = HEALTH_MIN;
+                        mconfig = CONFIG_NOTINUSE;
+                        writeLog("BatteryManager: Module "+m+" has failed after "+module2_fail_cycle+" cycles. Charging/Discharging will have no effect.");
                     }
                     
                     discharges[m-1] += (mconfig==CONFIG_DISCHARGE) ? 1 : 0;
@@ -324,7 +338,7 @@ public agent BatteryManager extends Agent implements Logger {
             res = false;
             writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+"." );
         }
-        planNodes[pid].record(res, res ? val : (module<=1) ? val : activeExecutionTrace.poppedTraceStability(), isRoot);
+        planNodes[pid].record(res, res ? val : (module<=1) ? val : activeExecutionTrace.poppedTraceStability(), isRoot, episode);
         
         /* Save this result */
         lastResult = res;
@@ -335,7 +349,8 @@ public agent BatteryManager extends Agent implements Logger {
     }
     
     public void initLearning(Logger logger, int nModules, 
-            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, int buildThreshold,
+            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
+            int buildThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW) {
             
         FastVector classVal = new FastVector();
@@ -385,11 +400,11 @@ public agent BatteryManager extends Agent implements Logger {
     
 
         planNodes = new PlanNode[5];
-        planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[1] = new PlanNode("SetDischarge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[2] = new PlanNode("SetNotInUse", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[3] = new PlanNode("Execute", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, logger);
-        planNodes[4] = new PlanNode("Dummy", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, logger);
+        planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        planNodes[1] = new PlanNode("SetDischarge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        planNodes[2] = new PlanNode("SetNotInUse", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        planNodes[3] = new PlanNode("Execute", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        planNodes[4] = new PlanNode("Dummy", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, wExperience, logger);
 
         Node[] goalNodes = new Node[1];
         goalNodes[0] = new GoalNode("G", logger);
@@ -437,7 +452,8 @@ public agent BatteryManager extends Agent implements Logger {
 
         // Default Config
         int nModules = 5;
-        int detcycle = 500;
+        int detcycle = 0;
+        int failcycle = 0;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
         UpdateMode uselect = UpdateMode.CONCURRENT;
         RunMode rselect = RunMode.FAILURE_RECOVERY;
@@ -454,16 +470,19 @@ public agent BatteryManager extends Agent implements Logger {
         double alpha = 0.5;
         int tolerance = 0;
         int buildThreshold = 2;
+        int wExperience = 0;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -c: Number of cycles after which module capacity deteriorates (default: "+detcycle+")\n";
         help += " -d: Target directory for output files (default: "+targetDir+")\n";
         help += " -e: Stability e value (default: "+stableE+")\n";
+        help += " -f: Number of cycles after which module 2 fails  (default: "+detcycle+")\n";
         help += " -g: Random generator seed value (default: "+seed+")\n";
         help += " -h: Help message\n";
         help += " -i: Number of episodes to run (default: "+episodes+")\n";
         help += " -k: Stability k value (default: "+stableK+")\n";
         help += " -l: Number of samples to collect between decision tree builds (default: "+buildThreshold+")\n";
+        help += " -m: Window of experiences to use for decision tree training (default: "+wExperience+")\n";
         help += " -n: Number of battery modules to simulate (default: "+nModules+")\n";
         help += " -o: Filename prefix for results (default: "+filename+")\n";
         help += " -s: Specifies operation modes (default: -s confidence -s failure_recovery)\n";
@@ -498,6 +517,10 @@ public agent BatteryManager extends Agent implements Logger {
                     stableE = Double.parseDouble(args[index]);
                     index++;
                     break;
+                case 'f':
+                    failcycle = Integer.parseInt(args[index]);
+                    index++;
+                    break;
                 case 'g':
                     seed = Long.parseLong(args[index]);
                     index++;
@@ -516,6 +539,10 @@ public agent BatteryManager extends Agent implements Logger {
                     break;
                 case 'l':
                     buildThreshold = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'm':
+                    wExperience = Integer.parseInt(args[index]);
                     index++;
                     break;
                 case 'n':
@@ -570,8 +597,9 @@ public agent BatteryManager extends Agent implements Logger {
             }
         }
         System.out.println("Using random generator seed: "+seed);
-        BatteryManager p = new BatteryManager(episodes, nModules, tolerance, detcycle,
-            pselect, uselect, rselect, buildThreshold,
+        BatteryManager p = new BatteryManager(episodes, nModules, tolerance, 
+            detcycle, failcycle,
+            pselect, uselect, rselect, buildThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
             seed, loadInit, saveInit);
