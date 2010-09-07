@@ -156,6 +156,14 @@ public agent BatteryManager extends Agent implements Logger {
     public RunMode rselect() {
         return rselect;
     }
+    
+    public int capacityDeteriorationCycle() {
+        return capacity_deterioration_cycle;
+    }
+
+    public int module2FailCycle() {
+        return module2_fail_cycle;
+    }
 
     /*** BDI Learning Framework related ***/
     

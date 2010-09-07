@@ -205,14 +205,14 @@ public class PlanNode extends Node{
                 if (successes > 0) {
                     Instance instance2 = (Instance)(instance.copy());
                     instance2.setValue(((Attribute) atts.elementAt(lastState.length)),"+");
-                    instance2.setWeight(1+(1.0*successes/(successes+failures)));
+                    instance2.setWeight(successes);
                     data.add(instance2);
                     //str += "Plan "+name()+" added training instance: "+instance2+ "\n";
                     added++;
                 }  
                 if ((failures > 0) && thisMemory.useForLearning()) {
                     instance.setValue(((Attribute) atts.elementAt(lastState.length)),"-");
-                    instance.setWeight(1+(1.0*failures/(successes+failures)));
+                    instance.setWeight(failures);
                     data.add(instance);
                     //str += "Plan "+name()+" added training instance: "+instance+ "\n";
                     added++;
