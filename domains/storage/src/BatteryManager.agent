@@ -361,7 +361,7 @@ public agent BatteryManager extends Agent implements Logger {
          * where n is the number of battery modules.
          */
         FastVector request = new FastVector();
-        for (int i = -nModules; i < nModules-CAPACITY_DETERIORATION+1; i++) {
+        for (int i = -nModules; i < nModules+1; i++) {
             request.addElement(Integer.toString(i));
         }
         
