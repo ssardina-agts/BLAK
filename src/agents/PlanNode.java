@@ -326,8 +326,8 @@ public class PlanNode extends Node{
      */
     public void record(boolean res) {
         int[] val = new int[2];
-        val[0] = 1;
-        val[1] = 1;
+        val[0] = 0;
+        val[1] = 0;
         record(res, val/*traceStability*/);
     }
     public void record(boolean res, int[] traceStability) {   
@@ -356,7 +356,7 @@ public class PlanNode extends Node{
                        double failureNodeComplexity,
                        int ts)
     {
-        boolean isStableBelow = (traceStability[0] != 0) && (traceStability[0] == traceStability[1]);
+        boolean isStableBelow = res ? true : isLeaf() ? true : (traceStability[1] != 0) && (traceStability[0] == traceStability[1]);
         
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
@@ -427,18 +427,22 @@ public class PlanNode extends Node{
         /* Now calculate experience stability and store back.
          * This is done for all modes.
          */
-        //int stability = (traceStability[0] != traceStability[1]) ? traceStability[0] : 
-        //res ? 1 : 
-        //isStable() ? 1 : 
-        //0;
-        
+        //int nStable = 0;
+        //if (isLeaf()) {
+        //    nStable = res ? 1 : isStable() ? 1 : 0;
+        //} else {
+        //    nStable = res ? traceStability[1]+1 : isStableBelow ? traceStability[1]+1 : traceStability[0];
+        //}
+        //int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         int nStable = 0;
-        if (isLeaf()) {
-            nStable = res ? 1 : isStable() ? 1 : 0;
+        if (res) {
+            nStable = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         } else {
-            nStable = res ? traceStability[1]+1 : isStableBelow ? traceStability[1]+1 : traceStability[0];
+            nStable = isStable() ? 1 : 0;
+            nStable += isLeaf() ? 0 : traceStability[0];
         }
         int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
+        
         thisMemory.addStableHistory(nStable, nTotal);
         logger.writeLog("Plan "+name()+" in state "+this.stringOfLastState()+" recorded stability "+nStable+"/"+nTotal);
         this.experiences.put(memoryKey, thisMemory);

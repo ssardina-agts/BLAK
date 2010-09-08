@@ -283,17 +283,14 @@ public agent Player extends Agent implements Logger{
             writeLog("Episode "+episode+" first failure node was "+failureNode.name()+" at depth "+failureNodeDepth+" with complexity="+failureNode.getComplexity(failureNodeDepth));
         }
         planNodes[pid].setLastInstance(state);
-        int[] val = new int[2];
-        val[0] = 1;
-        val[1] = 1;
         if (activeExecutionTrace.shouldRecordFailure()) {
             res = false;
             writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+" since a subgoal initially failed and was reposted." );
         }
-        planNodes[pid].record(res, res ? val : activeExecutionTrace.poppedTraceStability(), depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
+        planNodes[pid].record(res, activeExecutionTrace.poppedTraceStability(), depth, isRoot, (!res) ? failureNode.getComplexity(failureNodeDepth) : 1.0);
         
         /* Finished recording so pop this plan off the active execution trace */
-        activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
+        activeExecutionTrace.popTrace();
         writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
 
         /* If success then print stats for top level plan*/

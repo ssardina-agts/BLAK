@@ -758,6 +758,7 @@ public class ExpGenerator {
 	public void generateMetaPlan(){
 		String code = "package plans;\n"
 		+ "import java.lang.Math;\n"
+		+ "import java.util.Vector;\n"
         + "import java.util.Enumeration;\n"
 		+ "import agents.Config.PlanSelectMode;\n"
 		+ "import agents.Config.RunMode;\n"
@@ -1453,18 +1454,15 @@ public class ExpGenerator {
 		
         +"\t/* Now record the experience */\n"
         +"\tenv.indentRight();\n"
-        +"\tint[] val = new int[2];\n"
-        +"\tval[0] = 1;\n"
-        +"\tval[1] = 1;\n"
         +"\tif (activeExecutionTrace.shouldRecordFailure()) {\n"
         +"\t\tres = false;\n"
         +"\t\tenv.writeLog(\"Refiner Agent: Forced result to (-) for Plan \"+planNodes[plan_id].name()+\" since a subgoal initially failed and was reposted.\" );\n"
         +"\t}\n"
-		+"\tplanNodes[plan_id].record(res, res ? val : activeExecutionTrace.poppedTraceStability());\n"
+		+"\tplanNodes[plan_id].record(res, activeExecutionTrace.poppedTraceStability());\n"
         +"\tenv.indentLeft();\n"
         
         +"\t/* Finished recording so pop this plan off the active execution trace */\n"
-        +"\tactiveExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);\n"
+        +"\tactiveExecutionTrace.popTrace();\n"
         +"\t\tenv.writeLog(\"Refiner Agent: Removed Plan \"+planNodes[plan_id].name()+\" from active execution trace: \"+activeExecutionTrace);\n"
 		+"}\n";
 		

@@ -2,6 +2,7 @@ import agents.Config.PlanSelectMode;
 import agents.Config.RunMode;
 import agents.ExecutionTrace;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public plan MetaPlan extends Plan {
     #chooses for event SolveDisc;
@@ -142,7 +143,17 @@ public plan MetaPlan extends Plan {
             +ag.activeExecutionTrace());
 
         }
-        ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],info.state);
+        Vector alternatives = new Vector();
+        Signature[] fcps = (Signature[])(fullConfidencePlans.values().toArray(new Signature[0]));
+        Signature[] aps = (Signature[])(applicablePlans.values().toArray(new Signature[0]));
+        Signature[] alts = new Signature[fcps.length + aps.length];
+        System.arraycopy(fcps, 0, alts, 0, fcps.length);
+        System.arraycopy(aps, 0, alts, fcps.length, aps.length);
+        for (i = 0; i < alts.length; i++) {
+            PlanIdInfo info = (PlanIdInfo)(alts[i].getInfo());
+            alternatives.add(ag.planNodes[info.plan_id]);
+        }
+        ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],alternatives,info.state);
         ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
         ag.incrementPlansTried();
         if (ag.planNodes[info.plan_id].isLeaf()) {

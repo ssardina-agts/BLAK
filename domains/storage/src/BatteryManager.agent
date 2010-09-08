@@ -339,20 +339,17 @@ public agent BatteryManager extends Agent implements Logger {
     public void record(int pid, boolean res, String[] state, int module) {
         boolean isRoot = (module == nModules);
         planNodes[pid].setLastInstance(state);
-        int[] val = new int[2];
-        val[0] = 1;
-        val[1] = 1;
         if (activeExecutionTrace.shouldRecordFailure()) {
             res = false;
             writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+"." );
         }
-        planNodes[pid].record(res, res ? val : (module<=1) ? val : activeExecutionTrace.poppedTraceStability(), isRoot, episode);
+        planNodes[pid].record(res, activeExecutionTrace.poppedTraceStability(), isRoot, episode);
         
         /* Save this result */
         lastResult = res;
         
         /* Finished recording so pop this plan off the active execution trace */
-        activeExecutionTrace.popTrace(res==false/*indicate if stability info should be updated*/);
+        activeExecutionTrace.popTrace();
         writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
     }
     

@@ -8,16 +8,18 @@ import trees.Node;
 class TraceNode {
     public Node goal;
     public Node plan;
+    public Vector<Node> applicable;
     public String[] state;
     public boolean shouldRecordFailure;
     
-    public TraceNode(Node g, Node p, String[] s) {
-        this(g,p,s,false);
+    public TraceNode(Node g, Node p, Vector<Node> a, String[] s) {
+        this(g,p,a,s,false);
     }
     
-    public TraceNode(Node g, Node p, String[] s, boolean b) {
+    public TraceNode(Node g, Node p, Vector<Node> a, String[] s, boolean b) {
         goal = g;
         plan = p;
+        applicable = a;
         state = s;
         shouldRecordFailure = b;
     }
@@ -28,7 +30,6 @@ public class ExecutionTrace {
     /* MARK: Data Members */
     /*-----------------------------------------------------------------------*/
 	private Vector<TraceNode> trace;
-    private boolean werePoppedTracesStable;
     private int nTotal;
     private int nStable;
 	
@@ -37,7 +38,6 @@ public class ExecutionTrace {
     /*-----------------------------------------------------------------------*/
 	public ExecutionTrace() {
         trace = new Vector<TraceNode>();
-        werePoppedTracesStable = true;
         nTotal = 0;
         nStable = 0;
 	}
@@ -45,23 +45,25 @@ public class ExecutionTrace {
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - Stack */
     /*-----------------------------------------------------------------------*/
-    public void pushTrace(Node g, Node p, String[] s) {
+    public void pushTrace(Node g, Node p, Vector<Node> a, String[] s) {
         /* FIFO */
-        TraceNode n = new TraceNode(g,p,s);
+        TraceNode n = new TraceNode(g,p,a,s);
         trace.add(n);
         /* Reset the popped trace counters each time you push */
         nTotal = 0;
         nStable = 0;
     }
-    public void popTrace(boolean updateStable) {
+    public void popTrace() {
         /* FIFO - Pop the most recent instance from the trace */
         if (!trace.isEmpty()) {
             TraceNode n = trace.remove(trace.indexOf(trace.lastElement()));
-            if (updateStable) {
-                werePoppedTracesStable &= n.goal.isStable(n.state);
-                int[] stability = n.goal.stability(n.state);
-                nStable += stability[0];
-                nTotal += stability[1];
+            /* Now update stability information for popped traces before discarding */
+            if (n.applicable != null) {
+                for (int i = 0; i < n.applicable.size(); i++) {
+                    Node a = n.applicable.elementAt(i);
+                    nStable += (a.isStable(n.state)) ? 1 : 0;
+                    nTotal += 1;
+                }
             }
         }
     }
@@ -69,15 +71,10 @@ public class ExecutionTrace {
     /*-----------------------------------------------------------------------*/
     /* MARK: Member Functions - BUL related */
     /*-----------------------------------------------------------------------*/
-    
     public int[] poppedTraceStability() {
         int[] val = new int[2];
-        val[0] = 1;
-        val[1] = 1;
-        if (nTotal > 0) {
-            val[0] = nStable;
-            val[1] = nTotal;
-        }
+        val[0] = nStable;
+        val[1] = nTotal;
         return val;
     }
     
@@ -111,7 +108,6 @@ public class ExecutionTrace {
     
     public void reset() {
         trace.removeAllElements();
-        werePoppedTracesStable = true;
         nTotal = 0;
         nStable = 0;
     }

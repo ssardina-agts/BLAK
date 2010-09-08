@@ -1044,8 +1044,8 @@
 <target name="runhanoi5" description="Run hanoi5">
     <failIfBuildNotFound test.name="hanoi5"/>
 	<runTest        test.name="hanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z hanoi.init"/>
-	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/hanoi.init -p -1 -v 5 -w 5 -a 0.5"/>
-	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/hanoi.init -p -1"/>
+	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/hanoi.init -p -1 -l 100 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="hanoi5" run.class="Player" run.mode="concurrent" run.select="probabilistic" run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/hanoi.init -p -1 -l 100"/>
 </target>
 <target name="plothanoi5" description="Plot hanoi5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="hanoi5"/>
