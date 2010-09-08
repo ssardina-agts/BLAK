@@ -75,7 +75,7 @@ public agent BatteryManager extends Agent implements Logger {
     BatteryManager(int episodes, int modules, int tolerance, 
             int detcycle, int m2failcycle,
             PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
-            int buildThreshold, int wExperience,
+            int buildThreshold, double failThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
             long seed, String loadInit, String saveInit) {
@@ -87,6 +87,7 @@ public agent BatteryManager extends Agent implements Logger {
         discharges = new int[nModules];
         capacity_deterioration_cycle = detcycle;
         module2_fail_cycle = m2failcycle;
+        applicabilityThreshold = failThreshold;
         
         //--- BDI Learning Framework related
         this.activeExecutionTrace = new ExecutionTrace();
@@ -130,7 +131,7 @@ public agent BatteryManager extends Agent implements Logger {
     }
 
     public double applicabilityThreshold() {
-        return 0.0;
+        return applicabilityThreshold;
     }
 
     public double confidenceAlpha() {
@@ -164,7 +165,7 @@ public agent BatteryManager extends Agent implements Logger {
     public int module2FailCycle() {
         return module2_fail_cycle;
     }
-
+    
     /*** BDI Learning Framework related ***/
     
     public PlanIdInfo planInfo(int pid, String[] state) {
@@ -476,8 +477,10 @@ public agent BatteryManager extends Agent implements Logger {
         int tolerance = 0;
         int buildThreshold = 2;
         int wExperience = 0;
+        double failThreshold = 0.0;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
+        help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
         help += " -c: Number of cycles after which module capacity deteriorates (default: "+detcycle+")\n";
         help += " -d: Target directory for output files (default: "+targetDir+")\n";
         help += " -e: Stability e value (default: "+stableE+")\n";
@@ -508,6 +511,10 @@ public agent BatteryManager extends Agent implements Logger {
                 switch (option) {
                 case 'a':
                     alpha = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'b':
+                    failThreshold = Double.parseDouble(args[index]);
                     index++;
                     break;
                 case 'c':
@@ -604,7 +611,7 @@ public agent BatteryManager extends Agent implements Logger {
         System.out.println("Using random generator seed: "+seed);
         BatteryManager p = new BatteryManager(episodes, nModules, tolerance, 
             detcycle, failcycle,
-            pselect, uselect, rselect, buildThreshold, wExperience,
+            pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
             seed, loadInit, saveInit);
