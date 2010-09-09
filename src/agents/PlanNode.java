@@ -356,7 +356,9 @@ public class PlanNode extends Node{
                        double failureNodeComplexity,
                        int ts)
     {
-        boolean isStableBelow = res ? true : isLeaf() ? true : (traceStability[1] != 0) && (traceStability[0] == traceStability[1]);
+        /* If no trace nodes below this then for all practical purposes this is a leaf plan */
+        boolean isLeafPlan = (traceStability[1] == 0) ? true : false;
+        boolean isStableBelow = res ? true : isLeafPlan ? true : (traceStability[1] != 0) && (traceStability[0] == traceStability[1]);
         
         logger.writeLog("Plan "+name()+" is recording result "+(res?"(+)":"(-)")+" for state "+this.stringOfLastState());
         
@@ -436,12 +438,12 @@ public class PlanNode extends Node{
         //int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         int nStable = 0;
         if (res) {
-            nStable = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
+            nStable = isLeafPlan ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         } else {
             nStable = isStable() ? 1 : 0;
-            nStable += isLeaf() ? 0 : traceStability[0];
+            nStable += isLeafPlan ? 0 : traceStability[0];
         }
-        int nTotal = isLeaf() ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
+        int nTotal = isLeafPlan ? 1 : traceStability[1]/*plans below*/ + 1/*this plan*/;
         
         thisMemory.addStableHistory(nStable, nTotal);
         logger.writeLog("Plan "+name()+" in state "+this.stringOfLastState()+" recorded stability "+nStable+"/"+nTotal);
