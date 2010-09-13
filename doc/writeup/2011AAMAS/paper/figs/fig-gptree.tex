@@ -1,0 +1,38 @@
+%!TEX root = ../aamas11storage.tex
+\begin{tikzpicture} [level distance=8.0em]
+\tikzstyle{planbox}=[draw,minimum width=8.0em,rectangle split,rectangle split parts=3]
+\tikzstyle{goalbox}=[draw,rounded corners=1.25em,minimum height=3em,minimum width=4.5em]
+
+	
+\tikzstyle{level 1}=[sibling distance=13.0em] 
+\tikzstyle{level 2}=[level distance=7.0em] 
+
+\node[goalbox,solid] {$G($k,s$)$}
+	child {node[planbox] {$SetCharge$ 
+			\nodepart{second} $\psi: applies(k,s,C)$
+			\nodepart{third} $set(k,C);$
+		}
+		child {node[goalbox] {$G($k-1,s'$)$}}
+	}
+	child {node[planbox] {$SetDischarge$ \nodepart{second}
+			\nodepart{second} $\psi: applies(k,s,D)$
+			\nodepart{third} $set(k,D);$
+		}
+		child {node[goalbox] {$G($k-1,s'$)$}}
+	}
+	child {node[planbox] {$SetNotUsed$ \nodepart{second}
+			\nodepart{second} $\psi: applies(k,s,N)$
+			\nodepart{third} $set(k,N);$
+		}
+		child {node[goalbox] {$G($k-1,s'$)$}}
+	}
+	child {node[planbox] {$Execute$ 
+			\nodepart{second} $\psi:~!more(k)$
+			\nodepart{third} $operate();$ $evaluate();$
+		}
+	}
+;
+
+\end{tikzpicture}
+
+
