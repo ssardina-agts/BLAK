@@ -48,7 +48,7 @@ public agent BatteryManager extends Agent implements Logger {
     private int tolerance;
     private int[] discharges;
     private int capacity_deterioration_cycle;
-    private int module2_fail_cycle;
+    private int module_fail_cycle;
 
     //--- BDI Learning Framework related
     private int episode;
@@ -86,7 +86,7 @@ public agent BatteryManager extends Agent implements Logger {
         this.tolerance = tolerance;
         discharges = new int[nModules];
         capacity_deterioration_cycle = detcycle;
-        module2_fail_cycle = m2failcycle;
+        module_fail_cycle = m2failcycle;
         applicabilityThreshold = failThreshold;
         
         //--- BDI Learning Framework related
@@ -162,8 +162,8 @@ public agent BatteryManager extends Agent implements Logger {
         return capacity_deterioration_cycle;
     }
 
-    public int module2FailCycle() {
-        return module2_fail_cycle;
+    public int moduleFailCycle() {
+        return module_fail_cycle;
     }
     
     /*** BDI Learning Framework related ***/
@@ -274,13 +274,14 @@ public agent BatteryManager extends Agent implements Logger {
                     }
                     
                     /* Modelling module failure.
-                     * After N cycles, module 2 fails.
+                     * Module m fails after ((m-1)*N)+500 episodes and is restored after m*N
+                     * After 2N cycles, module 3 fails.
                      * So charge/discharge has no effect.
                      */
-                    if ((m==2) && (module2_fail_cycle>0) && (cycles(m) > module2_fail_cycle)) {
+                    if ((module_fail_cycle>0) && (episode > (((m-1)*module_fail_cycle))+500) && (episode < (m*module_fail_cycle))) {
                         mstate = HEALTH_MIN;
                         mconfig = CONFIG_NOTINUSE;
-                        writeLog("BatteryManager: Module "+m+" has failed after "+module2_fail_cycle+" cycles. Charging/Discharging will have no effect.");
+                        writeLog("BatteryManager: Module "+m+" has failed for the period "+((m-1)*module_fail_cycle)+500+"-"+(m*module_fail_cycle)+". Charging/Discharging will have no effect.");
                     }
                     
                     discharges[m-1] += (mconfig==CONFIG_DISCHARGE) ? 1 : 0;

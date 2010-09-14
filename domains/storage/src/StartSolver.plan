@@ -34,7 +34,7 @@ public plan StartSolver extends Plan {
                 }
                 configs.add(m,ag.CONFIG_NOTINUSE);
                 int health = states.get(m);
-                if ((m==2) && ag.module2FailCycle()>0 && (ag.episode() >= ag.module2FailCycle())) {
+                if ((ag.moduleFailCycle()>0) && (ag.episode() >= (((m-1)*ag.moduleFailCycle())+500)) && (ag.episode() < (m*ag.moduleFailCycle()))) {
                     nMax += 1;
                 } else if (ag.capacityDeteriorationCycle()>0 && (ag.episode() >= ag.capacityDeteriorationCycle())) {
                     nMax += (health>=(ag.HEALTH_MIN+ag.HEALTH_RANGE-ag.CAPACITY_DETERIORATION)) ? 1 : 0;
