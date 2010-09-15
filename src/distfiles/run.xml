@@ -1201,12 +1201,12 @@
 </target>
 <target name="runstorage1" description="Run storage1">
     <failIfBuildNotFound test.name="storage1"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -c 1000 -k 1 -e 0.5 -l 200 -b 0.2"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -c 1000 -k 1 -e 0.5 -l 200 -b 0.2"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
 </target>
 <target name="plotstorage1" description="Plot storage1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1"/>
-	<plotResult test.name="storage1" every="2500" window="200" label="storage1:modules=5:-c1000"/>
+	<plotResult test.name="storage1" every="2500" window="200" label="storage1:modules=5:-b20:-c1000:-m0"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1226,7 +1226,7 @@
 </target>
 <target name="plotstorage1m" description="Plot storage1m" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1m"/>
-	<plotResult test.name="storage1m" every="2500" window="200" label="storage1m:modules=5:-c1000:-m10000"/>
+	<plotResult test.name="storage1m" every="2500" window="200" label="storage1m:modules=5:-b20:-c1000:-m10000"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1241,12 +1241,32 @@
 </target>
 <target name="runstorage2" description="Run storage2">
     <failIfBuildNotFound test.name="storage2"/>
-	<runTestRepeats test.name="storage2" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 50000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2"/>
-	<runTestRepeats test.name="storage2" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 50000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2"/>
+	<runTestRepeats test.name="storage2" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.0 -m 0"/>
+	<runTestRepeats test.name="storage2" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.0 -m 0"/>
 </target>
 <target name="plotstorage2" description="Plot storage2" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2"/>
-	<plotResult test.name="storage2" every="2500" window="200" label="storage2:modules=5:-f20000"/>
+	<plotResult test.name="storage2" every="2500" window="200" label="storage2:modules=5:-b00:-f20000:-m0"/>
+</target>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- storage2b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildstorage2b" description="Build storage2b" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/storage2b/build"/>
+	<mkdir dir="${results.dir}/storage2b/build"/>
+	<compileJACK in.dir="${storage.dir}" make.dir="${results.dir}/storage2b"/>
+	<makeJAR test.name="storage2b" make.dir="${results.dir}/storage2b"/>
+	<jar destfile="${results.dir}/storage2b/build/storage2b.jar" basedir="${results.dir}/storage2b/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runstorage2b" description="Run storage2b">
+    <failIfBuildNotFound test.name="storage2b"/>
+	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+</target>
+<target name="plotstorage2b" description="Plot storage2b" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="storage2b"/>
+	<plotResult test.name="storage2b" every="2500" window="200" label="storage2b:modules=5:-b20:-f20000:-m0"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1261,14 +1281,33 @@
 </target>
 <target name="runstorage2m" description="Run storage2m">
     <failIfBuildNotFound test.name="storage2m"/>
-	<runTestRepeats test.name="storage2m" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 100000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
-	<runTestRepeats test.name="storage2m" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 100000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
+	<runTestRepeats test.name="storage2m" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.0 -m 10000"/>
+	<runTestRepeats test.name="storage2m" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.0 -m 10000"/>
 </target>
 <target name="plotstorage2m" description="Plot storage2m" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2m"/>
-	<plotResult test.name="storage2m" every="2500" window="200" label="storage2m:modules=5:-f20000:-m10000"/>
+	<plotResult test.name="storage2m" every="2500" window="200" label="storage2m:modules=5:-b00:-f20000:-m10000"/>
 </target>
 
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- storage2mb ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildstorage2mb" description="Build storage2mb" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/storage2mb/build"/>
+	<mkdir dir="${results.dir}/storage2mb/build"/>
+	<compileJACK in.dir="${storage.dir}" make.dir="${results.dir}/storage2mb"/>
+	<makeJAR test.name="storage2mb" make.dir="${results.dir}/storage2mb"/>
+	<jar destfile="${results.dir}/storage2mb/build/storage2mb.jar" basedir="${results.dir}/storage2mb/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runstorage2mb" description="Run storage2mb">
+    <failIfBuildNotFound test.name="storage2mb"/>
+	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
+	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
+</target>
+<target name="plotstorage2mb" description="Plot storage2mb" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="storage2mb"/>
+	<plotResult test.name="storage2mb" every="2500" window="200" label="storage2mb:modules=5:-b20:-f20000:-m10000"/>
+</target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- END TESTS TARGETS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
