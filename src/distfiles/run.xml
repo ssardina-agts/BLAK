@@ -101,7 +101,7 @@
 <target name="hanoi5fr"          description="Build, run and plot hanoi"  depends="buildhanoi5fr, runhanoi5fr, plothanoi5fr"/>
 
 
-<target name="aamas2011" description="Build, run and plot all tests used for the AAMAS2011 submission" depends="storage1,storage1m,storage2,storage2m"/>
+<target name="aamas2011" description="Build, run and plot all tests used for the AAMAS2011 submission" depends="storage1,storage1m,storage2,storage2m,storage2b,storage2mb"/>
 <target name="storage1"    description="Build, run and plot storage1"  depends="buildstorage1, runstorage1, plotstorage1"/>
 <target name="storage1m"    description="Build, run and plot storage1m"  depends="buildstorage1m, runstorage1m, plotstorage1m"/>
 <target name="storage2"    description="Build, run and plot storage2"  depends="buildstorage2, runstorage2, plotstorage2"/>
