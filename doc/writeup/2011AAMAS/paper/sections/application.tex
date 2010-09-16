@@ -56,16 +56,17 @@ Since constraint checking is performed in the context condition of the plan i.e.
 Finally, the system only learns a response to the immediate request i.e. how to resolve the top level goal. It does not learn any temporal relationship in the sequence of top level goals. For instance, the input signal may have some diurnal or seasonal pattern, however the proposed system does not attempt to learn this pattern. This is perfectly acceptable since the time-scale for decision making (in the order of seconds) is very short compared to the frequency of the pattern.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Programming for Learning}\label{subsec:constraints}
+\subsection{On Programmed vs Learnt Behaviour}\label{subsec:constraints}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-As far as learning systems go, the controller described so far is deployable and will over time learn to configure the battery for any given request - but it is far from ideal. As described later in our experimental setup, the state space for a $5$-module battery system is over $13$ million, and to learn over this space would take substantial time and errors. However, before we address the issue of state space we should explain how our learning problem differs from the typical learning scenario.
+As far as learning systems go, the controller described so far is deployable and will over time learn to configure the battery for any given request - but it is far from ideal. As described later in our experimental setup, the state space for even a $5$-module battery system is quite large (in the order of $13$ million), and will require substantial time to learn. However, before we address the issue of state space we should explain how our learning problem differs from the typical learning scenario.
 
-The problem we are trying to address is that of writing adaptable programs that take into account future changes in the environment. From the outset this means that we want to build a fully functional system based on the current specifications, but one that is capable of adapting (through learning) when the world changes in some pre-emptive way. For instance, in our application, the task is to program a fully specified controller given the data sheets of the battery modules. However, given the fact that battery performance degrades over time (but in an un-specifiable way based on a range of factors during it's life-span), then we want to program for this future change. 
+The problem we are trying to address is that of writing adaptable programs that take into account future changes in the environment. From the outset this means that we want to build a fully functional system based on the current specifications, but one that is capable of adapting (through learning) when the world changes in some predictable way. For instance, in our application, the task is to program a functional controller using the data sheets of the battery modules. However, given the fact that battery performance degrades over time (in a non-deterministic way based on a range of environmental and usage conditions), then we want to program for this future change. 
 
 In some way, we want to start with a program that captures the full set of ideal solutions, but learns to adjust this set based on future changes in the environment. Ideally, the program should cater for additions and subtractions of solutions over time, however for simplicity, we will only consider subtractions in this application. That is to say that we will program our controller with an ideal solution set based on the specifications of the modules, and will allow for future changes that result in solution sets that are subsets of this ideal set. For a battery system this is acceptable since we generally expect batteries to perform `less' over time than at the beginning.
 
-We do this by augmenting {\em operational} constraint checking into the context condition of each $Set*$ plan. Put simply, operational constraint checking decides if a configuration is admissible given the desired response, the configurations committed to so far, and the number of modules not yet configured. For instance, a request of $+1.0$ is only serviceable when all modules are configured to charge. So, if module $k$ were to not charge (it may already be fully charged so further charging is not possible), then the operational constraint for module $k+1$ will fail (meaning that no $Set*$ plan will apply). This is because regardless of how the remaining modules ($>k$) are configured, the response is bound to fall short of the request, so further configuration down this path is pointless. When this happens, BDI failure recovery allows us to backtrack up the chain of active $Set*$ plans and choose a different path until all constraints are met and the $Execute$ plan is run. Since the battery is operated only with configurations that should work (i.e. the ideal solution set), then in the beginning the system works perfectly. Over time, some environmental change will cause a subset of these solutions to no longer work, and our controller will learn to separate these out through experience.
+We do this by augmenting {\em operational} constraints into the context condition of the $Set*$ plans. Put simply, operational constraint checking decides if a configuration is admissible given the desired response, the configurations committed to so far, and the number of modules yet to be configured. For instance, a request of $+1.0$ is only serviceable when all modules are configured to charge. So, if module $k$ were to not charge (it may already be fully charged so further charging is not possible), then the operational constraint for module $k+1$ will fail and all $Set*$ plan will fail their context conditions and subsequently be discarded. The ``bad'' configuration of module $k$ makes further configuration pointless, because regardless of how the remaining modules ($>k$) are configured, the response is bound to fall short of the request. When this happens during deliberation, BDI failure recovery allows us to backtrack up the chain of active $Set*$ plans and choose a different path until all constraints are met. Since the $Execute$ plan is run only with configurations that should work (i.e. the ideal solution set), then the system works perfectly i.e. the evaluation against the request always produces a success. However, the important point is that some useful learning still takes place even if the system is always operating the battery correctly. This is because ``internal failures'' during deliberation i.e. when bad configuration paths are abandoned for good ones, provide the necessary negative samples to build a correct classifier. The net result is that the system works perfectly while all the time collecting samples and building an incrementally better classifier for the state space experienced so far. 
+
 
 
 
@@ -82,19 +83,19 @@ The applicability threshold for plan selection was set to $20\%$ so plans with l
 
 \subsubsection{Experiment One}
 
-In this experiment we model a future scenario where battery module capacities deteriorate..
+In this experiment we model a scenario where battery module capacities deteriorate..
 
 \begin{figure}[ht]
 \begin{center}
 \input{figs/fig-experiment1}
 \end{center}
-\caption{Controller performance with multiple module malfunctions over time.}
+\caption{Controller performance with module capacity deterioration.}
 \label{fig:experiment1}
 \end{figure}
 
 \subsubsection{Experiment Two}
 
-In this experiment we model a future scenario where battery modules may malfunction..
+In this experiment we model a scenario where some modules malfunction..
 
 \begin{figure}[ht]
 \begin{center}
