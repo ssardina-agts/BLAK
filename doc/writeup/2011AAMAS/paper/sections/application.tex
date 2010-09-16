@@ -1,7 +1,7 @@
 %!TEX root = ../aamas11storage.tex
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Modular Storage Application}\label{sec:introduction}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Modular Battery Controller}\label{sec:introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Energy storage enables increasing levels of renewable energy in our electricity system, and the rapidly maturing supply chains for several battery technologies encourages electricity utilities, generators, and customers to consider using large battery systems. 
 
@@ -29,40 +29,90 @@ Given, then, an input signal which is the requested rate of charging and dischar
 \end{figure*}
 
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{System Design}\label{subsec:design}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Figure \ref{fig:gptree} shows a BDI controller for a battery system with $k$ modules. At the beginning of each period of deliberation, the environment posts the top-level goal $G(r,k,s)$. The controller then responds by operating the battery system for that period in a suitable operational state that resolves the goal. Here $r$ specifies the desired response from the battery system and lies in the normalised range $[-1.0:+1.0]$ where $-1.0$ indicates a maximum discharge rate (where all modules are discharging) and $+1.0$ indicates a maximum charge rate (where all modules are charging). The parameter $s$ represents the current state of the battery system, and is derived from sensor readings of each modules current charge and operational state, and $k$ is initially set to the number of modules in the system. 
 
 The resolution of the battery system decides how closely it can match the desired response and is determined by the number of modules $n$. For simplicity, we will assume homogeneous capacity of the modules (but with possibly different chemical properties and constraints), such that each module has a normalised capacity $c$ and $c*n=1.0$. Each module in turn may be configured in one of three states: charging (i.e $+c$), discharging (i.e. $-c$) or not in use (i.e. $0$). The sum of these values gives the net response of the system. By appropriately setting each modules operational state then, the response of the battery system may be adjusted in the range $[-1.0:+1.0]$ in steps of $\pm c$.
 
-The BDI controller works by recursively setting the operational state of each module using the respective $Set*$ plans, and then finally executing the resulting battery configuration for one period and evaluating the result using the $Execute$ plan. The execution therefore always consists of the selection of $k$ high level $Set*$ plans followed by the $Execute$ leaf plan. Using the BDI learning framework from \cite{Singh:RAS10} the pass/fail result is then recorded in the chain of active plans for that period. By training over the outcomes of plan selections in each situation, the system over time learns correct plan selection at each recursive level for the set of possible top-level requests. Each plan in the goal-plan hierarchy is further explained below:
+The BDI controller works by recursively setting the operational state of each module using the respective $Set*$ plans, and then finally executing the resulting battery configuration for one period and evaluating the result using the $Execute$ plan. The execution therefore always consists of the selection of $k$ high level $Set*$ plans followed by the $Execute$ leaf plan. Using the BDI learning framework from \cite{Singh:RAS10} the pass/fail result is then recorded in the chain of active plans for that period. By training over the outcomes of plan selections in each situation, the system over time learns correct plan selection at each recursive level for the set of possible top-level requests. 
 
-$SetCharge$: Set the operational state of module $k$ to {\em Charge} (i.e $+c$) for this period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and Goal $G$ reposted for module $k-1$.
+Each plan in the goal-plan hierarchy is further explained below:
 
-$SetDischarge$: Set the operational state of module $k$ to {\em Discharge} (i.e $-c$) for this period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and Goal $G$ reposted for module $k-1$.
+$SetCharge$: Set the operational state of module $k$ to {\em Charge} (i.e $+c$) for this period. The plan's context condition first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and Goal $G$ reposted for module $k-1$.
 
-$SetNotUsed$: Set the operational state of module $k$ to {\em NotUsed} (i.e $0$). This means that the module will remain disconnected from use for this period. The plan first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and the Goal $G$ reposted for module $k-1$.
+$SetDischarge$: Set the operational state of module $k$ to {\em Discharge} (i.e $-c$) for this period. The plan's context condition first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and Goal $G$ reposted for module $k-1$.
+
+$SetNotUsed$: Set the operational state of module $k$ to {\em NotUsed} (i.e $0$). This means that the module will remain disconnected from use for this period. The plan's context condition first checks that the internal constraints of module $k>0$ will not be violated by this operation. If a violation is expected, then the plan is discarded, otherwise the state is updated and the Goal $G$ reposted for module $k-1$.
 
 $Execute$: The leaf plan that actually performs the operations on the battery modules. The plan executes only when $k=0$ which implies that all modules have been configured. All battery modules are then operated simultaneously for this period according to their assigned states. At the end of the period, the plan will evaluate the net battery response against the request. From a learning perspective, the battery response is deemed successful only if it was within tolerance of the desired response, otherwise it is deemed failed.
 
-
-A $Set*$ plan may be discarded from consideration if the respective constraints for module $k$ are not satisfied for that period. For instance, plan $SetCharge$ may be discarded because module $k$ is only allowed to change charge directions once every four periods say, and charging it in this period will violate that constraint. Similarly, plan $SetDischarge$ may be discarded because the module may already be discharged and further discharge is not possible. Finally, plan $SetNotUsed$ may be discarded because setting module $k$ to this state would imply that the request will become unserviceable regardless of how the as-yet-unassigned modules are configured. For instance, a request of $+1.0$ is only serviceable when all modules are configured to charge. If one of the modules were to not charge (it may already be fully charged so further charging is not possible), then any further configuration is pointless because the response is bound to fail.
+A $Set*$ plan may be discarded from consideration if the respective constraints for module $k$ are not satisfied for that period. For instance, plan $SetCharge$ may be discarded because module $k$ is only allowed to change charge directions once every four periods say, and charging it in this period will violate that constraint. Similarly, plan $SetDischarge$ may be discarded because the module may already be discharged and further discharge is not possible. 
 
 Since constraint checking is performed in the context condition of the plan i.e. prior to taking any action in the plan body, then BDI failure recovery may be employed to select different $Set*$ plans until all internal constraints are satisfied. Note that failure recovery is not allowed for the $Execute$ plan because it runs for a full period and that is the limit for the decision making. In other words, only one try is allowed per period. So functionally, the $Execute$ plan must always succeed, even though the evaluation against the goal (for learning purposes) may differ.
 
-Finally, the system only learns a response to the immediate request i.e. how to resolve the top level goal. It does not learn any temporal relationship in the sequence of top level goals. For instance, the input signal may have some diurnal or seasonal pattern, however the proposed system does not attempt to learn this pattern. This is perfectly acceptable since then time-scale for decision making by the controller (in the order of seconds) is very short compared to the frequency of the pattern.
+Finally, the system only learns a response to the immediate request i.e. how to resolve the top level goal. It does not learn any temporal relationship in the sequence of top level goals. For instance, the input signal may have some diurnal or seasonal pattern, however the proposed system does not attempt to learn this pattern. This is perfectly acceptable since the time-scale for decision making (in the order of seconds) is very short compared to the frequency of the pattern.
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experimental Setup}\label{experiments}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Programming for Learning}\label{subsec:constraints}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Modules=5, Period=1minute, Tolerance=0. Check all run parameters.
+As far as learning systems go, the controller described so far is deployable and will over time learn to configure the battery for any given request - but it is far from ideal. As described later in our experimental setup, the state space for a $5$-module battery system is over $13$ million, and to learn over this space would take substantial time and errors. However, before we address the issue of state space we should explain how our learning problem differs from the typical learning scenario.
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Analysis}\label{analysis}
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The problem we are trying to address is that of writing adaptable programs that take into account future changes in the environment. From the outset this means that we want to build a fully functional system based on the current specifications, but one that is capable of adapting (through learning) when the world changes in some pre-emptive way. For instance, in our application, the task is to program a fully specified controller given the data sheets of the battery modules. However, given the fact that battery performance degrades over time (but in an un-specifiable way based on a range of factors during it's life-span), then we want to program for this future change. 
+
+In some way, we want to start with a program that captures the full set of ideal solutions, but learns to adjust this set based on future changes in the environment. Ideally, the program should cater for additions and subtractions of solutions over time, however for simplicity, we will only consider subtractions in this application. That is to say that we will program our controller with an ideal solution set based on the specifications of the modules, and will allow for future changes that result in solution sets that are subsets of this ideal set. For a battery system this is acceptable since we generally expect batteries to perform `less' over time than at the beginning.
+
+We do this by augmenting {\em operational} constraint checking into the context condition of each $Set*$ plan. Put simply, operational constraint checking decides if a configuration is admissible given the desired response, the configurations committed to so far, and the number of modules not yet configured. For instance, a request of $+1.0$ is only serviceable when all modules are configured to charge. So, if module $k$ were to not charge (it may already be fully charged so further charging is not possible), then the operational constraint for module $k+1$ will fail (meaning that no $Set*$ plan will apply). This is because regardless of how the remaining modules ($>k$) are configured, the response is bound to fall short of the request, so further configuration down this path is pointless. When this happens, BDI failure recovery allows us to backtrack up the chain of active $Set*$ plans and choose a different path until all constraints are met and the $Execute$ plan is run. Since the battery is operated only with configurations that should work (i.e. the ideal solution set), then in the beginning the system works perfectly. Over time, some environmental change will cause a subset of these solutions to no longer work, and our controller will learn to separate these out through experience.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experimental Setup}\label{subsec:setup}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+All the experiments were conducted for a battery system with {\em five} modules. The current state of each module was defined as a discrete value in the range $[0:3]$ where zero indicated a fully discharged state and three indicated a fully charged state. As well as this, each module also had an assigned configuration for the period that was one of $Charging$, $NotInUse$, or $Discharging$. The number of possible requests were in the range $[-1.0:+1.0]$ in discrete intervals of $1/n$ i.e. $1/5$ giving a total of $11$ possible requests. The full state space for the problem was then $5 \cdot 11 \cdot 4^5 \cdot 3^5$ or $\approx 13.7$ million. However, note that we do not have to learn over the entire state space since the filtering of nonsensical configurations by the plans context conditions reduces the space dramatically.
+
+At the beginning of a learning episode the configuration of each module was reset to $N$. Moreover, the current state of each module was left untouched, as would be the case in the real system, implying that the state space was not uniformly sampled at the start of each episode. Each episode began with a top-level request from the environment. For simplicity the environment only generated satisfiable requests given the state of the battery system, so that a solution always existed for any given request. The outcome of each episode was either no response (no configuration was chosen), or a single invocation of the $Execute$ plan after which the response was evaluated. The operational model was straightforward, so that charging added $+c$ while discharging added $-c$ to the current state of the respective modules, otherwise the states was left unchanged for the period (no charge loss). The tolerance level was set to $0.0$ so that the battery response was deemed successful only when the sum of the configurations matched the request exactly.
+
+The applicability threshold for plan selection was set to $20\%$ so plans with likelihood of success below this value were discarded from the applicable set. The parameters for stability calculation were $k=1$ and $e=0.5$. For the stability-confidence measure, the averaging window used the last five recordings while the weighting factor was set to $0.5$. Finally, each experiment was run five times and the reported results are averages from these runs.
+
+\subsubsection{Experiment One}
+
+In this experiment we model a future scenario where battery module capacities deteriorate..
+
+\begin{figure}[ht]
+\begin{center}
+\input{figs/fig-experiment1}
+\end{center}
+\caption{Controller performance with multiple module malfunctions over time.}
+\label{fig:experiment1}
+\end{figure}
+
+\subsubsection{Experiment Two}
+
+In this experiment we model a future scenario where battery modules may malfunction..
+
+\begin{figure}[ht]
+\begin{center}
+\input{figs/fig-experiment2}
+\end{center}
+\caption{Controller performance with multiple module malfunctions over time.}
+\label{fig:experiment1}
+\end{figure}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Analysis}\label{subsec:analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Impact of applicability threshold: Reduces number of Execute tries by $7\%$ that is substantial when considering battery life. The difference in performance with and without the applicability threshold is not significant.\footnote{Data: Number of calls to $Execute$ averaged over five runs was $40000$ for test storage2 and $37249$ for test storage2b giving a saving of $7\%$.}
+
+Impact of data filtering: Reduces the training set size by an average of $74\%$ across all plans over all repeats of the experiment. The difference in performance with and without data filtering is not significant.\footnote{Data: The average DT instances for all plans over five runs was $12249.40$ for test storage2b and $3145.75$ for test storage2bm giving a saving of $74.3\%$.}
 
 %The system is (purposely) similar in design to the Towers of Hanoi problem of \cite{Singh:RAS10}. In some respects, it is simpler because the solutions are always at recursive depth $k$. Moreover, the non-leaf $Set*$ plans do not have side-effects when they fail and leave the initial state unaltered. Finally, a solution always consists of a single $Execute$ action whereas in the Hanoi problem it consists of possibly several $Move$ actions\footnote{One point of difference is that this is not a universal library where a solution can always be found. For some requests, no solution will be possible given the internal state of the modules.}.
 
