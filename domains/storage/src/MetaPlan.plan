@@ -59,14 +59,17 @@ public plan MetaPlan extends Plan {
                     ag.writeLog("MetaPlan: Found dummy plan "+ag.planNodes[info.plan_id].name()+".");
                 } else if (p >= 0.9) {
                     fullConfidencePlans.put(new Integer(i), s);
-                } else if (p < ag.applicabilityThreshold()) {
+                } else if ((p < ag.applicabilityThreshold()) && (ag.selector().nextDouble()<0.99)) {
                     /* We have reason to believe that these plans don't work so
                      * we will just remove them from the set.
                      * If all plans fall in this category then we will
                      * inevitably select the dummy plan.
+                     * We do this 99% of the time, leaving some hope for
+                     * these plans to be tried in case they become useful in the
+                     * future.
                      */
                     ag.writeLog("MetaPlan: Discarding plan "+ag.planNodes[info.plan_id].name()+" since the estimated success falls below the applicability threshold ("+p+"<"+ag.applicabilityThreshold()+").");
-                } else if (p >= ag.applicabilityThreshold()) {
+                } else {
                     applicablePlans.put(new Integer(i), s);
                 }
             }

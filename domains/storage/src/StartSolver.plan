@@ -34,9 +34,11 @@ public plan StartSolver extends Plan {
                 }
                 configs.add(m,ag.CONFIG_NOTINUSE);
                 int health = states.get(m);
-                if ((ag.moduleFailCycle()>0) && (ag.episode() >= (((m-1)*ag.moduleFailCycle())+500)) && (ag.episode() < (m*ag.moduleFailCycle()))) {
+                if ((ag.experiment()==ag.EXPERIMENT_FAIL_ONE) && (ag.episode() >= (((m-1)*ag.experimentCycle())+500)) && (ag.episode() < (m*ag.experimentCycle()+500))) {
                     nMax += 1;
-                } else if (ag.capacityDeteriorationCycle()>0 && (ag.episode() >= ag.capacityDeteriorationCycle())) {
+                } else if ((ag.experiment()==ag.EXPERIMENT_FAIL_ALL) && (ag.episode() > 500) && (ag.episode() < (ag.experimentCycle()+500))) {
+                    //nMax += 1; // allow everything
+                } else if ((ag.experiment()==ag.EXPERIMENT_CAPACITY_DROP_ALL) && (ag.episode() >= ag.experimentCycle())) {
                     nMax += (health>=(ag.HEALTH_MIN+ag.HEALTH_RANGE-ag.CAPACITY_DETERIORATION)) ? 1 : 0;
                 } else {
                     nMax += (health>=(ag.HEALTH_MIN+ag.HEALTH_RANGE)) ? 1 : 0;

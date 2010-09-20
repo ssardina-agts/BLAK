@@ -43,12 +43,19 @@ public agent BatteryManager extends Agent implements Logger {
     public static final int CONFIG_NOTINUSE = 0;
     public static final int CONFIG_CHARGE = 1;
     public static final int CAPACITY_DETERIORATION = 1;
+    
+    public static final int EXPERIMENT_NONE = 0;
+    public static final int EXPERIMENT_CAPACITY_DROP_ONE = 1;
+    public static final int EXPERIMENT_CAPACITY_DROP_ALL = 2;
+    public static final int EXPERIMENT_FAIL_ONE = 3;
+    public static final int EXPERIMENT_FAIL_ALL = 4;
 
     private int nModules;
     private int tolerance;
     private int[] discharges;
-    private int capacity_deterioration_cycle;
-    private int module_fail_cycle;
+
+    private int experiment;
+    private int experiment_cycle;
 
     //--- BDI Learning Framework related
     private int episode;
@@ -73,7 +80,7 @@ public agent BatteryManager extends Agent implements Logger {
     private String targetDir;
     
     BatteryManager(int episodes, int modules, int tolerance, 
-            int detcycle, int m2failcycle,
+            int experiment, int cycle,
             PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
             int buildThreshold, double failThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
@@ -85,8 +92,8 @@ public agent BatteryManager extends Agent implements Logger {
         this.nModules = modules;
         this.tolerance = tolerance;
         discharges = new int[nModules];
-        capacity_deterioration_cycle = detcycle;
-        module_fail_cycle = m2failcycle;
+        this.experiment = experiment;
+        experiment_cycle = cycle;
         applicabilityThreshold = failThreshold;
         
         //--- BDI Learning Framework related
@@ -158,12 +165,12 @@ public agent BatteryManager extends Agent implements Logger {
         return rselect;
     }
     
-    public int capacityDeteriorationCycle() {
-        return capacity_deterioration_cycle;
+    public int experimentCycle() {
+        return experiment_cycle;
     }
 
-    public int moduleFailCycle() {
-        return module_fail_cycle;
+    public int experiment() {
+        return experiment;
     }
     
     /*** BDI Learning Framework related ***/
@@ -267,23 +274,22 @@ public agent BatteryManager extends Agent implements Logger {
                      * After N cycles, the module capacity drops by 1.
                      * So charging past MAX-1 has no effect.
                      */
-                    if ((capacity_deterioration_cycle>0) && (cycles(m) > capacity_deterioration_cycle) && (mstate >= HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION) && (mconfig==CONFIG_CHARGE)) {
+                    if ((experiment==EXPERIMENT_CAPACITY_DROP_ALL) && (cycles(m) > experiment_cycle) && (mstate >= HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION) && (mconfig==CONFIG_CHARGE)) {
                         mstate = HEALTH_MIN+HEALTH_RANGE-CAPACITY_DETERIORATION;
                         mconfig = CONFIG_NOTINUSE;
-                        writeLog("BatteryManager: Module "+m+" capacity has deteriorated after "+capacity_deterioration_cycle+" cycles. Charging past "+mstate+" will have no effect.");
+                        writeLog("BatteryManager: Module "+m+" capacity has deteriorated after "+experiment_cycle+" cycles. Charging past "+mstate+" will have no effect.");
                     }
                     
                     /* Modelling module failure.
                      * Module m fails after ((m-1)*N)+500 episodes and is restored after m*N
-                     * After 2N cycles, module 3 fails.
                      * So charge/discharge has no effect.
                      */
-                    if ((module_fail_cycle>0) && (episode > (((m-1)*module_fail_cycle))+500) && (episode < (m*module_fail_cycle))) {
+                    if ((experiment==EXPERIMENT_FAIL_ONE) && (episode > (((m-1)*experiment_cycle))+500) && (episode < ((m*experiment_cycle)+500))) {
                         mstate = HEALTH_MIN;
                         mconfig = CONFIG_NOTINUSE;
-                        writeLog("BatteryManager: Module "+m+" has failed for the period "+((m-1)*module_fail_cycle)+500+"-"+(m*module_fail_cycle)+". Charging/Discharging will have no effect.");
+                        writeLog("BatteryManager: Module "+m+" has failed for the period "+((m-1)*experiment_cycle)+500+"-"+((m*experiment_cycle)+500)+". Charging/Discharging will have no effect.");
                     }
-                    
+
                     discharges[m-1] += (mconfig==CONFIG_DISCHARGE) ? 1 : 0;
 
                     int nstate = mstate + mconfig;
@@ -306,6 +312,14 @@ public agent BatteryManager extends Agent implements Logger {
         boolean eval = (reading >= (request - tolerance)) && (reading <= (request + tolerance));
         writeLog("BatteryManager: Request was "+request+" (+/- tolerance of "+tolerance+"). "+
             "Final Reading is "+reading+".");
+
+        /* Modelling module failure.
+         * All modules fail after 500 episodes and are restored after N
+         */
+        if ((experiment==EXPERIMENT_FAIL_ALL) && (episode > 500) && (episode < (experiment_cycle+500))) {
+            eval = false;
+            writeLog("BatteryManager: Forcing evaluation to failure for the period "+500+"-"+(experiment_cycle+500)+".");
+        }
 
         /* Record for logging */
         lastRequest = request;
@@ -459,11 +473,11 @@ public agent BatteryManager extends Agent implements Logger {
 
         // Default Config
         int nModules = 5;
-        int detcycle = 0;
-        int failcycle = 0;
         PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
         UpdateMode uselect = UpdateMode.CONCURRENT;
         RunMode rselect = RunMode.FAILURE_RECOVERY;
+        int experiment = EXPERIMENT_NONE;
+        int cycle = 0;
         int stableK = 1;
         double stableE = 0.5;
         int stableW = 5;
@@ -482,10 +496,10 @@ public agent BatteryManager extends Agent implements Logger {
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
-        help += " -c: Number of cycles after which module capacity deteriorates (default: "+detcycle+")\n";
+        help += " -c: Used with -f. Number of cycles after which experiment applies (default: "+cycle+")\n";
         help += " -d: Target directory for output files (default: "+targetDir+")\n";
         help += " -e: Stability e value (default: "+stableE+")\n";
-        help += " -f: Number of cycles after which module 2 fails  (default: "+detcycle+")\n";
+        help += " -f: Experiment type 0:none, 1:capacity_drop, 2:fail_one, 3:fail_all (default: "+experiment+")\n";
         help += " -g: Random generator seed value (default: "+seed+")\n";
         help += " -h: Help message\n";
         help += " -i: Number of episodes to run (default: "+episodes+")\n";
@@ -519,7 +533,7 @@ public agent BatteryManager extends Agent implements Logger {
                     index++;
                     break;
                 case 'c':
-                    detcycle = Integer.parseInt(args[index]);
+                    cycle = Integer.parseInt(args[index]);
                     index++;
                     break;
                 case 'd':
@@ -531,8 +545,14 @@ public agent BatteryManager extends Agent implements Logger {
                     index++;
                     break;
                 case 'f':
-                    failcycle = Integer.parseInt(args[index]);
+                    String exp = args[index];
                     index++;
+                    if (exp.equals("capacity_drop"))
+                        experiment = EXPERIMENT_CAPACITY_DROP_ALL;
+                    if (exp.equals("fail_one"))
+                        experiment = EXPERIMENT_FAIL_ONE;
+                    if (exp.equals("fail_all"))
+                        experiment = EXPERIMENT_FAIL_ALL;
                     break;
                 case 'g':
                     seed = Long.parseLong(args[index]);
@@ -611,7 +631,7 @@ public agent BatteryManager extends Agent implements Logger {
         }
         System.out.println("Using random generator seed: "+seed);
         BatteryManager p = new BatteryManager(episodes, nModules, tolerance, 
-            detcycle, failcycle,
+            experiment, cycle,
             pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
