@@ -1325,8 +1325,8 @@
 </target>
 <target name="runstorage3mb" description="Run storage3mb">
     <failIfBuildNotFound test.name="storage3mb"/>
-	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 10000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
-	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 10000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
+	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 5000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
+	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 5000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
 </target>
 <target name="plotstorage3mb" description="Plot storage3mb" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage3mb"/>
