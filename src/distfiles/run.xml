@@ -101,14 +101,14 @@
 <target name="hanoi5fr"          description="Build, run and plot hanoi"  depends="buildhanoi5fr, runhanoi5fr, plothanoi5fr"/>
 
 
-<target name="aamas2011" description="Build, run and plot all tests used for the AAMAS2011 submission" depends="storage1,storage1m,storage2,storage2m,storage2b,storage2mb,storage3b"/>
+<target name="aamas2011" description="Build, run and plot all tests used for the AAMAS2011 submission" depends="storage1,storage1m,storage2,storage2m,storage2b,storage2mb,storage3mb"/>
 <target name="storage1"    description="Build, run and plot storage1"  depends="buildstorage1, runstorage1, plotstorage1"/>
 <target name="storage1m"    description="Build, run and plot storage1m"  depends="buildstorage1m, runstorage1m, plotstorage1m"/>
 <target name="storage2"    description="Build, run and plot storage2"  depends="buildstorage2, runstorage2, plotstorage2"/>
 <target name="storage2m"    description="Build, run and plot storage2m"  depends="buildstorage2m, runstorage2m, plotstorage2m"/>
 <target name="storage2b"    description="Build, run and plot storage2b"  depends="buildstorage2b, runstorage2b, plotstorage2b"/>
 <target name="storage2mb"    description="Build, run and plot storage2mb"  depends="buildstorage2mb, runstorage2mb, plotstorage2mb"/>
-<target name="storage3b"    description="Build, run and plot storage3b"  depends="buildstorage3b, runstorage3b, plotstorage3b"/>
+<target name="storage3mb"    description="Build, run and plot storage3mb"  depends="buildstorage3mb, runstorage3mb, plotstorage3mb"/>
 
 
 <!-- Clean -->
@@ -1204,12 +1204,12 @@
 </target>
 <target name="runstorage1" description="Run storage1">
     <failIfBuildNotFound test.name="storage1"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
-	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.4 -m 0"/>
+	<runTestRepeats test.name="storage1" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.4 -m 0"/>
 </target>
 <target name="plotstorage1" description="Plot storage1" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1"/>
-	<plotResult test.name="storage1" every="2500" window="200" label="storage1:modules=5:-b20:capacity_drop:1000:-m0"/>
+	<plotResult test.name="storage1" every="2500" window="200" label="storage1:modules=5:-b0.4:capacity_drop:1000:-m0"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1224,12 +1224,12 @@
 </target>
 <target name="runstorage1m" description="Run storage1m">
     <failIfBuildNotFound test.name="storage1m"/>
-	<runTestRepeats test.name="storage1m" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
-	<runTestRepeats test.name="storage1m" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
+	<runTestRepeats test.name="storage1m" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
+	<runTestRepeats test.name="storage1m" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
 </target>
 <target name="plotstorage1m" description="Plot storage1m" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage1m"/>
-	<plotResult test.name="storage1m" every="2500" window="200" label="storage1m:modules=5:-b20:capacity_drop:1000:-m10000"/>
+	<plotResult test.name="storage1m" every="2500" window="200" label="storage1m:modules=5:-b0.4:capacity_drop:1000:-m10000"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1249,7 +1249,7 @@
 </target>
 <target name="plotstorage2" description="Plot storage2" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2"/>
-	<plotResult test.name="storage2" every="2500" window="200" label="storage2:modules=5:-b00:fail_one:20000:-m0"/>
+	<plotResult test.name="storage2" every="2500" window="200" label="storage2:modules=5:-b0.0:fail_one:20000:-m0"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1264,12 +1264,12 @@
 </target>
 <target name="runstorage2b" description="Run storage2b">
     <failIfBuildNotFound test.name="storage2b"/>
-	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
-	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.4 -m 0"/>
+	<runTestRepeats test.name="storage2b" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.4 -m 0"/>
 </target>
 <target name="plotstorage2b" description="Plot storage2b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2b"/>
-	<plotResult test.name="storage2b" every="2500" window="200" label="storage2b:modules=5:-b20:fail_one:20000:-m0"/>
+	<plotResult test.name="storage2b" every="2500" window="200" label="storage2b:modules=5:-b0.4:fail_one:20000:-m0"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1289,7 +1289,7 @@
 </target>
 <target name="plotstorage2m" description="Plot storage2m" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2m"/>
-	<plotResult test.name="storage2m" every="2500" window="200" label="storage2m:modules=5:-b00:fail_one:20000:-m10000"/>
+	<plotResult test.name="storage2m" every="2500" window="200" label="storage2m:modules=5:-b0.0:fail_one:20000:-m10000"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1304,33 +1304,33 @@
 </target>
 <target name="runstorage2mb" description="Run storage2mb">
     <failIfBuildNotFound test.name="storage2mb"/>
-	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
-	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 10000"/>
+	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
+	<runTestRepeats test.name="storage2mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_one -c 20000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
 </target>
 <target name="plotstorage2mb" description="Plot storage2mb" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="storage2mb"/>
-	<plotResult test.name="storage2mb" every="2500" window="200" label="storage2mb:modules=5:-b20:fail_one:20000:-m10000"/>
+	<plotResult test.name="storage2mb" every="2500" window="200" label="storage2mb:modules=5:-b0.4:fail_one:20000:-m10000"/>
 </target>
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- storage3b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- storage3mb ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildstorage3b" description="Build storage3b" if="available.buildDependencies" depends="buildDependencies">
-	<delete dir="${results.dir}/storage3b/build"/>
-	<mkdir dir="${results.dir}/storage3b/build"/>
-	<compileJACK in.dir="${storage.dir}" make.dir="${results.dir}/storage3b"/>
-	<makeJAR test.name="storage3b" make.dir="${results.dir}/storage3b"/>
-	<jar destfile="${results.dir}/storage3b/build/storage3b.jar" basedir="${results.dir}/storage3b/build" includes="*.class gui/*.class"/>
+<target name="buildstorage3mb" description="Build storage3mb" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/storage3mb/build"/>
+	<mkdir dir="${results.dir}/storage3mb/build"/>
+	<compileJACK in.dir="${storage.dir}" make.dir="${results.dir}/storage3mb"/>
+	<makeJAR test.name="storage3mb" make.dir="${results.dir}/storage3mb"/>
+	<jar destfile="${results.dir}/storage3mb/build/storage3mb.jar" basedir="${results.dir}/storage3mb/build" includes="*.class gui/*.class"/>
 </target>
-<target name="runstorage3b" description="Run storage3b">
-    <failIfBuildNotFound test.name="storage3b"/>
-	<runTestRepeats test.name="storage3b" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
-	<runTestRepeats test.name="storage3b" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 20000 -k 1 -e 0.5 -l 200 -b 0.2 -m 0"/>
+<target name="runstorage3mb" description="Run storage3mb">
+    <failIfBuildNotFound test.name="storage3mb"/>
+	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 10000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
+	<runTestRepeats test.name="storage3mb" run.class="BatteryManager" run.mode="concurrent" run.select="probabilistic" run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 40000 -f fail_all -c 10000 -k 1 -e 0.5 -l 200 -b 0.4 -m 10000"/>
 </target>
-<target name="plotstorage3b" description="Plot storage3b" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="storage3b"/>
-	<plotResult test.name="storage3b" every="2500" window="200" label="storage3b:modules=5:-b20:fail_all:20000:-m0"/>
+<target name="plotstorage3mb" description="Plot storage3mb" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="storage3mb"/>
+	<plotResult test.name="storage3mb" every="2500" window="200" label="storage3mb:modules=5:-b0.4:fail_all:10000:-m10000"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
