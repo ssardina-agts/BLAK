@@ -79,7 +79,7 @@ All the experiments were conducted for a battery system with {\em five} modules.
 
 At the beginning of a learning episode the configuration of each module was reset to $N$. Moreover, the current state of each module was left untouched, as would be the case in the real system, implying that the state space was not uniformly sampled at the start of each episode. Each episode began with a top-level request from the environment. For simplicity the environment only generated satisfiable requests given the state of the battery system, so that a solution always existed for any given request. The outcome of each episode was either no response (no configuration was chosen), or a single invocation of the $Execute$ plan after which the response was evaluated. The operational model was straightforward, so that charging added $+c$ while discharging added $-c$ to the current state of the respective modules, otherwise the states was left unchanged for the period (no charge loss). The tolerance level was set to $0.0$ so that the battery response was deemed successful only when the sum of the configurations matched the request exactly.
 
-The applicability threshold for plan selection was set to $20\%$ so plans with likelihood of success below this value were discarded from the applicable set. The parameters for stability calculation were $k=1$ and $e=0.5$. For the stability-confidence measure, the averaging window used the last five recordings while the weighting factor was set to $0.5$. Finally, each experiment was run five times and the reported results are averages from these runs.
+The applicability threshold for plan selection was set to $40\%$ so plans with likelihood of success below this value were discarded from the applicable set. The parameters for stability calculation were $k=1$ and $e=0.5$. For the stability-confidence measure, the averaging window used the last five recordings while the weighting factor was set to $0.5$. Finally, each experiment was run five times and the reported results are averages from these runs.
 
 \subsubsection{Experiment One}
 
@@ -102,7 +102,19 @@ In this experiment we model a scenario where some modules malfunction..
 \input{figs/fig-experiment2}
 \end{center}
 \caption{Controller performance with multiple module malfunctions over time.}
-\label{fig:experiment1}
+\label{fig:experiment2}
+\end{figure}
+
+\subsubsection{Experiment Three}
+
+In this experiment we model a scenario where the controller must re-learn.
+
+\begin{figure}[ht]
+\begin{center}
+\input{figs/fig-experiment3}
+\end{center}
+\caption{Controller performance when previous learning must be overcome.}
+\label{fig:experiment3}
 \end{figure}
 
 
@@ -111,9 +123,9 @@ In this experiment we model a scenario where some modules malfunction..
 \subsection{Analysis}\label{subsec:analysis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Impact of applicability threshold: Reduces number of Execute tries by $7\%$ that is substantial when considering battery life. The difference in performance with and without the applicability threshold is not significant.\footnote{Data: Number of calls to $Execute$ averaged over five runs was $40000$ for test storage2 and $37249$ for test storage2b giving a saving of $7\%$.}
+Impact of applicability threshold: Reduces number of Execute tries by $12\%$ that is substantial when considering battery life. The difference in performance with and without the applicability threshold is not significant.\footnote{Source: Repository revision 475. Number of calls to $Execute$ averaged over five runs was $40000$ for test storage2 and $35203$ for test storage2b giving a saving of $12\%$.}
 
-Impact of data filtering: Reduces the training set size by an average of $74\%$ across all plans over all repeats of the experiment. The difference in performance with and without data filtering is not significant.\footnote{Data: The average DT instances for all plans over five runs was $12249.40$ for test storage2b and $3145.75$ for test storage2bm giving a saving of $74.3\%$.}
+Impact of data filtering: Reduces the training set size by an average of $74\%$ across all plans over all repeats of the experiment. The difference in performance with and without data filtering is not significant.\footnote{Source: Repository revision 475. The average training set size for all plans over five runs was $56590.2$ for test storage2 and $14708.8$ for test storage2m giving a saving of $74\%$.}
 
 %The system is (purposely) similar in design to the Towers of Hanoi problem of \cite{Singh:RAS10}. In some respects, it is simpler because the solutions are always at recursive depth $k$. Moreover, the non-leaf $Set*$ plans do not have side-effects when they fail and leave the initial state unaltered. Finally, a solution always consists of a single $Execute$ action whereas in the Hanoi problem it consists of possibly several $Move$ actions\footnote{One point of difference is that this is not a universal library where a solution can always be found. For some requests, no solution will be possible given the internal state of the modules.}.
 
