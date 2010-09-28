@@ -3,4 +3,58 @@
 \section{Introduction}\label{sec:introduction}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The story. Assign to Lin.
+BDI agents do not traditionally do learning. However, if a deployed agent
+(or agent system) is to be able to adapt over time to a changing
+situation, then learning becomes important. Our vision is to be able
+to deploy an agent system which will be capable of adjusting to
+ongoing changes in an environment that were not foreseen and
+programmed for at deployment time, in a robust and effective manner.
+
+In this paper we build on the work of \cite{} which provides
+mechanisms for a BDI agent to learn the appropriate selection of plans
+in a situation. One of the key issues in any learning system is
+exploitation vs exploration: i.e. how much to believe and exploit the
+current knowledge, vs how much to try things in order to gain new
+knowledge. One of the key factors in this balance is how much learning
+has already been done, or how much has already been explored. In the
+work on which this is based, a confidence factor was used to capture
+how much the agent should trust its current understanding, and
+therefore explot rather than explore. However, this confidence factor
+was based on a static approximation based on the structure of the
+space of choices. The greater the percentage of the space that had
+been explored, the greater the confidence, and consequently the more
+likely the agent is to exploit.  
+
+However, this approach does not work for achieving our vision of an
+agent able to adjust to a changing environment, as the confidence
+increases monotonically. Because of this monotonic increase in
+confidence there is no ability for the agent
+to become less confident in its choices if the environment changes,
+and its currently learned behaviour becomes less successful.
+What we would prefer, and what we present in this paper, is a
+mechanism whereby the agent can observe how stable its learned
+knowledge is, and based on this stability, have a confidence factor
+which affects the balance between exploration and exploitation. We
+develop this new confidence measure, based on a notion of stability
+also developed in \cite{}.  An additional critical factor in an
+intuitive notion of confidence, is how much we are experiencing states
+we have seen before, vs how much we are seeing new situations. If we
+are still experiencing a substantial number of new situations we
+should be less confident that we have learnt well how to operate in
+the world. This notion is also incorporated into our new confidence
+measure by using a sliding window that checks what percentage of
+situations in the window have been seen previously.
+
+In the following section we provide an overview of the basic BDI
+learning framework that we are using, as developed by \cite{}. We then
+explain in detail our new dynamic measure of confidence, that enables
+our agents to continually adjust to a changing world. We show how this
+approach is much more suitable for our battery controller
+agent. Finally we describe some experiments evaluating the battery
+controller agent in different situations, and demonstrate that our
+approach does in fact allow the agent to adjust. in a variety of ways,
+to an environment where battery behaviour changes. We finish with
+conclusions and comments on what has been achieved as well as
+limitations requiring future work.
+
+*** need to introduce the example in intro...
