@@ -19,7 +19,7 @@ knowledge. One of the key factors in this balance is how much learning
 has already been done, or how much has already been explored. In the
 work on which this is based, a confidence factor was used to capture
 how much the agent should trust its current understanding, and
-therefore explot rather than explore. However, this confidence factor
+therefore exploit rather than explore. However, this confidence factor
 was based on a static approximation based on the structure of the
 space of choices. The greater the percentage of the space that had
 been explored, the greater the confidence, and consequently the more
@@ -31,19 +31,35 @@ increases monotonically. Because of this monotonic increase in
 confidence there is no ability for the agent
 to become less confident in its choices if the environment changes,
 and its currently learned behaviour becomes less successful.
-What we would prefer, and what we present in this paper, is a
-mechanism whereby the agent can observe how stable its learned
-knowledge is, and based on this stability, have a confidence factor
-which affects the balance between exploration and exploitation. We
-develop this new confidence measure, based on a notion of stability
-also developed in \cite{}.  An additional critical factor in an
-intuitive notion of confidence, is how much we are experiencing states
-we have seen before, vs how much we are seeing new situations. If we
-are still experiencing a substantial number of new situations we
-should be less confident that we have learnt well how to operate in
-the world. This notion is also incorporated into our new confidence
-measure by using a sliding window that checks what percentage of
-situations in the window have been seen previously.
+We use in this paper an example of a battery controller for a smart
+office building which has a number of renewable resources (solar
+panels, wind turbines, etc.) and a number of batteries which can be
+charged when there is excess power, and used when there is excess
+demand. Batteries are of different kinds, some of which have
+particular requirements such as the need to be fully discharged at
+regular intervals. The job of the battery controller is to set each
+battery to charge, discharge or unused, in reponse to a request to
+have an overall charge/discharge rate within a particular interval.
+Initially the controller can be programmed (or can learn) to operate
+optimally as all constraints are known, and the characteristics of
+each battery (such as the charge it can hold) is known. However, over
+time batteries operate less well, or some may cease to function
+alltogether. We need for the controller agent that has initially
+explored the space well, and developed a high confidence in what it
+has learned, to be able to observe when this learned knowledge becomes
+unstable, and dynamically modify its confidence, allowing new
+exploration and revised learning.
+
+In this work we develop a new confidence measure, based on a notion of
+stability also developed in \cite{}, which allows us to adjust our
+confidence as the environment changes.  An additional critical factor in
+an intuitive notion of confidence, is how much we are experiencing
+states we have seen before, vs how much we are seeing new
+situations. If we are still experiencing a substantial number of new
+situations we should be less confident that we have learnt well how to
+operate in the world. This notion is also incorporated into our new
+confidence measure by using a sliding window that checks what
+percentage of situations in the window have been seen previously.
 
 In the following section we provide an overview of the basic BDI
 learning framework that we are using, as developed by \cite{}. We then
@@ -56,5 +72,3 @@ approach does in fact allow the agent to adjust. in a variety of ways,
 to an environment where battery behaviour changes. We finish with
 conclusions and comments on what has been achieved as well as
 limitations requiring future work.
-
-\Shout{Need to introduce the example in intro.}
