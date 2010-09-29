@@ -3,11 +3,9 @@
 \section{Results}\label{sec:results}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experimental Setup}\label{subsec:setup}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 We conduct experiments for a battery system with {\em five} modules. In this system, the charge state of each module is described by a discrete value in the range $[0:3]$ where zero indicates a fully discharged state and three indicates a fully charged state. As well as this, each module has an assigned configuration for the period from the set $\{+c, 0, -c\}$ where $c=1/n$ i.e $1/5$. The desired response is in the range $[-1.0:+1.0]$ in discrete intervals of $\pm c$ giving a total of $11$ possible requests. The full state space for the problem is given by $5 \cdot 11 \cdot 4^5 \cdot 3^5 \approx 13.7$ million. This is significant, however note that we do not have to learn over this full set because the filtering of nonsensical configurations by the plans context conditions reduces the space substantially (to $\approx 1.5$ million).
+
+\Shout{Check this claim: $\approx 1.5$ million.}
 
 At the beginning of a learning episode the configuration of each module is reset to $0$. The charge state of each module, however, is left untouched and carries over from the previous episode as would be the case in the deployed system. This has implications for learning, particularly that the state space is not sampled uniformly. Each episode corresponds to one $G$ request from the environment. For simplicity of analysis, the environment only generates satisfiable requests given the state of the battery, such that a solution always exists for the generated request. The outcome of each episode is either no response (no configuration was executed), or a single invocation of the $Execute$ plan that operates the battery and evaluates the response. The operational model is simple, so that charging adds $+c$ while discharging adds $-c$ to a module's charge state, otherwise the state is unchanged for the period i.e there is no charge loss. The tolerance level is set to $0.0$ so that the battery response is deemed successful only when the sum of the module configurations matches the request exactly.
 
@@ -15,7 +13,12 @@ The applicability threshold for plan selection is set to $40\%$ so plans with a 
 
 \subsubsection{Experiment One}
 
+\Shout{$I' \subset I$ claims are incorrect. Reword.}
+
 In this experiment we model the situation where module capacities deteriorate over time. In a real system this will happen gradually over a very long time, however to ease the analysis of the impact of the change we force the situation to occur instantaneously in this experiment. Here the resulting solution set is a subset of the ideal set such that $I' \subset I$. Figure \ref{fig:experiment1} shows the system performance about this change. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording it's experiences although there is no evident use of the resulting learning yet. After some time (about $5000$ episodes), a dramatic change in the environment causes all five modules to instantaneously drop capacity (initially in the range $[0:3]$) to $[0:2]$. This results in an almost $25\%$ drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system therefore, would converge to about $75\%$ performance if this change were permanent. The learning system however, aptly rectifies the situation by learning to mostly avoid ``solutions'' that no longer work. 
+
+\Shout{Check this claim: $75\%$.}
+
 
 \begin{figure}[ht]
 \begin{center}
@@ -26,6 +29,8 @@ In this experiment we model the situation where module capacities deteriorate ov
 \end{figure}
 
 \subsubsection{Experiment Two}
+
+\Shout{$I' \subset I$ claims are incorrect. Reword.}
 
 This experiment highlights the system behaviour against a series of environmental changes. In this scenario, we model the situation where modules malfunction and are rectified after a time lag. Importantly, we model a series of such failures so that the space of failed solutions is different in different phases of the experiment. In particular $Module1$ fails for the duration $[0:20k]$ after which it is reinstated, $Module2$ fails for the period $[20k:40k]$, and so on. Figure \ref{fig:experiment2} shows the system performance about this change. As is evident, the system successfully identifies the changes and is able to learn the changed solution set each time. Here each resulting solution set is a subset of the prior such that $I'' \subset I' \subset I$. Note that the apparent difference in performance drops at $0k$ and $20k$ is due to the fact that the sampling of the state space is non-uniform and it just happens that more ``bad'' situations occurred about the first change than the second. The theoretical drop in performance for this change is $45\%$. 
 
@@ -38,6 +43,8 @@ This experiment highlights the system behaviour against a series of environmenta
 \end{figure}
 
 \subsubsection{Experiment Three}
+
+\Shout{$I' \subset I$ claims are incorrect. Reword.}
 
 In this experiment, we model two successive changes in the environment but where the resulting solution set is no longer a subset of the previous solution set. Here $I' \subset I$ and $I'' \subset I$ but $I'' \not\subset I'$. This means that some solutions that the system learnt to avoid in the first instance must be re-allowed in the second. Whereas in previous experiments all new learning complemented the old, in this case the initial learning must be superseded. In particular we experiment with the extreme case where {\em all} solutions fail for the period $[0:5k]$, after which they are reinstated. Figure \ref{fig:experiment3} shows the system performance about this change. At the beginning of the experiment, performance drops to zero rapidly as all of the ideal solutions start to fail. After an initial period of failures (at around 2k episodes), the estimated likelihood of success of all plans drops below the applicability threshold of $40\%$. Beyond this point the battery operation comes to a complete halt since no plans are ever applicable in any situation and so the Execute plan never gets invoked. The original behaviour is then reinstated at $5k$, however if no plans are being tried then new learning will also not occur. For this reason, the applicability threshold is implemented as a ``soft'' threshold. To be exact, the $40\%$ threshold applies $90\%$ of the time leaving some possibility for selecting plans below this threshold. This allows the battery to operate with some likelihood\footnote{Note that the battery operates after five $Set*$ plan selections. In the best case only one of these plans has failed the threshold and there is a $10\%$ chance that the battery will operate. However, if all plans fail the threshold then there is only a $0.1^5$ or $0.00001\%$ chance that the battery will operate.}, and the system is able to adapt to the new solution set beyond $6k$ episodes.
 

@@ -60,12 +60,19 @@
 \usepackage{url}
 
 \usepackage{tikz,pgf,pgfplots}
-\usetikzlibrary{calc,arrows,automata,trees,shapes,plotmarks}
+\usetikzlibrary{calc,arrows,automata,trees,shapes,plotmarks,patterns}
 
 
-\usepackage{algorithm}
-\usepackage{algorithmic}
-%\usepackage[ruled,vlined]{algorithm2e}
+% You need to undefine algorithm before loading the 
+% algorithm2e package, since both elsart and algorithm2e 
+% define the algorithm environment.
+\makeatletter
+\newif\if@restonecol
+\makeatother
+\let\algorithm\relax
+\let\endalgorithm\relax
+% Now we are ok to load algorithm2e
+\usepackage[ruled,vlined]{algorithm2e}
 
 \usepackage{textcomp}
 
@@ -130,6 +137,7 @@
 
 
 \newcommand{\Omit}[1]{}
+\newcommand{\Shout}[1]{\vskip 0.1in \fcolorbox{red}{white}{\parbox{0.9\columnwidth}{#1}} \vskip 0.1in}
 
 \begin{document}
 
