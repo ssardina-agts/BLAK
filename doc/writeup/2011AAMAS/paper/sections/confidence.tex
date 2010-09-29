@@ -17,7 +17,7 @@ Previous work has highlighted the importance of defining the exploration strateg
 
 To recap the definition of stability from \cite{singh10:extending}, ``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold $\epsilon$.'' Consider the example goal-plan structure of Figure \ref{fig:confidence} that shows the possible outcomes when plan $P$ is invoked in world state $w$. The $\surd$ and $\times$ symbols below the leaf plans indicate success and failure respectively. There is only one solution in world $w$ given by the sequential execution of the leaf plans $P_i$, $P_k$, and $P_m$. This is highlighted in Figure \ref{fig:confidence} as the shaded nodes. Line shading indicates initial execution traces while the solid shading highlights the final (active) execution trace. All other selection sequences lead to failures. Now let us consider the case where plan selection results in the failed active execution trace $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_h:w]$. What should we make of this failure from a learning perspective? Should we record the negative sample for training our learners at non-leaf nodes $P_a$ and $P$? The concern stems from the fact that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_h$) was made further down in the hierarchy. The stability measure allows us to resolve the issue by recording only when plans are considered to be stable, or ``well-informed''. 
 
-Given the definition of stability, we now define the {\em degree of stability of failed node $N$ in world $w$ as the ratio of the number of stable plans to the number of total applicable plans in the active execution trace starting at $N$ in $w$.} Here a node may be a plan or goal node. To see what this means, let us take the same failed trace $\lambda_1$ from before and say that leaf plan $P_h$ is stable. The degree of stability $s^o$ of each node in the trace then is given by:
+Given the definition of stability, we now define the {\em degree of stability of failed node $N$ in world $w$ as the ratio of stable plans to total applicable plans in the active execution trace below $N$ and starting in $w$.} Here a node may be a plan or goal node. To see what this means, let us take the same failed trace $\lambda_1$ from before and say that leaf plan $P_h$ is stable. The degree of stability $s^o$ of each node in the trace then is given by:
 
 \begin{eqnarray*}
 s^o(P_h,w) = & \frac{stable~in~[P_h]}{total~in~[P_h]} & = \frac{1}{1}  \\
@@ -27,32 +27,30 @@ s^o(G_1,w) = & \frac{stable~in~[P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P_a,P_g,P_h,
 s^o(P,w) = & \frac{stable~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]} & = \frac{1}{7} 
 \end{eqnarray*}
 
-\Shout{Update the following paragraph and algorithm.}
-
-Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $\eta$ is used to propagate the full list of sub-plans in the trace up to the parent. $StablePlan$ is a boolean function to check if the given plan $P_n$ is stable or not. For any given plan, $Choices$ holds the complete list of all executed sub-plans along with their stability status.
+Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $StablePlan$ is a function to check if the given plan $P_n$ is stable or not. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. The degree of stability of the plan $P_n$ is given by the pair $s'/t'$ and is saved using $SetDegreeStability$. For our sample trace $\lambda_1$ for instance, the calculated $s^o(P,w)$ is $1/7$. The same measure for a different failed trace $\lambda_2=G[P:w] \cdot G1[P_b:w]$ where plan $P_b$ is the only stable plan would be $1/4$. Assuming all plans eventually become stable, $s^o(P,w)$ is guaranteed to convergence to $1.0$. We use the {\em average degree of stability}, given by the average $s^o(P,w)$ over the last $n$ executions of plan $P$ in $w$, as a measure of our confidence in the decision tree for $P$ given $w$.
 
 \begin{algorithm}[ht]
-\KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $\eta=[P,b] \cdot \ldots \cdot [P_{r},b_{r}]$; $k\geq0$; $\epsilon\geq0$}
-\KwResult{Updates confidence for plans in $\lambda$}
-$choices(P_n,w_n) = choices(P_n,w_n) \cup P_n \cup \eta$\;
-$confidence(P_n,w_n) +\!\!= |choices(P_n,w_n) == true|/|choices(P_n,w_n)|$\;
+\KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
+\KwResult{Calculates the degree of stability for plans in $\lambda$}
 \If{$|\lambda| > 1$}{
 	$\lambda'=G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$\;
-	$\eta'+\!\!=[P_n,StablePlan(P_n,k,\epsilon)]$\;
-	$UpdateConfidence(\lambda', \eta', k, \epsilon)$\;
+	$s' = s + StablePlan(P_n,w_n,k,\epsilon)$\;
+	$t' = t + 1$\;
+	$SetDegreeStability(P_n, w_n, s', t')$\;
+	$UpdateDegreeStability(\lambda', s', t', k, \epsilon)$\;
 }
-\caption{$UpdateConfidence(\lambda, \eta, k, \epsilon)$}
+\caption{$UpdateDegreeStability(\lambda, s, t, k, \epsilon)$}
 \label{alg:degree}
 \end{algorithm}
 
-The degree of stability of plan $P$ in $w$ after $\lambda_1$ is $1/7$. The same measure for a different failed trace $\lambda_2=G[P:w] \cdot G1[P_b:w]$ where plan $P_b$ is the only stable plan would be $1/4$. If we take the average of this measure over the last $n$ executions of plan $P$ , then assuming all sub-plans eventually become stable, this value is guaranteed to convergence to $1.0$. This {\em average degree of stability} then, may be used as a measure of our confidence in the decision tree for $P$ given $w$. 
+
+Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
 \begin{equation}
 \C_s(P,w,n) = \frac{s^o_0(P,w) + s^o_1(P,w) + \cdots + s^o_{n-1}(P,w)}{n}
 \label{eqn:confidence-stability}
 \end{equation}
 
-Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
 The confidence measure $\C_s$ would make a useful heuristic for exploration (i.e. plan selection) in it's own right: such that when the confidence is at it's lowest we do maximum exploration and when it is at it's highest we fully utilise the decision tree. The problem with this approach, however, is that $\C_s$ only covers the space of known worlds. This means that whenever a new world is witnessed, $\C_s=0.0$, meaning that we will choose randomly. This is hardly beneficial since what we would really like is to use the learnt generalisations to classify this new world rather than be agnostic about it. What is missing is a metric that contributes to our net confidence but that is independent of $w$.
 
