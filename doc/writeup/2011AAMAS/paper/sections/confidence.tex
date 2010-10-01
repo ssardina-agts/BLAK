@@ -27,24 +27,25 @@ s^o(G_1,w) = & \frac{stable~in~[P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P_a,P_g,P_h,
 s^o(P,w) = & \frac{stable~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]} & = \frac{1}{7} 
 \end{eqnarray*}
 
-Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $StablePlan$ is a function to check if the given plan $P_n$ is stable or not. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. The degree of stability of the plan $P_n$ is given by the pair $s'/t'$ and is saved using $SetDegreeStability$. For our sample trace $\lambda_1$ for instance, the calculated $s^o(P,w)$ is $1/7$. The same measure for a different failed trace $\lambda_2=G[P:w] \cdot G1[P_b:w]$ where plan $P_b$ is the only stable plan would be $1/4$. Assuming all plans eventually become stable, $s^o(P,w)$ is guaranteed to convergence to $1.0$. We use the {\em average degree of stability}, given by the average $s^o(P,w)$ over the last $n$ executions of plan $P$ in $w$, as a measure of our confidence in the decision tree for $P$ given $w$.
+Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $G_n[P_n:w_n,T_n]$ indicates that plan $P_n$ was executed in world $w_n$ to resolve goal $G_n$ where $T_n$ is the set of all applicable plans for the situation. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. $StablePlan$ is a function to check if the given plan $P_n$ is stable or not. Function $SetDegreeStability$ is used to save the degree of stability, given by the pair $s'/t'$, for each plan $P_n$ . For our sample trace $\lambda_1$ for instance, the calculated $s^o(P,w)$ is $1/7$. The same measure for a different failed trace $\lambda_2=G[P:w] \cdot G1[P_b:w]$ where plan $P_b$ is the only stable plan would be $1/4$. Assuming all plans eventually become stable, $s^o(P,w)$ is guaranteed to convergence to $1.0$. We use the {\em average degree of stability}, given by the average $s^o(P,w)$ over the last $n$ executions of plan $P$ in $w$, as a measure of our confidence in the decision tree for $P$ given $w$.
 
 \begin{algorithm}[ht]
-\KwData{$\lambda=G_0[P_0:w_0] \cdot \ldots \cdot G_n[P_n:w_n]$; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
+\KwData{$\lambda=G_0[P_0:w_0,T_0] \cdot \ldots \cdot G_n[P_n:w_n,T_n]$; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
 \KwResult{Calculates the degree of stability for plans in $\lambda$}
 \If{$|\lambda| > 1$}{
 	$\lambda'=G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$\;
 	$s' = s + StablePlan(P_n,w_n,k,\epsilon)$\;
 	$t' = t + 1$\;
 	$SetDegreeStability(P_n, w_n, s', t')$\;
+	\ForEach{$P_i$ in $T_n$; $P_i \neq P_n$}{
+		$s' = s' + StablePlan(P_i, w_n, k,\epsilon)$\;
+		$t' = t + 1$\;
+	}
 	$UpdateDegreeStability(\lambda', s', t', k, \epsilon)$\;
 }
 \caption{$UpdateDegreeStability(\lambda, s, t, k, \epsilon)$}
 \label{alg:degree}
 \end{algorithm}
-
-\Shout{Need to add $s^o$ calculation for goals to the algprithm. And saving of the applicable plan set.}
-
 
 Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
@@ -77,5 +78,11 @@ Finally, Equation \ref{eqn:omega} shows how the confidence measure $\C$ is used 
 \label{eqn:omega}   
 \end{equation}
 
-\Shout{Now talk about the `dynamic' part and it's relevance to the application. Extract from application.tex.}
 
+\subsection{Applications for Dynamic Confidence}
+
+The stability-based confidence measure of Equation \ref{eqn:confidence} performs comparably to the proposed measures in \cite{singh10:learning,singh10:extending} in the respective domains used in those studies. So it serves as a direct replacement to the previous approaches. Moreover, the new measure improves upon the previous approaches in two key ways. Firstly, since the new stability-based measure is independent of the goal-plan structure in which it is used, then it is also truly scalable to practical applications. This factor was a key motivator for the work presented here.
+
+Secondly, and importantly it addresses the case where the solution set being learnt is not fixed. For several online learning applications the solution space changes over time and the learner must re-learn as necessary. Here it is important for the agent to reliably recognise such changes, and respond by adjusting it's exploration policy, switching policies, choosing to start afresh, and so on. One way of identifying changes to the learnt solution space is by monitoring the ongoing performance of the agent, and reacting when a significant change is identified. Since the stability-based confidence measure relies on observed data (actual plan selection and outcome), it consequently reflects agent performance: our confidence is maximum when the observed performance is stable, and minimum when it is not. As such, the confidence measure may be directly used to build heuristics that dynamically adjust exploration against a variable solution set.
+
+Our example storage domain highlights the usefulness of this feature. Here, it is easy to think of situations where the solution space changes over time. For instance, our motivation for learning is that battery chemistry (and therefore performance) deteriorates over time, and the system should learn to avoid ideal solutions that no longer work in the future. However, old battery modules get replaced as and when required. So some ``solutions'' that the learner had eliminated previously now become applicable once again. Similar examples may be conjured for cases around module malfunctions. The point is that each such change in the environment impacts the solution space in some way. However, it is not assumed that an external signal is always available to notify us of these changes (some changes are continuous, for instance). Morevoer, several such factors may play on the solution space at one time, and it is up to the learner to respond in this environment appropriately.
