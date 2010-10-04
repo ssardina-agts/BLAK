@@ -1,6 +1,71 @@
 %!TEX root = ../aamas11storage.tex
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{BDI and Learning Plan Selection}\label{sec:framework}
+\section{The BDI Learning Framework}\label{sec:framework}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Describes our learning framework. Assign to Sebastian.
+In this section, we briefly introduce the basic agent programming framework that will be used throughtout the paper~\cite{airiau09:enhancing,singh10:extending,singh10:learning}.
+%%
+Generally speaking, such framework is a seeamless integration of standard Belief-Desire-Intention (BDI) agent-oriented programming~\cite{Rao96:AgentSpeak,WooldridgeBook} with decision tree learning~\cite{Mitchell97:ML}. 
+
+Generally speaking, BDI agent-oriented programming languages are built around an explicit representation of propositional attitudes (e.g., beliefs, desires, intentions, etc.). A BDI architecture addresses how these components are represented, updated, and processed to determine the agent's actions.
+%%
+Specifically, a BDI intelligent agent systematically chooses and executes \emph{plans} (i.e., operational procedures) to achieve or realize its goals, called \emph{events}.
+%%
+Such plans are extracted from the so-called agent's \emph{plan library}, which encode the ``know-how'' information of the domain the agent operates on.
+%%
+For instance, the plan library of an unmanned air vehicle (UAV) agent controller may include several plans to address the event-goal of landing the aircraft. Each plan is associated with a \emph{context condition} stating under which belief conditions the plan is a sensible strategy for the goal in question. Whereas some plans for landing the aircraft may only be suitable under normal weather conditions, other plans may only be used under emergency operations.
+
+Besides the actual execution of domain actions (e.g., lifting the flaps), a plan may require the resolution of an (intermediate) sub-goal event (e.g., obtain landing permission from air control tower).
+%%
+As a result, the execution of a BDI system can be seen as a \textit{context sensitive subgoal expansion}, allowing agents to ``act as they go'' by making \emph{plan choices} at each level of abstraction with respect to the current situation. The use of plans' context (pre)conditions to make choices as late as possible, together with the built-in goal-failure mechanisms, ensures that the system is responsive to changes in the environment. 
+%%
+There are a plethora of agent programming languages and development platforms in the BDI tradition, including
+%such as \PRS\ \cite{Georgeff89-PRS},
+\JACK~\cite{BusettaRHL:AL99-JACK}, 
+\JADEX~\cite{PokahrBL:EXP03-JADEX}, and
+%\TAPL~\cite{Hindriks99:Agent} and
+%\DAPL~\cite{Dastani:JAAMAS08-2APL}, 
+\JASON~\cite{jasonbook}
+%, and SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, 
+among others. 
+
+
+As can be seen, adequate plan selection is critically important in BDI systems. Whereas standard BDI systems leverage domain expertise by means of the \emph{fixed} logical context conditions of plans, in this work, we are interested in exploring how a situated agent may \emph{learn} or \emph{improve} its plan selection mechanism based on experience, in order to better realize its goals.
+%%
+To that end, it was proposed to generalize the account for plans' context conditions to decision trees~\cite{Mitchell97:ML} that can be learnt over time~\cite{airiau09:enhancing,singh10:extending,singh10:learning}. The idea is simple: \emph{the decision tree of an agent plan provides a judgement as to whether the plan is likely to succeed or fail for the given situation.}
+%%
+By suitably \emph{learning} the structure of such decision tree and adequately \emph{using} such decision trees, we expect the agent to be able to improve its performance over time and release the domain modeller to encode ``perfect'' plan preconditions. Note that the classical boolean context conditions provided by the designer could (and will generally) still be used as initial necessary but possibly insufficient requirements for each plan that will be further \emph{refined} over time in the course of trying plans in various world states.
+
+
+Under the new BDI learning framework, two mechanisms become crucial. First, of course, a principled approach to learning such decision trees based on execution experiences is needed. Second, an adequate new plan selection scheme compatible with the new type of plans' preconditions is required.
+%%
+To select plans based on information in the decision trees, the work reported in \cite{singh10:extending,singh10:learning} used a probabilistic method that chooses a plan based on its believed likelihood of success in the given situation. This approach provides a balance between exploitation (we choose plans with relatively higher success expectations more often), and exploration (we sometimes choose plans with lower success expectation to get better confidence in their believed applicability by trying them in more situations). This balance is important because ongoing learning influences future plan selection, and subsequently whether a good solution is learnt.
+
+When it comes to the learning process, for each plan, the training set for its decision tree contains samples of the form $[w, o]$, where $w$ is the world state in which the plan was executed and $o$ was the boolean outcome, either success or failure. The world state $w$ itself is a set of discrete attributes that together represent the state of affairs Initially, the training set is empty and grows as the agent tries the plan in various world states and records each result. 
+%%
+Since the decision tree inductive bias is a preference for smaller trees, one expects that the decision tree learnt will contain only those attributes of world state $w$ that are relevant to that plans context condition.
+%%
+Now, due to the hierarchical nature of the plan-goal hierarchy being executed by the agent, the agent needs to determine whether certain plan failure needs to be accounted as part of its training set. In fact, such failure may have only been due to a poor plan selection lower in the hierarchy.
+%%
+One approach is to address the learning problem is that of careful consideration whereby failures are recorded for learning purposes only when the agent is sufficiently sure that the failure was not due to poor sub-plan choices.
+
+
+We have shown that this conservative approach is more robust, though often
+slower, than a more aggressive approach which records all experiences, but
+can in some particular cases completely fail to learn.
+Our second approach reported in [15] was to adjust the plan selection
+probability based on some measure of our conﬁdence in the decision tree.
+We consider the reliability of a plan’s decision tree in a given world state
+  
+to be proportional to the number of sub-plan choices (or paths below the
+plan in the goal-plan hierarchy) that have been covered in that world state.
+Here coverage [15] refers to the set of explored paths relative to the set of
+all possible paths. The greater the coverage, the more we have explored and
+the greater the conﬁdence in the resulting decision tree. By biasing the plan
+selection probability with a coverage-based conﬁdence measure we achieved
+the same robustness as that of conservative recording of failure cases. The
+coverage approach, however, is more ﬂexible as the extent to which this is
+used can be readily adjusted by parameters in the selection formula.
+A limitation with the previous approaches is that events were assumed to
+
+
