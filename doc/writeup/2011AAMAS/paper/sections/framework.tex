@@ -45,27 +45,10 @@ When it comes to the learning process, for each plan, the training set for its d
 %%
 Since the decision tree inductive bias is a preference for smaller trees, one expects that the decision tree learnt will contain only those attributes of world state $w$ that are relevant to that plans context condition.
 %%
-Now, due to the hierarchical nature of the plan-goal hierarchy being executed by the agent, the agent needs to determine whether certain plan failure needs to be accounted as part of its training set. In fact, such failure may have only been due to a poor plan selection lower in the hierarchy.
+Now, due to the hierarchical nature of the plan-goal hierarchy being executed by the agent, it is possible that the failure of a plan is only due to a poor plan selection lower in the hierarchy.
 %%
-One approach is to address the learning problem is that of careful consideration whereby failures are recorded for learning purposes only when the agent is sufficiently sure that the failure was not due to poor sub-plan choices.
+To deal with this issue, the work in \cite{airiau09:enhancing} uses a plan ``stability" measure to take failures into account only when the agent is sufficiently sure that the failure was not due to poor sub-plan choices. Another approach reported is to adjust the plan selection probability based on some measure of our ``confidence'' in the decision tree~\cite{singh10:learning} which considers the reliability of a plan's decision tree to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored already: the greater the coverage, the more we have explored and the greater the confidence in the resulting decision tree. 
 
 
-We have shown that this conservative approach is more robust, though often
-slower, than a more aggressive approach which records all experiences, but
-can in some particular cases completely fail to learn.
-Our second approach reported in [15] was to adjust the plan selection
-probability based on some measure of our conﬁdence in the decision tree.
-We consider the reliability of a plan’s decision tree in a given world state
-  
-to be proportional to the number of sub-plan choices (or paths below the
-plan in the goal-plan hierarchy) that have been covered in that world state.
-Here coverage [15] refers to the set of explored paths relative to the set of
-all possible paths. The greater the coverage, the more we have explored and
-the greater the conﬁdence in the resulting decision tree. By biasing the plan
-selection probability with a coverage-based conﬁdence measure we achieved
-the same robustness as that of conservative recording of failure cases. The
-coverage approach, however, is more ﬂexible as the extent to which this is
-used can be readily adjusted by parameters in the selection formula.
-A limitation with the previous approaches is that events were assumed to
 
 
