@@ -1,1 +1,12 @@
 %!TEX root = ../aamas11storage.tex
+
+% Abstract submissions for AAMAS 2011 are limited to 400 words maximum
+
+The popular Belief, Desire, and Intentions (BDI) agent programming paradigm has been applied to a range of real-world applications. Recent work has proposed the principled integration of a learning capability to the BDI architecture in order to extend applicability to domains where adaptability is important. In particular, the question being addressed is that of {\em plan choice}, or learning which plans work best in which situations. In this paper we report new progress in this direction.
+%
+
+Firstly, we contribute to the important issue of determining confidence in the ongoing learning of the agent. We propose a new measure that is truly scalable irrespective of the size of the BDI goal-plan hierarchy. Additionally, this measure dynamically adjusts based on agent performance, allowing in principle, infinitely many learning phases when used in the exploration heuristic. 
+%
+
+Secondly, we extend state-of-the-art towards a more practical system based on the scenario of an energy storage installation. The task is to program a controller for a modular battery system while ensuring adaptability to certain future performance-impacting situations such as changes in battery chemistry and module malfunctions. This learning scenario is typical of many real-world applications, but highlights a shift from the usual setting: here the task is not to learn the initial solution set, but to program the initial set and then use learning to adapt to changes to this set over time. A key consideration then is the programming of the initial {\em filter} that must allow for the ideal solution set as well as any future sets that are to be learnt. This is achieved in our BDI agent by programming each plan's {\em context condition} (the runtime condition that decides when the plan is applicable) in such a way as to capture all foreseeable solution sets. Learning is then used to refine these conditions over time in response to different environmental changes.
+
