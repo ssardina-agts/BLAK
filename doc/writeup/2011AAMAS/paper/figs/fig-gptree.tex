@@ -1,34 +1,35 @@
+
 %!TEX root = ../aamas11storage.tex
 \begin{tikzpicture} [level distance=8.0em]
-\tikzstyle{planbox}=[draw,text width=11.0em,rectangle split,rectangle split parts=3]
-\tikzstyle{goalbox}=[draw,rounded corners=1.25em,minimum height=3em,minimum width=5em]
+\tikzstyle{planbox}=[draw,text width=6.0em,rectangle split,rectangle split parts=3]
+\tikzstyle{goalbox}=[draw,rounded corners=1.25em,minimum height=3em,minimum width=3em]
 
 	
-\tikzstyle{level 1}=[sibling distance=13.0em] 
+\tikzstyle{level 1}=[sibling distance=8.0em] 
 \tikzstyle{level 2}=[level distance=7.0em] 
 
 \node[goalbox,solid] {$G($r,k,s$)$}
-	child {node[planbox] {$SetCharge$ 
-			\nodepart{second} $\psi:satisfies(r,k,s,+c),$\\$k>0$
-			\nodepart{third} $set(k,+c)$
+	child {node[planbox] {$\pSetCharge$ \\
+			\nodepart{second} $\cSatisfies(r,k,s,+c),$\\$k>0$
+			\nodepart{third} $\aSet(k,+c)$
 		}
 		child {node[goalbox] {$G($r,k-1,s'$)$}}
 	}
-	child {node[planbox] {$SetDischarge$ \nodepart{second}
-			\nodepart{second} $\psi:satisfies(r,k,s,-c),$\\$k>0$
-			\nodepart{third} $set(k,-c)$
+	child {node[planbox] {$\pSetDischarge$ \\ 
+			\nodepart{second} $\cSatisfies(r,k,s,-c),$\\$k>0$
+			\nodepart{third} $\aSet(k,-c)$
 		}
 		child {node[goalbox] {$G($r,k-1,s'$)$}}
 	}
-	child {node[planbox] {$SetNotUsed$ \nodepart{second}
-			\nodepart{second} $\psi:satisfies(r,k,s,0),$\\$k>0$
-			\nodepart{third} $set(k,0)$
+	child {node[planbox] {$\pSetNotUsed$ \\
+			\nodepart{second} $\cSatisfies(r,k,s,0),$\\$k>0$
+			\nodepart{third} $\aSet(k,0)$
 		}
 		child {node[goalbox] {$G($r,k-1,s'$)$}}
 	}
-	child {node[planbox] {$Execute$ 
+	child {node[planbox] {$\pExecute$ 
 			\nodepart{second} $\psi:k==0$
-			\nodepart{third} $operate()$ \\$evaluate()$
+			\nodepart{third} $\aOperate()$ \\$\aEvaluate()$
 		}
 	}
 ;
