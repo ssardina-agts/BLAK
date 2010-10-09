@@ -1,4 +1,4 @@
-%!TEX root = ../aamas11storage.tex
+\newpage 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The BDI Learning Framework}\label{sec:framework}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,15 +25,7 @@ For instance, the plan library of an unmanned air vehicle (UAV) agent controller
 %%%
 Besides the actual execution of domain actions (e.g., lifting the flaps), a plan may require the resolution of (intermediate) sub-goal events (e.g., obtain landing permission from air control tower). As a result, the execution of a BDI system can be seen as a \textit{context sensitive subgoal expansion}, allowing agents to ``act as they go'' by making \emph{plan choices} at each level of abstraction with respect to the current situation. The use of plans' context (pre)conditions to make choices as late as possible, together with the built-in goal-failure mechanisms, ensures that the system is responsive to changes in the environment. 
 
-\begin{figure}[t]
-\begin{center}
-%\resizebox{.45\textwidth}{!}{
-\input{figs/fig-confidence}
-%}
-\end{center}
-\caption{An example goal-plan hierarchy.}
-\label{fig:confidence}
-\end{figure}
+
 
 
 It is not hard to see that, by grouping together plans responding to the same event type, the agent's plan library can be seen as
@@ -52,6 +44,15 @@ Under the new BDI learning framework, two mechanisms become crucial. First, of c
 To select plans based on information in the decision trees, the work reported in \cite{singh10:extending,singh10:learning} used a probabilistic method that chooses a plan based on its believed likelihood of success in the given situation. This approach provides a balance between exploitation (we choose plans with relatively higher success expectations more often), and exploration (we sometimes choose plans with lower success expectation to get better confidence in their believed applicability by trying them in more situations). This balance is important because ongoing learning influences future plan selection, and subsequently whether a good solution is learnt.
 
 
+\begin{figure}[t]
+\begin{center}
+%\resizebox{.45\textwidth}{!}{
+\input{figs/fig-confidence}
+%}
+\end{center}
+\caption{An example goal-plan hierarchy.}
+\label{fig:confidence}
+\end{figure}
 
 When it comes to the learning process, the training set for a given plan's decision tree contains samples of the form $[w, o]$, where $w$ is the world state---a vector of discrete attributes---in which the plan was executed and $o$ is the execution outcome, namely, success or failure. Initially, the training set is empty and grows as the agent tries the plan in various world states and records each execution result. 
 %%
