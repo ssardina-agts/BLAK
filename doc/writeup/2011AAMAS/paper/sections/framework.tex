@@ -5,7 +5,7 @@
 
 We begin by briefly reviewing the basic agent programming framework that will be used throughout the paper~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, which is a seamless integration of standard Belief-Desire-Intention (BDI) agent-oriented programming~\cite{Rao96:AgentSpeak,WooldridgeBook} with decision tree learning~\cite{Mitchell97:ML}. 
 
-Generally speaking, BDI agent-oriented programming languages are built around an explicit representation of propositional attitudes (e.g., beliefs, desires, intentions, etc.). 
+Generally speaking, BDI agent-oriented programming languages are built around an explicit representation of propositional attitudes (e.g., beliefs, desires, intentions, etc.). A BDI architecture addresses how these components are represented, updated, and processed to determine the agent's actions.
 %%
 There are a plethora of agent programming languages and development platforms in the BDI tradition, including
 %such as \PRS\ \cite{Georgeff89-PRS},
@@ -16,8 +16,6 @@ There are a plethora of agent programming languages and development platforms in
 \JASON~\cite{jasonbook}
 %, and SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, 
 among others. 
-%%
-A BDI architecture addresses how these components are represented, updated, and processed to determine the agent's actions.
 %%
 Specifically, a BDI intelligent agent systematically chooses and executes \emph{plans} (i.e., operational procedures) to achieve or realize its goals, called \emph{events}.
 %%
@@ -69,12 +67,13 @@ To deal with this issue, the work in \cite{airiau09:enhancing} uses a plan ``sta
 
 
 
+\newcommand{\pSet}{\mathname{Set*}}
 \newcommand{\pSetCharge}{\mathname{SetCharge}}
 \newcommand{\pSetDischarge}{\mathname{SetDischarge}}
 \newcommand{\pSetNotUsed}{\mathname{SetNotUsed}}
 \newcommand{\pExecute}{\mathname{Execute}}
 
-\newcommand{\cSatisfies}{\mathname{sat}}
+\newcommand{\cSatisfies}{\psi}
 
 \newcommand{\aSet}{\mathname{set}}
 \newcommand{\aOperate}{\mathname{operate}}
@@ -94,18 +93,46 @@ To deal with this issue, the work in \cite{airiau09:enhancing} uses a plan ``sta
 \label{fig:energystorage}
 \end{figure*}
 
-
-
-Consider a smart office building comprising of a set of loads (appliances in the building), some renewable sources (solar panels on the roof and a local wind turbine), and a modular battery system. The building is connected to the main grid, and economics govern that the grid power consumption of the building be maintained within the range $[0:p_h]$. 
+Consider a smart office building comprising of a set of loads (e.g., appliances in the building), some renewable sources (e.g., solar panels on the roof and a local wind turbine), and a \emph{modular battery system}. The building is connected to the main grid, and economics govern that the overall grid power demand of the building be maintained within the range $[0:p_h]$; see Figure~\ref{fig:usecase}. 
 %%
-Since there is little control over the demand in the building and certainly no control over the renewable generation, then for some period in the day it is possible that the power consumption of the building will fall outside this range. For instance, if the renewable generation is high relative to the building loads, then net consumption may fall below $0$. Similarly, if demand is higher than generation then the net building consumption may rise above $p_h$. 
+Since there is little control over the demand in the building, and certainly no control over the renewable generation, it is possible that the building power consumption falls outside this range for some period in the day. For instance, if the renewable generation is high relative to the building loads, then net consumption may fall below $0$ (e.g., period prior to $t_1$); whereas if demand is higher than generation, then the net building consumption may rise above $p_h$ (e.g., period after $t_2$). 
+
+While net demand is fixed for all practical purposes, we do have control over the use of the battery system (Battery Charge). Hence, by suitably ordering the battery system to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates, it is possible to influence the building net demand. 
+% Figure \ref{fig:usecase} shows how the appropriate battery response (Battery Charge) added to the net building consumption (Building Demand) ensures that the power drawn from the grid (Grid Supply) is maintained within the desired range.
 %%
-In Figure \ref{fig:usecase} the Building Demand curve for the period prior to $t_1$ and after $t_2$, has this property. While this net demand is fixed for all practical purposes, we do have control over the use of the battery system. By suitably ordering the battery system to charge (act as a load) or discharge (act as a generator) at determined rates through this period we may influence the net demand in the building. Figure \ref{fig:usecase} shows how the appropriate battery response (Battery Charge) added to the net building consumption (Building Demand) ensures that the power drawn from the grid (Grid Supply) is maintained within the desired range.
+Large battery systems usually comprise of multiple modules that can be controlled independently.  Modules may be operated in synchrony, but there are often strategic reasons for keeping some modules in different states.  For example, if it is undesirable to change the direction of power flow between charging and discharging too frequently, a subset of modules may be used for each direction until it is necessary to swap their roles. Also, some technologies have specific requirements, such as zinc-bromine flow batteries needing complete discharges at regular intervals to ``strip'' the zinc plating and hence ensuring irregularities never accumulate. Where they exist, such requirements place further constraints on module control.
+
+So, given a large battery installation, we are interested in a mechanism to achieve certain desired rate of charging or discharging, by suitably setting each module in the battery---the overall rate is the sum over the modules' rates.  
+%%
+For simplicity, we assume homogeneous capacity $c$ of the modules (but with possibly different chemical properties and constraints), and hence an overall system capacity of $c*n$ (where $n$ is the total number of modules in the system). Each module, in turn, may be configured as charging ($+c$), discharging ($-c$), or not in use ($0$). By appropriately setting each module's operational state, the total response of the battery system may be adjusted in steps of $\pm c$.
+%%
+While hardwired control is indeed possible, it is not ideal due to the fact that battery performance is susceptible to changes over time---modules tend to lose actual capacity---and may diverge from normal. 
+%%
+What is required is an \emph{adaptable} control mechanism that accounts for such drift. 
+%%
+Figure~\ref{fig:gptree} depicts a BDI controller for this application. Top-level goal-even $G(r,k,s)$ is meant to request a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
+%%
+The BDI controller works by recursively \emph{configuring} each module for the period in question using the plans $\pSetCharge$ (\emph{charging} at rate $+c$), $\pSetDischarge$ (\emph{discharging} at rate $cc$), and $\pSetNotUsed$ plans (disconnect module), and, finally, after all modules have been configured, physically operating the battery for the period using the $\pExecute$ plan. 
+% At any point in the execution of the controller, then, the {\em active execution trace} always consists of the selection of $k$ high level $Set*$ plans followed by the selection of the $Execute$ leaf plan. 
+%%
+% Plan $\pSetCharge$ sets the $k$-th module to {\em charging} (state $+c$) for the period in question; similarly, plan $\pSetDischarge$ sets the $k$-th module to {\em discharging} (state $-c$) for the period.  Plan $\pSetNotUsed$, on the other hand, set the module to a neutral not-in-use state (state $0$). Finally, when all modules have been configured for the period, plan $\pExecute$ is meant to be executed so as to physically operate the battery system.
+%%%
+Observe that the first three plans already contain initial (known necessary) known domain constraints for applicability, by means of conditions $\cSatisfies_X(\cdot,\cdot,\cdot)$. For instance, plan $\pSetCharge$ may not be considered if the module is only allowed to change charge directions once every four periods and charging in this period would violate such constraint. Such condition would also check whether the current configuration so far is admissible.
+%%
+When none of the first three plans can be run for a module, the BDI failure recovery may be employed to select different module configurations, until all modules are configured successfully and plan $\pExecute$ can be carried out. When this happens, the whole battery system is first executed for the period (action $\aOperate$) and its performance evaluated via a sensor (action $\aEvaluate$). If the evaluation step \emph{succeeds}, then the desired overall rate $r$ has been met and the whole execution is assumed successful. If, on the other hand, the desired overall rate has not been met in reality, the evaluation step \emph{fails} and so does the whole execution of the program, since no BDI failure recovery can be used after the battery system has been operated. 
 
 
-Large battery systems usually comprise of multiple modules and in many installations these may be controlled independently.  Modules may be operated in synchrony but often there are strategic reasons to keep some modules in a different state to others.  For example, if it is undesirable to change the direction of power flow between charging and discharging too frequently, a subset of modules may be used for each direction until it is necessary to change their roles.  Also, some technologies have specific requirements, such as the zinc-bromine flow battery for which a complete discharge at regular intervals is desirable to ``strip'' the zinc plating and ensure irregularities never have an opportunity to accumulate.  Where they exist these requirements place further constraints on module control.
+\textbf{what do we want to say about the learning aspect of this? anything?}
 
-Given, then, a requested rate of charging and discharging for a large battery installation, we would like a control algorithm for the set of component modules that implements the requested rate as the sum over the module rates of charging and discharging.  While hardwired control of such response is possible, it is not ideal since battery performance is susceptible to change over time and may diverge from normal. What is required is a means of adaptable control that accounts for such drift, and as such, a machine learning approach may be appropriate. 
-%The input signal will be different every day but will have many features that are diurnal or nearly so, due to typical variations of electricity demand and solar and wind energy generation sources, and the repetitive patterns that may be seen over several days of the input signal suggest that a learning algorithm may be appropriate.  Our problem is to develop a method for on-line learning that will result in a useful control regime for a modular battery system, when installed at a new site and provided with an input signal derived from the electricity demand and renewable supply at that site.
+% internal constraints are satisfied. Note that failure recovery is not allowed for the $Execute$ plan because it runs for a full period and that is the limit for the decision making. In other words, only one try (in terms of physically operating the battery) is allowed per period.
+
+%%
+% Similarly, plan $\pSetDischarge$ may be ruled out because the module may already be discharged and further discharge is not possible. 
+%%
+% Since such constraint checking is performed in the context condition of the plans prior to physical operation of the battery, then BDI failure recovery may be employed to select different $Set*$ plans until all internal constraints are satisfied. Note that failure recovery is not allowed for the $Execute$ plan because it runs for a full period and that is the limit for the decision making. In other words, only one try (in terms of physically operating the battery) is allowed per period.
+
+% Finally, the context condition of the $Set*$ plans performs {\em operational constraint checking} to decide if the configuration is admissible for module $k$: given the desired response $r$, the modules configured to so far i.e $[0 \ldots k-1]$, and the number of modules yet to be configured i.e $[k+1 \ldots n]$. For instance, a request of $+1.0$ is only serviceable when all modules are configured to charge. So, if module $k$ were to not charge (it may already be fully charged so further charging is not possible), then the operational constraint for module $k+1$ will fail because the ``bad'' configuration of module $k$ implies that regardless of how the remaining modules are configured, the response is bound to fall short of the request. When this happens, BDI failure recovery allows us to backtrack up the chain of active $Set*$ plans and choose a different path until all constraints are met. As such, the $Execute$ plan is run only with configurations that are functionally correct.
+
+
 
 
