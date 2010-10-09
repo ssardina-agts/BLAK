@@ -9,39 +9,55 @@ At the beginning of a learning episode the configuration of each module is reset
 
 The applicability threshold for plan selection is set to $40\%$ so plans with a likelihood of success below this value are discarded from the applicable set. The parameters for stability calculation are set to $k=1$ and $e=0.5$. For the stability-confidence measure, the averaging window uses the last five recordings while the weighting factor is $0.5$. Finally, each experiment is run five times and the reported results are averages from these runs.
 
-\subsubsection{Experiment One}
+\subsubsection{Experiment 1: XXXXXXx}
 
 In this experiment we model the situation where module capacities deteriorate over time. In a real system this will happen gradually over a very long time, however to ease the analysis of the impact of the change we force the situation to occur instantaneously in this experiment. Figure \ref{fig:experiment1} shows the system performance about this change. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording it's experiences although there is no evident use of the resulting learning yet. After some time (about $5000$ episodes), a forced change in the environment causes all five modules to instantaneously drop capacity (initially in the range $[0:3]$) to $[0:2]$. This results in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would at this point converge to $\approx 76\%$ performance if this change were permanent. The learning system however, aptly rectifies the situation by learning to mostly avoid ``solutions'' that no longer work. 
 
-\begin{figure}[ht]
+% \begin{figure*}[t]
+% \begin{center}
+% \subfigure[Performance with different module failures over time.]{\label{fig:experiment2}
+% \input{figs/fig-experiment2}
+% }
+% \qquad
+% \subfigure[Performance with different module failures over time.]{\label{fig:experiment3}
+% \input{figs/fig-experiment3}
+% }
+% \caption{Controller performance in the energy storage scenario.}
+% \end{center}
+% \label{fig:energystorage}
+% \end{figure*}
+
+
+
+\begin{figure}[t]
 \begin{center}
 \input{figs/fig-experiment1}
 \end{center}
-\caption{Controller performance around battery capacity deterioration.}
+\caption{Performance around battery capacity deterioration.}
 \label{fig:experiment1}
 \end{figure}
 
-\subsubsection{Experiment Two}
+\subsubsection{Experiment 2: XXXXXXX}
 
 This experiment highlights the system behaviour against a series of environmental changes. In this scenario, we model the situation where modules malfunction and are rectified after a time lag. Importantly, we model a series of such failures so that the space of failed solutions is different in different phases of the experiment. In particular $Module1$ fails for the duration $[0:20k]$ after which it is reinstated, $Module2$ fails for the period $[20k:40k]$, and so on. Figure \ref{fig:experiment2} shows the system performance about this change. As is evident, the system successfully identifies the changes and is able to learn the changed solution set each time. Note that the apparent difference in performance drops at $0k$ and $20k$ is due to the fact that the sampling of the state space is non-uniform and it just happens that more ``bad'' situations occurred about the first change than the second. The theoretical drop in performance for this change is $45\%$. 
 
-\begin{figure}[ht]
+\begin{figure}[t]
 \begin{center}
 \input{figs/fig-experiment2}
 \end{center}
-\caption{Controller performance with different module failures over time.}
+\caption{Performance with different module failures over time.}
 \label{fig:experiment2}
 \end{figure}
 
-\subsubsection{Experiment Three}
+\subsubsection{Experiment 3: XXXXXXX}
 
 Whereas in previous experiments all new learning complemented the old, in this case the initial learning must be superseded. In particular we experiment with the extreme case where {\em all} solutions fail for the period $[0:5k]$, after which they are reinstated. Figure \ref{fig:experiment3} shows the system performance about this change. At the beginning of the experiment, performance drops to zero rapidly as all of the ideal solutions start to fail. After an initial period of failures (at around 2k episodes), the estimated likelihood of success of all plans drops below the applicability threshold of $40\%$. Beyond this point the battery operation comes to a complete halt since no plans are ever applicable in any situation and so the Execute plan never gets invoked. The original behaviour is then reinstated at $5k$, however if no plans are being tried then new learning will also not occur. For this reason, the applicability threshold is implemented as a ``soft'' threshold. To be exact, the $40\%$ threshold applies $90\%$ of the time leaving some possibility for selecting plans below this threshold. This allows the battery to operate with some likelihood\footnote{Note that the battery operates after five $Set*$ plan selections. In the best case only one of these plans has failed the threshold and there is a $10\%$ chance that the battery will operate. However, if all plans fail the threshold then there is only a $0.1^5$ or $0.00001\%$ chance that the battery will operate.}, and the system is able to adapt to the new solution set beyond $6k$ episodes.
 
 
-\begin{figure}[ht]
+\begin{figure}[t]
 \begin{center}
 \input{figs/fig-experiment3}
 \end{center}
-\caption{Controller performance when initial learning is superseded.}
+\caption{Performance when initial learning is superseded.}
 \label{fig:experiment3}
 \end{figure}
