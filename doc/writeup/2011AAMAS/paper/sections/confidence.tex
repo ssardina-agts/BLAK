@@ -3,40 +3,57 @@
 \section{A Dynamic Confidence Measure}\label{sec:confidence}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Shout{Reword:Previous work has highlighted the importance of defining the exploration strategy for a general BDI learner in terms of it's goal-plan structure. The idea is that the extent of exploration of the structure in some way relates to our {\em confidence} in the resulting learning and may be used to construct the exploration heuristic. The notions of coverage \cite{singh10:learning} and structural complexity \cite{singh10:extending} both fall in this category. The benefit of these approaches is that they provide a monotonic confidence measure for guiding exploration (i.e. plan selection) in any general hierarchy. However, they use an estimate of the \textit{potential choices} below each node in the hierarchy, that may be difficult to calculate. Comparatively, the \textit{stability} \cite{airiau09:enhancing,singh10:learning} measure relies purely on {\em actual} plan execution and being independent of the hierarchy also scales well. However, stability does not have the same granularity as the former, so is not very useful for guiding exploration\footnote{In \cite{singh10:learning}, stability was used not as an exploration heuristic but as a filter to decide which experiences should be recorded for learning purposes.}. In this section, we describe a new confidence measure that combines the merits of the above approaches and overcomes their shortcomings. 
+\Shout{Reword:Previous work has highlighted the importance of defining the exploration strategy for a general BDI learner in terms of its goal-plan structure. The idea is that the extent of exploration of the structure in some way relates to our {\em confidence} in the resulting learning and may be used to construct the exploration heuristic. The notions of coverage \cite{singh10:learning} and structural complexity \cite{singh10:extending} both fall in this category. The benefit of these approaches is that they provide a monotonic confidence measure for guiding exploration (i.e. plan selection) in any general hierarchy. However, they use an estimate of the \textit{potential choices} below each node in the hierarchy, that may be difficult to calculate. Comparatively, the \textit{stability} \cite{airiau09:enhancing,singh10:learning} measure relies purely on {\em actual} plan execution and being independent of the hierarchy also scales well. However, stability does not have the same granularity as the former, so is not very useful for guiding exploration\footnote{In \cite{singh10:learning}, stability was used not as an exploration heuristic but as a filter to decide which experiences should be recorded for learning purposes.}. In this section, we describe a new confidence measure that combines the merits of the above approaches and overcomes their shortcomings. 
 
 The stability-based confidence measure of Equation \ref{eqn:confidence} performs comparably to the proposed measures in \cite{singh10:learning,singh10:extending} in the respective domains used in those studies. So it serves as a direct replacement to the previous approaches. Moreover, the new measure improves upon the previous approaches in two key ways. Firstly, since the new stability-based measure is independent of the goal-plan structure in which it is used, then it is also truly scalable to practical applications. This factor was a key motivator for the work presented here.
 
 }
 
-To recap the definition of stability from \cite{singh10:learning}, ``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold $\epsilon$.'' %Consider the example goal-plan structure of Figure \ref{fig:confidence} that shows the possible outcomes when plan $P$ is invoked in world state $w$. The $\surd$ and $\times$ symbols below the leaf plans indicate success and failure respectively. There is only one solution in world $w$ given by the sequential execution of the leaf plans $P_i$, $P_k$, and $P_m$. This is highlighted in Figure \ref{fig:confidence} as the shaded nodes. Line shading indicates initial execution traces while the solid shading highlights the final (active) execution trace. All other selection sequences lead to failures. Now let us consider the case where plan selection results in the failed active execution trace $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_h:w]$. What should we make of this failure from a learning perspective? Should we record the negative sample for training our learners at non-leaf nodes $P_a$ and $P$? The concern stems from the fact that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_h$) was made further down in the hierarchy. The stability filter is used to resolve this issue in \cite{singh10:learning} by recording failures only for those plans that are considered to be stable, or ``well-informed''. 
-Given this, we now define the {\em degree of stability of failed node $N$ in world $w$ as the ratio of stable plans to total applicable plans in the active execution trace below $N$ and starting in $w$.} Here a node may be a plan or goal node. To see what this means, let us take the same failed trace $\lambda_1$ from before and say that $P_h$ is the only plan that is now stable. The degree of stability $s^o$ of each node in the trace $\lambda_1$ then is given by:
+To recap the definition of stability from \cite{singh10:learning}:
+
+\begin{quote}
+\emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold $\epsilon$.''}
+\end{quote} 
+%Consider the example goal-plan structure of Figure \ref{fig:confidence} that shows the possible outcomes when plan $P$ is invoked in world state $w$. The $\surd$ and $\times$ symbols below the leaf plans indicate success and failure respectively. There is only one solution in world $w$ given by the sequential execution of the leaf plans $P_i$, $P_k$, and $P_m$. This is highlighted in Figure \ref{fig:confidence} as the shaded nodes. Line shading indicates initial execution traces while the solid shading highlights the final (active) execution trace. All other selection sequences lead to failures. Now let us consider the case where plan selection results in the failed active execution trace $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_h:w]$. What should we make of this failure from a learning perspective? Should we record the negative sample for training our learners at non-leaf nodes $P_a$ and $P$? The concern stems from the fact that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_h$) was made further down in the hierarchy. The stability filter is used to resolve this issue in \cite{singh10:learning} by recording failures only for those plans that are considered to be stable, or ``well-informed''. 
+%%
+Given this, we define the \emph{degree of stability} of failed node $N$ in world $w$, denoted $s^o(N,w)$, as the ratio of stable plans to total applicable plans in the active execution trace below $N$ and starting in $w$. 
+%%
+Here, a node may either stand for a plan or goal node. 
+
+\notem{where this example?} To see what this means, let us take the same failed trace $\lambda_1$ from before and say that $P_h$ is the only plan that is now stable. The degree of stability $s^o$ of each node in the trace $\lambda_1$ then is given by:
+
+\newcommand{\stable}{\mathname{stable}}
 
 \begin{eqnarray*}
-s^o(P_h,w) = & \frac{stable~in~[P_h]}{total~in~[P_h]} & = \frac{1}{1}  \\
+s^o(P_h,w) = & \frac{\stable~in~[P_h]}{total~in~[P_h]} & = \frac{1}{1}  \\
 s^o(G_3,w) = & \frac{stable~in~[P_g,P_h,P_i]}{total~in~[P_g,P_h,P_i]} & = \frac{1}{3}  \\
 s^o(P_a,w) = & \frac{stable~in~[P_a,P_g,P_h,P_i]}{total~in~[P_a,P_g,P_h,P_i]} & = \frac{1}{4} \\
-s^o(G_1,w) = & \frac{stable~in~[P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P_a,P_g,P_h,P_i,P_b,P_c]} & = \frac{1}{6}  \\
+s^o(G_1,w) = & \frac{\stable(\set{P_a,P_g,P_h,P_i,P_b,P_c})}{\card{\set{P_a,P_g,P_h,P_i,P_b,P_c}}} & = \frac{1}{6}  \\
 s^o(P,w) = & \frac{stable~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]} & = \frac{1}{7} 
 \end{eqnarray*}
 
-Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $G_n[P_n:w_n,T_n]$ indicates that plan $P_n$ was executed in world $w_n$ to resolve goal $G_n$ where $T_n$ is the set of all applicable plans for the situation. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. $StablePlan$ is a function to check if the given plan $P_n$ is stable or not. Function $SetDegreeStability$ is used to save the degree of stability, given by the pair $s'/t'$, for each plan $P_n$.
+\newcommand{\StablePlan}{\mathname{StablePlan}}
+\newcommand{\SetDegreeStability}{\mathname{SetDegreeStability}}
+\newcommand{\UpdateDegreeStability}{\mathname{UpdateDegreeStability}}
 
-\begin{algorithm}[ht]
+Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $G_n[P_n:w_n,T_n]$ indicates that plan $P_n$ was executed in world $w_n$ to resolve goal $G_n$ where $T_n$ is the set of all applicable plans for the situation. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. $\StablePlan$ is a function to check if the given plan $P_n$ is stable or not. Function $\SetDegreeStability$ is used to save the degree of stability, given by the pair $s'/t'$, for each plan $P_n$.
+
+
+\begin{algorithm}[t]
 \KwData{$\lambda=G_0[P_0:w_0,T_0] \cdot \ldots \cdot G_n[P_n:w_n,T_n]$; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
 \KwResult{Calculates the degree of stability for plans in $\lambda$}
 \If{$|\lambda| > 1$}{
 	$\lambda'=G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$\;
-	$s' = s + StablePlan(P_n,w_n,k,\epsilon)$\;
+	$s' = s + \StablePlan(P_n,w_n,k,\epsilon)$\;
 	$t' = t + 1$\;
-	$SetDegreeStability(P_n, w_n, s', t')$\;
+	$\SetDegreeStability(P_n, w_n, s', t')$\;
 	\ForEach{$P_i$ in $T_n$; $P_i \neq P_n$}{
-		$s' = s' + StablePlan(P_i, w_n, k,\epsilon)$\;
+		$s' = s' + \StablePlan(P_i, w_n, k,\epsilon)$\;
 		$t' = t + 1$\;
 	}
-	$UpdateDegreeStability(\lambda', s', t', k, \epsilon)$\;
+	$\UpdateDegreeStability(\lambda', s', t', k, \epsilon)$\;
 }
-\caption{$UpdateDegreeStability(\lambda, s, t, k, \epsilon)$}
+\caption{$\UpdateDegreeStability(\lambda, s, t, k, \epsilon)$}
 \label{alg:degree}
 \end{algorithm}
 
@@ -47,10 +64,42 @@ For our sample trace $\lambda_1$ for instance, the calculated $s^o(P,w)$ is $1/7
 \label{eqn:confidence-stability}
 \end{equation}
 
+\input{sections/fig-energy}
 
-The confidence measure $\C_s$ would make a useful heuristic for exploration (i.e. plan selection) in it's own right: such that when the confidence is at it's lowest we do maximum exploration and when it is at it's highest we fully utilise the decision tree. The problem with this approach, however, is that $\C_s$ only covers the space of known worlds. This means that whenever a new world is witnessed, $\C_s=0.0$, meaning that we will choose randomly. This is hardly beneficial since what we would really like is to use the learnt generalisations to classify this new world rather than be agnostic about it. What is missing is a metric that contributes to our net confidence but that is independent of $w$.
+% \newcommand{\aSet}{\mathname{set}}
+% \newcommand{\aOperate}{\mathname{operate}}
+% \newcommand{\aEvaluate}{\mathname{evaluate}}
+% 
+% \newcommand{\pSet}{\mathname{Set*}}
+% \newcommand{\pSetCharge}{\mathname{SetCharge}}
+% \newcommand{\pSetDischarge}{\mathname{SetDischarge}}
+% \newcommand{\pSetNotUsed}{\mathname{SetNotUsed}}
+% \newcommand{\pExecute}{\mathname{Execute}}
+% 
+% \newcommand{\cSatisfies}{\psi}
+% 
+% \begin{figure*}[t]
+% \begin{center}
+% \subfigure[Use case scenario for a modular battery system.]{\label{fig:usecase}
+% %\resizebox{0.9\columnwidth}{!}{
+% \input{figs/fig-usecase}
+% %}
+% }
+% \qquad
+% \subfigure[Goal-plan hierarchy for a $k$-modules battery system.]{\label{fig:gptree}
+% %\resizebox{0.9\columnwidth}{!}{
+% \input{figs/fig-gptree}
+% %}
+% }
+% \caption{An energy storage application.}
+% \end{center}
+% \label{fig:energystorage}
+% \end{figure*}
 
-One way to achieve this is by monitoring the rate at which new worlds are being witnessed by the plan $P$. During early exploration it is expected that the majority of worlds that a plan is selected for will be unique, therefore this rate is high and our confidence is low. Over time as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would approach zero while our confidence over this period would increase to it's maximum.  Equation \ref{eqn:confidence-domain} defines this confidence metric $\C_d$ for plan $P$ over the last $n$ executions. Here, $W(P,*)$ is the set of all worlds witnessed by $P$ since the beginning and $\triangle W(P,n)$ is the set of worlds witnessed in the last $n$ executions. $\C_d$ is guaranteed to converge to $1.0$ as long as all worlds where the plan might apply are eventually witnessed.
+
+The confidence measure $\C_s$ would make a useful heuristic for exploration (i.e., plan selection) in its own right: such that when the confidence is at its lowest we do maximum exploration and when it is at its highest we fully utilise the decision tree. The problem with this approach, however, is that $\C_s$ only covers the space of known worlds. This means that whenever a new world is witnessed, $\C_s=0.0$, meaning that we will choose randomly. This is hardly beneficial since what we would really like is to use the learnt generalisations to classify this new world rather than be agnostic about it. What is missing is a metric that contributes to our net confidence but that is independent of $w$.
+
+One way to achieve this is by monitoring the rate at which new worlds are being witnessed by the plan $P$. During early exploration it is expected that the majority of worlds that a plan is selected for will be unique, therefore this rate is high and our confidence is low. Over time as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would approach zero while our confidence over this period would increase to its maximum.  Equation \ref{eqn:confidence-domain} defines this confidence metric $\C_d$ for plan $P$ over the last $n$ executions. Here, $W(P,*)$ is the set of all worlds witnessed by $P$ since the beginning and $\triangle W(P,n)$ is the set of worlds witnessed in the last $n$ executions. $\C_d$ is guaranteed to converge to $1.0$ as long as all worlds where the plan might apply are eventually witnessed.
 
 \begin{equation}
 \C_d(P,n) = \frac{|W(P,*)\cap \triangle W(P,n) |}{n}.
@@ -64,13 +113,15 @@ We are now ready to define our final confidence measure $\C$ based on the two co
 \label{eqn:confidence}
 \end{equation}
 
-Finally, Equation \ref{eqn:omega} shows how the confidence measure $\C$ is used as a exploration heuristic during plan selection. Here $\P$ is the probability of success of plan $P$ in world $w$ as given by it's decision tree and $\Omega$ is the plan selection weight. This formulation of the plan selection weight is similar to those presented in \cite{singh10:extending, singh10:learning} bar the replacement of earlier measures with the new confidence term $\C$.
+Finally, Equation \ref{eqn:omega} shows how the confidence measure $\C$ is used as a exploration heuristic during plan selection. Here $\P$ is the probability of success of plan $P$ in world $w$ as given by its decision tree and $\Omega$ is the plan selection weight. This formulation of the plan selection weight is similar to those presented in \cite{singh10:extending, singh10:learning} bar the replacement of earlier measures with the new confidence term $\C$.
 
 \begin{equation}
 \Omega(P,w,n) = 0.5 + \left[  \C(P,w,n) *  \left( \P(P,w) - 0.5 \right)  \right]
 \label{eqn:omega}   
 \end{equation}
 
-The storage domain scenario (c.f. Section \ref{sec:application}) highlights the benefits of our dynamic confidence measure of Equation \ref{eqn:confidence}. In this domain it is easy to think of situations where the dynamics of the environment change such that the solution space varies over time. For instance, our motivation for learning is that battery chemistry (and therefore performance) deteriorates over time, and the system should learn to avoid solutions that no longer work in the future. However, worn battery modules get replaced as and when required. So some configurations that the learner may have eliminated previously may become applicable once again. Similar examples may be conjured for situations involving module malfunctions. The point is that each such change in the environment impacts the solution space in some way, however an explicit signal is always available to notify us of these changes (some changes may be continuous, for instance). Moreover, several such factors may play on the solution space at one time, and it is up to the learner to respond in this environment appropriately.
+The storage domain scenario (c.f. Section \ref{sec:application}) highlights the benefits of our dynamic confidence measure of Equation \ref{eqn:confidence}. In this domain it is easy to think of situations where the dynamics of the environment changes such that the solution space varies over time. For instance, our motivation for learning is that battery chemistry (and therefore performance) deteriorates over time, and the system should learn to avoid solutions that no longer work in the future. However, worn battery modules get replaced every now and then, and hence, some configurations that the learner may have eliminated previously may become applicable once again. Similar examples may be conjured for situations involving module malfunctions. The point is that each such change in the environment impacts the solution space in some way, however an \notem{signal?} explicit signal is always available to notify us of these changes (some changes may be continuous, for instance). Moreover, several such factors may play on the solution space at one time, and it is up to the learner to respond in this environment appropriately.
 
-Here it becomes important for an agent to reliably recognise such changes, and respond by adjusting it's exploration strategy accordingly (or perhaps, switching policies, choosing to learn afresh, and so on). Since the new confidence measure is built using observed data alone, it consequently reflects agent performance: our confidence is maximum when the rate of change in observed performance and worlds states is stable, and minimum when it is not. Importantly, this means that the measure is non-monotonic and as such may be used to dynamically tune the exploration strategy (for instance during plan selection as in Equation \ref{eqn:omega}) against a variable solution space.
+
+
+Here it becomes important for an agent to reliably recognise such changes, and respond by adjusting its exploration strategy accordingly (or perhaps, switching policies, choosing to learn afresh, and so on). Since the new confidence measure is built using observed data alone, it consequently reflects agent performance: our confidence is maximum when the rate of change in observed performance and worlds states is stable, and minimum when it is not. Importantly, this means that the measure is non-monotonic and as such may be used to dynamically tune the exploration strategy (for instance during plan selection as in Equation \ref{eqn:omega}) against a variable solution space.

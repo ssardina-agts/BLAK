@@ -1,37 +1,8 @@
-%!TEX root = ../aamas11storage.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{An Energy Storage Application}\label{sec:application}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\pSet}{\mathname{Set*}}
-\newcommand{\pSetCharge}{\mathname{SetCharge}}
-\newcommand{\pSetDischarge}{\mathname{SetDischarge}}
-\newcommand{\pSetNotUsed}{\mathname{SetNotUsed}}
-\newcommand{\pExecute}{\mathname{Execute}}
 
-\newcommand{\cSatisfies}{\psi}
-
-\newcommand{\aSet}{\mathname{set}}
-\newcommand{\aOperate}{\mathname{operate}}
-\newcommand{\aEvaluate}{\mathname{evaluate}}
-
-\begin{figure*}[t]
-\begin{center}
-\subfigure[Use case scenario for a modular battery system.]{\label{fig:usecase}
-%\resizebox{0.9\columnwidth}{!}{
-\input{figs/fig-usecase}
-%}
-}
-\qquad
-\subfigure[Goal-plan hierarchy for a $k$-modules battery system.]{\label{fig:gptree}
-%\resizebox{0.9\columnwidth}{!}{
-\input{figs/fig-gptree}
-%}
-}
-\caption{An energy storage application.}
-\end{center}
-\label{fig:energystorage}
-\end{figure*}
 
 Energy storage enables increasing levels of renewable energy in our electricity system, and the rapidly maturing supply chains for several battery technologies encourages electricity utilities, generators, and customers to consider using large battery systems. 
 Consider a controller for managing the overall energy demand of a smart office building comprising of a set of loads (e.g., appliances in the building), some renewable sources (e.g., solar panels on the roof and a local wind turbine), and a \emph{modular battery system}. The building is connected to the main grid, and economics govern that the overall grid power demand of the building be maintained within the range $[0:p_h]$; see Figure~\ref{fig:usecase}. 
@@ -61,7 +32,7 @@ Observe that the first three plans already contain initial known (necessary) dom
 Similarly, plan $\pSetDischarge$ may be ruled out because discharging the module implies that regardless of how the remaining modules are configured, the response is bound to fall short of the request.
 When none of the first three plans apply for a given module, then BDI failure recovery may be employed to backtrack up and select a different configuration path until all constraints are satisfied (or all options are exhausted). 
 
-As such, the $Execute$ plan is run only with configurations that are functionally correct.
+As such, the $\pExecute$ plan is run only with configurations that are functionally correct.
 %
 When this happens, the whole battery system is first executed for the period (action $\aOperate$) and its performance evaluated via a sensor (action $\aEvaluate$). If the evaluation step \emph{succeeds}, then the desired overall rate $r$ has been met and the whole execution is assumed successful. If, on the other hand, the desired overall rate has not been met in reality, the evaluation step \emph{fails} and so does the whole execution of the program, since no BDI failure recovery can be used after the battery system has been physically operated. 
 
