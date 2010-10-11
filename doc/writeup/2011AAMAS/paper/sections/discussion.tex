@@ -1,20 +1,25 @@
 %!TEX root = ../aamas11storage.tex
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}\label{sec:discussion}
+\section{Conclusion and Discussion}\label{sec:discussion}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Here are some points in no particular order:
+The main contribution of this paper is a plan-selection learning mechanism for BDI agent-oriented programming languages and architectures that is able to \emph{adapt} when the dynamics of the environment in which the agent is situated in changes over time.
+%%
+Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas from two previous approaches to learning in BDI agent systems, namely, plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending}. The new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
+%%
+In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. Furthermore, the new mechanism does not require any account of plan ``coverage" and hence it scales up wrt the complexity of the goal-plan hierarchy. Furthermore, the new mechanism does not require any account of plan ``coverage" and hence it scales up wrt the complexity of the goal-plan hierarchy.
+%%
+We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing: modules performance within a battery system tend to degrade over time or completely fail, and the system is regularly maintained.  
 
-\begin{itemize}
+\notemin{Alternative start for 1st para: }
+In this paper we focused on the important aspect of \emph{adaptability} when it comes to learn how to select plans in BDI agent-oriented architectures. In particular, as the dynamics of the environment in which the BDI agent is situated in changes over time, the BDI plan selection mechanism needs to adapt in order to keep successfully achieve the agent's goals. 
+%% 
+To that end, we proposed a ....
 
-\item We show how to combine context conditions with decision trees as suggested in earlier work.
 
-\item We focus on an important feature of agent programming - adaptability. The aim is to build fully-functional systems that are also adaptable enough to rectify (some) environmental changes in the future. 
+There are several limitations and assumptions in the framework we have presented.
+%%
+One issue, of course, has to do with maintaining the training set of past executions experiences per plan, indexed by world states. One the one hand, just storing such data may become unfeasible after the agent has executed for a long period of time. What is more, the largest the training set, the more effort is required to induce the corresponding decision tree. For the latter problem, one thing we can do is to  filter the training data at hand, and keep only such data related to recently seen world states. In preliminary experimentation, we have seen a dramatic reduction of $74\%$ in training set size with no noticeable change in performance. However, this deserves further investigation to make any claim. Using\emph{incremental} approaches to induce decision trees~\cite{} will certaintly address both problems.
 
-\item We show how our dynamic confidence measure is better able to cope with the practical issue that learning is not a one-shot affair with a definite start and end. Together with a means of limiting the training data (future work), it shows potential for building systems that learn ad infinitum.
 
-\item We quantify the benefit of applicability thresholds. The threshold of $40\%$ used in the application reduces the number of battery operations by $12\%$ which is substantial when considering battery life. The difference in performance with and without the applicability threshold is not significant.
 
-\item We show that for certain problems there may be a strong case for filtering training data. We see a dramatic reduction of $74\%$ in training set size for no noticeable change in performance in our experiments. This is promising and motivates further investigation on the matter (future work). More general filtering techniques are required and a better handle on the sorts of problems where this makes sense. 
-
-\end{itemize}

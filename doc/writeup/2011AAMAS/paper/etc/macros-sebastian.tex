@@ -350,15 +350,13 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Margin notes for comments  
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\setlength{\marginparwidth}{0.1in}
-\let\oldmarginpar\marginpar
-\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
-{\raggedright\footnotesize #1}}
-
-% \setlength{\marginparwidth}{0.5in}
-\newcommand{\notem}[1]{**** \textbf{#1} ****}
-\newcommand{\notetext}[1]{\notem{OBS} \textit{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{marginnote}
+\setlength{\marginparwidth}{1.5cm}
+\renewcommand*{\marginfont}{\color{red}\sffamily\scriptsize}
+\edef\marginnotetextwidth{\the\textwidth}
+\newcommand{\notem}[1]{\marginnote{#1}}
+\newcommand{\notemin}[1]{\textbf{#1}}
 
 \newcommand{\ncheck}{\notem{CHECK!}}
 \newcommand{\GGG}{\notem{GGG}}
