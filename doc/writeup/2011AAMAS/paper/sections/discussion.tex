@@ -3,29 +3,36 @@
 \section{Conclusion and Discussion}\label{sec:discussion}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The main contribution of this paper is a plan-selection learning mechanism for BDI agent-oriented programming languages and architectures that is able to \emph{adapt} when the dynamics of the environment in which the agent is situated in changes over time.
+The main contribution of this paper is a plan-selection learning mechanism for BDI agent-oriented programming languages and architectures that is able to \emph{adapt} when the dynamics of the environment in which the agent is situated changes over time.
 %%
-Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas from two previous approaches to learning in BDI agent systems, namely, plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending}. The new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
+Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas of plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending,singh10:learning} from previous approaches to learning in BDI agent systems, with a sense of the rate at which new worlds are being witnessed. This new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
 %%
-In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. Furthermore, the new mechanism does not require any account of plan ``coverage" and hence it scales up wrt the complexity of the goal-plan hierarchy. Furthermore, the new mechanism does not require any account of plan ``coverage" and hence it scales up wrt the complexity of the goal-plan hierarchy.
+In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. Furthermore, the new mechanism does not require any account of the number of possible choices below a plan in the hierarchy, as is the case with the previous coverage-based approaches~\cite{singh10:extending,singh10:learning}, and hence scales up for any general goal-plan structure irrespective of its complexity. 
 %%
-We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing: modules performance within a battery system tend to deteriorate over time or even completely fail, and the system is regularly maintained.  
+We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing: module performance within a battery system deteriorates over time or even completely fails on occasion on the one hand, while being periodically improved through system maintenance and upgrades on the other.  
 
-\notemin{Alternative start for 1st para: }
-In this paper we focused on the important aspect of \emph{adaptability} when it comes to learn how to select plans in BDI agent-oriented architectures. In particular, as the dynamics of the environment in which the BDI agent is situated in changes over time, the BDI plan selection mechanism needs to adapt in order to keep successfully achieve the agent's goals. 
+%%
+
+%\notemin{Alternative start for 1st para: }
+%In this paper we focused on the important aspect of \emph{adaptability} when it comes to learn how to select plans in BDI agent-oriented architectures. In particular, as the dynamics of the environment in which the BDI agent is situated in changes over time, the BDI plan selection mechanism needs to adapt in order to keep successfully achieve the agent's goals. 
 %% 
-To that end, we proposed a ....
+%To that end, we proposed a ....
 
-\bigskip
-There are several limitations and assumptions in the framework we have presented.
+There are several limitations and assumptions in the learning framework we have used.
 %%
-One issue, of course, has to do with maintaining the training set of past executions experiences per plan, indexed by world states. One the one hand, just storing such data may become unfeasible after the agent has executed for a long period of time. What is more, the largest the training set, the more effort is required to induce the corresponding decision tree. For the latter problem, one thing we can do is to  filter the training data at hand, and keep only such data related to recently seen world states. In preliminary experimentation, we have seen a dramatic reduction of $74\%$ in training set size with no noticeable change in performance. However, this deserves further investigation to make any claim. Using \emph{incremental} approaches for inducing decision trees~\cite{Swere06:Fast,Utgoff:ML89,Utgoff97Decision} will certaintly address both problems.
+One issue, of course, has to do with maintaining the training set of past execution experiences per plan, indexed by world states. Simply storing such data may become unfeasible after the agent has been operating for a long period of time. Importantly, the larger the training set, the more effort is required to induce the corresponding decision tree. For the latter problem, one option is to filter the training data at hand based on some heuristic, and only use a subset of the complete experience set. For instance, we experimented with filtering the training data based on the recency of the world states experienced. In our example energy domain we were able to reduce the size of the data set used in training by almost $75\%$ by removing ``old'' experiences with no noticeable change in agent performance. The generality of such data-filtering heuristics, however, is unclear and requires further investigation to make any claims. Using \emph{incremental} approaches for inducing decision trees~\cite{Swere06:Fast,Utgoff:ML89,Utgoff97Decision} will certaintly address both problems, but may impact classification accuracy.
 
-
+\Shout{Complete:
+%Perhaps a more severe limitation of the learning framework is that it cannot account for interactions between a plan's subgoals. For instance, in a resource-bound agent it is possible that the way a subgoal is resolved ...
 \notemin{From AAMAS'10, develop more:} Probably the most serious limitation of our approach is that we did not consider the effects of conﬂicting interactions between subgoals of a plan. In fact, the way a subgoal is resolved may affect how the next subgoal can be addressed or even if it can be resolved at all. Our current approach will not detect and learn such interactions; each subgoal is treated ``locally.''
 %% 
 To handle such interactions, the selection of a plan for resolving a subgoal should also be predicated on the goals higher than the subgoal, that is, it should take into account the ``reasons'' for the subgoal. 
 
-
 \notemin{Talk about Koen's latest paper at PROMAS'10 here...}
+
+\notemin{Add other related works here...}
+
+\notemin{Concluding para here...}
+}
+
 
