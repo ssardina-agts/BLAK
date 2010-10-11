@@ -76,11 +76,16 @@
 
 \usepackage{textcomp}
 
+% \usepackage[natbib=true, bibstyle=numeric, citestyle=numeric]{biblatex}
+% \bibliography{aamas11storage}
+
 % \usepackage[sort&compress,numbers]{natbib}
+% \bibpunct{(}{)}{;}{a}{}{;}
+% \renewcommand{\cite}[1]{\citep{#1}}
+% \def\newblock{\hskip .11em plus .33em minus .07em 2222222}
 
 %% How deep we want to number sections/subsections
 \setcounter{secnumdepth}{1}  
-
 
 % \renewcommand{\baselinestretch}{0.965}
 
@@ -322,7 +327,11 @@ Paper  306
 % initial runs of your .tex file to
 % produce the bibliography for the citations in your paper.
 \bibliographystyle{abbrv}
+
+% \bibliographystyle{abbrvnat}
+
 \bibliography{aamas11storage}
+% \printbibliography
 
 % You must have a proper ".bib" file
 %  and remember to run:

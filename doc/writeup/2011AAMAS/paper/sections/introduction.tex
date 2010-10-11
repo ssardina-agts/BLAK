@@ -3,59 +3,40 @@
 \section{Introduction}\label{sec:introduction}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-BDI agents do not traditionally do learning. However, if a deployed agent
-(or agent system) is to be able to adapt over time to a changing
-situation, then learning becomes important. Our vision is to be able
-to deploy an agent system that is capable of adjusting to
-ongoing changes in environment dynamics that were not 
-programmed for, in a robust and effective manner.
+Agent systems built in the Belief-Desire-Intention (BDI) agent-oriented programming paradigm~\cite{Georgeff89-PRS,Rao96:AgentSpeak,WooldridgeBook} do not traditionally do learning. 
+%%
+However, if a deployed agent (i.e., agent system) is to be able to adapt over time to a changing situation, then learning becomes important. Our vision is to be able to deploy an agent system that is capable of adjusting to ongoing changes in the environment's dynamics in a robust and effective manner. Nonetheless, we still want to adhere to the BDI-style programming principle of leveraging on available procedural ``know-how'' information that is available. In that sense, we are \emph{not} interested in agents that learn from scratch, but rather on agents that learn how to (better) use the existing operational knowledge of the domain they are situated in. 
 
-In this paper we build on the work of \cite{airiau09:enhancing,singh10:extending,singh10:learning} which provides
-mechanisms for a BDI agent to learn the appropriate selection of plans
-in a situation. One of the key issues in any learning system is that of
-exploitation vs. exploration: i.e. how much to believe and exploit the
-current knowledge, versus how much to try things in order to gain new
-knowledge. Important in this balance is an understanding of how much learning
-has already been done, or how much has already been explored. In 
-\cite{singh10:extending,singh10:learning}, some measure of confidence was used to capture
-how much the agent should trust its current understanding, and
-therefore exploit rather than explore. 
-The greater the extent that this space had
-been explored, the greater the confidence, and consequently the more
-likely the agent is to exploit.  
 
-This approach, however, does not work for achieving our vision of the
-agent being able to adjust to a changing environment, as the confidence
-uses a static approximation based on the structure of the
-space of choices.
-As a result, confidence increases monotonically and
-there is no ability for the agent
-to become less confident in its choices, if the environment changes
-and its currently learned behaviour becomes less successful.
 
-We use in this paper an example of a battery controller for a smart
-office building which has a number of renewable resources (solar
-panels, wind turbines, etc.) and a large battery system which can be
-charged when there is excess power, and used when there is excess
-demand. Batteries have different chemistries, some of which have
-particular requirements such as the need to be fully discharged at
-regular intervals. The job of the battery controller is to set each
-battery module to charge, discharge or unused, in reponse to a request to
-have an overall charge/discharge rate within a particular interval.
-Initially the controller can be programmed (or can learn) to operate
-optimally as all constraints are known, and the characteristics of
-each battery (such as the charge it can hold) is known. However, over
-time batteries operate less well, or some may cease to function
-alltogether. We need for the controller agent that has initially
-explored the space well, and developed a high confidence in what it
-has learned, to be able to observe when this learned knowledge becomes
-unstable, and dynamically modify its confidence, allowing new
-exploration and revised learning.
+To that end, in this paper, by building on the recent work of~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, we develop mechanisms for which BDI-type agents can \emph{adaptively learn} the appropriate selection of plans in a situation, as they go. 
+%%
+One of the key issues in any learning system is that of exploitation vs. exploration, that is, how much to believe and exploit the current (learnt) knowledge, versus how much to try things in order to gain new knowledge. Important in this balance is an understanding of how much learning has already been done, or how much has already been explored. In~\cite{singh10:extending,singh10:learning}, a ``coverage-based" measure of confidence was used to capture how much the agent should trust its current understanding (of good plan selection), and therefore exploit rather than explore. Intuitively, such confidence was based to the degree to which the space of possible execution options for the plan has been explored (i.e., covered) so far. The greater the extent that this space had been explored, the greater the confidence, and consequently the more likely the agent is to exploit.  
 
-In this work we develop a new confidence measure, based on a notion of
-stability also developed in 
-\cite{airiau09:enhancing,singh10:learning}, which allows us to adjust our
-confidence as the environment changes.  An additional critical factor in
+As recognized by~\cite{singh10:learning} itself, the coverage-based confidence approach does not unfortunately work for achieving our vision of the agent being able to adjust to a changing environment. This is because  the confidence increases \emph{monotonically} and, as a result, there is no ability for the agent to become less confident in its choices, even if its currently learned behaviour becomes less successful due to the environment changes.
+
+
+
+Consider, for instance, a smart office building equipped with a large battery system that can be charged when there is excess power, and used (i.e., discharged) when there is excess demand, in order to achieve an overall desired building consumption rate for a given period. A battery installation is built from independent modules with different chemistries. Initially, the battery controller can be programmed (or can learn) to operate optimally. However, over time, the modules in a battery tend to operate less well or some may even cease to function altogether. In addition, modules may be replaced with some frequency.  
+%%	
+Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable and dynamically modify its confidence, allowing for new exploration and revised learning.
+
+% \notem{SS: HERE}
+% We use in this paper an example of a battery controller for a smart office building which has a number of renewable resources (e.g., solar panels, wind turbines, etc.) and a large battery system which can be charged when there is excess power, and used (i.e., discharged) when there is excess demand. 
+% %%
+% Modules in the battery systems have different chemistries, some of which have particular requirements such as the need to be fully discharged at regular intervals. The job of the battery controller is to set each battery module to charge, discharge, or unused, in response to an overall charge/discharge rate request for a particular interval. Initially, the controller can be programmed (or can learn) to operate optimally, as all constraints and the characteristics of each battery (such as the charge it can hold) are known. However, batteries (their modules) operate less well over time, or some may cease to function altogether. 
+% %%
+% So, what is needed is a controller agent that after having initially explored the space well, and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable and dynamically modify its confidence, allowing new exploration and revised learning.
+
+
+
+In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
+%%
+The new metric is built from two ingredients. \notem{SS: HERE}
+%%
+
+based on a notion of stability also developed in 
+\cite{airiau09:enhancing,singh10:learning},   An additional critical factor in
 an intuitive notion of confidence, is how much we are experiencing
 states we have seen before, vs how much we are seeing new
 situations. If we are still experiencing a substantial number of new
