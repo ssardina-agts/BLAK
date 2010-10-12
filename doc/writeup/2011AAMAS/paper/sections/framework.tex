@@ -26,12 +26,20 @@ For instance, the plan library of an unmanned air vehicle (UAV) agent controller
 %%%
 Besides the actual execution of domain actions (e.g., lifting the flaps), a plan may require the resolution of (intermediate) sub-goal events (e.g., obtain landing permission from air control tower). As a result, the execution of a BDI system can be seen as a \textit{context sensitive subgoal expansion}, allowing agents to ``act as they go'' by making \emph{plan choices} at each level of abstraction with respect to the current situation. The use of plans' context (pre)conditions to make choices as late as possible, together with the built-in goal-failure mechanisms, ensures that the system is responsive to changes in the environment. 
 
-
-
+\begin{figure}[t]
+\begin{center}
+%\resizebox{.45\textwidth}{!}{
+\input{figs/fig-confidence}
+%}
+\end{center}
+\caption{An example goal-plan hierarchy.}
+\label{fig:confidence}
+\end{figure}
 
 It is not hard to see that, by grouping together plans responding to the same event type, the agent's plan library can be seen as
 a set of goal-plan tree templates (e.g., Figure~\ref{fig:confidence}): a goal-event node (e.g., goal $G_1$) has children representing the alternative \emph{relevant} plans for achieving it (e.g., $P_a,P_b$ and $P_c$); and a plan node (e.g., $P_f$), in turn, has children nodes representing the subgoals (including primitive actions) of the plan (e.g., $G_4$ and $G_5$). These structures, can be seen as AND/OR trees: for a plan to succeed all the subgoals and actions of the plan must be successful (AND); for a subgoal to succeed one of the plans to achieve it must succeed (OR). Leaf plans are meant to directly interact with the environment and so, in a given world state, they can either succeed or fail when executed; this is marked accordingly in the figure for some particular world (of course such plans may behave differently in other states).
 
+We will use the notion of an {\em active execution trace} introduced in \cite{singh10:learning} to capture each decision sequence that terminates in the execution of a leaf plan. Consider again the goal-plan structure of Figure \ref{fig:confidence} that shows the possible outcomes when plan $P$ is selected in a given world $w$. Here, in order for the first subgoal $G_1$ to succeed, plan $P_a$ must be selected followed by $P_i$ that succeeds in the world (as indicated by the $\surd$ symbol). The active execution trace $\lambda$ for this selection then is described as $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_i:w]$ (highlighted in Figure~\ref{fig:confidence} as the line-shaded path terminating in $P_i$) where $G_i[P_i:w_i]$ indicates that goal $G_i$ was resolved by the selection of plan $P_i$ given world state $w_i$. Subsequently subgoal $G_2$ is posted whose successful resolution is described by the active trace $\lambda_2=G[P:w] \cdot G2[P_f:w'] \cdot G4[P_k:w']$ followed by the final trace $\lambda_3=G[P:w] \cdot G2[P_f:w'] \cdot G5[P_m:w'']$. Note that the world $w'$ in $\lambda_2$ is the resulting world state from the successful execution of leaf plan $P_i$ in the preceding trace $\lambda_1$. Similarly, $w''$ is the resulting world state from the execution of $P_k$ in $\lambda_2$. There is only one way for plan $P$ to succeed in the initial world $w$ as described by the traces $\lambda_1 \ldots \lambda_3$. All other execution traces lead to failures (as depicted by the $\times$ symbol).
 
 As can be seen, adequate plan selection is critically important in BDI systems. Whereas standard BDI platforms leverage domain expertise by means of the \emph{fixed} logical context conditions of plans, in this work, we are interested in exploring how a situated agent may \emph{learn} or \emph{improve} its plan selection mechanism based on experience, in order to better realize its goals.
 %%
@@ -47,26 +55,18 @@ Under the new BDI learning framework, two mechanisms become crucial. First, of c
 %%
 To select plans based on information in the decision trees, the work reported in \cite{singh10:extending,singh10:learning} used a probabilistic method that chooses a plan based on its believed likelihood of success in the given situation. This approach provides a balance between exploitation (by choosing plans with relatively higher success expectations more often), and exploration (by sometimes choosing plans with lower success expectation to get better confidence in their believed applicability by trying them in more situations). This balance is important because ongoing learning influences future plan selection, and subsequently whether a good solution is found.
 
-
-\begin{figure}[t]
-\begin{center}
-%\resizebox{.45\textwidth}{!}{
-\input{figs/fig-confidence}
-%}
-\end{center}
-\caption{An example goal-plan hierarchy.}
-\label{fig:confidence}
-\end{figure}
-
 When it comes to the learning process, the training set for a given plan's decision tree contains samples of the form $[w, o]$, where $w$ is the world state---a vector of discrete attributes---in which the plan was executed and $o$ is the execution outcome, namely, success or failure. Initially, the training set is empty and grows as the agent tries the plan in various world states and records each execution result. 
 %%
 Since the decision tree inductive bias is a preference for smaller trees, one expects that the learnt decision tree consists of only those world attributes that are relevant to the corresponding plan's (real) context condition.
 %%
+
 Now, due to the hierarchical nature of the plan-goal hierarchy being executed by the agent (c.f. Figure~\ref{fig:confidence}), it is possible that the failure of a plan (e.g., $P$) is only due to a poor plan selection lower in the hierarchy (e.g., $P_l$ is selected for goal $G_4$).
 %%
-To deal with this issue, the work in \cite{airiau09:enhancing} uses a plan ``stability" measure to take failures into account only when the agent is sufficiently sure that the failure was not due to poor sub-plan choices. Another approach reported is to adjust the plan selection probability based on some measure of ``confidence'' in the decision tree~\cite{singh10:extending,singh10:learning} which considers the reliability of a plan's decision tree to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored already: the more choices have been explored, the greater the confidence in the resulting decision tree. 
+To deal with this issue, the work in \cite{airiau09:enhancing} uses a plan ``stability" measure to take failures into account only when the agent is sufficiently sure that the failure was not due to poor sub-plan choices. 
+%
+To further understand this notion consider the case where plan selection results in the failed execution trace $\lambda=G[P:w] \cdot G2[P_f:w'] \cdot G4[P_j:w]$.\footnote{Note that trace $\lambda$ assumes the successful resolution of subgoal $G_1$ and the resulting world state $w'$, as described by $\lambda_1$ previously.} What should we make of this failure from a learning perspective? Should the negative sample be recorded for training our decision tree at non-leaf nodes $P_f$ and $P$? The concern stems from the fact that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_j$) was made further down in the hierarchy. To resolve this issue, the stability filter is used in \cite{airiau09:enhancing} to record failures only for those plans whose outcomes are considered to be stable, or ``well-informed''. 
+%
 
-\Shout{Add a description of execution traces here.}  
+Another approach reported is to adjust the plan selection probability based on some measure of ``confidence'' in the decision tree~\cite{singh10:extending,singh10:learning} which considers the reliability of a plan's decision tree to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored already: the more choices have been explored, the greater the confidence in the resulting decision tree. 
 
-To further understand the notion of stability introduced in \cite{airiau09:enhancing} consider the example goal-plan structure of Figure \ref{fig:confidence} that shows the possible outcomes when plan $P$ is invoked in a given world $w$. The $\surd$ and $\times$ symbols below the leaf plans indicate success and failure respectively. There is only one solution in such world $w$ given by the sequential execution of the leaf plans $P_i$, $P_k$, and $P_m$. This is highlighted in Figure \ref{fig:confidence} as the shaded nodes. Line shading indicates initial execution traces while the solid shading highlights the final (active) execution trace. All other selection sequences lead to failures. Now let us consider the case where plan selection results in the failed active execution trace $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_h:w]$. What should we make of this failure from a learning perspective? Should we record the negative sample for training our decision tree at non-leaf nodes $P_a$ and $P$? The concern stems from the fact that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_h$) was made further down in the hierarchy. The stability filter is used to resolve this issue in \cite{airiau09:enhancing,singh10:learning} by recording failures only for those plans whose outcomes are considered to be stable, or ``well-informed''. 
 
