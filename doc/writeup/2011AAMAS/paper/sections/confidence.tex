@@ -1,3 +1,6 @@
+
+\input{sections/fig-energy}
+
 %!TEX root = ../aamas11storage.tex
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Dynamic Confidence Measure}\label{sec:confidence}
@@ -79,18 +82,15 @@ Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens g
 \label{alg:degree}
 \end{algorithm}
 
-As a plan is executed in different failed execution experiences, several degrees of stability are recorded against it. Note, however, that assuming all plans eventually do become stable, $\ds(P,w)$ is guaranteed to converge to $1$. 
+As a plan is executed in different failed execution experiences, several degrees of stability are recorded against it. When a plan fully succeeds, we take an optimistic view and record $1$ (i.e., full stability) against it. This, together with the fact that all plans do eventually become stable, $\ds(P,w)$ is guaranteed to converge to $1$. 
 
-So, as a measure of our confidence in the decision tree for plan $P$ in state $w$, we shall use the \emph{average degree of stability} over the last last $n$ executions of plan $P$ in $w$. We denote such measure $\C_s(P,w,n)$. Intuitively, $\C_s(P,w,n)$ tells us how stable were the decisions taken when performing $P$ in $w$ over the most recent failed executions.
 
-Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
+To aggregate the different stability recordings for a plan over time, we shall use the \emph{average degree of stability} over the last last $k \geq 1$ executions of plan $P$ in $w$, denoted $\C_s(P,w,k)$. 
+%%
+This provides us with a measure of confidence in the decision tree for plan $P$ in state $w$. Intuitively, $\C_s(P,w,k)$ tells us how ``informed" were the decisions taken when performing $P$ in $w$ over the most recent failed executions.
+%%
+Notice this measure monotonically increases from $0$, as plans below $P$ start to become stable (or succeed); it reaches $1$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
-\begin{equation}
-\C_s(P,w,n) = \frac{s^o_0(P,w) + s^o_1(P,w) + \cdots + s^o_{n-1}(P,w)}{n}
-\label{eqn:confidence-stability}
-\end{equation}
-
-\input{sections/fig-energy}
 
 % \newcommand{\aSet}{\mathname{set}}
 % \newcommand{\aOperate}{\mathname{operate}}
@@ -123,29 +123,63 @@ Equation \ref{eqn:confidence-stability} defines this stability-based confidence 
 % \end{figure*}
 
 
-The confidence measure $\C_s$ would make a useful heuristic for exploration (i.e., plan selection) in its own right: such that when the confidence is at its lowest we do maximum exploration and when it is at its highest we fully utilise the decision tree. The problem with this approach, however, is that $\C_s$ only covers the space of known worlds. This means that whenever a new world is witnessed, $\C_s=0.0$, meaning that we will choose randomly. This is hardly beneficial since what we would really like is to use the learnt generalisations to classify this new world rather than be agnostic about it. What is missing is a metric that contributes to our net confidence but that is independent of $w$.
+The stability-based confidence measure $\C_s(\cdot,\cdot,\cdot)$ would make a useful heuristic for exploration (i.e., plan selection) in its own right: when the confidence is at its lowest the agent does maximum exploration, and when it is at its highest, the agent fully utilises the decision trees. 
+%%
+A problem with this approach, though, is that such measure only covers the space of \emph{known} worlds. This means that whenever a new world is witnessed, the stability-based confidence will be zero, meaning that the agent will choose randomly. This is hardly beneficial since what we would really like is to use the learnt generalisations to classify this new world rather than being agnostic about it. 
+%%
+What is missing is a metric that contributes to our net confidence but that is independent of $w$.
 
-One way to achieve this is by monitoring the rate at which new worlds are being witnessed by the plan $P$. During early exploration it is expected that the majority of worlds that a plan is selected for will be unique, therefore this rate is high and our confidence is low. Over time as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would approach zero while our confidence over this period would increase to its maximum.  Equation \ref{eqn:confidence-domain} defines this confidence metric $\C_d$ for plan $P$ over the last $n$ executions. Here, $W(P,*)$ is the set of all worlds witnessed by $P$ since the beginning and $\triangle W(P,n)$ is the set of worlds witnessed in the last $n$ executions. $\C_d$ is guaranteed to converge to $1.0$ as long as all worlds where the plan might apply are eventually witnessed.
 
-\begin{equation}
-\C_d(P,n) = \frac{|W(P,*)\cap \triangle W(P,n) |}{n}.
-\label{eqn:confidence-domain}
-\end{equation}
+\newcommand{\neww}{\mathname{NewStates}}
+One way to address this limitation is by monitoring the rate at which new worlds are being witnessed by a  plan $P$. During early exploration, it is expected that the majority of worlds that a plan is selected for will be unique, thus yielding a high rate and a low confidence. Over time, as exploration continues, the plan would get selected in all possible worlds and the rate of new worlds would approach zero, while our confidence over this period increases to its maximum.  
+%%
+So, we define our second confidence metric $\C_d(P,k) = |\neww(P,k)|/k$, where $\neww(P,k)$ stands for the set of world states that have been seen for the first time within the last $k$ execution experiences.   
+%%
+Clearly, $\C_d$ is guaranteed to converge to $1$ as long as all worlds where the plan might apply are eventually witnessed.
 
-We are now ready to define our final confidence measure $\C$ based on the two component confidence metrics $\C_s$ and $\C_d$. Equation \ref{eqn:confidence} describes this calculation. Here $\alpha$ is the weighting factor used to set a preference bias between the two components.
+% The equation below defines such confidence metric for a plan $P$ over the last $n$ executions, denoted denoted $\C_d(P,n)$. Here, $W(P,*)$ is the set of all worlds witnessed by $P$ since the beginning and $\triangle W(P,n)$ is the set of worlds witnessed in the last $n$ executions. $\C_d$ is guaranteed to converge to $1.0$ as long as all worlds where the plan might apply are eventually witnessed.
+% 
+% \begin{equation}
+% \C_d(P,n) = \frac{|W(P,*)\cap \triangle W(P,n) |}{n}.
+% \label{eqn:confidence-domain}
+% \end{equation}
 
-\begin{equation}
-\C(P,w,n) = (\C_s(P,w,n)*\alpha) + [\C_d(P,n)*(1.0-\alpha)].
+
+% The equation below defines such confidence metric for a plan $P$ over the last $n$ executions, denoted denoted $\C_d(P,n)$. Here, $W(P,*)$ is the set of all worlds witnessed by $P$ since the beginning and $\triangle W(P,n)$ is the set of worlds witnessed in the last $n$ executions. $\C_d$ is guaranteed to converge to $1.0$ as long as all worlds where the plan might apply are eventually witnessed.
+% 
+% \begin{equation}
+% \C_d(P,n) = \frac{|W(P,*)\cap \triangle W(P,n) |}{n}.
+% \label{eqn:confidence-domain}
+% \end{equation}
+
+So, to recap, we have defined two confidence measure over two different dimensions. Stability-based  confidence $\C_s(P,w,k)$ is meant to capture how ``stable'' the latest decisions (in the plan-goal hierarchy) when $P$ was executed were, whereas world-based confidence $\C_d(P,k)$ is meant to capture how ``similar'' the world is compared with what we have experienced before.
+
+
+We now have all the technical machinery to define our final (aggregated) confidence measure $\C$ that takes into account both above metrics. Specifically, the overall confidence on the decision tree of plan $P$ in world $n$ relative to the last $n$ experiences is defined as follows:
+%%
+\[
+	\C(P,w,n) = \alpha\C_s(P,w,n) + (1-\alpha)\C_d(P,n),
 \label{eqn:confidence}
-\end{equation}
+\]
 
-Finally, Equation \ref{eqn:omega} shows how the confidence measure $\C$ is used as a exploration heuristic during plan selection. Here $\P$ is the probability of success of plan $P$ in world $w$ as given by its decision tree and $\Omega$ is the plan selection weight. This formulation of the plan selection weight is similar to those presented in \cite{singh10:extending, singh10:learning} bar the replacement of earlier measures with the new confidence term $\C$.
+\noindent
+where $\alpha$ is a weighting factor used to set a preference bias between the two components.
 
-\begin{equation}
-\Omega(P,w,n) = 0.5 + \left[  \C(P,w,n) *  \left( \P(P,w) - 0.5 \right)  \right]
+
+
+Finally, we show how this confidence measure is to be used within the plan selection mechanism of a BDI agent. Remember that for a given goal-event that needs to be resolved, a BDI agent system may have various possible plans for which one ought to be chosen for execution. The BDI learning framework described in Section~\ref{sec:framework} will chose probabilistically among such options in a way proportional to some given weights per plan---the more weight a plan is assigned, the higher the chances of being chosen. 
+%%
+So, assume that $\P(P,w)$ is the probability of success of plan $P$ in world $w$ as given by $P$'s decision tree. Following~\cite{singh10:extending, singh10:learning}, the corresponding plan selection weight relative to $n$ last executions is defined as follows: 
+%%
+\[
+	\Omega(P,w,n) = 0.5 + \left[  \C(P,w,n) \times  \left( \P(P,w) - 0.5 \right)  \right].
 \label{eqn:omega}   
-\end{equation}
+\]
 
+Indeed, this weight definition is basically that of~\cite{singh10:extending, singh10:learning}, except for the use of our new confidence metric $\C(\cdot,\cdot,\cdot)$ as defined above.
+
+
+\notemin{SS: I am here}
 The storage domain scenario (c.f. Section \ref{sec:application}) highlights the benefits of our dynamic confidence measure of Equation \ref{eqn:confidence}. In this domain it is easy to think of situations where the dynamics of the environment changes such that the solution space varies over time. For instance, our motivation for learning is that battery chemistry (and therefore performance) deteriorates over time, and the system should learn to avoid solutions that no longer work in the future. However, worn battery modules get replaced every now and then, and hence, some configurations that the learner may have eliminated previously may become applicable once again. Similar examples may be conjured for situations involving module malfunctions. The point is that each such change in the environment impacts the solution space in some way, however an explicit notification, that may be used to trigger a change in behaviour, is not always available (some changes may be continuous, for instance). Moreover, several such factors may play on the solution space at one time, and it is up to the learner to respond in this environment appropriately.
 
 
