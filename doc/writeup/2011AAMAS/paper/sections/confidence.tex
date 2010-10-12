@@ -6,7 +6,7 @@
 \section{A Dynamic Confidence Measure}\label{sec:confidence}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section we describe a dynamic confidence measure that may be used to guide exploration when learning plan selection using the framework describes in Section \ref{sec:framework}. Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, the confidence metric will inform the agent how much it should trust the outcome estimation provided by its current decision tree.
+In this section we describe a dynamic confidence measure that may be used to guide exploration when learning plan selection using the framework describes in Section \ref{sec:framework}. Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, recall, the confidence metric informs the agent how much it should trust the outcome estimation provided by its current decision tree.
 
 Our new confidence measure improves upon previously used measures in two important ways. 
 %
@@ -82,6 +82,7 @@ Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens g
 \caption{$\UpdateDegreeStability(\lambda)$}
 \label{alg:degree}
 \end{algorithm}
+
 
 As a plan is executed in different failed execution experiences, several degrees of stability are recorded against it. When a plan fully succeeds, we take an optimistic view and record $1$ (i.e., full stability) against it. This, together with the fact that all plans do eventually become stable, $\ds(P,w)$ is guaranteed to converge to $1$. 
 
@@ -179,6 +180,7 @@ So, assume that $\P(P,w)$ is the probability of success of plan $P$ in world $w$
 
 Indeed, this weight definition is basically that of~\cite{singh10:extending, singh10:learning}, except for the use of our new confidence metric $\C(\cdot,\cdot,\cdot)$ as defined above.
 
+\input{sections/fig-energy}
 
 \notemin{SS: I am here}
 The storage domain scenario (c.f. Section \ref{sec:application}) highlights the benefits of our dynamic confidence measure of Equation \ref{eqn:confidence}. In this domain it is easy to think of situations where the dynamics of the environment changes such that the solution space varies over time. For instance, our motivation for learning is that battery chemistry (and therefore performance) deteriorates over time, and the system should learn to avoid solutions that no longer work in the future. However, worn battery modules get replaced every now and then, and hence, some configurations that the learner may have eliminated previously may become applicable once again. Similar examples may be conjured for situations involving module malfunctions. The point is that each such change in the environment impacts the solution space in some way, however an explicit notification, that may be used to trigger a change in behaviour, is not always available (some changes may be continuous, for instance). Moreover, several such factors may play on the solution space at one time, and it is up to the learner to respond in this environment appropriately.
