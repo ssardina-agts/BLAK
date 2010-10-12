@@ -7,7 +7,11 @@ The main contribution of this paper is a plan-selection learning mechanism for B
 %%
 Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas of plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending,singh10:learning} from previous approaches to learning in BDI agent systems, with a sense of the rate at which new worlds are being witnessed. This new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
 %%
-In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. Furthermore, the new mechanism does not require any account of the number of possible choices below a plan in the hierarchy, as is the case with the previous coverage-based approaches~\cite{singh10:extending,singh10:learning}, and hence scales up for any general goal-plan structure irrespective of its complexity. 
+In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. 
+%
+Importantly, however, the new measure subsumes previous approaches as it still preserves the traditional monotonic convergence expected in environments with fixed dynamics.
+%
+Furthermore, the new mechanism does not require any account of the number of possible choices below a plan in the hierarchy, as is the case with the previous coverage-based approaches~\cite{singh10:extending,singh10:learning}, and hence scales up for any general goal-plan structure irrespective of its complexity. 
 %%
 We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing: module performance within a battery system deteriorates over time or even completely fails on occasion on the one hand, while being periodically improved through system maintenance and upgrades on the other.  
 
