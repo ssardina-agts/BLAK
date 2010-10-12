@@ -1,14 +1,16 @@
 
-\input{sections/fig-energy}
+
 
 %!TEX root = ../aamas11storage.tex
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Dynamic Confidence Measure}\label{sec:confidence}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section we describe a dynamic confidence measure that may be used to guide exploration when learning plan selection using the framework describes in Section \ref{sec:framework}. Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Our new confidence measure improves upon previously used measures in two important ways. 
+In this section we describe a dynamic confidence measure that may be used to guide exploration when learning plan selection using the framework describes in Section \ref{sec:framework}. Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, the confidence metric will inform the agent how much it should trust the outcome estimation provided by its current decision tree.
+
+Our new confidence measure improves upon previously used measures in two important ways. 
 %
-Firstly, it caters to a changing dynamics of the environment that often results in prior learning becoming less effective. The stability-based \cite{airiau09:enhancing} and coverage-based \cite{singh10:extending,singh10:learning} measures that have been previously proposed do not support the requirement for adaptability to changing dynamics. Moreover, the new measure proposed here subsumes the functionality of the former methods, as it behaves monotonically in environments where the dynamics are fixed. As such, it offers a direct replacement for the previous approaches. 
+Firstly, it caters to changing dynamics of the environment that often results in prior learning becoming less effective. The stability-based \cite{airiau09:enhancing} and coverage-based \cite{singh10:extending,singh10:learning} measures that have been previously proposed do not support the requirement for adaptability to such changes. Moreover, the new measure proposed here subsumes the functionality of the former methods, as it behaves monotonically in environments where the dynamics are fixed. As such, it offers a direct replacement for the previous approaches. 
 %
 Secondly, the new measure does not rely on estimates of the number of choices in the goal-plan hierarchy as is the case in \cite{singh10:extending,singh10:learning}, and scales to any general goal-plan hierarchy irrespective of its complexity.
 
@@ -84,9 +86,9 @@ Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens g
 As a plan is executed in different failed execution experiences, several degrees of stability are recorded against it. When a plan fully succeeds, we take an optimistic view and record $1$ (i.e., full stability) against it. This, together with the fact that all plans do eventually become stable, $\ds(P,w)$ is guaranteed to converge to $1$. 
 
 
-To aggregate the different stability recordings for a plan over time, we shall use the \emph{average degree of stability} over the last last $k \geq 1$ executions of plan $P$ in $w$, denoted $\C_s(P,w,k)$. 
+To aggregate the different stability recordings for a plan over time, we shall use the \emph{average degree of stability} over the last $k \geq 1$ executions of plan $P$ in $w$, denoted $\C_s(P,w,k)$. 
 %%
-This provides us with a measure of confidence in the decision tree for plan $P$ in state $w$. Intuitively, $\C_s(P,w,k)$ tells us how ``informed" were the decisions taken when performing $P$ in $w$ over the most recent failed executions.
+This provides us with a measure of confidence in the decision tree for plan $P$ in state $w$. Intuitively, $\C_s(P,w,k)$ tells us how ``informed" the decisions taken when performing $P$ in $w$ were over the most recent failed executions.
 %%
 Notice this measure monotonically increases from $0$, as plans below $P$ start to become stable (or succeed); it reaches $1$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
