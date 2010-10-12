@@ -1,4 +1,4 @@
-\input{sections/fig-experiments}
+\input{figs/fig-experiments}
 %!TEX root = ../aamas11storage.tex
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Results}\label{sec:results}
@@ -44,7 +44,6 @@ In this scenario, we model a series of module malfunctions and their subsequent 
 
 In this experiment, we model the extreme scenario of complete failure of the system for some time followed by full restoration. Here {\em all} solutions fail for the period $[0:5k]$, after which they are reinstated. Figure \ref{fig:experiment3} shows the system performance about this change. At the beginning of the experiment, performance drops to zero rapidly as all of the ideal solutions start to fail. After an initial period of failures (at around $2k$ episodes), the estimated likelihood of success of all plans drops below the applicability threshold of $40\%$. Beyond this point the battery operation comes to a complete halt since no plans are ever applicable in any situation and so the $\pExecute$ plan never gets invoked. The original behaviour is then reinstated at $5k$, however if by this stage no plans are being tried then new learning will also not occur. For this reason, the applicability threshold is implemented as a ``soft'' threshold. To be exact, the $40\%$ threshold applies $90\%$ of the time leaving some possibility for selecting plans below this threshold. This allows the battery to operate with some likelihood\footnote{Note that the battery operates after five $Set*$ plan selections. In the best case only one of these plans has failed the threshold and there is a $10\%$ chance that the battery will operate. However, if all plans fail the threshold then there is only a $0.1^5$ or $0.00001\%$ chance that the battery will operate.}, and the system is able to adapt to the new solution set beyond $6k$ episodes.
 
-
 %\begin{figure}[t]
 %\begin{center}
 %\input{figs/fig-experiment3}
@@ -52,3 +51,7 @@ In this experiment, we model the extreme scenario of complete failure of the sys
 %\caption{Adapting to system restoration after complete failure.}
 %\label{fig:experiment3}
 %\end{figure}
+
+\Shout{Add closing para for the results section here.}
+%\medskip
+
