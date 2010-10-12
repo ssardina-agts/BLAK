@@ -32,28 +32,18 @@ Thus, what is needed is a controller agent that after having explored the space 
 
 In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
 %%
-The new metric is built from two ingredients. \notem{SS: HERE}
+The new metric is built from two ingredients.
 %%
+First, it uses the notion of plan stability from~\cite{airiau09:enhancing,singh10:learning} to quickly estimate how much the different options for achieving a goal has been explored.
+%%
+Second, it considers how much the agent is experiencing states that has been seen before vs how much it is seeing new situations, by using a sliding window that checks what percentage of situations in the window have been seen previously. If a substantial number of new situations are being experienced, then the agent should be less confident in what it has previously learnt. 
 
-based on a notion of stability also developed in 
-\cite{airiau09:enhancing,singh10:learning},   An additional critical factor in
-an intuitive notion of confidence, is how much we are experiencing
-states we have seen before, vs how much we are seeing new
-situations. If we are still experiencing a substantial number of new
-situations we should be less confident that we have learnt well how to
-operate in the world. This notion is also incorporated into our new
-confidence measure by using a sliding window that checks what
-percentage of situations in the window have been seen previously.
-
-In the following section we provide an overview of the basic BDI
-learning framework that we are using, as developed by 
-\cite{airiau09:enhancing,singh10:extending,singh10:learning}. We then
-explain in detail our new dynamic measure of confidence, that enables
-our agents to continually adjust to a changing world. We show how this
-approach is much more suitable for our battery controller
-agent. Finally we describe some experiments evaluating the battery
-controller agent in different situations, and demonstrate that our
-approach does in fact allow the agent to adjust in a variety of ways,
-to an environment where battery behaviour changes. We finish with
-conclusions and comments on what has been achieved as well as
-limitations requiring future work.
+The rest of the paper is organized as follows.
+%%
+In the following section, we provide an overview of the basic BDI learning framework on which this work is based on, as developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}. 
+%%
+We then explain in detail our new proposal for a dynamic measure of confidence that can be used at plan-selection time and will enable BDI agents to continually adjust to a changing world. 
+%%
+After that, we describe an energy storage domain taken from a real application that requires adaptive learning as the environment dynamics is meant to change over time. We then describe some experiments evaluating the battery controller agent in different situations, and demonstrate that our learning approach for BDI systems does in fact allow the agent to adjust in a variety of ways to an environment where battery behaviour changes. 
+%%
+We finish with conclusions and comments on limitations requiring future work.

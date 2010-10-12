@@ -13,28 +13,44 @@ Secondly, the new measure does not rely on estimates of the number of choices in
 To recap the definition of stability from \cite{singh10:learning}:
 
 \begin{quote}
-\emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold $\epsilon$.''}
+\emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold.''}
 \end{quote} 
-%%
-Given this, we define the \emph{degree of stability} of failed node $N$ in world $w$, denoted $s^o(N,w)$, as the ratio of stable plans to total applicable plans in the active execution trace below $N$ and starting in $w$. 
-%%
-Here, a node may either stand for a plan or goal node. 
 
-To see what this means, let us take the same failed trace $\lambda_1=G[P:w] \cdot G1[P_a:w] \cdot G3[P_h:w]$ from before and say that $P_h$ is the only plan that is now stable. The degree of stability $s^o$ of each node in the trace $\lambda_1$ then is given by:
-
+\newcommand{\ds}{\zeta}
+\newcommand{\app}{\mathname{app}}
 \newcommand{\stable}{\mathname{stable}}
 
-\begin{eqnarray*}
-s^o(P_h,w) = & \frac{\stable~in~[P_h]}{total~in~[P_h]} & = \frac{1}{1}  \\
-s^o(G_3,w) = & \frac{stable~in~[P_g,P_h,P_i]}{total~in~[P_g,P_h,P_i]} & = \frac{1}{3}  \\
-s^o(P_a,w) = & \frac{stable~in~[P_a,P_g,P_h,P_i]}{total~in~[P_a,P_g,P_h,P_i]} & = \frac{1}{4} \\
-s^o(G_1,w) = & \frac{\stable(\set{P_a,P_g,P_h,P_i,P_b,P_c})}{\card{\set{P_a,P_g,P_h,P_i,P_b,P_c}}} & = \frac{1}{6}  \\
-s^o(P,w) = & \frac{stable~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]}{total~in~[P,P_a,P_g,P_h,P_i,P_b,P_c]} & = \frac{1}{7} 
-\end{eqnarray*}
+Our aim is to use this notion to judge how ``stable'' the decisions the agent has made within a particular execution trace were. This is particularly meaningful for \emph{failed} execution traces: low stability suggests more exploration is needed before assuming no solution is possible (for the trace's top goal in question).
+%%
+To capture this, we define the \emph{degree of stability} of a (failed) execution trace $\lambda$, denoted $\ds(\lambda)$ as the ratio of stable plans to total applicable plans in the active execution trace below the top-level goal event in $\lambda$. Formally, when $\lambda= G_1[P_1:w_1] \cdots G_n[P_n:w_n]$ we define 
+%%
+\[
+\ds(\lambda) = 
+	\frac{ 
+			\card{ \bigcup\limits_{i \in \{1,\ldots,n\}} 
+						\set{P \mid P \in \Delta_{\app}(G_i,w_i), \stable(P,w_i)} } 
+		}
+		{
+			\bigcup\limits_{i \in \{1,\ldots,n\}} \Delta_{\app}(G_i,w_i) 
+		},
+\]
+
+\noindent
+where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable (i.e., whose boolean context conditions hold true) plans in world state $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable at world state $w_i$, as defined in~\cite{singh10:learning}.
+
+For instance, take the the failed execution trace above $\hat{\lambda} = G[P:w] \cdot G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ and assume that $P_n$ and $P_d$ are the only plans deemed stable (at the point where they are to execute in the trace). Then the degree of stability for the whole trace is 
+$\ds(\hat{\lambda})= 2/6$, provided the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w_2) = \{P_d,P_f\}$ and $\Delta_{\app}(G_2,w_2) = \{P_m,P_n,P_o\}$. 
+%%
+Similarly, for the two subtraces of $\hat{\lambda}$, we have $\ds(G_2[P_f:w_2] \cdot G_5[P_n:w_5]) = 2/5$ and $\ds(G_5[P_n:w_5]) = 1/3$.
+
 
 \newcommand{\StablePlan}{\mathname{StablePlan}}
 \newcommand{\SetDegreeStability}{\mathname{SetDegreeStability}}
 \newcommand{\UpdateDegreeStability}{\mathname{UpdateDegreeStability}}
+
+
+Now, the idea is that every time the agent reaches a failing execution trace, the stability degree
+
 
 Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $G_n[P_n:w_n,T_n]$ indicates that plan $P_n$ was executed in world $w_n$ to resolve goal $G_n$ where $T_n$ is the set of all applicable plans for the situation. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. $\StablePlan$ is a function to check if the given plan $P_n$ is stable or not. Function $\SetDegreeStability$ is used to save the degree of stability, given by the pair $s'/t'$, for each plan $P_n$.
 
