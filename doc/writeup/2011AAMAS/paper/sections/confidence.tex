@@ -38,42 +38,52 @@ To capture this, we define the \emph{degree of stability} of a (failed) executio
 \noindent
 where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable (i.e., whose boolean context conditions hold true) plans in world state $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable at world state $w_i$, as defined in~\cite{singh10:learning}.
 
-For instance, take the the failed execution trace above $\hat{\lambda} = G[P:w] \cdot G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ and assume that $P_n$ and $P_d$ are the only plans deemed stable (at the point where they are to execute in the trace). Then the degree of stability for the whole trace is 
-$\ds(\hat{\lambda})= 2/6$, provided the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w_2) = \{P_d,P_f\}$ and $\Delta_{\app}(G_2,w_2) = \{P_m,P_n,P_o\}$. 
+For instance, take the the failed execution trace above $\lambda_1 = G[P:w] \cdot G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ and assume that $P_n$ and $P_d$ are the only plans deemed stable (at the point where they are to execute in the trace). Suppose further that the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w_2) = \{P_d,P_f\}$, and $\Delta_{\app}(G_5,w_5) = \{P_m,P_n,P_o\}$.
 %%
-Similarly, for the two subtraces of $\hat{\lambda}$, we have $\ds(G_2[P_f:w_2] \cdot G_5[P_n:w_5]) = 2/5$ and $\ds(G_5[P_n:w_5]) = 1/3$.
+Then the degree of stability for the whole trace is $\ds(\lambda_1)= 2/6$.
+%%
+Similarly, for the two subtraces $\lambda_1'= G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ and $\lambda_1'' =G_5[P_n:w_5]$ of $\lambda_1$, we have $\ds(\lambda_1') = 2/5$ and $\ds(\lambda_1'') = 1/3$.
+
 
 
 \newcommand{\StablePlan}{\mathname{StablePlan}}
-\newcommand{\SetDegreeStability}{\mathname{SetDegreeStability}}
-\newcommand{\UpdateDegreeStability}{\mathname{UpdateDegreeStability}}
+\newcommand{\SetDegreeStability}{\mathname{RecordDegreeStability}}
+\newcommand{\UpdateDegreeStability}{\mathname{RecordDegreeStabilityInTrace}}
 
+Now, the idea is that every time the agent reaches a failing execution trace, the stability degree of each subtrace is stored in the plan that has produced such subtrace.
+%%
+So, for our example, for plan $P$ we store degree $\ds(\lambda_1')$ whereas for plan $P_f$ we record degree $\ds(\lambda_1'')$. Leaf plan nodes, like $P_n$, make no choices so their degree is simply $1$.
+%%
+Intuitively, by doing this, we record against each plan in the (failed) trace, an estimation on how informed the current (active) choices made for the plan were.  
+%%
+Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how a stability measure is reacorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records degree $d$ for plan $P$ in world state $w$.
 
-Now, the idea is that every time the agent reaches a failing execution trace, the stability degree
-
-
-Algorithm \ref{alg:degree} describes this calculation for any given active execution trace $\lambda$. Here $G_n[P_n:w_n,T_n]$ indicates that plan $P_n$ was executed in world $w_n$ to resolve goal $G_n$ where $T_n$ is the set of all applicable plans for the situation. The variables $s$ and $t$ store the number of stable and total plans respectively below $P_n$. $\StablePlan$ is a function to check if the given plan $P_n$ is stable or not. Function $\SetDegreeStability$ is used to save the degree of stability, given by the pair $s'/t'$, for each plan $P_n$.
-
-
-\begin{algorithm}[t]
-\KwData{$\lambda=G_0[P_0:w_0,T_0] \cdot \ldots \cdot G_n[P_n:w_n,T_n]$; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
-\KwResult{Calculates the degree of stability for plans in $\lambda$}
-\If{$|\lambda| > 1$}{
-	$\lambda'=G_0[P_0:w_0] \cdot \ldots \cdot G_{n-1}[P_{n-1}:w_{n-1}]$\;
-	$s' = s + \StablePlan(P_n,w_n,k,\epsilon)$\;
-	$t' = t + 1$\;
-	$\SetDegreeStability(P_n, w_n, s', t')$\;
-	\ForEach{$P_i$ in $T_n$; $P_i \neq P_n$}{
-		$s' = s' + \StablePlan(P_i, w_n, k,\epsilon)$\;
-		$t' = t + 1$\;
-	}
-	$\UpdateDegreeStability(\lambda', s', t', k, \epsilon)$\;
+\begin{algorithm}[h]
+\KwData{$\lambda=G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$}
+% ; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
+\KwResult{Records degree of stability for plans in $\lambda$.}
+\If{$(n > 1)$}{
+% 	$t = \Sigma_{i \in \{1,\ldots,n\}} \card{\Delta_{\app}(G_i,w_i)}$\;
+% 	$s = \Sigma_{i \in \{1,\ldots,n\}} \card{\Delta_{\app}(G_i,w_i)}$\;
+	$d = \ds(\lambda)$\;  
+	$\SetDegreeStability(P_1, w_1, d)$\;
+% 	\ForEach{$P_i$ in $T_n$; $P_i \neq P_n$}{
+% 		$s' = s' + \StablePlan(P_i, w_n, k,\epsilon)$\;
+% 		$t' = t + 1$\;
+% 	}
+	$\lambda'=G_2[P_2:w_2] \cdot \ldots \cdot G_n[P_n:w_n]$\;
+	$\UpdateDegreeStability(\lambda')$\;
 }
-\caption{$\UpdateDegreeStability(\lambda, s, t, k, \epsilon)$}
+\Else{$\SetDegreeStability(P_1, w_1, 1)$\;}
+\caption{$\UpdateDegreeStability(\lambda)$}
 \label{alg:degree}
 \end{algorithm}
 
-For our sample trace $\lambda_1$ for instance, the calculated $s^o(P,w)$ is $1/7$. The same measure for a different failed trace $\lambda_2=G[P:w] \cdot G1[P_b:w]$ where plan $P_b$ is the only stable plan would be $1/4$. Assuming all plans eventually become stable, $s^o(P,w)$ is guaranteed to converge to $1.0$. We use the {\em average degree of stability}, given by the average $s^o(P,w)$ over the last $n$ executions of plan $P$ in $w$, as a measure of our confidence in the decision tree for $P$ given $w$. Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
+As a plan is executed in different failed execution experiences, several degrees of stability are recorded against it. Note, however, that assuming all plans eventually do become stable, $\ds(P,w)$ is guaranteed to converge to $1$. 
+
+So, as a measure of our confidence in the decision tree for plan $P$ in state $w$, we shall use the \emph{average degree of stability} over the last last $n$ executions of plan $P$ in $w$. We denote such measure $\C_s(P,w,n)$. Intuitively, $\C_s(P,w,n)$ tells us how stable were the decisions taken when performing $P$ in $w$ over the most recent failed executions.
+
+Equation \ref{eqn:confidence-stability} defines this stability-based confidence measure $\C_s$ for plan $P$ over the last $n$ executions in world $w$ . This measure monotonically increases from $0.0$ as plans below $P$ start to become stable, and is $1.0$ when all tried plans below $P$ in the last $n$ executions are considered stable. 
 
 \begin{equation}
 \C_s(P,w,n) = \frac{s^o_0(P,w) + s^o_1(P,w) + \cdots + s^o_{n-1}(P,w)}{n}
