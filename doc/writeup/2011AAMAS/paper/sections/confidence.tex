@@ -30,11 +30,10 @@ To capture this, we define the \emph{degree of stability} of a (failed) executio
 \[
 \ds(\lambda) = 
 	\frac{ 
-			\card{ \bigcup\limits_{i \in \{1,\ldots,n\}} 
-						\set{P \mid P \in \Delta_{\app}(G_i,w_i), \stable(P,w_i)} } 
+			\card{ \bigcup_{i=1}^n \set{P \mid P \in \Delta_{\app}(G_i,w_i),\, \stable(P,w_i)} } 
 		}
 		{
-			\bigcup\limits_{i \in \{1,\ldots,n\}} \Delta_{\app}(G_i,w_i) 
+			\card{	\bigcup_{i=1}^n \Delta_{\app}(G_i,w_i) } 
 		},
 \]
 
@@ -62,19 +61,19 @@ Intuitively, by doing this, we record against each plan in the (failed) trace, a
 Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how a stability measure is reacorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records degree $d$ for plan $P$ in world state $w$.
 
 \begin{algorithm}[h]
-\KwData{$\lambda=G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$}
+\KwData{$\lambda=G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, with $n \geq 1$.}
 % ; $s\geq0$; $t\geq0$; $k\geq0$; $\epsilon\geq0$}
 \KwResult{Records degree of stability for plans in $\lambda$.}
 \If{$(n > 1)$}{
 % 	$t = \Sigma_{i \in \{1,\ldots,n\}} \card{\Delta_{\app}(G_i,w_i)}$\;
 % 	$s = \Sigma_{i \in \{1,\ldots,n\}} \card{\Delta_{\app}(G_i,w_i)}$\;
-	$d = \ds(\lambda)$\;  
+	$\lambda'=G_2[P_2:w_2] \cdot \ldots \cdot G_n[P_n:w_n]$\;
+	$d = \ds(\lambda')$\;  
 	$\SetDegreeStability(P_1, w_1, d)$\;
 % 	\ForEach{$P_i$ in $T_n$; $P_i \neq P_n$}{
 % 		$s' = s' + \StablePlan(P_i, w_n, k,\epsilon)$\;
 % 		$t' = t + 1$\;
 % 	}
-	$\lambda'=G_2[P_2:w_2] \cdot \ldots \cdot G_n[P_n:w_n]$\;
 	$\UpdateDegreeStability(\lambda')$\;
 }
 \Else{$\SetDegreeStability(P_1, w_1, 1)$\;}
