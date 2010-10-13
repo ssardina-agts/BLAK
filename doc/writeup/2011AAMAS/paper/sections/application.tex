@@ -10,23 +10,25 @@ Consider a controller for managing the overall energy demand of a smart office b
 %%
 Since there is little control over the demand in the building, and certainly no control over the renewable generation, it is possible that the building power consumption falls outside this range for some period in the day. For instance, if the renewable generation is high relative to the building loads, then net consumption may fall below $0$ (e.g., period prior to $t_1$); whereas if demand is higher than generation, then the net building consumption may rise above $p_h$ (e.g., period after $t_2$). 
 %
-While net demand is fixed for all practical purposes, we do have control over the use of the battery system (Battery Charge). Hence, by suitably ordering the battery system to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates, it is possible to influence the building net demand. 
+%While net demand is fixed for all practical purposes, 
+While there is little that can be done about the net building consumption and generation (Building Demand in Figure~\ref{fig:usecase}),
+we do have control over the use of the battery system. Hence, by suitably ordering the battery system to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates (Battery Charge), it is possible to influence the net demand and effectively the energy consumption from the electricity grid (Grid Supply).
 %%
 
 Large battery systems usually comprise of multiple modules that can be controlled independently.  Modules may be operated in synchrony, but there are often strategic reasons for keeping some modules in different states.  For example, if it is undesirable to change the direction of power flow between charging and discharging too frequently, a subset of modules may be used for each direction until it is necessary to swap their roles. Also, some technologies have specific requirements, such as zinc-bromine flow batteries needing complete discharges at regular intervals to ``strip'' the zinc plating and hence ensuring irregularities never accumulate. Where they exist, such requirements place further constraints on module control.
 
-So, given a large battery installation, we are interested in a mechanism to achieve certain desired rate of charging or discharging, by suitably setting each module in the battery---the overall rate is the sum over the modules' rates.  
+So, given a large battery installation, we are interested in a mechanism to achieve a desired rate of charging or discharging, by suitably setting each module in the battery---the overall rate being the sum over the modules' rates.  
 %%
-For simplicity, we assume homogeneous capacity $c$ of the modules (but with possibly different chemical properties and constraints), and hence an overall system capacity of $c*n$ (where $n$ is the total number of modules in the system). Each module, in turn, may be configured as charging ($+c$), discharging ($-c$), or not in use ($0$). By appropriately setting each module's operational state, the total response of the battery system may be adjusted in steps of $\pm c$.
+For simplicity, we assume homogeneous capacity $c$ of the modules (but with possibly different chemical properties and constraints), and hence an overall system capacity of $c*k$ (where $k$ is the total number of modules in the system). Each module, in turn, may be configured as charging ($+c$), discharging ($-c$), or not in use ($0$). By appropriately setting each module's operational state, the total response of the battery system may be adjusted in steps of $\pm c$.
 %%
 While hardwired control is indeed possible, it is not ideal due to the fact that battery performance is susceptible to changes over time---modules tend to lose actual capacity---and may diverge from normal. 
 %%
 What is required is an \emph{adaptable} control mechanism that accounts for such drift. 
 %%
 
-Figure~\ref{fig:gptree} depicts a BDI controller for this application. Top-level goal-even $G(r,k,s)$ is requests a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
+Figure~\ref{fig:gptree} depicts a BDI controller for this application. Top-level goal-event $G(r,k,s)$ is requests a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
 %%
-The BDI controller works by recursively configuring each module for the period in question using the plans $\pSetCharge$ (\emph{charging} at rate $+c$), $\pSetDischarge$ (\emph{discharging} at rate $-c$), and $\pSetNotUsed$ (disconnect module), and, finally, after all modules have been configured, physically operating the battery for the period using the $\pExecute$ plan. 
+The BDI controller works by recursively configuring each module for the period in question using the plans $\pSetCharge$ (charging at rate $+c$), $\pSetDischarge$ (discharging at rate $-c$), and $\pSetNotUsed$ (disconnected), and finally, after all modules have been configured, physically operating the battery for one period using the $\pExecute$ plan. 
 %%
 
 Observe that the first three plans already contain initial known (necessary) domain constraints for applicability, by means of conditions $\cSatisfies_X(\cdot,\cdot,\cdot)$. For instance, plan $\pSetCharge$ may not be considered in a given instance if the module is only allowed to change charge directions once every four periods and charging in this period would violate this constraint. 
