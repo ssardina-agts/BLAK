@@ -39,11 +39,11 @@ Finally, each experiment is run five times and the reported results are averages
 
 \subsubsection{Experiment 1: Capacity Deterioration}
 
-In this experiment we model the (typical) situation where module capacities deteriorate over time. In a real system this will happen gradually over several years of typical use. However, to ease the analysis of the impact of the change, we force this deterioration to occur instantaneously in this experiment. 
+In this experiment we model the (typical) situation where module capacities deteriorate over time. In a real system this will happen gradually over several years of typical use. However, to show the response to substantial change, we force this deterioration to occur instantaneously in this experiment. 
 %%
 Figure \ref{fig:experiment1} shows the results for this case. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording its experiences although there is no evident use of the resulting learning yet. After some time (about $5K$ episodes), the capacity of all five modules drops instantaneously, from the initial range $[0:3]$) to range $[0:2]$. 
 %%
-These capacity changes result in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would, at this point, converge to $\approx 76\%$ performance. The learning system, however, aptly rectifies the situation by learning to mostly avoid module configurations that no longer work. 
+These capacity changes result in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would, at this point, converge to $\approx 76\%$ performance. The learning system, however, aptly rectifies the situation by learning to avoid most module configurations that no longer work. 
 
 
 %\begin{figure}[t]
