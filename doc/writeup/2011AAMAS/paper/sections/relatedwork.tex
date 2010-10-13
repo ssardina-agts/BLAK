@@ -1,0 +1,16 @@
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}\label{sec:relatedwork}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Apart from the already discussed approaches in \cite{airiau09:enhancing,singh10:extending,singh10:learning} on which this work is based, the issue of combining learning with deliberation in BDI agent systems has not been widely addressed in the literature. 
+%
+Hern\'andez et al. \cite{hernandez04:learning} reported preliminary results on learning new context conditions using decision trees in a simple paint-world example, although they do not consider the issue of learning in plan hierarchies. In terms of approaches that integrate \emph{offline} learning with deliberation in BDI systems, the work in \cite{lokuge07:improving} gives a detailed account using a real-world ship berthing logistics application. The authors take operational shipping data to train a neural network offline that is then integrated into the BDI deliberation cycle to improve plan selection. They show that the trained system is able to outperform the human operators in terms of scheduling the docking of ships to loading berths. Similar approaches for offline learning module with BDI deliberation at runtime have previously also been used in robotic  soccer~\cite{riedmiller01:karlsruhe,brusey02:learning}.
+
+
+
+The work of \cite{simari06:relationship} has highlighted the relationship between BDI and Markov Decision Processes on which the reinforcement learning literature is founded. 
+%
+Recently, Broekens et al. \cite{broekens10:reinforcement} reported progress on integrating reinforcement learning to improve plan selection in GOAL, a declarative agent programming language in the BDI flavour. They use an abstract state representation using only the stack of applicable rules and a sum cost heuristic that captures the number of pending goals. The intent is to keep the representation domain independent, with the focus on improving the plan selection functionality in the framework itself. In that way, their approach complements ours, and may be integrated as ``meta-level'' learning to influence the plan selection calculation given by weighting function $\Omega$ (see Section~\ref{sec:confidence}). We note that such work is still preliminary and it is difficult to ascertain the generality of their approach in other domains. Nevertheless, their early results are encouraging in that the agent always achieves the goal state in less number of tries with learning enabled than without.
+%
+Our work also relates to the existing work in hierarchical reinforcement learning~\cite{barto03:recent}, where task hierarchies similar to those of BDI programs are used. Of particular interest is the early work by Dietterich~\cite{dietterich00:hierarchical} that supports learning at all levels in the task hierarchy (as we do in our learning framework) in contrast to waiting for learning to converge at the bottom levels first.
