@@ -26,7 +26,7 @@ While hardwired control is indeed possible, it is not ideal due to the fact that
 What is required is an \emph{adaptable} control mechanism that accounts for such drift. 
 %%
 
-Figure~\ref{fig:gptree} depicts a BDI controller for this application. Top-level goal-event $G(r,k,s)$ is requests a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
+Figure~\ref{fig:gptree} depicts a BDI controller for this application. Top-level goal-event $G(r,k,s)$ requests a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
 %%
 The BDI controller works by recursively configuring each module for the period in question using the plans $\pSetCharge$ (charging at rate $+c$), $\pSetDischarge$ (discharging at rate $-c$), and $\pSetNotUsed$ (disconnected), and finally, after all modules have been configured, physically operating the battery for one period using the $\pExecute$ plan. 
 %%
