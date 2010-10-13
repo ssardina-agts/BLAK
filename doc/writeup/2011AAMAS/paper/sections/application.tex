@@ -19,7 +19,7 @@ Large battery systems usually comprise of multiple modules that can be controlle
 
 So, given a large battery installation, we are interested in a mechanism to achieve a desired rate of charging or discharging, by suitably setting each module in the battery---the overall rate being the sum over the modules' rates.  
 %%
-For simplicity, we assume homogeneous capacity $c$ of the modules (but with possibly different chemical properties and constraints), and hence an overall system capacity of $c*k$ (where $k$ is the total number of modules in the system). Each module, in turn, may be configured as charging ($+c$), discharging ($-c$), or not in use ($0$). By appropriately setting each module's operational state, the total response of the battery system may be adjusted in steps of $\pm c$.
+For simplicity, we assume homogeneous capacity $c$ of the modules (but with possibly different chemical properties and constraints), and hence an overall system capacity of $c \times k$ (where $k$ is the total number of modules in the system). Each module, in turn, may be configured as charging ($+c$), discharging ($-c$), or not in use ($0$). By appropriately setting each module's operational state, the total response of the battery system may be adjusted in steps of $\pm c$.
 %%
 While hardwired control is indeed possible, it is not ideal due to the fact that battery performance is susceptible to changes over time---modules tend to lose actual capacity---and may diverge from normal. 
 %%
