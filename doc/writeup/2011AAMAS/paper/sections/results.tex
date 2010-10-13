@@ -4,19 +4,46 @@
 \section{Experimental Results}\label{sec:results}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we show experiments that demostrate the suitability of the framework developed in Section~\ref{sec:framework} using the energy domain example of Section~\ref{sec:application}. In particular we report on three experiments that highlight the adaptive behaviour of the controller under different situations where the environment dynamics are changing. The first experiment shows how the agent recovers functionality against deterioration in module capacities. In the second, the agent is exposed to partial failure of the system and a variable solution space caused by some modules malfunctioning and then subsequently being restored. Finally, in the third experiment we analyse the controller response and learning behaviour in the extreme case where the system suffers complete failure for some time and is thereafter restored.
+In this section, we show experiments that demonstrate the suitability of the framework developed in Section~\ref{sec:framework} using the energy domain example of Section~\ref{sec:application}. In particular, we report on three experiments that highlight the adaptive behaviour of the controller under different situations in which the environment dynamics are changing. 
+%%
+The first experiment shows how the agent recovers functionality against standard deterioration in module capacities. In the second one, the agent is exposed to partial (temporal) failures of the system, that is, modules malfunctioning that would still not preclude the battery to respond successfully to requests. Lastly, in the third experiment, we analyse the controller response and learning behaviour in the extreme case where the system suffers complete failure for some time and is thereafter restored.
+
+
 
 \subsubsection{Experimentation Setup}
 
-The following experimental setup applies to all experiments. We conduct experiments for a battery system with {\em five} modules. For each module, the charge state is described by a discrete value in the range $[0:3]$ where zero indicates a fully discharged state and three indicates a fully charged state. As well as this, each module has an assigned configuration for the period from the set $\{+c, 0, -c\}$ where $c=1/n$ and $n=5$ is the number of modules in the system. The desired response is in the range $[-1.0:+1.0]$ in discrete intervals of $\pm c$. The complete state space for the problem is described by the number of modules ($5$), the possible requests ($11$), the charge state of the system ($4^5$), and the assigned configuration of the system ($3^5$), or $5 \cdot 11 \cdot 4^5 \cdot 3^5 \approx 13.7$ million. This is significant, however note that we do not have to learn over this full set because the filtering of nonsensical configurations by the plans context conditions reduces the space substantially.
+The following experimental setup applies to all experiments. 
+%%
+We conducted experiments for a battery system with \emph{five} modules (i.e., $k=5$). For each module, the current charge state is described by a discrete value in the range $[0:3]$, where zero indicates a fully discharged state and three indicates a fully charged state. In addition, each module has an assigned configuration for the current period from the set $\{+c, 0, -c\}$, where $c=1/k$. The operational model is simple: charging is meant to add $+c$ while discharging is meant to add $-c$ to a module's charge state, otherwise the state is unchanged for the period (i.e., there is no charge loss).
+%%
+Thus, the desired overall battery response is in the (normalized) range $[-1.0:+1.0]$ in discrete intervals of $\pm c$. 
+%%
+The complete state space for the problem is described by the number of modules ($5$), the possible requests ($11$), the charge state of the system ($4^5$), and the assigned configuration of the system ($3^5$), that is, $5 \times 11 \times 4^5 \times 3^5 \approx 13.7$ million states. Though significant, note that the agent does not have to learn over this space, because the filtering of nonsensical configurations by the plans' context conditions $\psi_i$ will reduce substantially it.
 
-At the beginning of a learning episode the configuration of each module is reset to $0$. The charge state of each module, however, is left untouched and carries over from the previous episode as would be the case in the deployed system. This has implications for learning, particularly that the state space is not sampled uniformly. Each episode corresponds to one $G$ goal-event request received from the environment. For simplicity of analysis, the environment only generates satisfiable requests given the state of the battery, such that a solution always exists for the generated request. The outcome of each episode is either no response (no configuration was executed), or a single invocation of the $Execute$ plan that operates the battery and evaluates the response. The operational model is simple, so that charging adds $+c$ while discharging adds $-c$ to a module's charge state, otherwise the state is unchanged for the period i.e there is no charge loss. The tolerance level is set to $0.0$ so that the battery response is deemed successful only when the sum of the module configurations matches the request exactly.
 
-The applicability threshold for plan selection is set to $40\%$ so plans with a likelihood of success below this value are discarded from the applicable set. The threshold for stability calculation is set to $\epsilon=0.5$. For the stability-based metric $\C_s(\cdot,\cdot,k)$, and the world-based metric $\C_d(\cdot,k)$ the averaging window uses the last five recordings i.e. $k=5$. For the calculation of the final confidence measure $\C(\cdot,\cdot,\cdot)$ the stability-based and world-based component metrics are given an equal weighting using $\alpha=0.5$. Finally, each experiment is run five times and the reported results are averages from these runs.
+
+
+At the beginning of each learning episode, the configuration of each module is reset to $0$ (i.e., not in used). 
+%%
+The charge state of each module, however, is left untouched and carries over from the previous episode, as it would be the case in the actual deployed system. This has implications for learning, particularly that the state space is \emph{not} sampled uniformly. %%
+Each episode corresponds to one $G(r,5,s)$ goal-event request: achieve overall battery response of $r$ under current module charge states $s$.  For simplicity of analysis, we assume only satisfiable requests: a solution always exists. The outcome of each episode is either no response (no configuration was executed), or a single invocation of the $\pExecute$ plan for operating (and evaluating) the battery.  The tolerance level is set to $0$, so that the battery response is deemed successful only when the sum of the module configurations matches the request exactly.
+
+An important thing we used is an \emph{applicability threshold} for plan selection of $40\%$, meaning that plans with a likelihood of success below this value are discarded from consideration. While such feature does not alter the overal learning performance of the battery controller, it does preclude the battery to being operated (i.e., plan $\pExecute$) under module configurations that are bound to be unsuccessful. In fact, we found that the threshold used reduces the number of battery operations by $12\%$, which is substantial when considering battery life. Again, we stress that the difference in performance without the applicability threshold is not significant.
+
+
+The threshold for stability calculation is set to $0.5$. We used an averaging window of $n=5$ for both the stability-based metric $\C_s(\cdot,\cdot,n)$ and the world-based metric $\C_d(\cdot,n)$, and a (balanced) weighting of $\alpha=0.5$ for the final confidence measure $\C(\cdot,\cdot,\cdot)$.
+%%
+Finally, each experiment is run five times and the reported results are averages from these runs.
+
+
 
 \subsubsection{Experiment 1: Capacity Deterioration}
 
-In this experiment we model the situation where module capacities deteriorate over time. In a real system this will happen gradually over a very long period, however to ease the analysis of the impact of the change we force the situation to occur instantaneously in this experiment. Figure \ref{fig:experiment1} shows the system performance about this change. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording its experiences although there is no evident use of the resulting learning yet. After some time (about $5000$ episodes), a forced change in the environment causes all five modules to instantaneously drop capacity (initially in the range $[0:3]$) to $[0:2]$. This results in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would at this point converge to $\approx 76\%$ performance if this change were permanent. The learning system however, aptly rectifies the situation by learning to mostly avoid ``solutions'' that no longer work. 
+In this experiment we model the (typical) situation where module capacities deteriorate over time. In a real system this will happen gradually over several years of typical use. However, to ease the analysis of the impact of the change, we force this deterioration to occur instantaneously in this experiment. 
+%%
+Figure \ref{fig:experiment1} shows the results for this case. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording its experiences although there is no evident use of the resulting learning yet. After some time (about $5K$ episodes), the capacity of all five modules drops instantaneously, from the initial range $[0:3]$) to range $[0:2]$. 
+%%
+These capacity changes result in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would, at this point, converge to $\approx 76\%$ performance. The learning system, however, aptly rectifies the situation by learning to mostly avoid module configurations that no longer work. 
 
 
 %\begin{figure}[t]
