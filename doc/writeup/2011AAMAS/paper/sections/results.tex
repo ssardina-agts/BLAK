@@ -4,7 +4,7 @@
 \section{Experimental Results}\label{sec:results}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we show experiments that demonstrate the suitability of the framework developed in Section~\ref{sec:framework} using the energy domain example of Section~\ref{sec:application}. In particular, we report on three experiments that highlight the adaptive behaviour of the controller under different situations in which the environment dynamics are changing. 
+In this section, we show experiments that demonstrate the suitability of the framework developed in Sections~\ref{sec:framework} and \ref{sec:confidence} using the energy domain example of Section~\ref{sec:application}. In particular, we report on three experiments that highlight the adaptive behaviour of the controller under different situations in which the environment dynamics are changing. 
 %%
 The first experiment shows how the agent recovers functionality against standard deterioration in module capacities. In the second one, the agent is exposed to partial (temporal) failures of the system caused by modules malfunctioning, but which do not completely preclude the battery from successfully resolving system requests. Lastly, in the third experiment, we analyse the controller response and learning behaviour in the extreme case where the system suffers complete failure for some time and is thereafter restored.
 
@@ -25,15 +25,17 @@ The complete state space for the problem is described by the number of modules (
 
 
 
-At the beginning of each learning episode, the configuration of each module is reset to $0$ (i.e., not in used). 
+At the beginning of each learning episode, the configuration of every module is reset to $0$ (i.e., not in use). 
 %%
 The charge state of each module, however, is left untouched and carries over from the previous episode, as would be the case in the actual deployed system. This has implications for learning, particularly that the state space is \emph{not} sampled uniformly. %%
 Each episode corresponds to one $G(r,5,s)$ goal-event request: achieve overall battery response of $r$ given current module charge states $s$.  For simplicity of analysis, we assume only satisfiable requests: a solution always exists. The outcome of each episode is either no response (no configuration was executed), or a single invocation of the $\pExecute$ plan for operating (and evaluating) the battery.  The tolerance level is set to $0$, so that the battery response is deemed successful only when the sum of the module configurations matches the request exactly.
 
-An important thing we used is an \emph{applicability threshold} for plan selection of $40\%$, meaning that plans with a likelihood of success below this value are discarded from consideration. While such feature does not alter the overall learning performance of the battery controller, it does preclude the battery from being operated (i.e., plan $\pExecute$ being called) under module configurations that are likely to be unsuccessful. In fact, we found that the threshold used reduces the number of battery operations by $12\%$, which is substantial when considering battery life. Again, we stress that the difference in learning performance without the applicability threshold is not significant.
+In normal BDI operation, only plans that are applicable, as determined by their context condition, are considered for execution. For our learning framework, where applicability is additionally defined by a plan's decision tree, this means that only plans with a reasonable likelihood of success should be allowed. To represent this, we use 
+%An important thing we used is 
+an \emph{applicability threshold} for plan selection of $40\%$, meaning that plans with a likelihood of success below this value are removed from consideration. While this feature does not alter the overall learning performance of the battery controller, it does preclude the battery from being operated (i.e., plan $\pExecute$ being called) under module configurations that are likely to be unsuccessful. In fact, we found that the threshold used reduces the number of battery operations by $12\%$, which is substantial when considering battery life. Again, we stress that the difference in learning performance without the applicability threshold is not significant.
 
 
-The threshold for stability calculation is set to $0.5$. We used an averaging window of $n=5$ for both the stability-based metric $\C_s(\cdot,\cdot,n)$ and the world-based metric $\C_d(\cdot,n)$, and a (balanced) weighting of $\alpha=0.5$ for the final confidence measure $\C(\cdot,\cdot,\cdot)$.
+The threshold parameter for stability calculation is set to $0.5$. We use an averaging window of $n=5$ for both the stability-based metric $\C_s(\cdot,\cdot,n)$ and the world-based metric $\C_d(\cdot,n)$, and a (balanced) weighting of $\alpha=0.5$ for the final confidence measure $\C(\cdot,\cdot,\cdot)$.
 %%
 Finally, each experiment is run five times and the reported results are averages from these runs.
 
@@ -45,7 +47,7 @@ In this experiment we model the (typical) situation where module capacities dete
 %%
 Figure \ref{fig:experiment1} shows the results for this case. In the beginning of the experiment, the system performs ideally as programmed, and goes about recording its experiences although there is no evident use of the resulting learning yet. After some time (about $5\kilo$ episodes), the capacity of all five modules drops instantaneously, from the initial range $[0:3]$ to range $[0:2]$. 
 %%
-These capacity changes result in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would, at this point, converge to $\approx 76\%$ performance. The learning system, however, aptly rectifies the situation by learning to avoid most module configurations that no longer work. 
+These capacity changes result in a rapid drop in performance corresponding to the set of programmed/learnt solutions that no longer work. The ideally programmed system would, at this point, converge to $\approx 76\%$ performance. The adaptive system, however, aptly rectifies the situation by learning to avoid the module configurations that no longer work. 
 
 
 %\begin{figure}[t]
@@ -59,7 +61,7 @@ These capacity changes result in a rapid drop in performance corresponding to th
 
 \subsubsection{Experiment 2: Partial Failure with Restoration}
 
-In this scenario, we model a series of module malfunctions and their subsequent restoration. However, the battery always remains capable of successfully responding to the request.
+In this scenario, we model a series of module malfunctions and their subsequent restoration. However, the battery always remains capable of successfully responding to the request using alternative configurations.
 %%
 In the experiment, the first battery module fails for the duration $[0:20\kilo]$ after which it is reinstated, the second module fails for the period $[20\kilo:40\kilo]$, and so on. 
 %%
@@ -86,21 +88,9 @@ The results are shown in Figure~\ref{fig:experiment3}.
 %%
 At the beginning of the experiment, overall performance drops to zero rapidly, as none of the ideal configurations are successful in responding to the request. After a while (at around $2\kilo$ episodes), the estimated likelihood of success of all plans drops below the applicability threshold of $40\%$. At this point, the battery operation comes to a complete halt: no plans are ever applicable and plan $\pExecute$ is never invoked. 
 %%
-Then, at episode $5\kilo$, the failed modules are repaired so that the battery is restored to normal operation. However, observe that since no plans are ever tried due to the applicability threshold, then new learning may not occur. To tackle this issue, the applicability threshold we used as a ``soft'' applicability threshold mechanism: the $40\%$ threshold applies $90\%$ of the time. This allows the battery to operate with some likelihood and the agent system to eventually start recovering at around $6\kilo$ episodes.\footnote{Note that the battery will be actually operated after five module configuration plans $\pSet$ have been selected and carried out (one per existing module). In the best case, only one of these plans has failed the threshold and hence there is a $10\%$ chance that the battery will operate. On the other hand, if all plans are failing the applicability threshold, then there is only a $0.1^5$ (i.e.,  $0.00001$) chance that the battery will operate. In a real system, the agent should have some input from the environment indicating that some important changes have ocurred (e.g., some batteries have been replaced/repaired).}
+Then, at episode $5\kilo$, the failed modules are repaired so that the battery is restored to normal operation. However, observe that since no plans are ever tried due to the applicability threshold, then new learning may not occur. To tackle this issue, we use as a ``soft'' applicability threshold mechanism: the $40\%$ threshold applies $90\%$ of the time. This allows the battery to operate with some likelihood and the agent system to eventually start recovering at around $6\kilo$ episodes.\footnote{Note that the battery will be actually operated after five module configuration plans $\pSet$ have been selected and carried out (one per existing module). In the best case, only one of these plans has failed the threshold and hence there is a $10\%$ chance that the battery will operate. On the other hand, if all plans are failing the applicability threshold, then there is only a $0.1^5$ (i.e.,  $0.00001$) chance that the battery will operate. In a real system, the agent should have some input from the environment indicating that some important changes have ocurred (e.g., some batteries have been replaced/repaired).}
 
 
-
-
-%\begin{figure}[t]
-%\begin{center}
-%\input{figs/fig-experiment3}
-%\end{center}
-%\caption{Adapting to system restoration after complete failure.}
-%\label{fig:experiment3}
-%\end{figure}
-
-\medskip
-%To recap, we have described in this section three types of experiments for the energy storage domain to demonstrate, empirically, that the BDI learning framework is able to adapt to changes in the dynamics of the environment when the confidence metric developed in Section~\ref{sec:confidence} is used.  
 In summary, the three types of scenarios described here for the energy storage domain empirically demonstrate the ability of a learning BDI agent to adapt to changes in the dynamics of the environment using the framework of Section~\ref{sec:framework} combined with the confidence metric developed in Section~\ref{sec:confidence}.  
 
 

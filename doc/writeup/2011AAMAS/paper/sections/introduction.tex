@@ -11,24 +11,15 @@ However, if a deployed agent (i.e., agent system) is to be able to adapt over ti
 
 To that end, in this paper, by building on the recent work of~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, we develop mechanisms for which BDI-type agents can \emph{adaptively learn} the appropriate selection of plans in a situation, as they go. 
 %%
-One of the key issues in any learning system is that of exploitation vs. exploration, that is, how much to believe and exploit the current (learnt) knowledge, versus how much to try things in order to gain new knowledge. Important in this balance is an understanding of how much learning has already been done, or how much has already been explored. In~\cite{singh10:extending,singh10:learning}, a ``coverage-based" measure of confidence was used to capture how much the agent should trust its current understanding (of good plan selection), and therefore exploit rather than explore. Intuitively, such confidence was based on the degree to which the space of possible execution options for the plan has been explored (i.e., covered) so far. The greater the extent to which this space had been explored, the greater the confidence, and consequently the more likely the agent is to exploit.  
+One of the key issues in any learning system is that of exploitation vs. exploration, that is, how much to believe and exploit the current (learnt) knowledge, versus how much to try things in order to gain new knowledge. Important in this balance is an understanding of how much learning has already been done, or how much has already been explored. In~\cite{singh10:extending,singh10:learning}, a ``coverage-based" measure of confidence was used to capture how much the agent should trust its current understanding (of good plan selection), and therefore exploit rather than explore. Intuitively, such confidence was based on the degree to which the space of possible execution options for the plan has been explored (i.e., covered) so far. The greater the extent to which this space has been explored, the greater the confidence, and consequently the more likely the agent is to exploit.  
 
-As recognized by~\cite{singh10:learning}, the coverage-based confidence approach does not support learning in a changing environment. This is because the confidence increases \emph{monotonically} and, as a result, there is no ability for the agent to become less confident in its choices, even if its currently learned behaviour becomes less successful due to changes in the environment.
+As recognised by~\cite{singh10:learning}, the coverage-based confidence approach does not support learning in a changing environment. This is because the confidence increases \emph{monotonically} and, as a result, there is no ability for the agent to become less confident in its choices, even if its currently learned behaviour becomes less successful due to changes in the environment.
 
 
 
 Consider, for instance, a smart office building equipped with a large battery system that can be charged when there is excess power, and used (i.e., discharged) when there is excess demand, in order to achieve an overall desired building consumption rate for a given period. A battery installation is built from independent modules with different chemistries. Initially, the battery controller can be programmed (or can learn) to operate optimally. However, over time, the modules in a battery tend to operate less well or some may even cease to function altogether. In addition, modules may be replaced with some frequency.  
 %%	
-Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable and dynamically modify its confidence, allowing for new exploration and revised learning.
-
-% \notem{SS: HERE}
-% We use in this paper an example of a battery controller for a smart office building which has a number of renewable resources (e.g., solar panels, wind turbines, etc.) and a large battery system which can be charged when there is excess power, and used (i.e., discharged) when there is excess demand. 
-% %%
-% Modules in the battery systems have different chemistries, some of which have particular requirements such as the need to be fully discharged at regular intervals. The job of the battery controller is to set each battery module to charge, discharge, or unused, in response to an overall charge/discharge rate request for a particular interval. Initially, the controller can be programmed (or can learn) to operate optimally, as all constraints and the characteristics of each battery (such as the charge it can hold) are known. However, batteries (their modules) operate less well over time, or some may cease to function altogether. 
-% %%
-% So, what is needed is a controller agent that after having initially explored the space well, and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable and dynamically modify its confidence, allowing new exploration and revised learning.
-
-
+Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable, and dynamically modifies its confidence allowing for new exploration and revised learning.
 
 In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
 %%
@@ -38,13 +29,13 @@ First, it uses the notion of plan stability from~\cite{airiau09:enhancing,singh1
 %%
 Second, it considers how much the agent is experiencing states that have been seen before vs how much it is seeing new situations, by using a sliding window that checks what percentage of situations in the window have been seen previously. If a substantial number of new situations are being experienced, then the agent should be less confident in what it has previously learnt. 
 
-The rest of the paper is organized as follows.
+The rest of the paper is organised as follows.
 %%
 In the following section, we provide an overview of the basic BDI learning framework on which this work is based, as developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}. 
 %%
-We then explain in detail our new proposal for a dynamic measure of confidence that can be used at plan-selection time and will enable BDI agents to continually adjust to a changing world. 
+We then explain in detail our new proposal for a dynamic measure of confidence that may be used by the BDI agent at plan-selection time to continually adjust to a changing world. 
 %%
-Following that, we describe an energy storage domain taken from a real application where the environment dynamics changes over time requiring adaptive learning. We then describe some experiments evaluating the battery controller agent in different situations, and demonstrate that our learning approach for BDI systems does in fact allow the agent to adjust in a variety of ways to an environment where battery behaviour changes. 
+Following that, we describe an energy storage domain taken from a real application where the environment dynamics changes over time requiring adaptive learning. We then specify some experiments evaluating the battery controller agent in different situations, and demonstrate that our learning approach for BDI systems does in fact allow the agent to adjust in a variety of ways to an environment where battery behaviour changes. 
 %%
 We conclude the paper by discussing related work and some limitations requiring future work.
 
