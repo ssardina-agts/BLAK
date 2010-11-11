@@ -1,0 +1,402 @@
+/* JAVA includes*/
+import java.util.*;
+import java.io.*;
+
+/*JACK includes */
+import aos.util.Properties;
+import aos.jack.jak.beliefset.BeliefSetException;
+
+/* BDI Learning Framework includes */
+import trees.Logger;
+import trees.Tree;
+import trees.Node;
+import agents.PlanNode;
+import agents.GoalNode;
+import agents.ExecutionTrace;
+import agents.Config.PlanSelectMode;
+import agents.Config.UpdateMode;
+import agents.Config.RunMode;
+
+/* WEKA includes for decision tree learning */
+import weka.core.FastVector;
+import weka.core.Attribute;
+
+
+
+public agent BatteryManager extends Agent implements Logger {
+
+    //#private data ...
+    //#posts event ...
+    //#handles event ...
+
+	//#uses plan MetaPlan;
+	//#uses plan ...
+
+    //--- BDI Learning Framework related
+    private int episode;
+    private int nEpisodes;
+    public PlanNode[] planNodes;
+    private ExecutionTrace activeExecutionTrace; 
+    private Random generator;
+    private Random selector;
+    private PlanSelectMode pselect;
+    private UpdateMode uselect;
+    private RunMode rselect;
+    private double applicabilityThreshold;
+    private double confidenceAlpha;
+    private boolean lastResult;
+    private int lastRequest;
+    private int lastResponse;
+    
+    //--- Logger related
+    private int indent = 0;
+    private PrintWriter writerOut;
+    private PrintWriter writerRes;
+    private String targetDir;
+    
+    BWAgent(int episodes,
+            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
+            int buildThreshold, double failThreshold, int wExperience,
+            int stableK, double stableE, int stableW, int stateW, double alpha, 
+            String targetDir, String filename, 
+            long seed, String loadInit, String saveInit
+            // ...
+            ) {
+            
+        super("Blocks World Agent");
+        this.nEpisodes = episodes;
+        
+        //--- BDI Learning Framework related
+        this.applicabilityThreshold = failThreshold;
+        this.activeExecutionTrace = new ExecutionTrace();
+        this.selector = new Random();
+        this.generator = (seed==0) ? new Random() : new Random(seed);
+        this.pselect = pselect;
+        this.uselect = uselect;
+        this.rselect = rselect;
+        this.confidenceAlpha = alpha;
+        this.lastResult = false;
+        this.lastRequest = 0;
+        this.lastResponse = 0;
+        
+        //--- Logger related
+        this.targetDir = ".";
+        try{
+            writerOut = new PrintWriter(targetDir + "/" + filename + ".out");
+            writerRes = new PrintWriter(targetDir + "/" + filename + "-episodes.csv");
+        }catch(IOException e){
+            System.err.println("Error opening the file for writing the outcome \n"+e);
+            System.exit(9);
+        }
+
+        //--- Initialise Learning Framework
+        initLearning((Logger)this, nModules, pselect, uselect, rselect, buildThreshold, wExperience, stableK, stableE, stableW, stateW);
+        
+        //--- Initialise the system
+        episode = 1;
+    }
+
+    public int episode() {
+        return episode;
+    }
+    
+    public ExecutionTrace activeExecutionTrace() {
+        return activeExecutionTrace;
+    }
+
+    public double applicabilityThreshold() {
+        return applicabilityThreshold;
+    }
+
+    public double confidenceAlpha() {
+        return confidenceAlpha;
+    }
+
+    public Random generator() {
+        return generator;
+    }
+
+    public Random selector() {
+        return selector;
+    }
+
+    public PlanSelectMode pselect() {
+        return pselect;
+    }
+
+    public UpdateMode uselect() {
+        return uselect;
+    }
+
+    public RunMode rselect() {
+        return rselect;
+    }
+    
+    /*** Agent Code ***/
+    public void go() {
+        System.out.println("Blocks World Agent: placeholder to begin execution.")
+    }
+    
+    /*** BDI Learning Framework related ***/
+    
+    public PlanIdInfo planInfo(int pid, String[] state) {
+        //PlanNode thisNode = planNodes[pid];
+        //double planConfidence = thisNode.averageExperiencedStability(state);
+        //double stateConfidence = thisNode.stateExperienceConfidence(state);
+        //double[] ps = thisNode.getProbability(state);
+        //return new PlanIdInfo(state, pid, ps[0], planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
+  
+        /* Use this for now until the learning framework is plugged in */      
+        return new PlanIdInfo(state, pid, 1.0, 1.0, 1.0, false);
+    }
+
+    public void finishEpisode() {
+        /* Record the result for plotting */
+        writeResult(episode,lastResult,lastRequest,lastResponse);
+
+        /* Finish up */
+        indentReset();
+        activeExecutionTrace.reset();
+        episode++;
+        if (episode > nEpisodes) {
+            writeLog("Blocks World Agent: Finished run.");
+            for (int i = 0; i < planNodes.length; i++) {
+                writeLog(planNodes[i].getDT());
+            }
+            writerOut.close();
+            writerRes.close();
+            System.exit(0);
+        }
+    }
+    
+    public void record(int pid, boolean res, String[] state, int depth) {
+        boolean isRoot = (depth == maxRecursion);
+        planNodes[pid].setLastInstance(state);
+        if (activeExecutionTrace.shouldRecordFailure()) {
+            res = false;
+            writeLog("Forced result to (-) for Plan "+planNodes[pid].name()+"." );
+        }
+        planNodes[pid].record(res, activeExecutionTrace.poppedTraceStability(), isRoot, episode);
+        
+        /* Save this result */
+        lastResult = res;
+        
+        /* Finished recording so pop this plan off the active execution trace */
+        activeExecutionTrace.popTrace();
+        writeLog("Removed Plan "+planNodes[pid].name()+" from active execution trace: "+activeExecutionTrace);
+    }
+    
+    public void initLearning(Logger logger, 
+            PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
+            int buildThreshold, int wExperience,
+            int stableK, double stableE, int stableW, int stateW) {
+            
+        //FastVector classVal = new FastVector();
+        //classVal.addElement("+");
+        //classVal.addElement("-");
+
+        //FastVector request = new FastVector();
+        //for (int i = -nModules; i < nModules+1; i++) {
+        //    request.addElement(Integer.toString(i));
+        //}
+        
+        /* Now assign all attributes */
+        //FastVector atts = new FastVector();
+        //atts.addElement(new Attribute("request",request));
+        //atts.addElement(new Attribute("module",modules));
+        //atts.addElement(new Attribute("outcome",classVal));
+    
+
+        //planNodes = new PlanNode[5];
+        //planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        //planNodes[1] = new PlanNode("SetDischarge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        //planNodes[2] = new PlanNode("SetNotInUse", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        //planNodes[3] = new PlanNode("Execute", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        //planNodes[4] = new PlanNode("Dummy", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, wExperience, logger);
+
+        //Node[] goalNodes = new Node[1];
+        //goalNodes[0] = new GoalNode("G", logger);
+        //goalNodes[0].addChild(planNodes[0]);
+        //goalNodes[0].addChild(planNodes[1]);
+        //goalNodes[0].addChild(planNodes[2]);
+        //goalNodes[0].addChild(planNodes[3]);
+        //goalNodes[0].addChild(planNodes[4]);
+
+        //planNodes[0].addChild(goalNodes[0]);
+        //planNodes[1].addChild(goalNodes[0]);
+        //planNodes[2].addChild(goalNodes[0]);
+    }
+    
+    /*** Logger Interface **/
+    public void indentRight() {
+        indent++;
+    }
+
+    public void indentLeft() {
+        indent--;
+    }
+    
+    public void indentReset() {
+        indent=0;
+    }
+
+    public void writeLog(String str) {
+        String s = "";
+        for (int i = 0;(i < indent);i++ ) s+= " ";
+        writerOut.println(s + str);
+        writerOut.flush();
+    }
+
+    public void writeResult(int episode, boolean result, int request, int response) {
+        String str = episode + (result ? " 1.0 0.0" : " 0.0 1.0") +
+            " " + ((request<0) ? "" : "+") + Integer.toString(request) +
+            " " + ((response<0) ? "" : "+") + Integer.toString(response);
+        writerRes.println(str);
+        writerRes.flush();
+    }
+
+    /*** Main  **/
+    public static void main(String[] args) {
+
+        // Default Config
+        PlanSelectMode pselect = PlanSelectMode.PROBABILISTIC;
+        UpdateMode uselect = UpdateMode.CONCURRENT;
+        RunMode rselect = RunMode.FAILURE_RECOVERY;
+        int stableK = 1;
+        double stableE = 0.5;
+        int stableW = 5;
+        int stateW = 5;
+        int episodes=10;
+        String targetDir = ".";
+        String filename = "bw";
+        long seed = 0;
+        String saveInit = filename+".init";
+        String loadInit = saveInit;
+        double alpha = 0.5;
+        int buildThreshold = 2;
+        int wExperience = 0;
+        double failThreshold = 0.0;
+        String help = "";
+        help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
+        help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
+        help += " -d: Target directory for output files (default: "+targetDir+")\n";
+        help += " -e: Stability e value (default: "+stableE+")\n";
+        help += " -g: Random generator seed value (default: "+seed+")\n";
+        help += " -h: Help message\n";
+        help += " -i: Number of episodes to run (default: "+episodes+")\n";
+        help += " -k: Stability k value (default: "+stableK+")\n";
+        help += " -l: Number of samples to collect between decision tree builds (default: "+buildThreshold+")\n";
+        help += " -m: Window of experiences to use for decision tree training (default: "+wExperience+")\n";
+        help += " -o: Filename prefix for results (default: "+filename+")\n";
+        help += " -s: Specifies operation modes (default: -s confidence -s failure_recovery)\n";
+        help += " -u: Specifies operation modes (default: -u concurrent)\n";
+        help += " -v: Applies to confidence learning only: Window size for execution stability (default: "+stableW+")\n";
+        help += " -w: Applies to confidence learning only: Window size for domain stability (default: "+stateW+")\n";
+        help += " -y: Load a goal/state generation sequence from file (default: "+loadInit+")\n";
+        help += " -z: Save a goal/state generation sequence to file (default: "+saveInit+")\n";
+        
+        args = Jak.initialize(args);
+        if (args.length > 0) {
+            int index = 0;
+            while (index < args.length) {
+                String arg = args[index];
+                index++;
+                char option = arg.charAt(1);
+                switch (option) {
+                case 'a':
+                    alpha = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'b':
+                    failThreshold = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'd':
+                    targetDir = args[index];
+                    index++;
+                    break;
+                case 'e':
+                    stableE = Double.parseDouble(args[index]);
+                    index++;
+                    break;
+                case 'g':
+                    seed = Long.parseLong(args[index]);
+                    index++;
+                    break;
+                case 'h':
+                    System.out.println("Valid options are:");
+                    System.out.println(help);
+                    System.exit(0);
+                case 'i':
+                    episodes = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'k':
+                    stableK = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'l':
+                    buildThreshold = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'm':
+                    wExperience = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'o':
+                    filename = args[index];
+                    index++;
+                    break;
+                case 's':
+                    String mode = args[index];
+                    index++;
+                    if (mode.equals("probabilistic"))
+                        pselect = PlanSelectMode.PROBABILISTIC;
+                    if (mode.equals("coverage"))
+                        pselect = PlanSelectMode.COVERAGE;
+                    if (mode.equals("confidence"))
+                        pselect = PlanSelectMode.CONFIDENCE;
+                    if (mode.equals("failure_recovery"))
+                        rselect = RunMode.FAILURE_RECOVERY;
+                    break;
+                case 't':
+                    tolerance = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'u':
+                    String mode = args[index];
+                    index++;
+                    if (mode.equals("stable"))
+                        uselect = UpdateMode.STABLE;
+                    if (mode.equals("concurrent"))
+                        uselect = UpdateMode.CONCURRENT;
+                    break;
+                case 'v':
+                    stableW = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'w':
+                    stateW = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+                case 'y':
+                    loadInit = args[index];
+                    index++;
+                    break;
+                case 'z':
+                    saveInit = args[index];
+                    index++;
+                    break;
+                }
+            }
+        }
+        System.out.println("Using random generator seed: "+seed);
+        BWAgent p = new BWAgent(episodes,
+            pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
+            stableK, stableE, stableW, stateW, alpha, 
+            targetDir, filename, 
+            seed, loadInit, saveInit);
+        p.go();
+    }
+
+}

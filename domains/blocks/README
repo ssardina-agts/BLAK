@@ -1,0 +1,17 @@
+Blocks World Domain 
+
+This is a JACK program that learns to solve problems in the Blocks World domain using our BDI Learning framework[1,2,3,4]. The aim is to first duplicate the efforts of Broekens et al.[5] that learns rule selection using reinforcement learning in the GOAL agent language, and eventually integrate their ideas into our framework.
+
+
+References (see ./doc):
+
+[1] Stéphane Airiau, Lin Padgham, Sebastian Sardina, and Sandip Sen. Enhancing Adaptation in BDI Agents Using Learning Techniques. International Journal of Agent Technologies and Systems (IJATS), 2009.
+
+[2] Dhirendra Singh, Sebastian Sardina, Lin Padgham and Stéphane Airiau. Learning Context Conditions for BDI Plan Selection. In Proceedings of Autonomous Agents and Multi-Agent Systems (AAMAS), 2010.
+
+[3] Dhirendra Singh, Sebastian Sardina and Lin Padgham. Extending BDI Plan Selection to Incorporate Learning from Experience. Robotics and Autonomous Systems (RAS), 2010.
+
+[4] Dhirendra Singh, Sebastian Sardina, Lin Padgham and Geoff James. A BDI Learning Agent for Environments with Changing Dynamics. (Submission under review.)
+
+[5] Joost Broekens, Koen Hindriks, Pascal Wiggers. Reinforcement Learning as Heuristic for Action-Rule Preferences in The Eighth International 
+Workshop on Programming Multi-Agent Systems (PROMAS), 2010. 
