@@ -23,7 +23,7 @@ import weka.core.Attribute;
 
 
 
-public agent BatteryManager extends Agent implements Logger {
+public agent BWAgent extends Agent implements Logger {
 
     //#private data ...
     //#posts event ...
@@ -90,7 +90,7 @@ public agent BatteryManager extends Agent implements Logger {
         }
 
         //--- Initialise Learning Framework
-        initLearning((Logger)this, nModules, pselect, uselect, rselect, buildThreshold, wExperience, stableK, stableE, stableW, stateW);
+        initLearning((Logger)this, pselect, uselect, rselect, buildThreshold, wExperience, stableK, stableE, stableW, stateW);
         
         //--- Initialise the system
         episode = 1;
@@ -134,21 +134,18 @@ public agent BatteryManager extends Agent implements Logger {
     
     /*** Agent Code ***/
     public void go() {
-        System.out.println("Blocks World Agent: placeholder to begin execution.")
+        System.out.println("Blocks World Agent: placeholder to begin execution.");
     }
     
     /*** BDI Learning Framework related ***/
     
-    public PlanIdInfo planInfo(int pid, String[] state) {
+    //public PlanIdInfo planInfo(int pid, String[] state) {
         //PlanNode thisNode = planNodes[pid];
         //double planConfidence = thisNode.averageExperiencedStability(state);
         //double stateConfidence = thisNode.stateExperienceConfidence(state);
         //double[] ps = thisNode.getProbability(state);
         //return new PlanIdInfo(state, pid, ps[0], planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
-  
-        /* Use this for now until the learning framework is plugged in */      
-        return new PlanIdInfo(state, pid, 1.0, 1.0, 1.0, false);
-    }
+    //}
 
     public void finishEpisode() {
         /* Record the result for plotting */
@@ -170,7 +167,7 @@ public agent BatteryManager extends Agent implements Logger {
     }
     
     public void record(int pid, boolean res, String[] state, int depth) {
-        boolean isRoot = (depth == maxRecursion);
+        boolean isRoot = (depth == 1/*maxRecursion*/);
         planNodes[pid].setLastInstance(state);
         if (activeExecutionTrace.shouldRecordFailure()) {
             res = false;
@@ -358,10 +355,6 @@ public agent BatteryManager extends Agent implements Logger {
                         pselect = PlanSelectMode.CONFIDENCE;
                     if (mode.equals("failure_recovery"))
                         rselect = RunMode.FAILURE_RECOVERY;
-                    break;
-                case 't':
-                    tolerance = Integer.parseInt(args[index]);
-                    index++;
                     break;
                 case 'u':
                     String mode = args[index];
