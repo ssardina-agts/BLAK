@@ -8,8 +8,9 @@ lib/weka.jar:
 	@echo "WEKA bundle not found in $@. Please copy it here before continuing."
 	@exit 1
 
-lib/blak.jar: ../../build/dist/lib/blak.jar
-	cp $? $@
+lib/blak.jar:
+	@echo "BDI Learning bundle not found in $@. Please copy it here before continuing."
+	@exit 1
 
 lib/bwagent.jar:
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar aos.main.JackBuild -wd src -r -d ../build -i -DJAVACARGS=-g
