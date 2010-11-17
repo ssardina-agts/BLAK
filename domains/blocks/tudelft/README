@@ -1,0 +1,22 @@
+The archive GoalRL.zip contains the program source for Broekens et al.[1].
+
+[1] Joost Broekens, Koen Hindriks, Pascal Wiggers. Reinforcement Learning as Heuristic for Action-Rule Preferences in The Eighth International 
+Workshop on Programming Multi-Agent Systems (PROMAS), 2010. 
+
+
+--<snip>--
+In the GoalAgents folder you find different agents.
+The agents used for the experiment were deliveryAgent (in GOALAgent dir), and blocksworld (see the mas files in BlocksWorld subdir of GOALAgent dir).
+
+The project is an eclipse project, you should be able to open it.
+If not, please let me know.
+
+The learning is hooked into the Goal engine (goal.core package).
+The learning algorithm itself is in the edu.liacs.dlt package.
+However, you should be able to use any model-based RL learner, and I also advice you to do so, and not use my own implementation , as this is one with quite some overhead in it (it's a dumbed-down version of a more complicate RL model I worked on).
+
+The main idea is explained in the paper, if you have any questions, please mail.
+
+Best,
+Joost.
+--<snip>--
