@@ -1,0 +1,7 @@
+public event Start extends Event
+{
+	#posted as 
+	start()
+	{}
+
+}

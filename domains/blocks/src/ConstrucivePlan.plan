@@ -1,0 +1,131 @@
+import java.util.Random;
+
+plan ConstructivePlan extends Plan
+{
+	#handles event MoveEvent ev;
+
+	#modifies data Order order;
+	#modifies data Movable mv;
+	#modifies data Place pl;
+
+
+	static boolean 
+	relevant(MoveEvent m)
+	{
+		return true;
+
+	}
+	
+	context()
+	{
+		true;//mv.isFree(X) && isFree(Y) && gl.isGoal(X,Y);
+	}
+	public PlanInstanceInfo getInstanceInfo()
+	{
+		return new PlanType(0);
+	}
+	body()
+	{
+		// pick one block 
+		// first need to know movable nums
+		System.out.println("Constructive!");
+		logical int stack;
+		logical String block;
+		int nums = 0;
+		for (Cursor c = mv.get(stack,block); c.next();)
+		{
+			if (block.getValue().compareTo("table") != 0)
+			{
+				if (nums  < stack.getValue())
+				{
+					nums = stack.getValue();
+
+				}
+			}
+		}
+		// random pick one
+		Random r = new Random();
+		logical String sour ;
+		logical String dest ;
+		int d = r.nextInt(nums+1);
+		int s = r.nextInt(nums+1);
+		mv.get(s,sour);
+		while (sour.getValue().compareTo("table") == 0)
+		{
+			s = r.nextInt(nums+1);
+			mv.get(s,sour);
+		}  		
+		while( s == d) // avoid pick it up and put it back
+		{
+			d = r.nextInt(nums+1);
+			
+		}
+		mv.get(d,dest);
+		System.out.println("s:"+sour.getValue()+" d:"+dest.getValue());
+		order.add(sour.getValue(),dest.getValue());
+		updateMovable();		
+		printAll();
+
+	}
+	
+	#reasoning method
+	updateMovable()
+	{
+		for (int i = 0;(i < 10);i++ ) mv.add(i,"table");
+		int stack = 0;
+		logical String b1 ;
+		logical String b2 ;
+		for (Cursor c = order.get(b1,b2);c.next();)
+		{
+			logical String b3 ;
+			if (!order.get(b3,b1))
+              mv.add(stack++ ,b1.getValue());
+		}
+		logical int stack ;
+		logical String b3 ;
+		for (Cursor c = mv.get(stack,b3);c.next();)
+		{
+				initPlace(stack.getValue(),b3.getValue());
+		}
+	}
+
+	#reasoning method
+	initPlace(int stack,String block)
+	{
+        logical String b;
+		if (block.compareTo("table") != 0)
+        	pl.add(stack,block);
+        if (order.get(block,b)) 
+            initPlace(stack,b.getValue());
+	}
+
+	#reasoning method
+	printAll()
+	{
+		System.out.println("Comes from Constructive plan.");
+		System.out.println("This is order:");
+		logical String b1;
+		logical String b2;
+		for (Cursor c = order.get(b1,b2);c.next();)
+		{
+			System.out.print("block1:"+b1.getValue()+" ");
+			System.out.println("block2:"+b2.getValue());
+		}
+		System.out.println("This is mov:");
+		logical int stack;
+		for (Cursor c = mv.get(stack,b2);c.next();)
+		{
+			if (b2.getValue().compareTo("table") == 0) continue;
+			System.out.print("stack:"+stack.getValue()+" ");
+			System.out.println("block:"+b2.getValue());
+		}
+		System.out.println("This is pl:");
+		for (Cursor c = pl.get(stack,b2);c.next();)
+		{
+			System.out.print("stack:"+stack.getValue()+" ");
+			System.out.println("block:"+b2.getValue());
+		}
+	}
+
+}
+

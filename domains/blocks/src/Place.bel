@@ -1,0 +1,7 @@
+public beliefset Place extends ClosedWorld {
+    #value field int stack;
+    #key field String block;
+	#indexed query get(int stack, logical String block);
+	#indexed query get(logical int stack, String block);
+	#indexed query get(logical int stack, logical String block);
+}

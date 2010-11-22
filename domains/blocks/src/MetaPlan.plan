@@ -1,0 +1,42 @@
+import java.util.Random;
+
+plan MetaPlan extends Plan
+{
+	#handles event PlanChoice ev;
+	#chooses for event MoveEvent;
+
+	static boolean 
+	relevant(PlanChoice ev)
+	{
+		return true;
+	}
+
+	context()
+	{
+		true;
+	}
+	body()
+	{
+		MoveEvent me = (MoveEvent) ev.event;	
+		Random r = new Random ();		
+		int i =  r.nextInt(1024)%2;
+		for ( Signature s = ev.applicable.first();
+		s != null ;
+		s = ev.applicable.next( s )
+		)
+		{
+			if ( s.getInfo() instanceof PlanType )
+			{	
+				PlanType p = (PlanType) s.getInfo();
+				if (p.choice == i)
+				{
+					System.out.println("p.choice:"+ p.choice);// 0 is to choice constructive 1 is to choice deconstrctive
+					ev.chosen = s;
+					return true;
+				}				
+			}	
+		}
+	}
+
+}
+

@@ -1,0 +1,12 @@
+public event MoveEvent extends BDIGoalEvent
+{
+	public String sour;
+	public String dest;
+	#posted as 
+	move(String from,String to)
+	{
+		sour = from;
+		to = dest;
+	}
+
+}
