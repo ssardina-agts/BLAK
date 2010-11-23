@@ -39,7 +39,7 @@ public agent BWAgent extends Agent implements Logger {
 	#uses plan ConstructivePlan;
 	#uses plan DeconstructivePlan;
 
-	#private data Order order("./src/init.dat");//change later
+	#private data Order order();// randomly initialize
 	#private data Place pl();
 	#private data Movable mv();
 	#private data Goal gl("./src/goal.dat");

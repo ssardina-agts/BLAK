@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Random;
 
 public plan StartPlan extends Plan {
 
@@ -12,9 +13,10 @@ public plan StartPlan extends Plan {
         return true;
     }
 
-    #reads data Order order;
+    #modifies data Order order;
 	#modifies data Movable mv;
 	#modifies data Place pl;
+	#reads data Goal gl;
 
     context()
     {
@@ -24,12 +26,97 @@ public plan StartPlan extends Plan {
     #reasoning method
     body()
     {
-		updateMovable();	
-		for (int i = 0; i < ag.nEpisodes(); i++)
+		initOrder();
+		updateMovable();
+		printAll();	
+		for (int i = 0; i < 10; i++) //ag.nEpisodes()
 		{
 			@subtask(me.move("",""));
 		}
     }	
+	
+	#reasoning method
+	initOrder() //randomly init order
+	{
+		// get the blocks 
+		logical String b1;
+		logical String b2;
+		String blocks = "";
+		int blockNum = 0;
+		for (Cursor c = gl.get(b1,b2);c.next();)
+		{
+			if (!(blocks.contains(b1.getValue())))
+			{
+				blockNum++;
+				blocks += b1.getValue();
+			}
+			if (!(blocks.contains(b2.getValue())))
+			{
+				if (b2.getValue().compareTo("table") == 0 )
+				{
+					continue;
+				}
+				else
+				{
+					blockNum++;
+					blocks += b2.getValue();
+				}
+			}
+		}
+		System.out.println("Blocks:" + blocks);
+		// random put them include table or exclude(keep or the thing in one stack)
+		Random r = new Random ();
+		String b1 ;
+		String b2 ;		
+		int	position = r.nextInt(blocks.length());
+		b1 = blocks.substring(position,position + 1);
+		blocks = blocks.replace(b1,"");
+		while (blocks.length() > 0)
+		{
+			if (r.nextInt(1024)% 3 == 1) 
+			{
+				b2 = "table";
+			}
+			else 
+			{
+				position = r.nextInt(blocks.length());
+				b2 = blocks.substring(position,position + 1);
+				blocks = blocks.replace(b2,"");
+			}
+			order.add(b1,b2);
+			if (b2.compareTo("table") == 0)
+			{
+				position = r.nextInt(blocks.length());
+				b1 = blocks.substring(position,position + 1);
+				blocks = blocks.replace(b1,"");	
+				if (blocks .length() == 0)
+				{
+					order.add(b1,"table");
+				}
+			}
+			else 
+			{
+				b1 = b2;
+			}
+		}
+		logical String b3;
+		logical String b4;
+		String btm = "empty";
+		for (Cursor c = order.get(b3,b4);c.next();)
+		{
+			logical String b5;
+			if ((!order.get(b4,b5)) && (b4.getValue().compareTo("table") != 0))
+			{
+				btm = b4.getValue();	
+				break;
+			}
+		}		
+		if (btm.compareTo("empty") != 0)	
+		{
+			order.add(btm,"table");
+		}
+
+	}
 
 	#reasoning method
 	updateMovable()
@@ -86,6 +173,13 @@ public plan StartPlan extends Plan {
 		{
 			System.out.print("stack:"+stack.getValue()+" ");
 			System.out.println("block:"+b2.getValue());
+		}
+		System.out.println("This is gl:");
+		for (Cursor c = gl.get(b1,b2);c.next();)
+		{
+			System.out.print("block1:"+b1.getValue()+" ");
+			System.out.println("block2:"+b2.getValue());
+		
 		}
 	}
 	

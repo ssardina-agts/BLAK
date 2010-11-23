@@ -7,7 +7,12 @@ plan ConstructivePlan extends Plan
 	#modifies data Order order;
 	#modifies data Movable mv;
 	#modifies data Place pl;
+	#modifies data Goal gl;
 
+	public logical String sour; 
+	public logical String dest;
+	logical int a;
+	logical int b;	
 
 	static boolean 
 	relevant(MoveEvent m)
@@ -18,56 +23,23 @@ plan ConstructivePlan extends Plan
 	
 	context()
 	{
-		true;//mv.isFree(X) && isFree(Y) && gl.isGoal(X,Y);
+		//mv.get(a,sour) && mv.get(b,dest) && 
+mv.get(a,sour) && mv.get(b,dest) && gl.get(sour.getValue(),dest.getValue());
 	}
+	
 	public PlanInstanceInfo getInstanceInfo()
 	{
 		return new PlanType(0);
 	}
 	body()
 	{
-		// pick one block 
-		// first need to know movable nums
-		System.out.println("Constructive!");
-		logical int stack;
-		logical String block;
-		int nums = 0;
-		for (Cursor c = mv.get(stack,block); c.next();)
-		{
-			if (block.getValue().compareTo("table") != 0)
-			{
-				if (nums  < stack.getValue())
-				{
-					nums = stack.getValue();
-
-				}
-			}
-		}
-		// random pick one
-		Random r = new Random();
-		logical String sour ;
-		logical String dest ;
-		int d = r.nextInt(nums+1);
-		int s = r.nextInt(nums+1);
-		mv.get(s,sour);
-		while (sour.getValue().compareTo("table") == 0)
-		{
-			s = r.nextInt(nums+1);
-			mv.get(s,sour);
-		}  		
-		while( s == d) // avoid pick it up and put it back
-		{
-			d = r.nextInt(nums+1);
-			
-		}
-		mv.get(d,dest);
-		System.out.println("s:"+sour.getValue()+" d:"+dest.getValue());
 		order.add(sour.getValue(),dest.getValue());
 		updateMovable();		
 		printAll();
 
 	}
-	
+
+
 	#reasoning method
 	updateMovable()
 	{

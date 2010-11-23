@@ -4,5 +4,6 @@ public beliefset Order extends ClosedWorld {
     #indexed query get(String block1, logical String block2);
     #indexed query get(logical String block1, String block2);
     #indexed query get(logical String block1, logical String block2);
+    #indexed query get(String block1,  String block2);
 
 }

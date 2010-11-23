@@ -1,7 +1,10 @@
+import java.lang.*;
 public beliefset Movable extends ClosedWorld {
     #key field int stack;
     #value field String block;
 	#indexed query get(int stack, logical String block);
 	#indexed query get(logical int stack, String block);
 	#indexed query get(logical int stack, logical String block);
+	#indexed query get(int stack, String block);
+
 }

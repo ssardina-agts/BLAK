@@ -7,6 +7,12 @@ plan DeconstructivePlan extends Plan
 	#modifies data Order order;
 	#modifies data Movable mv;
 	#modifies data Place pl;
+	#modifies data Goal gl;
+
+	public logical String sour;
+	public logical String dest;
+	logical int a;
+	logical int b;
 
 	static boolean 
 	relevant(MoveEvent m)
@@ -17,7 +23,8 @@ plan DeconstructivePlan extends Plan
 	
 	context()
 	{
-		true;//isFree(X) && isFree(Y) && !isGoal(X,Y);
+		//mv.get(a,sour) && mv.get(b,dest) && !gl.get(sour,dest);
+false;
 	}
 
 	public PlanInstanceInfo getInstanceInfo()
@@ -27,34 +34,11 @@ plan DeconstructivePlan extends Plan
 
 	body()
 	{
-		logical int stack;
-		logical String block;
-		int nums = 0;
-		for (Cursor c = mv.get(stack,block); c.next();)
-		{
-			if (block.getValue().compareTo("table") != 0)
-			{
-				nums++;
-			}
-		}
-		// random pick one
-		Random r = new Random();
-		int s = r.nextInt(nums+1);  		
-		logical String sour ;
-		mv.get(s,sour);
-		logical String sourbtm;
-		order.get(sour.getValue(),sourbtm);
-		while (sourbtm.getValue().compareTo("table") == 0) // avoid pick from table and put it back to table
-		{
-			s = r.nextInt(nums+1);  		
-			mv.get(s,sour);
-			order.get(sour.getValue(),sourbtm);
-		}
 		order.add(sour.getValue(),"table");
 		updateMovable();
 		printAll();
 	}
-
+	
 	#reasoning method
 	updateMovable()
 	{
