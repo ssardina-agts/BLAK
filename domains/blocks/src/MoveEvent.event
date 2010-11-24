@@ -1,5 +1,11 @@
 public event MoveEvent extends BDIGoalEvent
 {
+	#set behavior PostPlanChoice one_applicable;
+	#set behavior PostPlanChoice multiple_applicable;
+	#set behavior ApplicableChoice random;
+	#set behavior Recover never; 
+	#set behavior ApplicableSet new; 
+    
 	public String sour;
 	public String dest;
 	#posted as 

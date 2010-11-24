@@ -31,12 +31,10 @@ plan MetaPlan extends Plan
 		if (s != null)
 		{
 			ev.chosen = s;
-			System.out.println("value:"+s.getPlan().getVariable("sour") );
-			return true;
 		}
 		else 
 		{
-			System.err.println("no applicaple plan");
+			System.err.println("No applicaple plan.");
 		}					
 
 	}

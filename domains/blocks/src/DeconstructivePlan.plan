@@ -3,14 +3,16 @@ import java.util.Random;
 plan DeconstructivePlan extends Plan
 {
 	#handles event MoveEvent ev;
-
+    #uses interface BWAgent ag;
+    
 	#modifies data Order order;
 	#modifies data Movable mv;
 	#modifies data Place pl;
 	#modifies data Goal gl;
 
-	public logical String sour;
-	public logical String dest;
+	public logical String top;
+	public logical String first;
+	public logical String second;
 	logical int a;
 	logical int b;
 
@@ -23,8 +25,10 @@ plan DeconstructivePlan extends Plan
 	
 	context()
 	{
-		//mv.get(a,sour) && mv.get(b,dest) && !gl.get(sour,dest);
-false;
+        order.get(first,second) &&            // find two blocks, one above the other
+        !order.get(top,first.getValue()) &&   // such that the first is free to move
+        !second.getValue().equals("table") && // and the second is not the table
+        !ag.isGoalTower(first.getValue());    // and where the first is not a goal tower
 	}
 
 	public PlanInstanceInfo getInstanceInfo()
@@ -34,7 +38,7 @@ false;
 
 	body()
 	{
-		order.add(sour.getValue(),"table");
+		order.add(first.getValue(),"table");
 		updateMovable();
 		printAll();
 	}

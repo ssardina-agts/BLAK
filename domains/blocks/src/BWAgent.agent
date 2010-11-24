@@ -5,6 +5,8 @@ import java.io.*;
 /*JACK includes */
 import aos.util.Properties;
 import aos.jack.jak.beliefset.BeliefSetException;
+import aos.jack.jak.logic.LogicException;
+import aos.jack.jak.cursor.Cursor;
 
 /* BDI Learning Framework includes */
 import trees.Logger;
@@ -113,7 +115,7 @@ public agent BWAgent extends Agent implements Logger {
     public int episode() {
         return episode;
     }
-    
+
     public int nEpisodes() {
         return nEpisodes;
     }
@@ -223,6 +225,7 @@ public agent BWAgent extends Agent implements Logger {
         //atts.addElement(new Attribute("outcome",classVal));
     
 
+        planNodes = new PlanNode[0];
         //planNodes = new PlanNode[5];
         //planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
         //planNodes[1] = new PlanNode("SetDischarge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
@@ -673,6 +676,27 @@ public agent BWAgent extends Agent implements Logger {
 		}
 		return acheived;
 	}
+    
+    public boolean isGoalTower(String t) {
+        String top = t;
+        while (!top.equals("table")) {
+            try{
+                String goalBlockBelow = gl.getBlockBelow(top);
+                String realBlockBelow = order.getBlockBelow(top);
+                if (realBlockBelow.equals(goalBlockBelow)) {
+                    top = realBlockBelow;
+                } else {
+                    System.out.println("isGoalTower("+top+") = false");
+                    return false;
+                }
+            } catch (BeliefSetException e) {
+                System.err.println("Error accessing belief *.getBlockBelow("+top+")\n"+e);
+                System.exit(9);
+            }
+        }
+        System.out.println("isGoalTower("+t+") = true");
+        return true;
+    }
 //********************************self define end*******************************
 }
 

@@ -9,8 +9,8 @@ plan ConstructivePlan extends Plan
 	#modifies data Place pl;
 	#modifies data Goal gl;
 
-	public logical String sour; 
-	public logical String dest;
+	public logical String first; 
+	public logical String second;
 	logical int a;
 	logical int b;	
 
@@ -23,8 +23,11 @@ plan ConstructivePlan extends Plan
 	
 	context()
 	{
-		//mv.get(a,sour) && mv.get(b,dest) && 
-mv.get(a,sour) && mv.get(b,dest) && gl.get(sour.getValue(),dest.getValue());
+        mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
+        !first.getValue().equals(second.getValue()) &&  // that are unique
+        !first.getValue().equals("table") &&            // and not references to
+        !first.getValue().equals("table") &&            // the table itself
+        gl.get(first.getValue(),second.getValue());     // and where the goal is to have the first on the second
 	}
 	
 	public PlanInstanceInfo getInstanceInfo()
@@ -33,7 +36,7 @@ mv.get(a,sour) && mv.get(b,dest) && gl.get(sour.getValue(),dest.getValue());
 	}
 	body()
 	{
-		order.add(sour.getValue(),dest.getValue());
+		order.add(first.getValue(),second.getValue());
 		updateMovable();		
 		printAll();
 

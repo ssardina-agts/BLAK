@@ -29,9 +29,11 @@ public plan StartPlan extends Plan {
 		initOrder();
 		updateMovable();
 		printAll();	
-		for (int i = 0; i < 10; i++) //ag.nEpisodes()
+		for (int i = 0; i < ag.nEpisodes(); i++) //ag.nEpisodes()
 		{
+            System.out.println("Episode "+ag.episode()+" ----------");
 			@subtask(me.move("",""));
+            ag.finishEpisode();
 		}
     }	
 	
