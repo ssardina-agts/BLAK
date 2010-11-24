@@ -30,75 +30,9 @@ plan DeconstructivePlan extends Plan
         !second.getValue().equals("table") && // and the second is not the table
         !ag.isGoalTower(first.getValue());    // and where the first is not a goal tower
 	}
-
-	public PlanInstanceInfo getInstanceInfo()
-	{
-		return new PlanType(1);
-	}
-
 	body()
 	{
 		order.add(first.getValue(),"table");
-		updateMovable();
-		printAll();
-	}
-	
-	#reasoning method
-	updateMovable()
-	{
-		for (int i = 0;(i < 10);i++ ) mv.add(i,"table");
-		int stack = 0;
-		logical String b1 ;
-		logical String b2 ;
-		for (Cursor c = order.get(b1,b2);c.next();)
-		{
-			logical String b3 ;
-			if (!order.get(b3,b1))
-              mv.add(stack++ ,b1.getValue());
-		}
-		logical int stack ;
-		logical String b3 ;
-		for (Cursor c = mv.get(stack,b3);c.next();)
-		{
-				initPlace(stack.getValue(),b3.getValue());
-		}
-	}
-
-	#reasoning method
-	initPlace(int stack,String block)
-	{
-        logical String b;
-		if (block.compareTo("table") != 0)
-        	pl.add(stack,block);
-        if (order.get(block,b)) 
-            initPlace(stack,b.getValue());
-	}
-	#reasoning method
-	printAll()
-	{
-		System.out.println("Comes from Deconstructive plan.");
-		System.out.println("This is order:");
-		logical String b1;
-		logical String b2;
-		for (Cursor c = order.get(b1,b2);c.next();)
-		{
-			System.out.print("block1:"+b1.getValue()+" ");
-			System.out.println("block2:"+b2.getValue());
-		}
-		System.out.println("This is mov:");
-		logical int stack;
-		for (Cursor c = mv.get(stack,b2);c.next();)
-		{
-			if (b2.getValue().compareTo("table") == 0) continue;
-			System.out.print("stack:"+stack.getValue()+" ");
-			System.out.println("block:"+b2.getValue());
-		}
-		System.out.println("This is pl:");
-		for (Cursor c = pl.get(stack,b2);c.next();)
-		{
-			System.out.print("stack:"+stack.getValue()+" ");
-			System.out.println("block:"+b2.getValue());
-		}
 	}
 	
 }

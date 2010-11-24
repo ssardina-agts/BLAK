@@ -17,6 +17,7 @@ public plan StartPlan extends Plan {
 	#modifies data Movable mv;
 	#modifies data Place pl;
 	#reads data Goal gl;
+	#modifies data Blocks bl;
 
     context()
     {
@@ -27,12 +28,14 @@ public plan StartPlan extends Plan {
     body()
     {
 		initOrder();
-		updateMovable();
 		printAll();	
 		for (int i = 0; i < ag.nEpisodes(); i++) //ag.nEpisodes()
 		{
-            System.out.println("Episode "+ag.episode()+" ----------");
+            ag.writeLog("Episode "+ag.episode()+" ----------");
+			updateMovable();
 			@subtask(me.move("",""));
+			printAll();	
+			ag.subGoalRemind();
             ag.finishEpisode();
 		}
     }	
@@ -65,57 +68,34 @@ public plan StartPlan extends Plan {
 				}
 			}
 		}
-		System.out.println("Blocks:" + blocks);
+		bl.setBlocks(blocks);
 		// random put them include table or exclude(keep or the thing in one stack)
 		Random r = new Random ();
 		String b1 ;
 		String b2 ;		
-		int	position = r.nextInt(blocks.length());
-		b1 = blocks.substring(position,position + 1);
-		blocks = blocks.replace(b1,"");
+		int	position ;
+		int stacknum = 0;
 		while (blocks.length() > 0)
 		{
-			if (r.nextInt(1024)% 3 == 1) 
+			position = r.nextInt(blocks.length());
+			b1 = blocks.substring(position,position + 1);
+			blocks = blocks.replace(b1,"");
+			if ((r.nextInt(1024)%3 == 1) || (stacknum == 0))
 			{
 				b2 = "table";
+				order.add(b1,b2);
+				mv.add(stacknum,b1);
+				stacknum++;
 			}
-			else 
-			{
-				position = r.nextInt(blocks.length());
-				b2 = blocks.substring(position,position + 1);
-				blocks = blocks.replace(b2,"");
+			else
+			{	
+				logical String b3;
+				int x = r.nextInt(stacknum);
+				mv.get(x,b3);
+				b2 = b3.getValue();
+				order.add(b1,b2);
+				mv.add(x,b1);
 			}
-			order.add(b1,b2);
-			if (b2.compareTo("table") == 0)
-			{
-				position = r.nextInt(blocks.length());
-				b1 = blocks.substring(position,position + 1);
-				blocks = blocks.replace(b1,"");	
-				if (blocks .length() == 0)
-				{
-					order.add(b1,"table");
-				}
-			}
-			else 
-			{
-				b1 = b2;
-			}
-		}
-		logical String b3;
-		logical String b4;
-		String btm = "empty";
-		for (Cursor c = order.get(b3,b4);c.next();)
-		{
-			logical String b5;
-			if ((!order.get(b4,b5)) && (b4.getValue().compareTo("table") != 0))
-			{
-				btm = b4.getValue();	
-				break;
-			}
-		}		
-		if (btm.compareTo("empty") != 0)	
-		{
-			order.add(btm,"table");
 		}
 
 	}
@@ -154,34 +134,20 @@ public plan StartPlan extends Plan {
 	#reasoning method
 	printAll()
 	{
-		System.out.println("This is order:");
+		ag.writeLog("This is order:");
 		logical String b1;
 		logical String b2;
 		for (Cursor c = order.get(b1,b2);c.next();)
 		{
-			System.out.print("block1:"+b1.getValue()+" ");
-			System.out.println("block2:"+b2.getValue());
+			ag.writeLog("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
+			//System.out.println("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
 		}
-		System.out.println("This is mov:");
-		logical int stack;
-		for (Cursor c = mv.get(stack,b2);c.next();)
+		logical int a;
+		logical String b;
+		for (Cursor c = mv.get(a,b);c.next();)
 		{
-			if (b2.getValue().compareTo("table") == 0) continue;
-			System.out.print("stack:"+stack.getValue()+" ");
-			System.out.println("block:"+b2.getValue());
-		}
-		System.out.println("This is pl:");
-		for (Cursor c = pl.get(stack,b2);c.next();)
-		{
-			System.out.print("stack:"+stack.getValue()+" ");
-			System.out.println("block:"+b2.getValue());
-		}
-		System.out.println("This is gl:");
-		for (Cursor c = gl.get(b1,b2);c.next();)
-		{
-			System.out.print("block1:"+b1.getValue()+" ");
-			System.out.println("block2:"+b2.getValue());
-		
+			ag.writeLog("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
+			//System.out.println("stack:"+a.getValue()+" "+"block:"+b.getValue());
 		}
 	}
 	

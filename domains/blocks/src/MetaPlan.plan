@@ -20,8 +20,6 @@ plan MetaPlan extends Plan
 		MoveEvent me = (MoveEvent) ev.event;	
 		Random r = new Random ();		
 		int rand = r.nextInt(ev.applicable.size()+1);
-		System.out.println("size:"+ev.applicable.size());
-		System.out.println("rand:"+rand);
 		Signature s;
 		for (  s = ev.applicable.first();
 		((s != null) && (rand > 1));
@@ -32,11 +30,6 @@ plan MetaPlan extends Plan
 		{
 			ev.chosen = s;
 		}
-		else 
-		{
-			System.err.println("No applicaple plan.");
-		}					
-
 	}
 
 }

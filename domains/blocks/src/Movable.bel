@@ -7,4 +7,10 @@ public beliefset Movable extends ClosedWorld {
 	#indexed query get(logical int stack, logical String block);
 	#indexed query get(int stack, String block);
 
+    #function query String getBlock(int stack) {
+        logical String block;
+        get(stack,block).next();
+        return block.as_string();
+    }
+	
 }

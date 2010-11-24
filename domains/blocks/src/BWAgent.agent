@@ -45,6 +45,7 @@ public agent BWAgent extends Agent implements Logger {
 	#private data Place pl();
 	#private data Movable mv();
 	#private data Goal gl("./src/goal.dat");
+	#private data Blocks bl();
 
 	//#uses plan MetaPlan;
 	//#uses plan ...
@@ -154,7 +155,6 @@ public agent BWAgent extends Agent implements Logger {
     
     /*** Agent Code ***/
     public void go() {
-        System.out.println("Blocks World Agent: placeholder to begin execution.");
 		postEventAndWait(st.start());
 }
     
@@ -416,267 +416,6 @@ public agent BWAgent extends Agent implements Logger {
 
 
 //****************************self define*********************//
-	private int maxStack = 10;
-	public String [] currentStacks = new String [maxStack];
-	public String movable = "";
-	public int used = 0;
-	public String [] goalStacks = new String [4];
-	public String [] subgoal;
-	public int acheived = 0;
-
-//later should be implement as read from the files
-/*
-	void initializeCurrentStacks()
-	{
-		currentStacks[0] = "1abcde";
-		currentStacks[1] = "1";
-		currentStacks[2] = "1";
-		currentStacks[3] = "1";
-		currentStacks[4] = "1";
-		currentStacks[5] = "1";
-		currentStacks[6] = "1";
-		currentStacks[7] = "1";
-		currentStacks[8] = "1";
-		currentStacks[9] = "1";
-		goalStacks[0] = "1edc";
-		goalStacks[1] = "1a";
-		goalStacks[2] = "1b";
-		goalStacks[3] = "1";
-		used = 3;
-	}*/
-	void initializeCurrentStacks()
-	{
-		try{
-			FileInputStream fstream = new FileInputStream("/home/theneil/project/state/StartStat.txt");
-		        DataInputStream s = new DataInputStream(fstream);
-			BufferedReader start  = new BufferedReader(new InputStreamReader(s));
-			fstream = new FileInputStream("/home/theneil/project/state/GoalStat.txt");
-			s = new DataInputStream(fstream);
-			BufferedReader goal = new BufferedReader(new InputStreamReader(s));
-			for (int i = 0; i < maxStack ; i++)
-			{
-				currentStacks[i] = "1";
-			}
-			for (int i = 0; i < 4 ; i++)
-			{
-				goalStacks[i] = "1";
-			}
-			int i = 0;
-			String str;
-			while ((str = start.readLine()) != null)	
-			{
-				currentStacks[i] =  str;
-				i++;
-				used++;
-			}
-			i = 0;
-			while ((str = goal.readLine()) != null)	
-			{
-				if (i >= 4)
-				{
-					System.err.println("GoalStacks overload");
-					break;
-				}
-				goalStacks[i] = str;
-				i++;
-			}
-		    } catch (Exception e){//Catch exception if any
-     			 System.err.println("Error: " + e.getMessage());
-  		    }
-	}
-	// update the movable stack.
-	// should be called before other operation in the plan 
-	public void updateMovable()
-	{
-	    movable="";
-	    for(int i = 0 ; i < used ; i++)
-	    {
-		currentStacks[i] = currentStacks[i].trim();
-		if (currentStacks[i] == "1") continue;
-		char t = currentStacks[i].charAt(currentStacks[i].length()-1);
-		if (!(movable.contains((t+""))))
-		{
-			movable += t+"";
-		}
-	    }
-	}
-
-	// move one block to another stack 
-	// stack should be int 
-	// if int >= player.maxStackNumber
-	// recreate the stacks and double the size 
-	void move (char block , int ref)
-	{
-	    if (ref >= maxStack) // stack is full
-	    {
-		doubleStateStack();
-	    }
-            if (currentStacks[ref] == "1")// 
-	    {
-		used++;
-	    }
-	    remove(block);
-            currentStacks[ref] += block+"";    
-
-	}
-	    
-	// find a Empty stack to store the new stack
-	int findEmpty()
-	{
-		for (int i = 0; i < maxStack ;i++)
-		{
-			currentStacks[i] = currentStacks[i].trim();
-			if (currentStacks[i] == "1" ) return i;
-		}
-		return 9;
-	}
-
-	// remove the block from the stack
-	void remove (char block)
-	{
-		for ( int i = 0 ; i < used ; i++ )
-		{
-			currentStacks[i] = currentStacks[i].trim();
-			if (currentStacks[i] == "1") continue;
-			char end = currentStacks[i].charAt(currentStacks[i].length()-1);
-			if ( end == block ) 
-			{
-				if (currentStacks[i].length() == 2)
-				{	
-					currentStacks[i] = "1";
-					return ;
-				}
-				else
-				{
-					currentStacks[i] = currentStacks[i].replace(end+"","");
-					return ;
-				}
-			}
-		}
-	}
-
-	// double the currentStacks size    
-	void doubleStateStack()
-	{
-	    String [] temp = currentStacks;
-	    currentStacks = new String [maxStack * 2]; 
-	    // double the size 
-	    for (int i = 0 ; i < temp.length ; i++)
-	    {
-		currentStacks[i] = temp[i];
-		
-	    }
-	}
-	
-	// print all the stacks which contain blocks
-	void print ()
-	{
-		for (int i = 0; i < used ; i++)
-		{
-			if (!(currentStacks[i] == "1"))
-			System.out.println("stack "+i+":"+currentStacks[i]);
-
-		}
-	}
-
-	// save the stacks information in the first several stacks
-	void reSave()
-	{
-		String[] temp = new String [maxStack];
-		used = 0;
-		for (int i = 0; i < maxStack; i++ )
-		{
-			temp[i] = currentStacks[i];
-			currentStacks[i] = "1";
-
-		}	
-		for (int i = 0; i < maxStack; i++ )
-		{
-			temp[i] = temp[i].trim();
-			if (temp[i] == "1")
-			{
-				continue;
-			}
-			else 
-			{
-				currentStacks[used] = temp[i];
-				used++;
-
-			}
-
-		}
-	}
-	
-	// check whether the block is on the table and alone
-	boolean isAlone (char b)
-	{
-		for (int i = 0; i <= used ; i++)
-		{
-			if ( (currentStacks[i].contains(b+"")) && (currentStacks[i].length() == 2))
-			{
-				return true ;
-			}
-		}
-		return false;
-	}
-
-	// return which posion the block stay
-	int position(char b)
-	{
-		for (int i = 0; i <= used ; i++)
-		{
-			if (currentStacks[i].contains(b+""))
-			{
-				return i ;
-			}
-		}
-		return -1;
-
-	}
-
-	// split the goal into small sub goals
-	// in order to help acheive the most sub goals
-	
-	void splitGoal()
-	{
-	    int total=0;
-	    // how many sub goals need to achieve
-	    for (int i = 0; i < goalStacks.length ;i++)
-	    {
-		total += goalStacks[i].length();
-	    }
-	    total -= goalStacks.length;
-	    subgoal = new String [total];
-	     
-	    int i = 0;
-	    for (int m = 0; m < goalStacks.length; m++)
-	    {
-	       for ( int j = 0; j <= (goalStacks[m].length() - 2); j++,i++)
-	       {
-		  subgoal[i] = goalStacks[m].substring(j, j+2);
-		  System.out.println("Subgoal "+i+":"+subgoal[i]);
-	       }         
-	    }		
-
-	}
-
-	int subgoalAcheived()
-	{
-		acheived = 0;
-		for (int i = 0 ; i < used ; i++)
-		{
-			for (int j = 0; j < subgoal.length; j++)
-			{
-				if ( (currentStacks[i].contains(subgoal[j])) && (subgoal[j] != "1"))
-				{
-					acheived++;
-				}
-			}
-	
-		}
-		return acheived;
-	}
-    
     public boolean isGoalTower(String t) {
         String top = t;
         while (!top.equals("table")) {
@@ -686,7 +425,7 @@ public agent BWAgent extends Agent implements Logger {
                 if (realBlockBelow.equals(goalBlockBelow)) {
                     top = realBlockBelow;
                 } else {
-                    System.out.println("isGoalTower("+top+") = false");
+                  //  System.out.println("isGoalTower("+top+") = false");
                     return false;
                 }
             } catch (BeliefSetException e) {
@@ -694,9 +433,33 @@ public agent BWAgent extends Agent implements Logger {
                 System.exit(9);
             }
         }
-        System.out.println("isGoalTower("+t+") = true");
+        //System.out.println("isGoalTower("+t+") = true");
         return true;
     }
+
+	public int subGoalRemind()	
+	{
+		
+		int goalRemind = gl.nFacts();
+		String blocks = bl.getBlocks();
+		for (int i = 0; i < blocks.length(); i++)
+		{
+			try
+			{
+				String search = blocks.substring(i,i+1);
+				String goalBlockBelow = gl.getBlockBelow(search);
+            	String realBlockBelow = order.getBlockBelow(search);
+				if (goalBlockBelow.equals(realBlockBelow))
+				{
+					goalRemind--;
+				}
+			}catch(Exception e)
+			{}
+		}		
+        return goalRemind;
+
+	}
+	
 //********************************self define end*******************************
 }
 
