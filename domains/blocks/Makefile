@@ -17,7 +17,7 @@ lib/bwagent.jar:
 	cd build && jar -cvf ../lib/bwagent.jar *
 
 clean:
-	/bin/rm -rf build/* lib/bwagent.jar
+	/bin/rm -rf build lib/bwagent.jar
 
 help: lib/bwagent.jar
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/bwagent.jar BWAgent -h
