@@ -28,14 +28,16 @@ public plan StartPlan extends Plan {
     body()
     {
 		initOrder();
-		printAll();	
-		for (int i = 0; i < ag.nEpisodes(); i++) //ag.nEpisodes()
+		for (int i = 0; i < ag.nEpisodes(); i++)
 		{
-            ag.writeLog("Episode "+ag.episode()+" ----------");
-			updateMovable();
-			@subtask(me.move("",""));
-			printAll();	
-			ag.subGoalRemind();
+            ag.writeLog("EPISODE "+ag.episode()+":-----------------------------------------");
+            updateMovable();
+            if (ag.goalsRemaining() > 0) {
+                @subtask(me.move("",""));
+                printAll();	
+            } else {
+                ag.writeLog("Nothing left to do");
+            }
             ag.finishEpisode();
 		}
     }	
@@ -103,7 +105,7 @@ public plan StartPlan extends Plan {
 	#reasoning method
 	updateMovable()
 	{
-		for (int i = 0;(i < 10);i++ ) mv.add(i,"table");//?
+        mv.deleteAll();
 		int stack = 0;
 		logical String b1 ;
 		logical String b2 ;
@@ -134,21 +136,25 @@ public plan StartPlan extends Plan {
 	#reasoning method
 	printAll()
 	{
-		ag.writeLog("This is order:");
 		logical String b1;
 		logical String b2;
-		for (Cursor c = order.get(b1,b2);c.next();)
+		for (Cursor c = order.get(b1,"table");c.next();)
 		{
-			ag.writeLog("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
-			//System.out.println("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
-		}
-		logical int a;
-		logical String b;
-		for (Cursor c = mv.get(a,b);c.next();)
-		{
-			ag.writeLog("block1:"+b1.getValue()+" "+"block2:"+b2.getValue());
-			//System.out.println("stack:"+a.getValue()+" "+"block:"+b.getValue());
-		}
+            String block = b1.getValue();
+            String stackStr = "|" + block;
+            boolean done = false;
+            while (!done) {
+                logical String top;
+                if (order.get(top,block)){
+                    stackStr += "-"+top;
+                    block = top.getValue();
+                } else {
+                    done = true;
+                }
+            }
+			ag.writeLog(stackStr);
+        }
+        ag.writeLog("Subgoals remaining: "+ag.goalsRemaining());
 	}
 	
 	#reasoning method

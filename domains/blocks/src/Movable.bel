@@ -12,5 +12,12 @@ public beliefset Movable extends ClosedWorld {
         get(stack,block).next();
         return block.as_string();
     }
-	
+
+    #function query boolean deleteAll() {
+        logical int s;
+        logical String b;
+        BeliefSetCursor c = get(s,b);
+        c.removeAll();
+        return true;
+    }
 }

@@ -437,7 +437,7 @@ public agent BWAgent extends Agent implements Logger {
         return true;
     }
 
-	public int subGoalRemind()	
+	public int goalsRemaining()	
 	{
 		
 		int goalRemind = gl.nFacts();

@@ -27,11 +27,12 @@ plan ConstructivePlan extends Plan
         mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
         !first.getValue().equals(second.getValue()) &&  // that are unique
         !first.getValue().equals("table") &&            // and not references to
-        !first.getValue().equals("table") &&            // the table itself
+        !second.getValue().equals("table") &&           // the table itself
         gl.get(first.getValue(),second.getValue());     // and where the goal is to have the first on the second
 	}
 	body()
 	{
+        ag.writeLog("ConstructivePlan: Moving block "+first.getValue()+" onto block "+second.getValue());
 		order.add(first.getValue(),second.getValue());
 	}
 }

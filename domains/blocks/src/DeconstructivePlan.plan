@@ -32,6 +32,7 @@ plan DeconstructivePlan extends Plan
 	}
 	body()
 	{
+        ag.writeLog("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
 		order.add(first.getValue(),"table");
 	}
 	
