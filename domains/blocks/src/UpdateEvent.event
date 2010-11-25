@@ -1,0 +1,7 @@
+public event UpdateEvent extends Event
+{
+	#posted as 
+	update()
+	{}
+
+}

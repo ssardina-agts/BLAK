@@ -35,17 +35,23 @@ public agent BWAgent extends Agent implements Logger {
 	#handles event MoveEvent;
 	#handles event PlanChoice;
 	#handles event Start;
+	#handles event UpdateEvent;
+	#handles event PrintEvent;
 
 	#uses plan StartPlan;	
 	#uses plan MetaPlan ;
 	#uses plan ConstructivePlan;
 	#uses plan DeconstructivePlan;
+	#uses plan UpdatePlan;
+	#uses plan PrintPlan;
 
 	#private data Order order();// randomly initialize
 	#private data Place pl();
 	#private data Movable mv();
 	#private data Goal gl("./src/goal.dat");
 	#private data Blocks bl();
+
+	public int recursive = 0;
 
 	//#uses plan MetaPlan;
 	//#uses plan ...

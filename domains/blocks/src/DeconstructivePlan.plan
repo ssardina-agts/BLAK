@@ -3,12 +3,17 @@ import java.util.Random;
 plan DeconstructivePlan extends Plan
 {
 	#handles event MoveEvent ev;
+	#posts event MoveEvent me;
+	#posts event PrintEvent pe;
+	#posts event UpdateEvent ue;
+
     #uses interface BWAgent ag;
     
 	#modifies data Order order;
 	#modifies data Movable mv;
 	#modifies data Place pl;
 	#modifies data Goal gl;
+	#reads data Blocks bl;
 
 	public logical String top;
 	public logical String first;
@@ -32,9 +37,30 @@ plan DeconstructivePlan extends Plan
 	}
 	body()
 	{
-        ag.writeLog("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
+        System.out.println("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
 		order.add(first.getValue(),"table");
+		@subtask(ue.update());
+		@subtask(pe.print());
+		ag.recursive++;
+		int maxRecursive = ( bl.getBlocks().length() - 1 )* 2 ;
+		System.out.println("max:" + maxRecursive);
+		System.out.println("current:" + ag.recursive);
+		if(ag.goalsRemaining() != 0)
+		{
+			@subtask(me.move("",""));
+		}
+		else if(ag.recursive >= maxRecursive)
+		{
+			fail();
+		}
 	}
+
+	#reasoning method
+	fail()
+	{
+		System.out.println("Meet the max recursive!");
+	}
+
 	
 }
 

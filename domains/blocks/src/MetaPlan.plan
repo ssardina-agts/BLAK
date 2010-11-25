@@ -5,6 +5,8 @@ plan MetaPlan extends Plan
 	#handles event PlanChoice ev;
 	#chooses for event MoveEvent;
 
+	#uses interface BWAgent ag;
+
 	static boolean 
 	relevant(PlanChoice ev)
 	{
@@ -20,14 +22,45 @@ plan MetaPlan extends Plan
 		MoveEvent me = (MoveEvent) ev.event;	
 		Random r = new Random ();		
 		int rand = r.nextInt(ev.applicable.size()+1);
+		String con = "0";
+		String decon = "0";
+		int subgoal = 0 ;
 		Signature s;
+		for (  s = ev.applicable.first();
+		(s != null) ;
+		s = ev.applicable.next( s )
+		)
+		{
+			if (s.getPlanName().equals("ConstructivePlan"))
+			{
+				con = "1";
+			}
+			else if (s.getPlanName().equals("DeconstructivePlan"))
+			{
+				decon = "1";
+			}
+		}
 		for (  s = ev.applicable.first();
 		((s != null) && (rand > 1));
 		s = ev.applicable.next( s )
 		)
-		{rand -- ;}
+		{
+			rand -- ;
+		}
 		if (s != null)
 		{
+			System.out.println("Selected Plan name:" + s.getPlanName());
+			if (s.getPlanName().equals("ConstructivePlan"))
+			{
+				con = "2";
+			}
+			else if (s.getPlanName().equals("DeconstructivePlan"))
+			{
+				decon = "2";
+			}
+			subgoal = ag.goalsRemaining();
+			String record = con + decon + subgoal;
+			System.out.println("Record:"+record);
 			ev.chosen = s;
 		}
 	}

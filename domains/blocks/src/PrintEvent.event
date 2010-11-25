@@ -1,0 +1,6 @@
+public event PrintEvent extends Event
+{
+	#posted as
+	print()
+	{}
+}

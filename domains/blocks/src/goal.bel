@@ -1,0 +1,15 @@
+public beliefset Goal extends ClosedWorld {
+    #key field String block1;
+    #value field String block2;
+    #indexed query get(String block1, logical String block2);
+    #indexed query get(logical String block1, String block2);
+    #indexed query get(logical String block1, logical String block2);
+    #indexed query get(String block1,  String block2);
+
+    #function query String getBlockBelow(String top) {
+        logical String block;
+        get(top,block).next();
+        return block.as_string();
+    }
+
+}

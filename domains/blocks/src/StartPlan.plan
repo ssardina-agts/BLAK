@@ -5,6 +5,7 @@ public plan StartPlan extends Plan {
 
     #handles event Start ev;
 	#posts event MoveEvent me;
+	#posts event UpdateEvent ue;
 	#uses interface BWAgent ag;
 
     static boolean
@@ -28,20 +29,10 @@ public plan StartPlan extends Plan {
     body()
     {
 		initOrder();
-        ag.writeLog("BEGIN -----------------------------------------");
-        printAll();	
-		for (int i = 0; i < ag.nEpisodes(); i++)
-		{
-            ag.writeLog("EPISODE "+ag.episode()+":-----------------------------------------");
-            updateMovable();
-            if (ag.goalsRemaining() > 0) {
-                @subtask(me.move("",""));
-                printAll();	
-            } else {
-                ag.writeLog("Nothing left to do");
-            }
-            ag.finishEpisode();
-		}
+		ag.recursive = 0;
+        System.out.println("BEGIN -----------------------------------------");
+		@subtask(ue.update());
+        @subtask(me.move("",""));
     }	
 	
 	#reasoning method
@@ -102,61 +93,6 @@ public plan StartPlan extends Plan {
 			}
 		}
 
-	}
-
-	#reasoning method
-	updateMovable()
-	{
-        mv.deleteAll();
-		int stack = 0;
-		logical String b1 ;
-		logical String b2 ;
-		for (Cursor c = order.get(b1,b2);c.next();)
-		{
-			logical String b3 ;
-			if (!order.get(b3,b1))
-              mv.add(stack++ ,b1.getValue());
-		}
-		logical int stack ;
-		logical String b3 ;
-		for (Cursor c = mv.get(stack,b3);c.next();)
-		{
-				initPlace(stack.getValue(),b3.getValue());
-		}
-	}
-
-	#reasoning method
-	initPlace(int stack,String block)
-	{
-        logical String b;
-		if (block.compareTo("table") != 0)
-        	pl.add(stack,block);
-        if (order.get(block,b)) 
-            initPlace(stack,b.getValue());
-	}
-
-	#reasoning method
-	printAll()
-	{
-		logical String b1;
-		logical String b2;
-		for (Cursor c = order.get(b1,"table");c.next();)
-		{
-            String block = b1.getValue();
-            String stackStr = "|" + block;
-            boolean done = false;
-            while (!done) {
-                logical String top;
-                if (order.get(top,block)){
-                    stackStr += "-"+top;
-                    block = top.getValue();
-                } else {
-                    done = true;
-                }
-            }
-			ag.writeLog(stackStr);
-        }
-        ag.writeLog("Subgoals remaining: "+ag.goalsRemaining());
 	}
 	
 	#reasoning method

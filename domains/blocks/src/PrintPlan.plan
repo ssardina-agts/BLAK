@@ -1,0 +1,36 @@
+public plan PrintPlan extends Plan
+{
+	#handles event PrintEvent ev;
+
+	#reads data Order order;
+
+	#uses interface BWAgent ag;
+
+	body()
+	{
+		printAll();
+	}
+	#reasoning method
+	printAll()
+	{
+		logical String b1;
+		logical String b2;
+		for (Cursor c = order.get(b1,"table");c.next();)
+		{
+            String block = b1.getValue();
+            String stackStr = "|" + block;
+            boolean done = false;
+            while (!done) {
+                logical String top;
+                if (order.get(top,block)){
+                    stackStr += "-"+top;
+                    block = top.getValue();
+                } else {
+                    done = true;
+                }
+            }
+			System.out.println(stackStr);
+        }
+        System.out.println("Subgoals remaining: "+ag.goalsRemaining());
+	}
+}
