@@ -37,28 +37,30 @@ plan DeconstructivePlan extends Plan
 	}
 	body()
 	{
-        System.out.println("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
+        ag.writeLog("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
 		order.add(first.getValue(),"table");
 		@subtask(ue.update());
 		@subtask(pe.print());
 		ag.recursive++;
-		int maxRecursive = ( bl.getBlocks().length() - 1 )* 2 ;
-		System.out.println("max:" + maxRecursive);
-		System.out.println("current:" + ag.recursive);
-		if(ag.goalsRemaining() != 0)
+		if ((ag.goalsRemaining() != 0) && (ag.recursive < ag.recursiveMax))
 		{
 			@subtask(me.move("",""));
 		}
-		else if(ag.recursive >= maxRecursive)
+		else if(ag.recursive >= ag.recursiveMax)
 		{
 			fail();
+		}
+		else if ((ag.goalsRemaining() == 0))
+		{
+			ag.records[ag.currentUsedRecord] = "000";
+			ag.currentUsedRecord++;
+			pass();
 		}
 	}
 
 	#reasoning method
 	fail()
 	{
-		System.out.println("Meet the max recursive!");
 	}
 
 	

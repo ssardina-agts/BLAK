@@ -52,6 +52,10 @@ public agent BWAgent extends Agent implements Logger {
 	#private data Blocks bl();
 
 	public int recursive = 0;
+	public int recursiveMax = 0;
+	
+	public String[] records;
+	public int currentUsedRecord = 0;
 
 	//#uses plan MetaPlan;
 	//#uses plan ...
@@ -82,7 +86,7 @@ public agent BWAgent extends Agent implements Logger {
             int buildThreshold, double failThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
-            long seed, String loadInit, String saveInit
+            long seed, String loadInit, String saveInit,int recursiveMax
             // ...
             ) {
             
@@ -117,6 +121,7 @@ public agent BWAgent extends Agent implements Logger {
         
         //--- Initialise the system
         episode = 1;
+		this.recursiveMax = recursiveMax;
     }
 
     public int episode() {
@@ -160,8 +165,9 @@ public agent BWAgent extends Agent implements Logger {
     }
     
     /*** Agent Code ***/
-    public void go() {
-		postEventAndWait(st.start());
+    public void go() {	
+		//for (int i = 0; i < nEpisodes; i++)
+			postEventAndWait(st.start());
 }
     
     /*** BDI Learning Framework related ***/
@@ -301,6 +307,7 @@ public agent BWAgent extends Agent implements Logger {
         int buildThreshold = 2;
         int wExperience = 0;
         double failThreshold = 0.0;
+		int recursiveMax = 0;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
@@ -408,6 +415,11 @@ public agent BWAgent extends Agent implements Logger {
                     saveInit = args[index];
                     index++;
                     break;
+				case 'r':
+					recursiveMax = Integer.parseInt(args[index]);
+					System.out.println(recursiveMax);
+					index++;
+					break;
                 }
             }
         }
@@ -416,7 +428,7 @@ public agent BWAgent extends Agent implements Logger {
             pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
-            seed, loadInit, saveInit);
+            seed, loadInit, saveInit,recursiveMax);
         p.go();
     }
 

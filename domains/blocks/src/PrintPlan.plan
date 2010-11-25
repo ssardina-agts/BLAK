@@ -29,8 +29,8 @@ public plan PrintPlan extends Plan
                     done = true;
                 }
             }
-			System.out.println(stackStr);
+			ag.writeLog(stackStr);
         }
-        System.out.println("Subgoals remaining: "+ag.goalsRemaining());
+        ag.writeLog("Subgoals remaining: "+ag.goalsRemaining());
 	}
 }

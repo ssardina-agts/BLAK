@@ -37,28 +37,34 @@ plan ConstructivePlan extends Plan
 	}
 	body()
 	{
-        System.out.println("ConstructivePlan: Moving block "+first.getValue()+" onto block "+second.getValue());
+        ag.writeLog("ConstructivePlan: Moving block "+first.getValue()+" onto block "+second.getValue());
 		order.add(first.getValue(),second.getValue());
 		@subtask(ue.update());
 		@subtask(pe.print());
 		ag.recursive++;
-		int maxRecursive = ( bl.getBlocks().length() - 1 )* 2 ;
-		System.out.println("max:" + maxRecursive);
-		System.out.println("current:" + ag.recursive);
-		if((ag.goalsRemaining() != 0) && (ag.recursive < maxRecursive))
+		if((ag.goalsRemaining() != 0) && (ag.recursive < ag.recursiveMax))
 		{
 			@subtask(me.move("",""));
 		}
-		else if(ag.recursive >= maxRecursive)
+		else if(ag.recursive >= ag.recursiveMax)
 		{
 			fail();
+		}	
+		else if ((ag.goalsRemaining() == 0))
+		{	
+			ag.records[ag.currentUsedRecord] = "000";
+			ag.currentUsedRecord++;
+			pass();
 		}
 	}
+
+	#reasoning method 
+	pass()
+	{}
 	
 	#reasoning method
 	fail()
 	{
-		System.out.println("Meet the max recursive!");
 	}
 }
 

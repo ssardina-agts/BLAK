@@ -30,7 +30,12 @@ public plan StartPlan extends Plan {
     {
 		initOrder();
 		ag.recursive = 0;
-        System.out.println("BEGIN -----------------------------------------");
+		if(ag.recursiveMax == 0)
+		{
+			ag.recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
+		} 
+		ag.records = new String[ag.recursiveMax];
+        ag.writeLog("BEGIN -----------------------------------------");
 		@subtask(ue.update());
         @subtask(me.move("",""));
     }	
