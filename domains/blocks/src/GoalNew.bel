@@ -1,4 +1,4 @@
-public beliefset Goal extends ClosedWorld {
+public beliefset GoalNew extends ClosedWorld {
     #key field String block1;
     #value field String block2;
     #indexed query get(String block1, logical String block2);

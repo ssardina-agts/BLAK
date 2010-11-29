@@ -11,8 +11,7 @@ plan ConstructivePlan extends Plan
 	
 	#modifies data Order order;
 	#modifies data Movable mv;
-	#modifies data Place pl;
-	#modifies data Goal gl;
+	#modifies data GoalNew gl;
 	#reads data Blocks bl;
 
 	public logical String first; 
@@ -33,6 +32,7 @@ plan ConstructivePlan extends Plan
         !first.getValue().equals(second.getValue()) &&  // that are unique
         !first.getValue().equals("table") &&            // and not references to
         !second.getValue().equals("table") &&           // the table itself
+		!order.get(first.getValue(),second.getValue()) && // and do not exsit in order
         gl.get(first.getValue(),second.getValue());     // and where the goal is to have the first on the second
 	}
 	body()

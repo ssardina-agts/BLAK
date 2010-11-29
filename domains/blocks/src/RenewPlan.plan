@@ -1,0 +1,19 @@
+public plan RenewPlan extends Plan
+{
+	#handles event RenewEvent ev;
+	
+	#modifies data Order order;
+	#reads data InitStat is;
+	
+	body()
+	{
+		logical String block1;
+		logical String block2;
+		for(Cursor c = is.get(block1,block2);c.next();)
+		{
+			order.add(block1.getValue(),block2.getValue());
+		}
+		
+	}
+
+}

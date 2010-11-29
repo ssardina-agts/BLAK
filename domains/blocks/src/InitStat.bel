@@ -1,0 +1,7 @@
+public beliefset InitStat extends ClosedWorld {
+    #value field String block2;
+    #key field String block1;
+	#indexed query get(String stack, logical String block);
+	#indexed query get(logical String stack, String block);
+	#indexed query get(logical String stack, logical String block);
+}

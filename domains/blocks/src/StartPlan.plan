@@ -17,8 +17,8 @@ public plan StartPlan extends Plan {
 
     #modifies data Order order;
 	#modifies data Movable mv;
-	#modifies data Place pl;
-	#reads data Goal gl;
+	#modifies data InitStat is;
+	#reads data GoalNew gl;
 	#modifies data Blocks bl;
 
     context()
@@ -98,7 +98,14 @@ public plan StartPlan extends Plan {
 				mv.add(x,b1);
 			}
 		}
-
+// save the init state
+		logical String block1;
+		logical String block2;
+		for(Cursor c = order.get(block1,block2);c.next();)
+		{
+			System.out.println("Block1: "+ block1 + " Block2: " + block2);
+			is.add(block1.getValue(),block2.getValue());
+		}
 	}
 	
 	#reasoning method

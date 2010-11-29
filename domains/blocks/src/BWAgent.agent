@@ -32,6 +32,8 @@ public agent BWAgent extends Agent implements Logger {
     //#handles event ...
 	#posts event Start st;
 	#posts event MoveEvent me;
+	#posts event RenewEvent re; // make the order to a particular state which initalize randomly at first
+	#handles event RenewEvent;
 	#handles event MoveEvent;
 	#handles event PlanChoice;
 	#handles event Start;
@@ -44,11 +46,12 @@ public agent BWAgent extends Agent implements Logger {
 	#uses plan DeconstructivePlan;
 	#uses plan UpdatePlan;
 	#uses plan PrintPlan;
+	#uses plan RenewPlan;
 
 	#private data Order order();// randomly initialize
-	#private data Place pl();
+	#private data InitStat is();
 	#private data Movable mv();
-	#private data Goal gl("./src/goal.dat");
+	#private data GoalNew gl("./src/goal.dat");
 	#private data Blocks bl();
 
 	public int recursive = 0;
@@ -172,6 +175,7 @@ public agent BWAgent extends Agent implements Logger {
             writeLog("EPISODE "+ episode + ":-----------------------------------------");
             if (goalsRemaining() > 0) {
        			postEventAndWait(me.move(recursiveMax));
+				postEventAndWait(re.renew());
             } else {
                 writeLog("Nothing left to do");
             }

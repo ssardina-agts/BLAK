@@ -4,7 +4,6 @@ public plan UpdatePlan extends Plan
 	
 	#modifies data Order order;
 	#modifies data Movable mv;
-	#modifies data Place pl;
 	
 	body()
 	{
@@ -23,22 +22,6 @@ public plan UpdatePlan extends Plan
 			if (!order.get(b3,b1))
               mv.add(stack++ ,b1.getValue());
 		}
-		logical int stack ;
-		logical String b3 ;
-		for (Cursor c = mv.get(stack,b3);c.next();)
-		{
-				initPlace(stack.getValue(),b3.getValue());
-		}
-	}
-
-	#reasoning method
-	initPlace(int stack,String block)
-	{
-        logical String b;
-		if (block.compareTo("table") != 0)
-        	pl.add(stack,block);
-        if (order.get(block,b)) 
-            initPlace(stack,b.getValue());
 	}
 
 

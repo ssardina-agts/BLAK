@@ -1,0 +1,6 @@
+public event RenewEvent extends Event
+{
+	#posted as
+	renew()
+	{}
+}

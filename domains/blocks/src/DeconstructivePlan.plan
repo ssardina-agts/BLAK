@@ -11,8 +11,7 @@ plan DeconstructivePlan extends Plan
     
 	#modifies data Order order;
 	#modifies data Movable mv;
-	#modifies data Place pl;
-	#modifies data Goal gl;
+	#modifies data GoalNew gl;
 	#reads data Blocks bl;
 
 	public logical String top;
