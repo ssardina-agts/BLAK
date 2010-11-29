@@ -103,7 +103,7 @@ public plan StartPlan extends Plan {
 		logical String block2;
 		for(Cursor c = order.get(block1,block2);c.next();)
 		{
-			System.out.println("Block1: "+ block1 + " Block2: " + block2);
+			//System.out.println("Block1: "+ block1 + " Block2: " + block2);
 			is.add(block1.getValue(),block2.getValue());
 		}
 	}
