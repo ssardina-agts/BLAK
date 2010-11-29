@@ -12,4 +12,4 @@ public beliefset Goal extends ClosedWorld {
         return block.as_string();
     }
 
-}
+}   

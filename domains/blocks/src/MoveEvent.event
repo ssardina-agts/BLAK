@@ -6,13 +6,11 @@ public event MoveEvent extends BDIGoalEvent
 	#set behavior Recover never; 
 	#set behavior ApplicableSet new; 
     
-	public String sour;
-	public String dest;
+	public int recursive;
 	#posted as 
-	move(String from,String to)
+	move(int in)
 	{
-		sour = from;
-		to = dest;
+		recursive = in;
 	}
 
 }

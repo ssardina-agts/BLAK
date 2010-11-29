@@ -37,34 +37,29 @@ plan ConstructivePlan extends Plan
 	}
 	body()
 	{
-        ag.writeLog("ConstructivePlan: Moving block "+first.getValue()+" onto block "+second.getValue());
+		@test(ev.recursive > 0,null);
+        ag.writeLog("ConstructivePlan: Recursion "+ev.recursive+". Moving block "+first.getValue()+" onto block "+second.getValue());
 		order.add(first.getValue(),second.getValue());
 		@subtask(ue.update());
 		@subtask(pe.print());
-		ag.recursive++;
-		if((ag.goalsRemaining() != 0) && (ag.recursive < ag.recursiveMax))
+		if(ag.goalsRemaining() > 0)
 		{
-			@subtask(me.move("",""));
+			@subtask(me.move(ev.recursive-1));
 		}
-		else if(ag.recursive >= ag.recursiveMax)
-		{
-			fail();
-		}	
-		else if ((ag.goalsRemaining() == 0))
-		{	
-			ag.records[ag.currentUsedRecord] = "000";
-			ag.currentUsedRecord++;
-			pass();
-		}
+
 	}
 
 	#reasoning method 
 	pass()
-	{}
+	{
+		ag.records[ev.recursive] = "000"; // add to the record that the process is successful 
+        //ag.writeLog("ConstructivePlan Passed.");
+	}
 	
 	#reasoning method
 	fail()
 	{
+        //ag.writeLog("ConstructivePlan Failed.");	
 	}
 }
 

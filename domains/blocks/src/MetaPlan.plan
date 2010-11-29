@@ -21,8 +21,14 @@ plan MetaPlan extends Plan
 	{
 		MoveEvent me = (MoveEvent) ev.event;	
 		Random r = new Random ();		
-		int rand = r.nextInt(ev.applicable.size()+1);
-		String con = "0";
+		int rand = r.nextInt(ev.applicable.size()+1); // randomly pick one applicable plan
+		// the first bit of the string stands for constructive plan 
+		// the second bit of the string stands for deconstructive plan
+		// the third bit of the string stands for how many subgoals left 
+		// 1 stands for that this plan is in the picking list
+		// 2 stands for that this plan is selected
+		// 0 means not in the applicable list 	
+		String con = "0"; 
 		String decon = "0";
 		int subgoal = 0 ;
 		Signature s;
@@ -59,8 +65,7 @@ plan MetaPlan extends Plan
 			}
 			subgoal = ag.goalsRemaining();
 			String record = con + decon + subgoal;
-			ag.records[ag.currentUsedRecord] = record;
-			ag.currentUsedRecord++;
+			ag.records[me.recursive] = record;
 			ev.chosen = s;
 		}
 	}

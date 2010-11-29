@@ -6,6 +6,7 @@ public plan StartPlan extends Plan {
     #handles event Start ev;
 	#posts event MoveEvent me;
 	#posts event UpdateEvent ue;
+	#posts event PrintEvent pe;
 	#uses interface BWAgent ag;
 
     static boolean
@@ -29,16 +30,16 @@ public plan StartPlan extends Plan {
     body()
     {
 		initOrder();
-		ag.recursive = 0;
 		if(ag.recursiveMax == 0)
 		{
 			ag.recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
 		} 
-		ag.records = new String[ag.recursiveMax];
+		ag.records = new String[ag.recursiveMax + 1];
         ag.writeLog("BEGIN -----------------------------------------");
-		@subtask(ue.update());
-        @subtask(me.move("",""));
-    }	
+		ag.writeLog("Initial state:");
+		@subtask(pe.print());
+		@subtask(ue.update());	
+   }	
 	
 	#reasoning method
 	initOrder() //randomly init order
@@ -104,4 +105,10 @@ public plan StartPlan extends Plan {
 	pass()
 	{
 	}
+
+	#reasoning method
+	fail()
+	{
+	}
+
 }

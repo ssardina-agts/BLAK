@@ -54,7 +54,7 @@ public agent BWAgent extends Agent implements Logger {
 	public int recursive = 0;
 	public int recursiveMax = 0;
 	
-	public String[] records;
+	public String[] records; // save all the record in one episode
 	public int currentUsedRecord = 0;
 
 	//#uses plan MetaPlan;
@@ -165,9 +165,19 @@ public agent BWAgent extends Agent implements Logger {
     }
     
     /*** Agent Code ***/
-    public void go() {	
-		//for (int i = 0; i < nEpisodes; i++)
-			postEventAndWait(st.start());
+    public void go() {
+		postEventAndWait(st.start());	
+		for (int i = 0; i < nEpisodes; i++)
+		{
+            writeLog("EPISODE "+ episode + ":-----------------------------------------");
+            if (goalsRemaining() > 0) {
+       			postEventAndWait(me.move(recursiveMax));
+            } else {
+                writeLog("Nothing left to do");
+            }
+            finishEpisode();
+		}
+			
 }
     
     /*** BDI Learning Framework related ***/
@@ -415,7 +425,8 @@ public agent BWAgent extends Agent implements Logger {
                     saveInit = args[index];
                     index++;
                     break;
-				case 'r':
+				case 'r': // add set the recursive depth
+						  // if this value is not set , it's default value will be ---- (blocks number - 1 ) * 2
 					recursiveMax = Integer.parseInt(args[index]);
 					System.out.println(recursiveMax);
 					index++;
