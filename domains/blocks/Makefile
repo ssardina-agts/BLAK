@@ -23,5 +23,5 @@ help: lib/bwagent.jar
 	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/bwagent.jar BWAgent -h
 
 run: lib/bwagent.jar
-	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i 20:5 -r 200 
+	java -cp lib/jack.jar:lib/weka.jar:lib/blak.jar:lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i 250:50 -r 200 -f ./src/init.dat
 

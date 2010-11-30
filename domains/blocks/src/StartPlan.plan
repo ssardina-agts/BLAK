@@ -37,8 +37,8 @@ public plan StartPlan extends Plan {
 		ag.records = new String[ag.recursiveMax + 1];
         ag.writeLog("BEGIN -----------------------------------------");
 		ag.writeLog("Initial state:");
-		@subtask(pe.print());
 		@subtask(ue.update());	
+		@subtask(pe.print());
    }	
 	
 	#reasoning method

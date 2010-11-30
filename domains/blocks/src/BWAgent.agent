@@ -34,6 +34,7 @@ public agent BWAgent extends Agent implements Logger {
 	#posts event MoveEvent me;
 	#posts event RenewEvent re; // make the order to a particular state which initalize randomly at first
 	#posts event PrintEvent pe;	
+	#posts event UpdateEvent ue;	
 	#handles event RenewEvent;
 	#handles event MoveEvent;
 	#handles event PlanChoice;
@@ -83,7 +84,6 @@ public agent BWAgent extends Agent implements Logger {
     private boolean lastResult;
     private int lastRequest;
     private int lastResponse;
-    private boolean inTraining = true;
     //--- Logger related
     private int indent = 0;
     private PrintWriter writerOut;
@@ -104,7 +104,6 @@ public agent BWAgent extends Agent implements Logger {
             
         super("Blocks World Agent");
         this.nEpisodes = episodes;
-		inTraining = true;
 		String [] ep = nEpisodes.split(":");
 		trainEpisodes = Integer.parseInt(ep[0]);
 		testEpisodes = Integer.parseInt(ep[1]);
@@ -182,7 +181,7 @@ public agent BWAgent extends Agent implements Logger {
 
 	public boolean isLearning()	
 	{
-		return inTraining;
+		return (episode>=trainEpisodes);
 	}    
 
 	public void startFromFile(String file)
@@ -203,6 +202,7 @@ public agent BWAgent extends Agent implements Logger {
 				recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
 			} 
 			records = new String[recursiveMax + 1];
+			postEventAndWait(ue.update());
         	writeLog("BEGIN -----------------------------------------");
 			writeLog("Initial state:");
 			postEventAndWait(pe.print());
@@ -210,23 +210,23 @@ public agent BWAgent extends Agent implements Logger {
 	}
     /*** Agent Code ***/
     public void go() {
-		if (initFile.equals(""))
-		{
-			postEventAndWait(st.start());	
-		}
-		else
-		{
-			startFromFile(initFile);
-		}
 
-		for (int i = 0; i < trainEpisodes; i++)
+		for (int i = 0; i < trainEpisodes+testEpisodes; i++)
 		{
-            writeLog("Training EPISODE "+ i + ":-----------------------------------------");
+            if (initFile.equals(""))
+            {
+                postEventAndWait(st.start());	
+            }
+            else
+            {
+                startFromFile(initFile);
+            }
+            String tstr = (episode <= trainEpisodes) ? "Training" : "Testing";
+            writeLog("EPISODE "+ i + ": "+tstr+"-----------------------------------------");
             if (goalsRemaining() > 0) {
        			postEventAndWait(me.move(recursiveMax));
 				postEventAndWait(re.renew(renew));
-				writeLog("Takes " + steps + " to acheive the goal");
-				writeLog("Training EPISODE "+ i + " end");
+				writeLog("Takes " + steps + " steps to achieve the goal");
 				writerRes.println(episode + " " + steps);
 				steps = 0;
             } else {
@@ -234,24 +234,6 @@ public agent BWAgent extends Agent implements Logger {
             }
             finishEpisode();
 		}
-		inTraining = false;
-
-		for (int i = 0; i < testEpisodes; i++)
-		{
-            writeLog("Testing EPISODE "+ i + ":-----------------------------------------");
-            if (goalsRemaining() > 0) {
-       			postEventAndWait(me.move(recursiveMax));
-				postEventAndWait(re.renew(renew));
-				writeLog("Takes " + steps + " to acheive the goal");
-				writeLog("Testing EPISODE "+ i + " end");
-				writerRes.println(episode + " " + steps);
-				steps = 0;
-            } else {
-                writeLog("Nothing left to do");
-            }
-            finishEpisode();
-		}
-			
 }
     
     /*** BDI Learning Framework related ***/
@@ -266,7 +248,7 @@ public agent BWAgent extends Agent implements Logger {
 
     public void finishEpisode() {
         /* Record the result for plotting */
-        writeResult(episode,lastResult,lastRequest,lastResponse);
+        //writeResult(episode,lastResult,lastRequest,lastResponse);
 
         /* Finish up */
         indentReset();

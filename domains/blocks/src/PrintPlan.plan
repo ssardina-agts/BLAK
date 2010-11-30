@@ -3,6 +3,7 @@ public plan PrintPlan extends Plan
 	#handles event PrintEvent ev;
 
 	#reads data Order order;
+	#reads data Movable mv;
 
 	#uses interface BWAgent ag;
 
@@ -13,6 +14,14 @@ public plan PrintPlan extends Plan
 	#reasoning method
 	printAll()
 	{
+		logical int stack;
+		logical String block;
+        String mstr = "";
+		for (Cursor c = mv.get(stack,block);c.next();)
+		{
+            mstr += block.as_string();
+        }
+        ag.writeLog("Movable: "+mstr);
 		logical String b1;
 		logical String b2;
 		for (Cursor c = order.get(b1,"table");c.next();)
