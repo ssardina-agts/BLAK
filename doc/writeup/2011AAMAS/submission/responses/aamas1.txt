@@ -1,50 +1,34 @@
-Issues and some responses, ordered by importance
+%Issues and some responses, ordered by importance
 
-The definition of plan stability says that a plan is considered as
-stable in a world state w if the success rate of the plan is changing
-below a threshold. According to what factors this threshold is chosen
-and how much does the choice of this threshold influence the
-performance of the learning algorithm?  - At what time points is
-stability recorded? Every time a plan fails or after a goal fails?
+%Issue: ------------------------------------------------------------
+%The definition of plan stability says that a plan is considered as stable in a world state w if the success rate of the plan is changing below a threshold. According to what factors this threshold is chosen and how much does the choice of this threshold influence the performance of the learning algorithm?  - At what time points is stability recorded? Every time a plan fails or after a goal fails?
 
-Response: If the threshold for change is too small, and actions have
-some non-deterministic failure, then plans can fail to stabilise and
-learning will be slowed down. If the threshold is too high plans can
-be prematurely regarded as stable. Stability is assessed every time a
-plan fails. (this needs refining wrt how we are using stability now).
+Stability captures the plan's success rate change i.e. difference between consecutive #successes/#failures values, and this difference is evaluated against the threshold. Therefore smaller threshold implies greater accuracy (more samples) and vice-versa. Stability is assesed every time a leaf-plan terminates.
+%If the threshold for change is too small, and actions have some non-deterministic failure, then plans can fail to stabilise and learning will be slowed down. If the threshold is too high plans can be prematurely regarded as stable. Stability is assessed every time a plan fails. (this needs refining wrt how we are using stability now).
 
-Does the world state encompass the whole knowledge of the agent or
-does it only include the parameters of a goal or plan?
+%Issue: ------------------------------------------------------------
+%Does the world state encompass the whole knowledge of the agent or does it only include the parameters of a goal or plan?
 
-Response: The world state includes parameters relevant for the plan
-and its descendants. This can be programmer specified, or calculated
-based on variables accessed.
+The world state includes parameters relevant for the goal and plan (including descendants). This can be programmer specified, or calculated from variables accessed.
 
-How much time of the normal execution has to be spent for learning, i.e.
-does learning heavily impacts the reactivity of the agent? How large
-problems can be that can be dealt with? Is it possible to use the
-approach selectively for those parts where learning is beneficial and
-use standard BDI for the rest of the agent?
+%Issue: ------------------------------------------------------------
+%How much time of the normal execution has to be spent for learning, i.e. does learning heavily impacts the reactivity of the agent? How large problems can be that can be dealt with? Is it possible to use the approach selectively for those parts where learning is beneficial and use standard BDI for the rest of the agent?
 
-Response: It would be possible to use the learning selectively, though
-we have not done that as yet. The major cost is in continually
-rebuilding the decision trees. Using incremental decision trees would
-address this.
+The approach applies where the learning space (e.g. 13.7M) may be constrained by programmed context conditions (to ~1.5M). It is also possible to learn selectively, though we have not done that yet. 
+%The major cost is in continually rebuilding the decision trees: here an incremental approach would help.
 
-So why using a learning BDI controller is better than using a planner?
+%Issue: ------------------------------------------------------------
+%[...] it does not discuss much the applicability of the approach. In which domains would it be beneficial using the approach? What are the inherent limitations of the approach e.g.  with respect to the size of problem?
 
-it does not discuss much the applicability of the approach. In which
-domains would it be beneficial using the approach? What are the
-inherent limitations of the approach e.g.  with respect to the size of
-problem?
+%Handled by previous response.
+
+%Issue: ------------------------------------------------------------
+%So why using a learning BDI controller is better than using a planner?
+
+Traditional (HTN) planning is not suitable since the effects of actions are changing over time.
 
 
+%Issue: ------------------------------------------------------------
+%Actually, I was a bit astonished to read this, because without being able to react on environmental dynamics the approach is quite limited.
 
-
-
-
-capable of dealing with changing environments.  Actually, I was a bit
-astonished to read this, because without being able to react on
-environmental dynamics the approach is quite limited.
-
-
+Regarding environment dynamics: difference from traditional learning is that the task to learn is not stationary.
