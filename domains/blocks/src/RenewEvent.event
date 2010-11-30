@@ -1,6 +1,9 @@
 public event RenewEvent extends Event
 {
+	public int action ;
 	#posted as
-	renew()
-	{}
+	renew(int a)
+	{
+		action = a; // 0 for renew , 1 for save
+	}
 }

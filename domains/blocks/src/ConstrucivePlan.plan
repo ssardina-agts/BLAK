@@ -36,9 +36,10 @@ plan ConstructivePlan extends Plan
         gl.get(first.getValue(),second.getValue());     // and where the goal is to have the first on the second
 	}
 	body()
-	{
+	{	
+		ag.steps++;
 		@test(ev.recursive > 0,null);
-        ag.writeLog("ConstructivePlan: Recursion "+ev.recursive+". Moving block "+first.getValue()+" onto block "+second.getValue());
+        ag.writeLog("ConstructivePlan: Moving block "+first.getValue()+" onto block "+second.getValue());
 		order.add(first.getValue(),second.getValue());
 		@subtask(ue.update());
 		@subtask(pe.print());

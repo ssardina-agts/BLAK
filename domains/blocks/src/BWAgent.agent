@@ -33,6 +33,7 @@ public agent BWAgent extends Agent implements Logger {
 	#posts event Start st;
 	#posts event MoveEvent me;
 	#posts event RenewEvent re; // make the order to a particular state which initalize randomly at first
+	#posts event PrintEvent pe;	
 	#handles event RenewEvent;
 	#handles event MoveEvent;
 	#handles event PlanChoice;
@@ -48,6 +49,8 @@ public agent BWAgent extends Agent implements Logger {
 	#uses plan PrintPlan;
 	#uses plan RenewPlan;
 
+	String initFile = "";
+
 	#private data Order order();// randomly initialize
 	#private data InitStat is();
 	#private data Movable mv();
@@ -60,11 +63,14 @@ public agent BWAgent extends Agent implements Logger {
 	public String[] records; // save all the record in one episode
 	public int currentUsedRecord = 0;
 
+	public int steps = 0;
 	//#uses plan MetaPlan;
 	//#uses plan ...
     //--- BDI Learning Framework related
     private int episode;
-    private int nEpisodes;
+    private String nEpisodes;
+	private int trainEpisodes;
+	private int testEpisodes;
     public PlanNode[] planNodes;
     private ExecutionTrace activeExecutionTrace; 
     private Random generator;
@@ -77,25 +83,32 @@ public agent BWAgent extends Agent implements Logger {
     private boolean lastResult;
     private int lastRequest;
     private int lastResponse;
-    
+    private boolean inTraining = true;
     //--- Logger related
     private int indent = 0;
     private PrintWriter writerOut;
     private PrintWriter writerRes;
     private String targetDir;
     
-    BWAgent(int episodes,
+	private	final int save = 1;
+	private	final int renew = 0;
+    BWAgent(String episodes,
             PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
             int buildThreshold, double failThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
-            long seed, String loadInit, String saveInit,int recursiveMax
+            long seed, String loadInit, String saveInit
             // ...
+			,int recursiveMax, String initFile
             ) {
             
         super("Blocks World Agent");
         this.nEpisodes = episodes;
-        
+		inTraining = true;
+		String [] ep = nEpisodes.split(":");
+		trainEpisodes = Integer.parseInt(ep[0]);
+		testEpisodes = Integer.parseInt(ep[1]);
+        this.initFile = initFile;
         //--- BDI Learning Framework related
         this.applicabilityThreshold = failThreshold;
         this.activeExecutionTrace = new ExecutionTrace();
@@ -131,7 +144,7 @@ public agent BWAgent extends Agent implements Logger {
         return episode;
     }
 
-    public int nEpisodes() {
+    public String nEpisodes() {
         return nEpisodes;
     }
     
@@ -166,16 +179,73 @@ public agent BWAgent extends Agent implements Logger {
     public RunMode rselect() {
         return rselect;
     }
-    
+
+	public boolean isLearning()	
+	{
+		return inTraining;
+	}    
+
+	public void startFromFile(String file)
+	{
+
+	 	try {
+				BufferedReader in  = new BufferedReader(new FileReader(file)) ;
+				String line = in.readLine();
+				while(line != null)
+				{
+					String [] blocks = line.split(" ");
+					order.add(blocks[0],blocks[1]);
+					line = in.readLine();
+				}
+			} catch (Exception e) {}	
+			if(recursiveMax == 0)
+			{
+				recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
+			} 
+			records = new String[recursiveMax + 1];
+        	writeLog("BEGIN -----------------------------------------");
+			writeLog("Initial state:");
+			postEventAndWait(pe.print());
+			postEventAndWait(re.renew(save));
+	}
     /*** Agent Code ***/
     public void go() {
-		postEventAndWait(st.start());	
-		for (int i = 0; i < nEpisodes; i++)
+		if (initFile.equals(""))
 		{
-            writeLog("EPISODE "+ episode + ":-----------------------------------------");
+			postEventAndWait(st.start());	
+		}
+		else
+		{
+			startFromFile(initFile);
+		}
+
+		for (int i = 0; i < trainEpisodes; i++)
+		{
+            writeLog("Training EPISODE "+ i + ":-----------------------------------------");
             if (goalsRemaining() > 0) {
        			postEventAndWait(me.move(recursiveMax));
-				postEventAndWait(re.renew());
+				postEventAndWait(re.renew(renew));
+				writeLog("Takes " + steps + " to acheive the goal");
+				writeLog("Training EPISODE "+ i + " end");
+				writerRes.println(episode + " " + steps);
+				steps = 0;
+            } else {
+                writeLog("Nothing left to do");
+            }
+            finishEpisode();
+		}
+		inTraining = false;
+
+		for (int i = 0; i < testEpisodes; i++)
+		{
+            writeLog("Testing EPISODE "+ i + ":-----------------------------------------");
+            if (goalsRemaining() > 0) {
+       			postEventAndWait(me.move(recursiveMax));
+				postEventAndWait(re.renew(renew));
+				writeLog("Takes " + steps + " to acheive the goal");
+				writeLog("Testing EPISODE "+ i + " end");
+				writerRes.println(episode + " " + steps);
+				steps = 0;
             } else {
                 writeLog("Nothing left to do");
             }
@@ -202,7 +272,7 @@ public agent BWAgent extends Agent implements Logger {
         indentReset();
         activeExecutionTrace.reset();
         episode++;
-        if (episode > nEpisodes) {
+        if (episode > (trainEpisodes + testEpisodes)) {
             writeLog("Blocks World Agent: Finished run.");
             for (int i = 0; i < planNodes.length; i++) {
                 writeLog(planNodes[i].getDT());
@@ -300,6 +370,7 @@ public agent BWAgent extends Agent implements Logger {
         writerRes.flush();
     }
 
+
     /*** Main  **/
     public static void main(String[] args) {
 
@@ -311,7 +382,7 @@ public agent BWAgent extends Agent implements Logger {
         double stableE = 0.5;
         int stableW = 5;
         int stateW = 5;
-        int episodes=10;
+        String episodes= "250:30";
         String targetDir = ".";
         String filename = "bw";
         long seed = 0;
@@ -322,6 +393,7 @@ public agent BWAgent extends Agent implements Logger {
         int wExperience = 0;
         double failThreshold = 0.0;
 		int recursiveMax = 0;
+		String initFile = "";
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
@@ -374,7 +446,7 @@ public agent BWAgent extends Agent implements Logger {
                     System.out.println(help);
                     System.exit(0);
                 case 'i':
-                    episodes = Integer.parseInt(args[index]);
+                    episodes = args[index];
                     index++;
                     break;
                 case 'k':
@@ -435,6 +507,10 @@ public agent BWAgent extends Agent implements Logger {
 					System.out.println(recursiveMax);
 					index++;
 					break;
+				case 'f': // load from file
+					initFile = args[index];
+					index++;
+					break;
                 }
             }
         }
@@ -443,7 +519,7 @@ public agent BWAgent extends Agent implements Logger {
             pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
-            seed, loadInit, saveInit,recursiveMax);
+            seed, loadInit, saveInit,recursiveMax,initFile);
         p.go();
     }
 

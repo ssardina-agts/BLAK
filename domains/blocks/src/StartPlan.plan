@@ -43,7 +43,7 @@ public plan StartPlan extends Plan {
 	
 	#reasoning method
 	initOrder() //randomly init order
-	{
+	{	
 		// get the blocks 
 		logical String b1;
 		logical String b2;
@@ -103,7 +103,6 @@ public plan StartPlan extends Plan {
 		logical String block2;
 		for(Cursor c = order.get(block1,block2);c.next();)
 		{
-			//System.out.println("Block1: "+ block1 + " Block2: " + block2);
 			is.add(block1.getValue(),block2.getValue());
 		}
 	}
