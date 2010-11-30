@@ -1,0 +1,28 @@
+Issues identified - ordered according to importance to address:
+
+the paper lacks a comparative evaluation against other common learning
+algorithms from the literature (beyond the "BDI learning" approach).
+The performance of the method could be compared to any general
+learning method from the literature (learning which (applicable) plan
+should be selected in a state).
+
+There should also be some discussion on how the plan selection process
+fits into the BDI architecture (e.g. when an execution trace fails,
+dropping goals, etc),
+
+Response:
+The BDI execution process itself is not changed. The standard plan
+selection process is simply replaced by the decision tree and
+probabilistic selection. Once failure recovery has occurred in a
+particular execution trace, no further data is collected for the
+learning from that trace (unless the failed execution made no changes).
+
+importance and sensitivity of the parameters, e.g. \alpha
+
+Additional measures regarding the reliability of the results, e.g.
+statistical variance, should be provided to indicate the significance
+of the results.
+it is unclear how significant and reliable these results are.
+
+formal definition of 'stable(P,w)' and 'mathcal{P}(P,w)' should be
+included (both in section 3).

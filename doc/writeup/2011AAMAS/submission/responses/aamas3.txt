@@ -1,0 +1,60 @@
+Explain stability: must be done, but possibly in another response.
+
+"stability".  only failed plans can be stable?  the rate of success of
+ P in w is changing below a certain threshold" - but what about if it
+ is constant and below that threshold?
+
+------ response text --------------
+Stability captures how certain we are regarding current knowledge of
+success/failure for a particular plan in a given world state. Success
+means a path has been found and implies stability. Failure cannot be
+assumed until all paths have been explored. Because actions may fail
+non-deterministically (at a certain rate), stability is recognised by
+achieving a (more or less) constant rate of success, rather than
+constant success/failure.
+
+------------
+
+what happened to the context conditions originally designed for plans
+(before learning)
+
+response: 
+
+Programmer defined context conditions are used as an initial
+filter. For some evaluation a functioning program had these removed to
+determine if the system could learn them.
+
+-----------------
+
+Section 3 discusses world-based confidence measure which (despite its
+name) measures confidence independently from the world in which
+success is judged. Are all plans equally world-dependent or
+world-independent? I could envisage plans whose success depends
+critically on current conditions and others where the general method
+is successful relatively independent of context, but the
+equation/mechanism does not seem to account for any variation. If
+there is a simple answer to this, it would be good to clarify.
+
+answer if possible (unsure of priority between this and next)
+
+--------------------
+
+Algorithm 1, why is d not a parameter of RecordDegreeStabilityInTrace
+(as it is in RecordDegreeStability)? What is the meaning of it being
+omitted?
+
+should answer this.
+
+------ take below if space -----
+
+goal G(r,5,s) configure all batteries in the system, or just one
+battery? If the former, what form does the plan take?
+
+The plan configures all batteries in the system.  (answer what form
+does the plan take)
+
+----------------
+
+assumes an agent with multiple plans available for each goal (no space)
+
+term BDI, term dynamics (there will not be space to address this)
