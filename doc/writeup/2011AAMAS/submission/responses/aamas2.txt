@@ -37,8 +37,8 @@ is simply replaced by the decision tree and probabilistic selection.
 %how changing their values affects the learning process would be helpful. 
 
 Thanks: we will improve discussion on the impact of parameters' values on
-learning. For stability threshold, see
-answer to Review1; regarding alpha, it is generally  not critical to
+learning. For stability threshold, please see
+response1; regarding alpha, it is generally  not critical to
 performance if broadly speaking there are many decision paths in the
 hierarchy and many states in which plans apply.
 %\alpha selection generally (and also in our example) is not critical to
@@ -63,5 +63,5 @@ hierarchy and many states in which plans apply.
 %experimentation was provided as well (at least as a measure of a rough number of
 %states which can treated by the system).
 
-Regarding states: programmed context conditions constrain 13.7M states to
+Regarding states: programmed context conditions constrain the 13.7M states to
 roughly 1.5M.
