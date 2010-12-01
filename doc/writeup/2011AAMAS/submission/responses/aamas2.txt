@@ -1,30 +1,56 @@
 %Issues identified - ordered according to importance to address:
 
 %Issue: ------------------------------------------------------------
-%The paper is lacking a comparative empirical investigation of the efficiency of the proposed method (rather than a demonstration of its behaviour) against learning methods outside the "BDI learning" literature. The performance of the method could be compared to any general learning method from the literature (learning which (applicable) plan should be selected in a state). An example would be a reinforcement learning algorithm, based on a reward that is calculated depending on the success of the execution trace (assigned to individual decisions depending on which plans are responsible for the failure).
+%The paper is lacking a comparative empirical investigation of the efficiency of
+the proposed method (rather than a demonstration of its behaviour) against
+learning methods outside the "BDI learning" literature. The performance of the
+method could be compared to any general learning method from the literature
+(learning which (applicable) plan should be selected in a state). An example
+would be a reinforcement learning algorithm, based on a reward that is
+calculated depending on the success of the execution trace (assigned to
+individual decisions depending on which plans are responsible for the failure).
 
-Our hierarchical learning shares similarities with Diettrich's MAXQ approach that forseeably could replace the decision tree framework. Our focus has been the principled integration of learning with BDI, and less on the learning technique itself.
-
-%Issue: ------------------------------------------------------------
-% There should also be some discussion on how the plan selection process fits into the BDI architecture (e.g. when an execution trace fails, dropping goals, etc),
-
-The BDI execution process itself is unchanged: standard plan selection process is simply replaced by the decision tree and probabilistic selection. Once failure recovery has occurred in a \lambda trace, no further data is collected for learning from that trace (unless the failed execution made no state changes).
-
-%Issue: ------------------------------------------------------------
-%Intuition on the importance and sensitivity of the parameters, e.g. \alpha, and how changing their values affects the learning process would be helpful. 
-
-\alpha selection generally (and also in our example) is not critical to performance if broadly speaking there are many decision paths in the hierarchy and many states in which plans apply.
-
-
-%Issue: ------------------------------------------------------------
-%Additional measures regarding the reliability of the results, e.g. statistical variance, should be provided to indicate the significance of the results. [...] it is unclear how significant and reliable these results are.
-
+Our hierarchical learning shares similarities with Diettrich's MAXQ approach
+that forseeably could replace the decision tree framework. Our focus has been
+the principled integration of learning with BDI, and less on the learning
+technique itself.
 
 %Issue: ------------------------------------------------------------
-%A formal definition of 'stable(P,w)' and 'mathcal{P}(P,w)' should be included (both in section 3).
+% There should also be some discussion on how the plan selection process fits
+into the BDI architecture (e.g. when an execution trace fails, dropping goals,
+etc),
+
+The BDI execution process itself is unchanged: standard plan selection process
+is simply replaced by the decision tree and probabilistic selection. Once
+failure recovery has occurred in a \lambda trace, no further data is collected
+for learning from that trace (unless the failed execution made no state
+changes).
+
+%Issue: ------------------------------------------------------------
+%Intuition on the importance and sensitivity of the parameters, e.g. \alpha, and
+how changing their values affects the learning process would be helpful. 
+
+\alpha selection generally (and also in our example) is not critical to
+performance if broadly speaking there are many decision paths in the hierarchy
+and many states in which plans apply.
 
 
 %Issue: ------------------------------------------------------------
-%The total number of states (13.7 million states) seems quite high. It would be a good intuition if the number of distinct states that were observed during the experimentation was provided as well (at least as a measure of a rough number of states which can treated by the system).
+%Additional measures regarding the reliability of the results, e.g. statistical
+variance, should be provided to indicate the significance of the results. [...]
+it is unclear how significant and reliable these results are.
 
-Regarding states: programmed context conditions constrain the 13.7M states to roughly 1.5M.
+
+%Issue: ------------------------------------------------------------
+%A formal definition of 'stable(P,w)' and 'mathcal{P}(P,w)' should be included
+(both in section 3).
+
+
+%Issue: ------------------------------------------------------------
+%The total number of states (13.7 million states) seems quite high. It would be
+a good intuition if the number of distinct states that were observed during the
+experimentation was provided as well (at least as a measure of a rough number of
+states which can treated by the system).
+
+Regarding states: programmed context conditions constrain the 13.7M states to
+roughly 1.5M.
