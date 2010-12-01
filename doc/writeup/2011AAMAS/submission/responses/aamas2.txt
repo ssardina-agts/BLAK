@@ -38,7 +38,7 @@ is simply replaced by the decision tree and probabilistic selection.
 
 Thanks: we will improve discussion on the impact of parameters' values on
 learning. For stability threshold, see
-answer to Review1; regarding \alpha, it is generally  not critical to
+answer to Review1; regarding alpha, it is generally  not critical to
 performance if broadly speaking there are many decision paths in the
 hierarchy and many states in which plans apply.
 %\alpha selection generally (and also in our example) is not critical to
