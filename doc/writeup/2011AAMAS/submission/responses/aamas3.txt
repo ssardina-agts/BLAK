@@ -1,60 +1,38 @@
-Explain stability: must be done, but possibly in another response.
+%Issue: ------------------------------------------------------------
+%The technical point I found most unclear, and affected my understanding of the approach, was "stability". At the start of Section 3, a definition which largely makes sense but implies that only failed plans can be stable ("A failed plan P is considered to be stable..."). Later in the section, the authors say "When a plan finally succeeds, we take an optimistic view and record 1 (i.e., full stability) against it." This seems contradictory and I do not understand. By the definition and the equation below it, "1" appears to imply that all applicable plans consistently failed. Moreover, the authors say "Leaf plan nodes... make no choices so their degree is simply 1." But, by the equation, wouldn't it be 1 only if the leaf plan was stable, and 0 otherwise? Finally, the definition asserts stability where "the rate of success of P in w is changing below a certain threshold" - but what about if it is constant and below that threshold? Do you mean "remains" rather than "is changing"? In general, this concept needs clarifying.
 
-"stability".  only failed plans can be stable?  the rate of success of
- P in w is changing below a certain threshold" - but what about if it
- is constant and below that threshold?
+Stability tells us how well-informed decisions were. Given all decision paths, success is rare and failure frequent. So when we succeed we consider the decisions well-informed (stability/degree=1), but for failures we want to know how well-informed (degree=?). For threshold please read response1.
+%Explain stability: must be done, but possibly in another response.
+%Stability captures how certain we are regarding current knowledge of success/failure for a particular plan in a given world state. Success means a path has been found and implies stability. Failure cannot be assumed until all paths have been explored. Because actions may fail non-deterministically (at a certain rate), stability is recognised by achieving a (more or less) constant rate of success, rather than constant success/failure.
 
------- response text --------------
-Stability captures how certain we are regarding current knowledge of
-success/failure for a particular plan in a given world state. Success
-means a path has been found and implies stability. Failure cannot be
-assumed until all paths have been explored. Because actions may fail
-non-deterministically (at a certain rate), stability is recognised by
-achieving a (more or less) constant rate of success, rather than
-constant success/failure.
+%Issue: ------------------------------------------------------------
+%Starting from the description of the augmented BDI system in Section 2, I was unclear what happened to the context conditions originally designed for plans (before learning). At one point, the authors refer to the "plan's (real) context condition" and I guess this is what is being referred to (please clarify), but I am unsure whether the context condition is still checked before/after the decision tree or confidence measure is applied? 
 
-------------
+Programmed context conditions are used as the first filter followed by learning filter to decide final applicability. Interpret "real" context conditions to mean the sum result of this filtering.
+%For some evaluation a functioning program had these removed to determine if the system could learn them.
 
-what happened to the context conditions originally designed for plans
-(before learning)
+%Issue: ------------------------------------------------------------
+%Section 3 discusses world-based confidence measure which (despite its name) measures confidence independently from the world in which success is judged. Are all plans equally world-dependent or world-independent? I could envisage plans whose success depends critically on current conditions and others where the general method is successful relatively independent of context, but the equation/mechanism does not seem to account for any variation. If there is a simple answer to this, it would be good to clarify.
 
-response: 
+%answer if possible (unsure of priority between this and next)
 
-Programmer defined context conditions are used as an initial
-filter. For some evaluation a functioning program had these removed to
-determine if the system could learn them.
+%Issue: ------------------------------------------------------------
+%Algorithm 1, why is d not a parameter of RecordDegreeStabilityInTrace (as it is in RecordDegreeStability)? What is the meaning of it being omitted?
 
------------------
+RecordDegreeStability "saves" d wrt P1,W1 so is not required to be passed on recursively.
 
-Section 3 discusses world-based confidence measure which (despite its
-name) measures confidence independently from the world in which
-success is judged. Are all plans equally world-dependent or
-world-independent? I could envisage plans whose success depends
-critically on current conditions and others where the general method
-is successful relatively independent of context, but the
-equation/mechanism does not seem to account for any variation. If
-there is a simple answer to this, it would be good to clarify.
+%Issue: ------------------------------------------------------------
+%[...] do the high-level plans which achieve a goal G(r,5,s) configure all batteries in the system, or just one battery? If the former, what form does the plan take? If the latter, why would learning about configuring one battery be different about learning about another? Also, what are the "possible requests" referred to in Experiment Setup, and what is the "overall battery response"? 
 
-answer if possible (unsure of priority between this and next)
+Plans for G(r,5,s) configure all modules by: configuring module5 then posting and waiting for G(r,4,s') to finish. "Possible requests" and "overall response" both mean [-1.0:+1.0] in steps +/-c.
 
---------------------
+%The plan configures all batteries in the system.  (answer what form does the plan take)
 
-Algorithm 1, why is d not a parameter of RecordDegreeStabilityInTrace
-(as it is in RecordDegreeStability)? What is the meaning of it being
-omitted?
 
-should answer this.
+%Issue: ------------------------------------------------------------
+%assumes an agent with multiple plans available for each goal (no space)
 
------- take below if space -----
+%Issue: ------------------------------------------------------------
+%term BDI, term dynamics (there will not be space to address this)
 
-goal G(r,5,s) configure all batteries in the system, or just one
-battery? If the former, what form does the plan take?
-
-The plan configures all batteries in the system.  (answer what form
-does the plan take)
-
-----------------
-
-assumes an agent with multiple plans available for each goal (no space)
-
-term BDI, term dynamics (there will not be space to address this)
+We agree that use of terms "BDI" and "dynamics" could be improved.
