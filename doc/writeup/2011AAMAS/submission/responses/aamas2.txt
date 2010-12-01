@@ -13,7 +13,7 @@ The BDI execution process itself is unchanged: standard plan selection process i
 %Issue: ------------------------------------------------------------
 %Intuition on the importance and sensitivity of the parameters, e.g. \alpha, and how changing their values affects the learning process would be helpful. 
 
-\alpha selection generally (and also in our example) does not contribute to performance if broadly speaking there are many decision paths in the hierarchy and many states in which plans apply.
+\alpha selection generally (and also in our example) is not critical to performance if broadly speaking there are many decision paths in the hierarchy and many states in which plans apply.
 
 
 %Issue: ------------------------------------------------------------
