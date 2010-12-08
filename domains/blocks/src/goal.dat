@@ -1,9 +1,5 @@
-<TupleTable
-    :tuples (
-	<GoalNew__Tuple :block1 "a" :block2 "b" >
-	<GoalNew__Tuple :block1 "b" :block2 "c" >
-	<GoalNew__Tuple :block1 "c" :block2 "table" >
-//	<GoalNew__Tuple :block1 "d" :block2 "table" >
-//	<GoalNew__Tuple :block1 "e" :block2 "table" >
-    )
->
+a b
+b c
+c table
+d table
+e table

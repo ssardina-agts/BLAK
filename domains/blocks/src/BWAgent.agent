@@ -51,11 +51,12 @@ public agent BWAgent extends Agent implements Logger {
 	#uses plan RenewPlan;
 
 	String initFile = "";
+	String goalFile = "";
 
 	#private data Order order();// randomly initialize
 	#private data InitStat is();
 	#private data Movable mv();
-	#private data GoalNew gl("./src/goal.dat");
+	#private data GoalNew gl();
 	#private data Blocks bl();
 
 	public int recursive = 0;
@@ -99,7 +100,7 @@ public agent BWAgent extends Agent implements Logger {
             String targetDir, String filename, 
             long seed, String loadInit, String saveInit
             // ...
-			,int recursiveMax, String initFile
+			,int recursiveMax, String initFile,String goalFile
             ) {
             
         super("Blocks World Agent");
@@ -108,6 +109,7 @@ public agent BWAgent extends Agent implements Logger {
 		trainEpisodes = Integer.parseInt(ep[0]);
 		testEpisodes = Integer.parseInt(ep[1]);
         this.initFile = initFile;
+		this.goalFile = goalFile;
         //--- BDI Learning Framework related
         this.applicabilityThreshold = failThreshold;
         this.activeExecutionTrace = new ExecutionTrace();
@@ -124,8 +126,8 @@ public agent BWAgent extends Agent implements Logger {
         //--- Logger related
         this.targetDir = ".";
         try{
-            writerOut = new PrintWriter(targetDir + "/" + filename + ".out");
-            writerRes = new PrintWriter(targetDir + "/" + filename + "-episodes.csv");
+            writerOut = new PrintWriter(targetDir + "/result/" + filename + ".out");
+            writerRes = new PrintWriter(targetDir + "/result/" + filename + "-episodes.csv");
         }catch(IOException e){
             System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
@@ -186,7 +188,7 @@ public agent BWAgent extends Agent implements Logger {
 
 	public void startFromFile(String file)
 	{
-
+		String block = "";
 	 	try {
 				BufferedReader in  = new BufferedReader(new FileReader(file)) ;
 				String line = in.readLine();
@@ -194,13 +196,18 @@ public agent BWAgent extends Agent implements Logger {
 				{
 					String [] blocks = line.split(" ");
 					order.add(blocks[0],blocks[1]);
+					block += blocks[0];
 					line = in.readLine();
 				}
-			} catch (Exception e) {}	
+			} catch (Exception e) 
+			{
+				writeLog("Error in reading initialize file");
+			}	
 			if(recursiveMax == 0)
 			{
 				recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
 			} 
+			bl.setBlocks(block);
 			records = new String[recursiveMax + 1];
 			postEventAndWait(ue.update());
         	writeLog("BEGIN -----------------------------------------");
@@ -208,9 +215,32 @@ public agent BWAgent extends Agent implements Logger {
 			postEventAndWait(pe.print());
 			postEventAndWait(re.renew(save));
 	}
+
+	public void setGoalFromFile(String file)
+	{
+	 	try {
+				BufferedReader in  = new BufferedReader(new FileReader(file)) ;
+				String line = in.readLine();
+				while(line != null)
+				{
+					String [] blocks = line.split(" ");
+					gl.add(blocks[0],blocks[1]);
+					line = in.readLine();
+				}
+			} catch (Exception e) 
+			{
+				writeLog("Error in reading Goal file");
+			}	
+	}
     /*** Agent Code ***/
     public void go() {
-
+		
+		if (goalFile == "")
+		{
+			writeLog("Error: Please set the goal file");
+			System.exit(1);
+		}
+		setGoalFromFile(goalFile);
 		for (int i = 0; i < trainEpisodes+testEpisodes; i++)
 		{
             if (initFile.equals(""))
@@ -376,6 +406,7 @@ public agent BWAgent extends Agent implements Logger {
         double failThreshold = 0.0;
 		int recursiveMax = 0;
 		String initFile = "";
+		String goalFile = "";
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
@@ -489,8 +520,12 @@ public agent BWAgent extends Agent implements Logger {
 					System.out.println(recursiveMax);
 					index++;
 					break;
-				case 'f': // load from file
+				case 'f': // load init from file
 					initFile = args[index];
+					index++;
+					break;
+				case 'G': // load goal from file
+					goalFile = args[index];
 					index++;
 					break;
                 }
@@ -501,7 +536,9 @@ public agent BWAgent extends Agent implements Logger {
             pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
-            seed, loadInit, saveInit,recursiveMax,initFile);
+            seed, loadInit, saveInit,recursiveMax,initFile,goalFile);
+		p.writeLog("GoalFile"+goalFile);
+		p.writeLog("InitFile"+initFile);
         p.go();
     }
 

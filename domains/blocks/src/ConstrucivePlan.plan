@@ -32,8 +32,8 @@ plan ConstructivePlan extends Plan
         !first.getValue().equals(second.getValue()) &&  // that are unique
         !first.getValue().equals("table") &&            // and not references to
         !second.getValue().equals("table") &&           // the table itself
-		//!order.get(first.getValue(),second.getValue()) && // and do not exsit in order
-        gl.get(first.getValue(),second.getValue());     // and where the goal is to have the first on the second
+        gl.get(first.getValue(),second.getValue()) &&   // and where the goal is to have the first on the second
+        ag.isGoalTower(second.getValue());              // and where the second is a goal tower
 	}
 	body()
 	{	
