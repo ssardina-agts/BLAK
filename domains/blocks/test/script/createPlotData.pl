@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 
-opendir(DH,"../Experiment") || die "Can not open directory";
+opendir(DH,"../../result") || die "Can not open directory";
 @files = readdir DH;
 closedir DH;
 $content ="";
@@ -13,7 +13,7 @@ $content .= 'set ylabel "Steps used"'."\n";
 foreach(@files)
 {
 	next if /\./;
-	$filename = "../Experiment/$_/".$_."_Result";
+	$filename = "../../result/$_/".$_."_Result";
 	$content .= 'set output "'.$filename.'.jpeg"'."\n" ;
 	open(FH,$filename)|| die "Can not that file";	
 	$trainSum = 0;

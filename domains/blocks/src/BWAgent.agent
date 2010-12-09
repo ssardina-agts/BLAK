@@ -126,8 +126,8 @@ public agent BWAgent extends Agent implements Logger {
         //--- Logger related
         this.targetDir = ".";
         try{
-            writerOut = new PrintWriter(targetDir + "/Experiment/" + filename + ".out");
-            writerRes = new PrintWriter(targetDir + "/Experiment/" + filename + "-episodes.csv");
+            writerOut = new PrintWriter(targetDir + "/result/" + filename + ".out");
+            writerRes = new PrintWriter(targetDir + "/result/" + filename + "-episodes.csv");
         }catch(IOException e){
             System.err.println("Error opening the file for writing the outcome \n"+e);
             System.exit(9);
