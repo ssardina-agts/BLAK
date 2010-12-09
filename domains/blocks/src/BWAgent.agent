@@ -62,7 +62,7 @@ public agent BWAgent extends Agent implements Logger {
 	public int recursive = 0;
 	public int recursiveMax = 0;
 	
-	public String[] records; // save all the record in one episode
+	public String[][] records; // save all the record in one episode
 	public int currentUsedRecord = 0;
 
 	public int steps = 0;
@@ -124,7 +124,7 @@ public agent BWAgent extends Agent implements Logger {
         this.lastResponse = 0;
         
         //--- Logger related
-        this.targetDir = ".";
+        this.targetDir = targetDir;
         try{
             writerOut = new PrintWriter(targetDir + "/result/" + filename + ".out");
             writerRes = new PrintWriter(targetDir + "/result/" + filename + "-episodes.csv");
@@ -141,6 +141,10 @@ public agent BWAgent extends Agent implements Logger {
 		this.recursiveMax = recursiveMax;
     }
 
+    public int maxRecursion() {
+        return recursiveMax;
+    }
+    
     public int episode() {
         return episode;
     }
@@ -181,9 +185,9 @@ public agent BWAgent extends Agent implements Logger {
         return rselect;
     }
 
-	public boolean isLearning()	
+	public boolean isTraining()	
 	{
-		return (episode>=trainEpisodes);
+		return (episode<trainEpisodes);
 	}    
 
 	public void startFromFile(String file)
@@ -208,7 +212,7 @@ public agent BWAgent extends Agent implements Logger {
 				recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
 			} 
 			bl.setBlocks(block);
-			records = new String[recursiveMax + 1];
+			records = new String[recursiveMax + 1][];
 			postEventAndWait(ue.update());
         	writeLog("BEGIN -----------------------------------------");
 			writeLog("Initial state:");
@@ -268,13 +272,14 @@ public agent BWAgent extends Agent implements Logger {
     
     /*** BDI Learning Framework related ***/
     
-    //public PlanIdInfo planInfo(int pid, String[] state) {
-        //PlanNode thisNode = planNodes[pid];
-        //double planConfidence = thisNode.averageExperiencedStability(state);
-        //double stateConfidence = thisNode.stateExperienceConfidence(state);
+    public PlanIdInfo planInfo(int pid) {
+        String[] state = null;
+        PlanNode thisNode = planNodes[pid];
+        double planConfidence = 1;//thisNode.averageExperiencedStability(state);
+        double stateConfidence = 1;//thisNode.stateExperienceConfidence(state);
         //double[] ps = thisNode.getProbability(state);
-        //return new PlanIdInfo(state, pid, ps[0], planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
-    //}
+        return new PlanIdInfo(state, pid, 1.0, planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
+    }
 
     public void finishEpisode() {
         /* Record the result for plotting */
@@ -296,7 +301,7 @@ public agent BWAgent extends Agent implements Logger {
     }
     
     public void record(int pid, boolean res, String[] state, int depth) {
-        boolean isRoot = (depth == 1/*maxRecursion*/);
+        boolean isRoot = (depth == recursiveMax);
         planNodes[pid].setLastInstance(state);
         if (activeExecutionTrace.shouldRecordFailure()) {
             res = false;
@@ -317,41 +322,35 @@ public agent BWAgent extends Agent implements Logger {
             int buildThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW) {
             
-        //FastVector classVal = new FastVector();
-        //classVal.addElement("+");
-        //classVal.addElement("-");
+        FastVector classVal = new FastVector();
+        classVal.addElement("+");
+        classVal.addElement("-");
 
-        //FastVector request = new FastVector();
-        //for (int i = -nModules; i < nModules+1; i++) {
-        //    request.addElement(Integer.toString(i));
-        //}
+        FastVector pval = new FastVector();
+        for (int i = 0; i < 3; i++) {
+            pval.addElement(Integer.toString(i));
+        }
+
         
         /* Now assign all attributes */
-        //FastVector atts = new FastVector();
-        //atts.addElement(new Attribute("request",request));
-        //atts.addElement(new Attribute("module",modules));
-        //atts.addElement(new Attribute("outcome",classVal));
+        FastVector atts = new FastVector();
+        atts.addElement(new Attribute("CPlan",pval));
+        atts.addElement(new Attribute("DPlan",pval));
+        atts.addElement(new Attribute("Dist"));
+        atts.addElement(new Attribute("Outcome",classVal));
     
 
-        planNodes = new PlanNode[0];
-        //planNodes = new PlanNode[5];
-        //planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
-        //planNodes[1] = new PlanNode("SetDischarge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
-        //planNodes[2] = new PlanNode("SetNotInUse", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
-        //planNodes[3] = new PlanNode("Execute", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
-        //planNodes[4] = new PlanNode("Dummy", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, true, buildThreshold, wExperience, logger);
+        planNodes = new PlanNode[2];
+        planNodes[0] = new PlanNode("ConstructivePlan", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
+        planNodes[1] = new PlanNode("DestructivePlan", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
 
-        //Node[] goalNodes = new Node[1];
-        //goalNodes[0] = new GoalNode("G", logger);
-        //goalNodes[0].addChild(planNodes[0]);
-        //goalNodes[0].addChild(planNodes[1]);
-        //goalNodes[0].addChild(planNodes[2]);
-        //goalNodes[0].addChild(planNodes[3]);
-        //goalNodes[0].addChild(planNodes[4]);
+        Node[] goalNodes = new Node[1];
+        goalNodes[0] = new GoalNode("G", logger);
+        goalNodes[0].addChild(planNodes[0]);
+        goalNodes[0].addChild(planNodes[1]);
 
-        //planNodes[0].addChild(goalNodes[0]);
-        //planNodes[1].addChild(goalNodes[0]);
-        //planNodes[2].addChild(goalNodes[0]);
+        planNodes[0].addChild(goalNodes[0]);
+        planNodes[1].addChild(goalNodes[0]);
     }
     
     /*** Logger Interface **/

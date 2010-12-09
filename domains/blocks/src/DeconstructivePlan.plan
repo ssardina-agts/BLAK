@@ -1,4 +1,5 @@
-import java.util.Random;
+import agents.PlanNode;
+import PlanIdInfo;
 
 plan DeconstructivePlan extends Plan
 {
@@ -14,11 +15,17 @@ plan DeconstructivePlan extends Plan
 	#modifies data GoalNew gl;
 	#reads data Blocks bl;
 
+    public int pid = 1;
+
 	public logical String top;
 	public logical String first;
 	public logical String second;
 	logical int a;
 	logical int b;
+
+    public PlanInstanceInfo getInstanceInfo(){
+        return ag.planInfo(pid);
+    }
 
 	static boolean 
 	relevant(MoveEvent m)
@@ -51,13 +58,15 @@ plan DeconstructivePlan extends Plan
 	#reasoning method 
 	pass()
 	{
-		ag.records[ev.recursive] = "000";
+        ag.record(pid, true, ag.records[ev.recursive], ev.recursive);
+		//ag.records[ev.recursive] = "000";
         //ag.writeLog("DeconstructivePlan Passed.");
 	}
 	
 	#reasoning method
 	fail()
 	{
+        ag.record(pid, false, ag.records[ev.recursive], ev.recursive);
         //ag.writeLog("DeconstructivePlan Failed.");
 	}
 

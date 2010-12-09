@@ -1,4 +1,8 @@
-import java.util.Random;
+import agents.Config.PlanSelectMode;
+import agents.Config.RunMode;
+import agents.ExecutionTrace;
+import java.util.Hashtable;
+import java.util.Vector;
 
 plan MetaPlan extends Plan
 {
@@ -20,58 +24,94 @@ plan MetaPlan extends Plan
 	body()
 	{
 		MoveEvent me = (MoveEvent) ev.event;	
-		Random r = new Random ();		
-		int rand = r.nextInt(ev.applicable.size()); // randomly pick one applicable plan
+        
+		int rand;
+        if (ag.isTraining()) {
+            /* We're in the training phase so select randomly */
+            rand = ag.selector().nextInt(ev.applicable.size());
+        } else {
+            /* We're in the testing phase so use learning to select */
+            int i = 0;
+            int iselect = 0;
+            int pMax = 0;
+            for (Signature s = ev.applicable.first(); s != null; s = ev.applicable.next(s),i++) {
+                PlanIdInfo info = (PlanIdInfo) s.getInfo();
+                /* !!! PROBLEM: STATE SELECTED IS THE LAST ONE */
+                String[] s = (me.recursive == ag.maxRecursion()) ? new String[0] : ag.records[me.recursive+1];
+                double planConfidence = ag.planNodes[info.plan_id].averageExperiencedStability(s);
+                double stateConfidence = ag.planNodes[info.plan_id].stateExperienceConfidence(s);
+                double[] ps = ag.planNodes[info.plan_id].getProbability(s);
+                double p = ps[0];
+                double c = (planConfidence * ag.confidenceAlpha()) + (stateConfidence * (1.0-ag.confidenceAlpha()));
+                p = 0.5 + (c * (p - 0.5));
+                if (p > pMax) {
+                    p = pMax;
+                    iselect = i;
+                }
+                String str =
+                    "MetaPlan: P" + info.plan_id +
+                    " REVISED probability" +
+                    " to p=" + ((double) ((int) (p * 10000))) / 10000 +
+                    " based on confidence c=" + ((double) ((int) (c * 10000))) / 10000 +
+                    ". (pConf="+((double) ((int) (planConfidence * 10000))) / 10000 +
+                    " sConf="+((double) ((int) (stateConfidence * 10000))) / 10000 +
+                    " alpha="+ag.confidenceAlpha()+")";
+                ag.writeLog(str);
+            }
+            rand = iselect;
+            
+        }
+        Signature selectedPlan;
+        int select = 0;
+		for (selectedPlan = ev.applicable.first(); 
+            ((selectedPlan != null) && (select < rand)); 
+            selectedPlan = ev.applicable.next(selectedPlan)) 
+        {
+			select++;
+		}
+        ev.chosen = selectedPlan;
+        String[] state = extractState(ev.applicable,selectedPlan);
+        ag.records[me.recursive] = state;
+
+        /* Learning related */
+        PlanIdInfo info = (PlanIdInfo) ev.chosen.getInfo();
+        Vector alternatives = new Vector();
+        for (Signature s = ev.applicable.first(); s != null; s = ev.applicable.next(s)) {
+            PlanIdInfo info = (PlanIdInfo) s.getInfo();
+            alternatives.add(ag.planNodes[info.plan_id]);
+        }
+        ag.activeExecutionTrace().pushTrace(ag.planNodes[info.plan_id].parent(),ag.planNodes[info.plan_id],alternatives,state);
+        ag.writeLog("MetaPlan: Added Plan "+ag.planNodes[info.plan_id].name()+" to the active execution trace: "+ag.activeExecutionTrace());
+	}
+
+
+	String[] extractState(ApplicableSet applicable, Signature selectedPlan)
+	{
+        
 		// the first bit of the string stands for constructive plan 
 		// the second bit of the string stands for deconstructive plan
 		// the third bit of the string stands for how many subgoals left 
 		// 1 stands for that this plan is in the picking list
 		// 2 stands for that this plan is selected
 		// 0 means not in the applicable list 	
+
 		String con = "0"; 
 		String decon = "0";
-		int subgoal = 0 ;
 		Signature s;
-		for (  s = ev.applicable.first();
-		(s != null) ;
-		s = ev.applicable.next( s )
-		)
-		{
-			if (s.getPlanName().equals("ConstructivePlan"))
-			{
-				con = "1";
-			}
-			else if (s.getPlanName().equals("DeconstructivePlan"))
-			{
-				decon = "1";
+		for (s = applicable.first(); s != null ;s = applicable.next(s)) {
+			if (s.getPlanName().equals("ConstructivePlan")) {
+				con = (s==selectedPlan) ? "2" : "1";
+			} else if (s.getPlanName().equals("DeconstructivePlan")) {
+				decon = (s==selectedPlan) ? "2" : "1";
 			}
 		}
-        ag.writeLog("Start rand="+rand+". Applicable="+ev.applicable.size());
-        int select = 0;
-		for (  s = ev.applicable.first();
-		((s != null) && (select < rand));
-		s = ev.applicable.next( s )
-		)
-		{
-			select++;
-		}
-        ag.writeLog("End rand="+rand);
-		if (s != null)
-		{
-			if (s.getPlanName().equals("ConstructivePlan"))
-			{
-				con = "2";
-			}
-			else if (s.getPlanName().equals("DeconstructivePlan"))
-			{
-				decon = "2";
-			}
-			subgoal = ag.goalsRemaining();
-			String record = con + decon + subgoal;
-			ag.records[me.recursive] = record;
-			ev.chosen = s;
-		}
+        String[] state = new String[3];
+        state[0] = con;
+        state[1] = decon;
+        state[2] = Integer.toString(ag.goalsRemaining());
+        return state;
 	}
+    
 
 }
 

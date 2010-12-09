@@ -34,7 +34,7 @@ public plan StartPlan extends Plan {
 		{
 			ag.recursiveMax = (bl.getBlocks().length() - 1) * 2  ;
 		} 
-		ag.records = new String[ag.recursiveMax + 1];
+		ag.records = new String[ag.recursiveMax + 1][];
         ag.writeLog("BEGIN -----------------------------------------");
 		ag.writeLog("Initial state:");
 		@subtask(ue.update());	
