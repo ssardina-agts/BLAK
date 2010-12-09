@@ -31,8 +31,8 @@ plan DeconstructivePlan extends Plan
 	{
         order.get(first,second) &&            // find two blocks, one above the other
         !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table") && // and the second is not the table
-        !ag.isGoalTower(first.getValue());    // and where the first is not a goal tower
+        !second.getValue().equals("table") // and the second is not the table
+		&& !ag.isGoalTower(first.getValue()); //REMOVABLE
 	}
 	body()
 	{

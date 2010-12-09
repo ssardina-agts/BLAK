@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Block" basedir="." default="all">
+
+<property name="root" value="${basedir}"/>
+<property name="source" value="${root}/src"/>
+<property name="lib" value="${root}/lib"/>
+<property name="config" value="${root}/etc"/>
+<property name="Experiment" value="${root}/Experiment"/>
+<property name="script" value="${root}/script"/>
+<property name="runtime" value="250:50"/>
+
+
+<target name="all" description="Build, run the test" depends="init,experiment,print"/>
+
+<!-- Create the build directory -->
+<target name="init" description="Mkdir build">
+	<mkdir dir="${Experiment}"/>
+</target>
+
+<!--make Directory tree -->
+
+<macrodef name="makeDirTree">
+	<attribute name="exper"/>
+	<sequential>
+		<mkdir dir="${Experiment}/@{exper}/build"/>
+		<mkdir dir="${Experiment}/@{exper}/lib"/>
+		<mkdir dir="${Experiment}/@{exper}/First"/>
+		<mkdir dir="${Experiment}/@{exper}/Second"/>
+		<mkdir dir="${Experiment}/@{exper}/Third"/>
+		<mkdir dir="${Experiment}/@{exper}/Fouth"/>
+		<mkdir dir="${Experiment}/@{exper}/Fifth"/>
+	</sequential>
+</macrodef>
+
+<!-- Do the all experiment -->
+<target name="experiment" description="Run all the experiment" 
+depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
+
+<!-- Compile the files-->
+<macrodef name="compile">
+	<attribute name="buildto"/>
+	<sequential>
+		<java fork="yes" maxmemory="1g" classname="aos.main.JackBuild" failonerror="true">
+			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar -wd src -r -d ../@{buildto}/build -i -DJAVACARGS=-g"/>
+			<classpath>
+				<pathelement location="lib/blak.jar"/>
+				<pathelement location="lib/jack.jar"/>
+				<pathelement location="lib/weka.jar"/>
+			</classpath>
+		</java>
+		<jar destfile="@{buildto}/lib/bwagent.jar" basedir="@{buildto}/build"/>
+	</sequential>
+</macrodef>
+
+<!-- First experiment -->
+<target name="experiment1" description="Compile from the soursce files">
+	<makeDirTree exper="Experiment1"/>
+	<compile buildto="Experiment/Experiment1"/>
+	<runRepeat initFile="etc/experiment1/init.dat" goalFile="etc/experiment1/goal.dat" output="${Experiment}/Experiment1/First_Experiment_Result"  experiment="Experiment1"/>
+</target>
+
+<!-- Second experiment -->
+<target name="experiment2" description="Compile from the soursce files">
+	<makeDirTree exper="Experiment2"/>
+	<compile buildto="Experiment/Experiment2"/>
+	<runRepeat initFile="etc/experiment2/init.dat" goalFile="etc/experiment2/goal.dat" output="${Experiment}/Experiment2/Second_Experiment_Result" experiment="Experiment2"/>
+</target>
+
+<!-- Third experiment -->
+<target name="experiment3" description="Compile from the soursce files">
+	<makeDirTree exper="Experiment3"/>
+	<compile buildto="Experiment/Experiment3"/>
+	<runRepeat initFile="RandomStart" goalFile="etc/experiment3/goal.dat" output="${Experiment}/Experiment3/Third_Experiment_Result" experiment="Experiment3"/>
+</target>
+
+<!-- Fouth experiment -->
+<target name="experiment4" description="Compile from the soursce files">
+	<exec executable="perl">
+		<arg line="./script/changeDeconstructiveplan.pl 1"/>
+	</exec>
+	<makeDirTree exper="Experiment4"/>
+	<compile buildto="Experiment/Experiment4"/>
+	<runRepeat initFile="RandomStart" goalFile="etc/experiment4/goal.dat" output="${Experiment}/Experiment4/Fouth_Experiment_Result" experiment="Experiment4"/>
+	<exec executable="perl">
+		<arg line="./script/changeDeconstructiveplan.pl 2"/>
+	</exec>
+</target>
+
+<!-- Fifth experiment -->
+<target name="experiment5" description="Compile from the soursce files">
+	<makeDirTree exper="Experiment5"/>
+	<compile buildto="Experiment/Experiment5"/>
+	<runRepeat initFile="RandomStart" goalFile="etc/experiment5/goal.dat" output="${Experiment}/Experiment5/Fifth_Experiment_Result" experiment="Experiment5"/>
+</target>
+
+<!-- Run each experiment One time -->
+<macrodef name="run">
+	<attribute name="sequence"/>
+	<attribute name="initFile"/>
+    <attribute name="goalFile"/>
+	<attribute name="experiment"/>
+	<attribute name="time"/>
+	<sequential>
+		<exec executable="java">
+			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar:Experiment/@{experiment}/lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i ${runtime} -r 500 -f @{initFile} -G @{goalFile}" />
+		</exec>
+		<exec executable="perl" dir="${script}">
+			<arg line="getAverage.pl ../Experiment/bw-episodes.csv ../Experiment/@{experiment}/@{experiment}_Result @{sequence} ${runtime} "/>
+		</exec>
+		<move file="${Experiment}/bw-episodes.csv" tofile="${Experiment}/@{experiment}/@{time}/bw-episodes.csv"/>
+		<move file="${Experiment}/bw.out" tofile="${Experiment}/@{experiment}/@{time}/bw.out"/>
+	</sequential>
+</macrodef>
+
+<!-- Repeat the expriment 5 times  -->
+<macrodef name="runRepeat">
+	<attribute name="output"/>
+	<attribute name="initFile"/>
+    <attribute name="goalFile"/>
+	<attribute name="experiment"/>
+	<sequential>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="1" experiment="@{experiment}" time="First"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="2" experiment="@{experiment}" time="Second"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="3" experiment="@{experiment}" time="Third"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="4" experiment="@{experiment}" time="Fouth"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="5" experiment="@{experiment}" time="Fifth"/>
+	</sequential>
+</macrodef>
+
+<!-- clearn all the build stuff -->
+
+<target name="clean" description="clean the build">
+	<delete dir="${Experiment}"/>
+</target>
+
+
+<!-- Check for build dependencies -->
+<target name="depend" unless="checked.buildDependencies">
+	<available file="${lib}/jack.jar" property="available"/>
+	<available file="${lib}/weka.jar" property="available"/>
+	<available file="${lib}/blak.jar" property="available"/>
+	<fail message="Could not found the dependencies!" unless="available"/>
+	<property name="checked.buildDependencies" value="true"/>
+</target>
+
+<target name="print" depends="experiment" >
+	<exec executable="perl" dir="script">
+		<arg line="createPlotData.pl"/>
+	</exec>
+	<exec executable="gnuplot" dir="script">
+		<arg line="create.plot"/>
+	</exec>
+</target>
+
+
+</project>
