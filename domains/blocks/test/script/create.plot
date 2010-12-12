@@ -5,11 +5,11 @@ set xtics ("TrainStepsAverage" 1, "LearnStepsAverage" 2)
 set xlabel "Run times"
 set ylabel "Steps used"
 set output "../../result/Experiment4/Experiment4_Result.jpeg"
-set yrange [67:71]
+set yrange [63:72]
 plot [0:3] "../../result/Experiment4/Experiment4_Result.bak" with boxes
 
 set output "../../result/Experiment3/Experiment3_Result.jpeg"
-set yrange [12:15]
+set yrange [12:14]
 plot [0:3] "../../result/Experiment3/Experiment3_Result.bak" with boxes
 
 set output "../../result/Experiment1/Experiment1_Result.jpeg"

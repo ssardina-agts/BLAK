@@ -6,16 +6,16 @@
 <property name="source" value="${root}/src"/>
 <property name="lib" value="${root}/lib"/>
 <property name="config" value="${root}/test"/>
-<property name="Experiment" value="${root}/result"/>
+<property name="experiment" value="${root}/result"/>
 <property name="script" value="${root}/test/script"/>
 <property name="runtime" value="250:50"/>
 
 
-<target name="all" description="Build, run the test" depends="init,experiment,print"/>
+<target name="all" description="Build, run the test" depends="init,experiment"/>
 
 <!-- Create the build directory -->
 <target name="init" description="Mkdir build">
-	<mkdir dir="${Experiment}"/>
+	<mkdir dir="${experiment}"/>
 </target>
 
 <!--make Directory tree -->
@@ -23,8 +23,8 @@
 <macrodef name="makeDirTree">
 	<attribute name="exper"/>
 	<sequential>
-		<mkdir dir="${Experiment}/@{exper}/build"/>
-		<mkdir dir="${Experiment}/@{exper}/lib"/>
+		<mkdir dir="${experiment}/@{exper}/build"/>
+		<mkdir dir="${experiment}/@{exper}/lib"/>
 	</sequential>
 </macrodef>
 
@@ -50,23 +50,23 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 
 <!-- First experiment -->
 <target name="experiment1" description="Compile from the soursce files">
-	<makeDirTree exper="Experiment1"/>
-	<compile buildto="result/Experiment1"/>
-	<runRepeat initFile="test/experiment1/init.dat" goalFile="test/experiment1/goal.dat" output="${Experiment}/Experiment1/First_Experiment_Result"  experiment="Experiment1"/>
+	<makeDirTree exper="experiment1"/>
+	<compile buildto="result/experiment1"/>
+	<runRepeat initFile="test/experiment1/init.dat" goalFile="test/experiment1/goal.dat" experiment="experiment1"/>
 </target>
 
 <!-- Second experiment -->
 <target name="experiment2" description="Compile from the soursce files">
-	<makeDirTree exper="Experiment2"/>
-	<compile buildto="result/Experiment2"/>
-	<runRepeat initFile="test/experiment2/init.dat" goalFile="test/experiment2/goal.dat" output="${Experiment}/Experiment2/Second_Experiment_Result" experiment="Experiment2"/>
+	<makeDirTree exper="experiment2"/>
+	<compile buildto="result/experiment2"/>
+	<runRepeat initFile="test/experiment2/init.dat" goalFile="test/experiment2/goal.dat" experiment="experiment2"/>
 </target>
 
 <!-- Third experiment -->
 <target name="experiment3" description="Compile from the soursce files">
-	<makeDirTree exper="Experiment3"/>
-	<compile buildto="result/Experiment3"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment3/goal.dat" output="${Experiment}/Experiment3/Third_Experiment_Result" experiment="Experiment3"/>
+	<makeDirTree exper="experiment3"/>
+	<compile buildto="result/experiment3"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment3/goal.dat" experiment="experiment3"/>
 </target>
 
 <!-- Fouth experiment -->
@@ -74,9 +74,9 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	<exec executable="perl">
 		<arg line="./test/script/changeDeconstructiveplan.pl 1"/>
 	</exec>
-	<makeDirTree exper="Experiment4"/>
-	<compile buildto="result/Experiment4"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment4/goal.dat" output="${Experiment}/Experiment4/Fouth_Experiment_Result" experiment="Experiment4"/>
+	<makeDirTree exper="experiment4"/>
+	<compile buildto="result/experiment4"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment4/goal.dat" experiment="experiment4"/>
 	<exec executable="perl">
 		<arg line="./test/script/changeDeconstructiveplan.pl 2"/>
 	</exec>
@@ -84,9 +84,9 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 
 <!-- Fifth experiment -->
 <target name="experiment5" description="Compile from the soursce files">
-	<makeDirTree exper="Experiment5"/>
-	<compile buildto="result/Experiment5"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment5/goal.dat" output="${Experiment}/Experiment5/Fifth_Experiment_Result" experiment="Experiment5"/>
+	<makeDirTree exper="experiment5"/>
+	<compile buildto="result/experiment5"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment5/goal.dat" experiment="experiment5"/>
 </target>
 
 <!-- Run each experiment One time -->
@@ -96,20 +96,18 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
     <attribute name="goalFile"/>
 	<attribute name="experiment"/>
 	<sequential>
+		<mkdir dir="result/@{experiment}/@{sequence}"/>
 		<exec executable="java">
-			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar:result/@{experiment}/lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i ${runtime} -r 500 -f @{initFile} -G @{goalFile}" />
+			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar:result/@{experiment}/lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i ${runtime} -r 500 -f @{initFile} -G @{goalFile} -d result/@{experiment}/@{sequence} " />
 		</exec>
 		<exec executable="perl" dir="${script}">
-			<arg line="getAverage.pl ../../result/bw-episodes.csv ../../result/@{experiment}/@{experiment}_Result @{sequence} ${runtime} "/>
+			<arg line="getAverage.pl ../../result/@{experiment}/@{sequence}/bw-episodes.csv ../../result/@{experiment}/@{experiment}_Result @{sequence} ${runtime} "/>
 		</exec>
-		<move file="${Experiment}/bw-episodes.csv" tofile="${Experiment}/@{experiment}/@{sequence}/bw-episodes.csv"/>
-		<move file="${Experiment}/bw.out" tofile="${Experiment}/@{experiment}/@{sequence}/bw.out"/>
 	</sequential>
 </macrodef>
 
 <!-- Repeat the expriment 5 times  -->
 <macrodef name="runRepeat">
-	<attribute name="output"/>
 	<attribute name="initFile"/>
     <attribute name="goalFile"/>
 	<attribute name="experiment"/>
@@ -119,13 +117,14 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="3" experiment="@{experiment}" />
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="4" experiment="@{experiment}" />
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="5" experiment="@{experiment}" />
+		<print filename="../../result/@{experiment}/@{experiment}_Result" />
 	</sequential>
 </macrodef>
 
 <!-- clearn all the build stuff -->
 
 <target name="clean" description="clean the build">
-	<delete dir="${Experiment}"/>
+	<delete dir="${experiment}"/>
 </target>
 
 
@@ -138,14 +137,19 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	<property name="checked.buildDependencies" value="true"/>
 </target>
 
-<target name="print" depends="experiment" >
-	<exec executable="perl" dir="./test/script">
-		<arg line="createPlotData.pl"/>
-	</exec>
-	<exec executable="gnuplot" dir="./test/script">
-		<arg line="create.plot"/>
-	</exec>
-</target>
-
+<macrodef name="print">
+	<attribute name="filename"/>
+	<sequential>
+		<exec executable="perl" dir="./test/script">
+			<arg line="createPlotData.pl @{filename}"/>
+		</exec>
+		<exec executable="gnuplot" dir="./test/script">
+			<arg line="@{filename}.plot"/>
+		</exec>
+		<exec executable="rm" dir="./test/script">
+			<arg line="-f @{filename}.plot"/>
+		</exec>
+	</sequential>
+</macrodef>
 
 </project>
