@@ -16,7 +16,7 @@ plan ConstructivePlan extends Plan
 	#reads data Blocks bl;
 
     public int pid = 0;
-
+	static boolean condition = false;
 	public logical String first; 
 	public logical String second;
 	logical int a;
@@ -26,20 +26,21 @@ plan ConstructivePlan extends Plan
         return ag.planInfo(pid);
     }
 
-	static boolean 
+	boolean 
 	relevant(MoveEvent m)
 	{
-		return true;
+		conditionTest();
+		return	condition;  // and where the goal is to have the first on the second
 
 	}
 	
 	context()
-	{
-        mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
+	{	
+		mv.get(a,first) && mv.get(b,second) &&   
         !first.getValue().equals(second.getValue()) &&  // that are unique
         !first.getValue().equals("table") &&            // and not references to
-        !second.getValue().equals("table") &&           // the table itself
-        gl.get(first.getValue(),second.getValue()) &&   // and where the goal is to have the first on the second
+        !second.getValue().equals("table") &&          
+        gl.get(first.getValue(),second.getValue()) &&
         ag.isGoalTower(second.getValue());              // and where the second is a goal tower
 	}
 	body()
@@ -55,6 +56,19 @@ plan ConstructivePlan extends Plan
 			@subtask(me.move(ev.recursive-1));
 		}
 
+	}
+
+	#reasoning method 
+	conditionTest()
+	{
+		if (
+		mv.get(a,first) && mv.get(b,second) &&   
+        !first.getValue().equals(second.getValue()) &&  // that are unique
+        !first.getValue().equals("table") &&            // and not references to
+        !second.getValue().equals("table") &&          
+        gl.get(first.getValue(),second.getValue())
+		)
+		condition = true;	
 	}
 
 	#reasoning method 

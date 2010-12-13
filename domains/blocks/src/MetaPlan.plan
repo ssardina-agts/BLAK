@@ -24,7 +24,7 @@ plan MetaPlan extends Plan
 	body()
 	{
 		MoveEvent me = (MoveEvent) ev.event;	
-        
+		//get relevant();
 		int rand;
         if (ag.isTraining()) {
             /* We're in the training phase so select randomly */
@@ -70,7 +70,7 @@ plan MetaPlan extends Plan
 			select++;
 		}
         ev.chosen = selectedPlan;
-        String[] state = extractState(ev.applicable,selectedPlan);
+        String[] state = extractState(ev.applicable,me.relevant);
         ag.records[me.recursive] = state;
 
         /* Learning related */
@@ -85,7 +85,7 @@ plan MetaPlan extends Plan
 	}
 
 
-	String[] extractState(ApplicableSet applicable, Signature selectedPlan)
+	String[] extractState(ApplicableSet applicable, Plan[] relevant)
 	{
         
 		// the first bit of the string stands for constructive plan 
@@ -97,12 +97,23 @@ plan MetaPlan extends Plan
 
 		String con = "0"; 
 		String decon = "0";
+		for (int i = 0; i < relevant.length; i++)
+		{
+			if (relevant[i].getPlanName().equals("ConstructivePlan"))
+			{
+				con = "1";
+			}
+			else if (relevant[i].getPlanName().equals("DeconstructivePlan"))
+			{
+				decon = "1";			
+			}
+		}
 		Signature s;
 		for (s = applicable.first(); s != null ;s = applicable.next(s)) {
 			if (s.getPlanName().equals("ConstructivePlan")) {
-				con = (s==selectedPlan) ? "2" : "1";
+				con = "2";
 			} else if (s.getPlanName().equals("DeconstructivePlan")) {
-				decon = (s==selectedPlan) ? "2" : "1";
+				decon = "2";
 			}
 		}
         String[] state = new String[3];

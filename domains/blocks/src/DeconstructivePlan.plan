@@ -16,7 +16,7 @@ plan DeconstructivePlan extends Plan
 	#reads data Blocks bl;
 
     public int pid = 1;
-
+	static boolean condition  = false;
 	public logical String top;
 	public logical String first;
 	public logical String second;
@@ -27,24 +27,25 @@ plan DeconstructivePlan extends Plan
         return ag.planInfo(pid);
     }
 
-	static boolean 
+	boolean 
 	relevant(MoveEvent m)
 	{
-		return true;
+		conditionTest();
+		return condition;
 
 	}
 	
 	context()
 	{
-        order.get(first,second) &&            // find two blocks, one above the other
+		order.get(first,second) &&            // find two blocks, one above the other
         !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table") // and the second is not the table
+        !second.getValue().equals("table")
 		&& !ag.isGoalTower(first.getValue()); //REMOVABLE
 	}
 	body()
 	{
 		ag.steps++;
-		@test(ev.recursive > 0,null);
+		@test(ev.recursive > 0,null);	
         ag.writeLog("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
 		order.add(first.getValue(),"table");
 		@subtask(ue.update());
@@ -54,6 +55,18 @@ plan DeconstructivePlan extends Plan
 			@subtask(me.move(ev.recursive-1));
 		}
 	}
+	
+	#reasoning method
+	conditionTest()
+	{
+		if (
+		order.get(first,second) &&            // find two blocks, one above the other
+        !order.get(top,first.getValue()) &&   // such that the first is free to move
+        !second.getValue().equals("table") // and the second is not the table
+		)
+		condition = true;
+	}
+
 	
 	#reasoning method 
 	pass()
