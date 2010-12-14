@@ -24,7 +24,7 @@ plan MetaPlan extends Plan
 	body()
 	{
 		MoveEvent me = (MoveEvent) ev.event;
-		String[] state = extractState(ev.applicable);	
+		String[] state = extractState(ev.applicable,me.relevant);	
 		int rand;
         if (ag.isTraining()) {
             /* We're in the training phase so select randomly */
@@ -83,7 +83,7 @@ plan MetaPlan extends Plan
 	}
 
 
-	String[] extractState(ApplicableSet applicable)
+	String[] extractState(ApplicableSet applicable,Plan[] relevant)
 	{
         
 		// the first bit of the string stands for constructive plan 
@@ -93,15 +93,30 @@ plan MetaPlan extends Plan
 		// 2 stands for that this plan is selected
 		// 0 means not in the applicable list 	
 
+		/* Step 0: Default state */
 		String con = "0"; 
 		String decon = "0";
+
+		/* Step 1: See if Constructive/Deconstructive was relevant in thie episode */
+		for (int i = 0; i < relevant.length; i++)
+		{
+			if (relevant[i].equals("ConstructivePlan"))
+			{
+				con = "1";
+			}
+			else if (relevant[i].equals("DeconstructivePlan"))
+			{
+				decon = "2";
+			}
+		}
+		/* Step 2: See if Constructive/Deconstructive was applicable in thie episode */
 		Signature s;
 		for (s = applicable.first(); s != null ;s = applicable.next(s)) {
             PlanIdInfo info = (PlanIdInfo) s.getInfo();
 			if (s.getPlanName().equals("ConstructivePlan")) {
-				con = Integer.toString(info.thisState);
+				con = "2";
 			} else if (s.getPlanName().equals("DeconstructivePlan")) {
-				decon = Integer.toString(info.thisState);
+				decon = "2";
 			}
 		}
         String[] state = new String[3];

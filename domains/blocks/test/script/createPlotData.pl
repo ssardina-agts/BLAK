@@ -1,5 +1,6 @@
 #! /usr/bin/env perl
-$filename=$ARGV[0];
+$filename = $ARGV[0];
+$experimentTimes = $ARGV[1];
 
 $content ="";
 $content .= "set terminal postscript landscape color rounded\n";
@@ -22,8 +23,8 @@ while ($line=<FH>)
 }
 close FH;
 
-$trainAverage = $trainSum/5;
-$learnAverage = $learnSum/5;
+$trainAverage = $trainSum/$experimentTimes; # change
+$learnAverage = $learnSum/$experimentTimes; # change
 $min = int($learnAverage) - 1;
 $max = int($trainAverage) + 2;
 

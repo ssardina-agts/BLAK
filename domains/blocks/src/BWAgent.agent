@@ -272,13 +272,13 @@ public agent BWAgent extends Agent implements Logger {
     
     /*** BDI Learning Framework related ***/
     
-    public PlanIdInfo planInfo(int pid, int s) {
+    public PlanIdInfo planInfo(int pid) {
         String[] state = null;
         PlanNode thisNode = planNodes[pid];
         double planConfidence = 1;//thisNode.averageExperiencedStability(state);
         double stateConfidence = 1;//thisNode.stateExperienceConfidence(state);
         //double[] ps = thisNode.getProbability(state);
-        return new PlanIdInfo(state, pid, 1.0, planConfidence, stateConfidence, thisNode.isFailedThresholdHandler(), s);
+        return new PlanIdInfo(state, pid, 1.0, planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
     }
 
     public void finishEpisode() {

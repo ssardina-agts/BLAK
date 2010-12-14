@@ -22,29 +22,25 @@ plan DeconstructivePlan extends Plan
 	public logical String second;
 	logical int a;
 	logical int b;
-	public int thisState ;
+	boolean condition = false; //CHANGE 
 
     public PlanInstanceInfo getInstanceInfo(){
-        return ag.planInfo(pid,thisState);
+        return ag.planInfo(pid);
     }
 
 	boolean 
 	relevant(MoveEvent m)
 	{
-		return true;
-
+		conditionTest();
+		return condition;
 	}
 	
 	context()
 	{
         order.get(first,second) &&         // find two blocks, one above the other
-		!ag.isGoalTower(first.getValue()) && //REMOVABLE
-		assign1() &&						// assign the state to 1
+		!ag.isGoalTower(first.getValue()) &&  //REMOVABLE 
         !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table") &&         // find two blocks, one above the other
-        ((!order.get(top,first.getValue()) && 		// if the action condition is true 
-        !second.getValue().equals("table"))         // then assign the state to 2
-		? assign2() : true); 
+        !second.getValue().equals("table");     // find two blocks, one above the other
 	}
 	body()
 	{
@@ -60,17 +56,6 @@ plan DeconstructivePlan extends Plan
 		}
 	}
 	
-	boolean assign1()
-	{
-		thisState = 1;
-		return true;
-	}
-	boolean assign2()
-	{
-		thisState = 2;
-		return true;
-	}
-
 	#reasoning method 
 	pass()
 	{
@@ -87,20 +72,16 @@ plan DeconstructivePlan extends Plan
 	}
 
 	#reasoning method 
-	stateTest()
+	conditionTest()
 	{
- 		/* Should come here only if the context is true */
-		thisState = 1;
 
-		/* If the MOVE precondition also holds then state is 2*/
 		if(
-        order.get(first,second) &&            // find two blocks, one above the other
-        !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table") // prevent moving a block on the table to another place on the table
+		order.get(first,second) &&  
+        !ag.isGoalTower(first.getValue())&&    
+        !second.getValue().equals("table") 
 		) {
-			thisState = 2;
+			condition = true;
 		}
-		return true;
 	}
 
 }
