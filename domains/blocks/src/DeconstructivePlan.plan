@@ -16,36 +16,40 @@ plan DeconstructivePlan extends Plan
 	#reads data Blocks bl;
 
     public int pid = 1;
-	static boolean condition  = false;
+
 	public logical String top;
 	public logical String first;
 	public logical String second;
 	logical int a;
 	logical int b;
+	public int thisState ;
 
     public PlanInstanceInfo getInstanceInfo(){
-        return ag.planInfo(pid);
+        return ag.planInfo(pid,thisState);
     }
 
 	boolean 
 	relevant(MoveEvent m)
 	{
-		conditionTest();
-		return condition;
+		return true;
 
 	}
 	
 	context()
 	{
-		order.get(first,second) &&            // find two blocks, one above the other
+        order.get(first,second) &&         // find two blocks, one above the other
+		!ag.isGoalTower(first.getValue()) && //REMOVABLE
+		assign1() &&						// assign the state to 1
         !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table")
-		&& !ag.isGoalTower(first.getValue()); //REMOVABLE
+        !second.getValue().equals("table") &&         // find two blocks, one above the other
+        ((!order.get(top,first.getValue()) && 		// if the action condition is true 
+        !second.getValue().equals("table"))         // then assign the state to 2
+		? assign2() : true); 
 	}
 	body()
 	{
 		ag.steps++;
-		@test(ev.recursive > 0,null);	
+		@test(ev.recursive > 0,null);
         ag.writeLog("DeconstructivePlan: Moving block "+first.getValue()+" onto the table");
 		order.add(first.getValue(),"table");
 		@subtask(ue.update());
@@ -56,18 +60,17 @@ plan DeconstructivePlan extends Plan
 		}
 	}
 	
-	#reasoning method
-	conditionTest()
+	boolean assign1()
 	{
-		if (
-		order.get(first,second) &&            // find two blocks, one above the other
-        !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table") // and the second is not the table
-		)
-		condition = true;
+		thisState = 1;
+		return true;
+	}
+	boolean assign2()
+	{
+		thisState = 2;
+		return true;
 	}
 
-	
 	#reasoning method 
 	pass()
 	{
@@ -83,6 +86,22 @@ plan DeconstructivePlan extends Plan
         //ag.writeLog("DeconstructivePlan Failed.");
 	}
 
-	
+	#reasoning method 
+	stateTest()
+	{
+ 		/* Should come here only if the context is true */
+		thisState = 1;
+
+		/* If the MOVE precondition also holds then state is 2*/
+		if(
+        order.get(first,second) &&            // find two blocks, one above the other
+        !order.get(top,first.getValue()) &&   // such that the first is free to move
+        !second.getValue().equals("table") // prevent moving a block on the table to another place on the table
+		) {
+			thisState = 2;
+		}
+		return true;
+	}
+
 }
 

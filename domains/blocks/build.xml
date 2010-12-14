@@ -52,21 +52,21 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 <target name="experiment1" description="Compile from the soursce files">
 	<makeDirTree exper="experiment1"/>
 	<compile buildto="result/experiment1"/>
-	<runRepeat initFile="test/experiment1/init.dat" goalFile="test/experiment1/goal.dat" experiment="experiment1"/>
+	<runRepeat initFile="test/experiment1/init.dat" goalFile="test/experiment1/goal.dat" experiment="experiment1" maxrecursive="3"/>
 </target>
 
 <!-- Second experiment -->
 <target name="experiment2" description="Compile from the soursce files">
 	<makeDirTree exper="experiment2"/>
 	<compile buildto="result/experiment2"/>
-	<runRepeat initFile="test/experiment2/init.dat" goalFile="test/experiment2/goal.dat" experiment="experiment2"/>
+	<runRepeat initFile="test/experiment2/init.dat" goalFile="test/experiment2/goal.dat" experiment="experiment2" maxrecursive="20"/>
 </target>
 
 <!-- Third experiment -->
 <target name="experiment3" description="Compile from the soursce files">
 	<makeDirTree exper="experiment3"/>
 	<compile buildto="result/experiment3"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment3/goal.dat" experiment="experiment3"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment3/goal.dat" experiment="experiment3" maxrecursive="20"/>
 </target>
 
 <!-- Fouth experiment -->
@@ -76,7 +76,7 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	</exec>
 	<makeDirTree exper="experiment4"/>
 	<compile buildto="result/experiment4"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment4/goal.dat" experiment="experiment4"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment4/goal.dat" experiment="experiment4" maxrecursive="100"/>
 	<exec executable="perl">
 		<arg line="./test/script/changeDeconstructiveplan.pl 2"/>
 	</exec>
@@ -86,7 +86,7 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 <target name="experiment5" description="Compile from the soursce files">
 	<makeDirTree exper="experiment5"/>
 	<compile buildto="result/experiment5"/>
-	<runRepeat initFile="RandomStart" goalFile="test/experiment5/goal.dat" experiment="experiment5"/>
+	<runRepeat initFile="RandomStart" goalFile="test/experiment5/goal.dat" experiment="experiment5" maxrecursive="15"/>
 </target>
 
 <!-- Run each experiment One time -->
@@ -95,10 +95,11 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	<attribute name="initFile"/>
     <attribute name="goalFile"/>
 	<attribute name="experiment"/>
+	<attribute name="maxrecursive"/>
 	<sequential>
 		<mkdir dir="result/@{experiment}/@{sequence}"/>
 		<exec executable="java">
-			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar:result/@{experiment}/lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i ${runtime} -r 500 -f @{initFile} -G @{goalFile} -d result/@{experiment}/@{sequence} " />
+			<arg line="-cp lib/jack.jar:lib/weka.jar:lib/blak.jar:result/@{experiment}/lib/bwagent.jar BWAgent -u concurrent -s confidence -o bw -k 1 -e 0.5 -a 0.5 -v 5 -w 5 -l 20 -m 0 -b 0.0 -i ${runtime} -r @{maxrecursive} -f @{initFile} -G @{goalFile} -d result/@{experiment}/@{sequence} " />
 		</exec>
 		<exec executable="perl" dir="${script}">
 			<arg line="getAverage.pl ../../result/@{experiment}/@{sequence}/bw-episodes.csv ../../result/@{experiment}/@{experiment}_Result @{sequence} ${runtime} "/>
@@ -111,12 +112,13 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	<attribute name="initFile"/>
     <attribute name="goalFile"/>
 	<attribute name="experiment"/>
+	<attribute name="maxrecursive"/>
 	<sequential>
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="1" experiment="@{experiment}" />
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="2" experiment="@{experiment}" />
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="3" experiment="@{experiment}" />
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="4" experiment="@{experiment}" />
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="5" experiment="@{experiment}" />
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="1" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="2" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="3" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="4" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="5" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<print filename="../../result/@{experiment}/@{experiment}_Result" />
 	</sequential>
 </macrodef>

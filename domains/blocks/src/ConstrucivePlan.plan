@@ -16,32 +16,37 @@ plan ConstructivePlan extends Plan
 	#reads data Blocks bl;
 
     public int pid = 0;
-	static boolean condition = false;
+
 	public logical String first; 
 	public logical String second;
 	logical int a;
 	logical int b;	
+	public int thisState;
 
     public PlanInstanceInfo getInstanceInfo(){
-        return ag.planInfo(pid);
+        return ag.planInfo(pid,thisState);
     }
 
 	boolean 
 	relevant(MoveEvent m)
-	{
-		conditionTest();
-		return	condition;  // and where the goal is to have the first on the second
+	{	
+		return true;
 
 	}
 	
 	context()
-	{	
-		mv.get(a,first) && mv.get(b,second) &&   
-        !first.getValue().equals(second.getValue()) &&  // that are unique
-        !first.getValue().equals("table") &&            // and not references to
-        !second.getValue().equals("table") &&          
-        gl.get(first.getValue(),second.getValue()) &&
-        ag.isGoalTower(second.getValue());              // and where the second is a goal tower
+	{
+		mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
+        gl.get(first.getValue(),second.getValue()) &&   // and where the goal is to have the first on the second
+        ag.isGoalTower(second.getValue()) &&            // and where the second is a goal tower
+		assign1() &&									// make the state to be 1
+		!first.getValue().equals(second.getValue()) &&  // that are unique
+		!first.getValue().equals("table") &&            // and not references to
+        !second.getValue().equals("table") &&
+        ((!first.getValue().equals(second.getValue()) && // check the action condition
+        !first.getValue().equals("table") &&            //  true assign the state to 2
+        !second.getValue().equals("table"))             
+		? assign2() : true);		
 	}
 	body()
 	{	
@@ -57,18 +62,32 @@ plan ConstructivePlan extends Plan
 		}
 
 	}
-
-	#reasoning method 
-	conditionTest()
+	boolean assign1()
 	{
-		if (
-		mv.get(a,first) && mv.get(b,second) &&   
+		thisState = 1;
+		return true;
+	}
+	boolean assign2()
+	{
+		thisState = 2;
+		return true;
+	}
+	#reasoning method 
+	stateTest()
+	{
+ 		/* Should come here only if the context is true */
+		thisState = 1;
+
+		/* If the MOVE precondition also holds then state is 2*/
+		if(       
+		mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
         !first.getValue().equals(second.getValue()) &&  // that are unique
         !first.getValue().equals("table") &&            // and not references to
-        !second.getValue().equals("table") &&          
-        gl.get(first.getValue(),second.getValue())
-		)
-		condition = true;	
+        !second.getValue().equals("table")             // the table itself) // prevent moving a block on the table to another place on the table
+		) {
+			thisState = 2;
+		}
+		return true;
 	}
 
 	#reasoning method 

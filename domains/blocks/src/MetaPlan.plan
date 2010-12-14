@@ -23,8 +23,8 @@ plan MetaPlan extends Plan
 	}
 	body()
 	{
-		MoveEvent me = (MoveEvent) ev.event;	
-		//get relevant();
+		MoveEvent me = (MoveEvent) ev.event;
+		String[] state = extractState(ev.applicable);	
 		int rand;
         if (ag.isTraining()) {
             /* We're in the training phase so select randomly */
@@ -33,19 +33,19 @@ plan MetaPlan extends Plan
             /* We're in the testing phase so use learning to select */
             int i = 0;
             int iselect = 0;
-            int pMax = 0;
+            double pMax = 0;
             for (Signature s = ev.applicable.first(); s != null; s = ev.applicable.next(s),i++) {
                 PlanIdInfo info = (PlanIdInfo) s.getInfo();
-                /* !!! PROBLEM: STATE SELECTED IS THE LAST ONE */
-                String[] s = (me.recursive == ag.maxRecursion()) ? new String[0] : ag.records[me.recursive+1];
-                double planConfidence = ag.planNodes[info.plan_id].averageExperiencedStability(s);
-                double stateConfidence = ag.planNodes[info.plan_id].stateExperienceConfidence(s);
-                double[] ps = ag.planNodes[info.plan_id].getProbability(s);
+                /* !!! PROBLEM: STATE SELECTED IS THE LAST ONE */        		
+                //String[] s = (me.recursive == ag.maxRecursion()) ? new String[0] : ag.records[me.recursive+1];
+                double planConfidence = ag.planNodes[info.plan_id].averageExperiencedStability(state);
+                double stateConfidence = ag.planNodes[info.plan_id].stateExperienceConfidence(state);
+                double[] ps = ag.planNodes[info.plan_id].getProbability(state);
                 double p = ps[0];
                 double c = (planConfidence * ag.confidenceAlpha()) + (stateConfidence * (1.0-ag.confidenceAlpha()));
                 p = 0.5 + (c * (p - 0.5));
                 if (p > pMax) {
-                    p = pMax;
+                    pMax = p;
                     iselect = i;
                 }
                 String str =
@@ -70,9 +70,7 @@ plan MetaPlan extends Plan
 			select++;
 		}
         ev.chosen = selectedPlan;
-        String[] state = extractState(ev.applicable,me.relevant);
         ag.records[me.recursive] = state;
-
         /* Learning related */
         PlanIdInfo info = (PlanIdInfo) ev.chosen.getInfo();
         Vector alternatives = new Vector();
@@ -85,7 +83,7 @@ plan MetaPlan extends Plan
 	}
 
 
-	String[] extractState(ApplicableSet applicable, Plan[] relevant)
+	String[] extractState(ApplicableSet applicable)
 	{
         
 		// the first bit of the string stands for constructive plan 
@@ -97,23 +95,13 @@ plan MetaPlan extends Plan
 
 		String con = "0"; 
 		String decon = "0";
-		for (int i = 0; i < relevant.length; i++)
-		{
-			if (relevant[i].getPlanName().equals("ConstructivePlan"))
-			{
-				con = "1";
-			}
-			else if (relevant[i].getPlanName().equals("DeconstructivePlan"))
-			{
-				decon = "1";			
-			}
-		}
 		Signature s;
 		for (s = applicable.first(); s != null ;s = applicable.next(s)) {
+            PlanIdInfo info = (PlanIdInfo) s.getInfo();
 			if (s.getPlanName().equals("ConstructivePlan")) {
-				con = "2";
+				con = Integer.toString(info.thisState);
 			} else if (s.getPlanName().equals("DeconstructivePlan")) {
-				decon = "2";
+				decon = Integer.toString(info.thisState);
 			}
 		}
         String[] state = new String[3];
