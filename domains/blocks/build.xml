@@ -119,11 +119,11 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="3" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="4" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="5" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
-<!--		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="6" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="6" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="7" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="8" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="9" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
-		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="10" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/> -->
+		<run initFile="@{initFile}" goalFile="@{goalFile}" sequence="10" experiment="@{experiment}" maxrecursive="@{maxrecursive}"/>
 		<print filename="../../result/@{experiment}/@{experiment}_Result" />
 	</sequential>
 </macrodef>
@@ -148,7 +148,7 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 	<attribute name="filename"/>
 	<sequential>
 		<exec executable="perl" dir="./test/script">
-			<arg line="createPlotData.pl @{filename} 5"/> <!-- If add more experiment change the number as well -->
+			<arg line="createPlotData.pl @{filename} 10"/> 
 		</exec>
 		<exec executable="gnuplot" dir="./test/script">
 			<arg line="@{filename}.plot"/>

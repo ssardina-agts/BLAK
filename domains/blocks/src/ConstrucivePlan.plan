@@ -41,8 +41,7 @@ plan ConstructivePlan extends Plan
 		assign("1") &&
 		mv.get(a,first.getValue()) && mv.get(b,second.getValue()) && // both movable
 		!first.getValue().equals(second.getValue()) &&  // that are unique
-		!first.getValue().equals("table") &&            // and not references to tables
-		assign("2");
+		!first.getValue().equals("table") ;           // and not references to tables
 	}
 	body()
 	{	

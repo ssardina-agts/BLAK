@@ -38,8 +38,7 @@ plan DeconstructivePlan extends Plan
 		!ag.isGoalTower(first.getValue()) &&  //REMOVABLE 
 		!second.getValue().equals("table") && // do not move from table to table 
 		assign("1") &&
-        mv.get(a,first.getValue()) &&  // such that the first is free to move
-		assign("2");
+        mv.get(a,first.getValue());  // such that the first is free to move
 	}
 	body()
 	{
