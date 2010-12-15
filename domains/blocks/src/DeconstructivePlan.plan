@@ -17,30 +17,29 @@ plan DeconstructivePlan extends Plan
 
     public int pid = 1;
 
-	public logical String top;
 	public logical String first;
 	public logical String second;
 	logical int a;
-	logical int b;
-	boolean condition = false; //CHANGE 
+
 
     public PlanInstanceInfo getInstanceInfo(){
         return ag.planInfo(pid);
     }
 
-	boolean 
+	static boolean 
 	relevant(MoveEvent m)
 	{
-		conditionTest();
-		return condition;
+		return true;
 	}
 	
 	context()
 	{
         order.get(first,second) &&         // find two blocks, one above the other
 		!ag.isGoalTower(first.getValue()) &&  //REMOVABLE 
-        !order.get(top,first.getValue()) &&   // such that the first is free to move
-        !second.getValue().equals("table");     // find two blocks, one above the other
+		!second.getValue().equals("table") && // do not move from table to table 
+		assign("1") &&
+        mv.get(a,first.getValue()) &&  // such that the first is free to move
+		assign("2");
 	}
 	body()
 	{
@@ -54,6 +53,12 @@ plan DeconstructivePlan extends Plan
 		{
 			@subtask(me.move(ev.recursive-1));
 		}
+	}
+
+	boolean assign (String value)
+	{
+		ag.decon = value;
+		return true;
 	}
 	
 	#reasoning method 
@@ -69,19 +74,6 @@ plan DeconstructivePlan extends Plan
 	{
         ag.record(pid, false, ag.records[ev.recursive], ev.recursive);
         //ag.writeLog("DeconstructivePlan Failed.");
-	}
-
-	#reasoning method 
-	conditionTest()
-	{
-
-		if(
-		order.get(first,second) &&  
-        !ag.isGoalTower(first.getValue())&&    
-        !second.getValue().equals("table") 
-		) {
-			condition = true;
-		}
 	}
 
 }

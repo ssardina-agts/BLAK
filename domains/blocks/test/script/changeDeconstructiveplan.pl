@@ -13,7 +13,6 @@ if ($mode == 1)
 	open (WFH,">>",$filename) || die "Can not open that file" ;
 	foreach(@lines)
 	{
-		$_ = "\tboolean condition = true; //CHANGE\n" if /CHANGE/;
 		$_ = "\t\t//REMOVABLE\n" if /REMOVABLE/;
 		print WFH $_;
 	}	
@@ -23,7 +22,6 @@ if ($mode == 2)
 {
 	foreach(@lines)
 	{
-		$_ = "\tboolean condition = false; //CHANGE \n" if /CHANGE/;
 		$_ = "\t\t!ag.isGoalTower(first.getValue()) &&  //REMOVABLE \n" if /REMOVABLE/;
 	}	
 	open (WFH,">",$filename) || die "Can not open that file" ;

@@ -1,5 +1,6 @@
 import agents.PlanNode;
 import PlanIdInfo;
+import aos.jack.jak.beliefset.BeliefSetException;
 
 plan ConstructivePlan extends Plan
 {
@@ -21,28 +22,27 @@ plan ConstructivePlan extends Plan
 	public logical String second;
 	logical int a;
 	logical int b;	
-	boolean condition = false;
+	static boolean condition;
 
     public PlanInstanceInfo getInstanceInfo(){
         return ag.planInfo(pid);
     }
 
-	boolean 
+	static boolean 
 	relevant(MoveEvent m)
-	{	
-		conditionTest();
-		return condition;
-
+	{		
+		return true;
 	}
 	
 	context()
 	{
-		mv.get(a,first) && mv.get(b,second) &&  
-		gl.get(first.getValue(),second.getValue()) &&   // and where the goal is to have the first on the second
-        ag.isGoalTower(second.getValue()) &&     // and where the second is a goal towe
+		gl.get(first,second) &&   // and where the goal is to have the first on the second
+        ag.isGoalTower(second.getValue()) &&     // and where the second is a goal tower
+		assign("1") &&
+		mv.get(a,first.getValue()) && mv.get(b,second.getValue()) && // both movable
 		!first.getValue().equals(second.getValue()) &&  // that are unique
-		!first.getValue().equals("table") &&            // and not references to
-        !second.getValue().equals("table");	
+		!first.getValue().equals("table") &&            // and not references to tables
+		assign("2");
 	}
 	body()
 	{	
@@ -57,18 +57,12 @@ plan ConstructivePlan extends Plan
 			@subtask(me.move(ev.recursive-1));
 		}
 
-	}
-
-	#reasoning method 
-	conditionTest()
+	}	
+	
+	boolean assign(String value)
 	{
-		if(       
-		mv.get(a,first) && mv.get(b,second) &&          // find two free blocks
-        gl.get(first.getValue(),second.getValue()) &&   // and where the goal is to have the first on the second
-        ag.isGoalTower(second.getValue())           // and where the second is a goal towe
-		) {
-			condition = true;
-		}
+		ag.con = value;
+		return true;
 	}
 
 	#reasoning method 
@@ -84,5 +78,7 @@ plan ConstructivePlan extends Plan
         ag.record(pid, true, ag.records[ev.recursive], ev.recursive);
         //ag.writeLog("false Failed.");	
 	}
+
+
 }
 

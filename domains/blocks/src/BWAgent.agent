@@ -64,6 +64,8 @@ public agent BWAgent extends Agent implements Logger {
 	
 	public String[][] records; // save all the record in one episode
 	public int currentUsedRecord = 0;
+	public String con = "0";
+	public String decon = "0";
 
 	public int steps = 0;
 	//#uses plan MetaPlan;
