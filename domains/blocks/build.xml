@@ -156,6 +156,9 @@ depends="experiment1,experiment2,experiment3,experiment4,experiment5"/>
 		<exec executable="rm" dir="./test/script">
 			<arg line="-f @{filename}.plot"/>
 		</exec>
+		<exec executable="ps2pdf" dir="./test/script">
+			<arg line="-sPAPERSIZE=a4 -dEmbedAllFonts=true @{filename}.eps @{filename}.pdf"/>
+		</exec>
 	</sequential>
 </macrodef>
 
