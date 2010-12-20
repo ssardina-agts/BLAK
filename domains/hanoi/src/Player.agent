@@ -439,7 +439,8 @@ public agent Player extends Agent implements Logger{
         if (learningMode) {
             PlanNode thisNode = planNodes[pid];
             //double confidence = thisNode.getConfidence(level,state);
-            double planConfidence = ((level==0)||thisNode.isLeaf()) ? (thisNode.isStable(state)?1.0:0.0) : thisNode.averageExperiencedStability(state);
+            //double planConfidence = ((level==0)||thisNode.isLeaf()) ? (thisNode.isStable(state)?1.0:0.0) : thisNode.averageExperiencedStability(state);
+            double planConfidence = thisNode.averageExperiencedStability(state);
             double stateConfidence = thisNode.stateExperienceConfidence(state);
             double[] ps = thisNode.getProbability(state);
             return new PlanIdInfo(state, pid, ps[0], planConfidence, stateConfidence, thisNode.isFailedThresholdHandler());
