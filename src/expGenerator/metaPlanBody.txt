@@ -127,6 +127,9 @@
 		s = pc.applicable.next(s);
 	    }
 	    pc.chosen = s;
+	} else {
+	    ag.env.writeLog("MetaPlan: Nothin applies so returning false");
+	    return false;
 	}
         PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
 	if(isReposted) {

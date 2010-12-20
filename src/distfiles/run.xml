@@ -1250,12 +1250,12 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- THESIS RELATED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="thanoi" description="Build, run and plot Hanoi tests used in the thesis" depends="thanoid5s1r8,thanoid5s3r8,thanoid5s5r8,thanoi5,thanoi5t"/>
+<target name="thanoi" description="Build, run and plot Hanoi tests used in the thesis" depends="thanoid5s1r8,thanoid5s3r8,thanoid5s5r8,thanoi5"/>
 <target name="thanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s5r8, runthanoid5s5r8, plotthanoid5s5r8"/>
 <target name="thanoid5s3r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s3r8, runthanoid5s3r8, plotthanoid5s3r8"/>
 <target name="thanoid5s1r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s1r8, runthanoid5s1r8, plotthanoid5s1r8"/>
 <target name="thanoi5"          description="Build, run and plot hanoi"  depends="buildthanoi5, runthanoi5, plotthanoi5"/>
-<target name="thanoi5t"         description="Build, run and plot hanoi"  depends="buildthanoi5t, runthanoi5t, plotthanoi5t"/>
+<!--<target name="thanoi5t"         description="Build, run and plot hanoi"  depends="buildthanoi5t, runthanoi5t, plotthanoi5t"/>-->
 
 <target name="tsynthetic" description="Build, run and plot all synthetic tests used for the thesis" depends="ttest01v3gm,ttest01v3gmt,ttest05v3gm,ttest05v3gmt,ttestImpactvars2,ttestImpactvars2t,ttestfr01a,ttestfr01b,ttestfr02a,ttestfr02b"/>
 
@@ -1393,11 +1393,11 @@
 </target>
 <target name="runttestfr01a" description="Run ttestfr01a">
     <failIfBuildNotFound test.name="ttestfr01a"/>
-	<runTestRepeats test.name="ttestfr01a" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+	<runTestRepeats test.name="ttestfr01a" run.mode="concurrent" run.select="confidence" run.params="-n 0.1 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
 </target>
 <target name="plotttestfr01a" description="Plot ttestfr01a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="ttestfr01a"/>
-	<plotResult test.name="ttestfr01a" every="200" key1="center" key2="right" label="ttestfr01a:n=0.0,failure_recovery:testfr01a.txt"/>
+	<plotResult test.name="ttestfr01a" every="200" key1="center" key2="right" label="ttestfr01a:n=0.1,failure_recovery:testfr01a.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- ttestfr01b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1411,11 +1411,11 @@
 </target>
 <target name="runttestfr01b" description="Run ttestfr01b">
     <failIfBuildNotFound test.name="ttestfr01b"/>
-	<runTestRepeats test.name="ttestfr01b" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+	<runTestRepeats test.name="ttestfr01b" run.mode="concurrent" run.select="confidence" run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
 </target>
 <target name="plotttestfr01b" description="Plot ttestfr01b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="ttestfr01b"/>
-	<plotResult test.name="ttestfr01b" every="200" key1="center" key2="right" label="ttestfr01b:n=0.0,m=1:testfr01b.txt"/>
+	<plotResult test.name="ttestfr01b" every="200" key1="center" key2="right" label="ttestfr01b:n=0.1,m=1:testfr01b.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- ttestfr02a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1429,11 +1429,11 @@
 </target>
 <target name="runttestfr02a" description="Run ttestfr02a">
     <failIfBuildNotFound test.name="ttestfr02a"/>
-	<runTestRepeats test.name="ttestfr02a" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+	<runTestRepeats test.name="ttestfr02a" run.mode="concurrent" run.select="confidence" run.params="-n 0.1 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
 </target>
 <target name="plotttestfr02a" description="Plot ttestfr02a" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="ttestfr02a"/>
-	<plotResult test.name="ttestfr02a" every="500" key1="center" key2="right" label="ttestfr02a:n=0.0,failure_recovery:testfr02a.txt"/>
+	<plotResult test.name="ttestfr02a" every="500" key1="center" key2="right" label="ttestfr02a:n=0.1,failure_recovery:testfr02a.txt"/>
 </target>
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- ttestfr02b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1447,11 +1447,11 @@
 </target>
 <target name="runttestfr02b" description="Run ttestfr02b">
     <failIfBuildNotFound test.name="ttestfr02b"/>
-	<runTestRepeats test.name="ttestfr02b" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -k 3 -v 10 -w 10 -a 0.9"/>
+	<runTestRepeats test.name="ttestfr02b" run.mode="concurrent" run.select="confidence" run.params="-n 0.1 -i 5000 -k 3 -v 10 -w 10 -a 0.9"/>
 </target>
 <target name="plotttestfr02b" description="Plot ttestfr02b" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="ttestfr02b"/>
-	<plotResult test.name="ttestfr02b" every="500" key1="center" key2="right" label="ttestfr02b:n=0.0,failure_recovery:testfr02b.txt"/>
+	<plotResult test.name="ttestfr02b" every="500" key1="center" key2="right" label="ttestfr02b:n=0.1,failure_recovery:testfr02b.txt"/>
 </target>
 
 
@@ -1470,7 +1470,7 @@
 <target name="runthanoid5s5r8" description="Run thanoid5s5r8">
     <failIfBuildNotFound test.name="thanoid5s5r8"/>
 	<runTest test.name="thanoid5s5r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000 -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 5 -l 20 -v 10 -w 10 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 5 -l 20 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoid5s5r8" description="Plot thanoid5s5r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s5r8"/>
@@ -1491,7 +1491,7 @@
 <target name="runthanoid5s3r8" description="Run thanoid5s3r8">
     <failIfBuildNotFound test.name="thanoid5s3r8"/>
 	<runTest        test.name="thanoid5s3r8" run.class="Player" run.mode="init" run.select="x"                    run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 3 -l 20 -v 10 -w 10 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 3 -l 20 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoid5s3r8" description="Plot thanoid5s3r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s3r8"/>
@@ -1512,7 +1512,7 @@
 <target name="runthanoid5s1r8" description="Run thanoid5s1r8">
     <failIfBuildNotFound test.name="thanoid5s1r8"/>
 	<runTest        test.name="thanoid5s1r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 1 -l 20 -v 10 -w 10 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 1 -l 20 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoid5s1r8" description="Plot thanoid5s1r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s1r8"/>
@@ -1533,7 +1533,7 @@
 <target name="runthanoi5" description="Run thanoi5">
     <failIfBuildNotFound test.name="thanoi5"/>
 	<runTest        test.name="thanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -v 10 -w 10 -a 0.5"/>
+	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoi5" description="Plot thanoi5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoi5"/>
@@ -1543,6 +1543,7 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- thanoi5t ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--
 <target name="buildthanoi5t" description="Build thanoi5t" if="available.buildDependencies" depends="buildDependencies">
 	<delete dir="${results.dir}/thanoi5t/build"/>
 	<mkdir dir="${results.dir}/thanoi5t/build"/>
@@ -1554,13 +1555,13 @@
 <target name="runthanoi5t" description="Run thanoi5t">
     <failIfBuildNotFound test.name="thanoi5t"/>
 	<runTest        test.name="thanoi5t" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -t 0.2 -b 0.01 -v 10 -w 10 -a 0.5"/>
+	<runTestRepeats test.name="thanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -t 0.2 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoi5t" description="Plot thanoi5t" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoi5t"/>
 	<plotResult test.name="thanoi5t" every="2000" window="200" label="thanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
 </target>
-
+-->
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
