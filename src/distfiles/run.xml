@@ -84,12 +84,6 @@
 <target name="test05v3gmt" description="Build, run and plot test05v3gmt" depends="buildtest05v3gmt,graphtest05v3gmt,runtest05v3gmt,plottest05v3gmt"/>
 <target name="test05v5gm"  description="Build, run and plot test05v5gm"  depends="buildtest05v5gm, graphtest05v5gm, runtest05v5gm, plottest05v5gm"/>
 
-<target name="testfr01a" description="Build, run and plot testfr01a" depends="buildtestfr01a,graphtestfr01a,runtestfr01a,plottestfr01a"/>
-<target name="testfr01b" description="Build, run and plot testfr01b" depends="buildtestfr01b,graphtestfr01b,runtestfr01b,plottestfr01b"/>
-
-<target name="testfr02a" description="Build, run and plot testfr02a" depends="buildtestfr02a,graphtestfr02a,runtestfr02a,plottestfr02a"/>
-<target name="testfr02b" description="Build, run and plot testfr02b" depends="buildtestfr02b,graphtestfr02b,runtestfr02b,plottestfr02b"/>
-
 <target name="hanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s5r8, runhanoid5s5r8, plothanoid5s5r8"/>
 <target name="hanoid5s5r8fr"     description="Build, run and plot hanoi"  depends="buildhanoid5s5r8fr, runhanoid5s5r8fr, plothanoid5s5r8fr"/>
 <target name="hanoid5s3r8"     description="Build, run and plot hanoi"  depends="buildhanoid5s3r8, runhanoid5s3r8, plothanoid5s3r8"/>
@@ -1111,89 +1105,6 @@
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr01a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr01a" description="Build testfr01a" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr01a"/>
-	<buildTest test.name="testfr01a" specs.file="${specs.dir}/testFailureRecovery/testfr01a.txt"/>
-</target>
-<target name="graphtestfr01a" description="Graph testfr01a" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr01a"/>
-</target>
-<target name="runtestfr01a" description="Run testfr01a">
-    <failIfBuildNotFound test.name="testfr01a"/>
-	<runTestRepeats test.name="testfr01a" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 2000 -p failure_recovery"/>
-	<runTestRepeats test.name="testfr01a" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 2000 -p failure_recovery -k 3 -e 0.3"/>
-</target>
-<target name="plottestfr01a" description="Plot testfr01a" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr01a"/>
-	<plotResult test.name="testfr01a" every="200" key1="center" key2="right" label="testfr01a:n=0.0,failure_recovery:testfr01a.txt"/>
-</target>
-
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr01b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr01b" description="Build testfr01b" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr01b"/>
-	<buildTest test.name="testfr01b" specs.file="${specs.dir}/testFailureRecovery/testfr01b.txt"/>
-</target>
-<target name="graphtestfr01b" description="Graph testfr01b" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr01b"/>
-</target>
-<target name="runtestfr01b" description="Run testfr01b">
-    <failIfBuildNotFound test.name="testfr01b"/>
-	<runTestRepeats test.name="testfr01b" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 2000"/>
-	<runTestRepeats test.name="testfr01b" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 2000"/>
-</target>
-<target name="plottestfr01b" description="Plot testfr01b" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr01b"/>
-	<plotResult test.name="testfr01b" every="200" key1="center" key2="right" label="testfr01b:n=0.0,m=1:testfr01b.txt"/>
-</target>
-
-
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr02a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr02a" description="Build testfr02a" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr02a"/>
-	<buildTest test.name="testfr02a" specs.file="${specs.dir}/testFailureRecovery/testfr02a.txt"/>
-</target>
-<target name="graphtestfr02a" description="Graph testfr02a" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr02a"/>
-</target>
-<target name="runtestfr02a" description="Run testfr02a">
-    <failIfBuildNotFound test.name="testfr02a"/>
-	<runTestRepeats test.name="testfr02a" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery"/>
-	<runTestRepeats test.name="testfr02a" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3"/>
-</target>
-<target name="plottestfr02a" description="Plot testfr02a" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr02a"/>
-	<plotResult test.name="testfr02a" every="500" key1="center" key2="right" label="testfr02a:n=0.0,failure_recovery:testfr02a.txt"/>
-</target>
-
-
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!-- testfr02b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="buildtestfr02b" description="Build testfr02b" if="available.buildDependencies" depends="buildDependencies">
-	<cleanTest test.name="testfr02b"/>
-	<buildTest test.name="testfr02b" specs.file="${specs.dir}/testFailureRecovery/testfr02b.txt"/>
-</target>
-<target name="graphtestfr02b" description="Graph testfr02b" if="available.graphDependencies" depends="graphDependencies">
-	<graphInput test.name="testfr02b"/>
-</target>
-<target name="runtestfr02b" description="Run testfr02b">
-    <failIfBuildNotFound test.name="testfr02b"/>
-	<runTestRepeats test.name="testfr02b" run.mode="concurrent" run.select="probabilistic"      run.params="-n 0.0 -i 5000"/>
-	<runTestRepeats test.name="testfr02b" run.mode="stable"     run.select="probabilistic"      run.params="-n 0.0 -i 5000 -k 3 -e 0.3"/>
-</target>
-<target name="plottestfr02b" description="Plot testfr02b" if="available.plotDependencies" depends="plotDependencies">
-    <failIfResultsNotFound test.name="testfr02b"/>
-	<plotResult test.name="testfr02b" every="500" key1="center" key2="right" label="testfr02b:n=0.0,failure_recovery:testfr02b.txt"/>
-</target>
-
-
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- storage1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <target name="buildstorage1" description="Build storage1" if="available.buildDependencies" depends="buildDependencies">
@@ -1339,12 +1250,210 @@
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- THESIS RELATED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<target name="thanoi" description="Build, run and plot Hanoi tests used in the thesis" depends="thanoid5s1r8,thanoid5s3r8,thanoid5s5r8,thanoi5"/>
+<target name="thanoi" description="Build, run and plot Hanoi tests used in the thesis" depends="thanoid5s1r8,thanoid5s3r8,thanoid5s5r8,thanoi5,thanoi5t"/>
 <target name="thanoid5s5r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s5r8, runthanoid5s5r8, plotthanoid5s5r8"/>
 <target name="thanoid5s3r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s3r8, runthanoid5s3r8, plotthanoid5s3r8"/>
 <target name="thanoid5s1r8"     description="Build, run and plot hanoi"  depends="buildthanoid5s1r8, runthanoid5s1r8, plotthanoid5s1r8"/>
 <target name="thanoi5"          description="Build, run and plot hanoi"  depends="buildthanoi5, runthanoi5, plotthanoi5"/>
 <target name="thanoi5t"         description="Build, run and plot hanoi"  depends="buildthanoi5t, runthanoi5t, plotthanoi5t"/>
+
+<target name="tsynthetic" description="Build, run and plot all synthetic tests used for the thesis" depends="ttest01v3gm,ttest01v3gmt,ttest05v3gm,ttest05v3gmt,ttestImpactvars2,ttestImpactvars2t,ttestfr01a,ttestfr01b,ttestfr02a,ttestfr02b"/>
+
+<target name="ttest01v3gm"  description="Build, run and plot ttest01v3gm"  depends="buildttest01v3gm, graphttest01v3gm, runttest01v3gm, plotttest01v3gm"/>
+<target name="ttest01v3gmt" description="Build, run and plot ttest01v3gmt" depends="buildttest01v3gmt,graphttest01v3gmt,runttest01v3gmt,plotttest01v3gmt"/>
+<target name="ttest05v3gm"  description="Build, run and plot ttest05v3gm"  depends="buildttest05v3gm, graphttest05v3gm, runttest05v3gm, plotttest05v3gm"/>
+<target name="ttest05v3gmt" description="Build, run and plot ttest05v3gmt" depends="buildttest05v3gmt,graphttest05v3gmt,runttest05v3gmt,plotttest05v3gmt"/>
+<target name="ttestImpactvars2" description="Build, run and plot ttestImpactvars2" depends="buildttestImpactvars2,graphttestImpactvars2,runttestImpactvars2,plotttestImpactvars2"/>
+<target name="ttestImpactvars2t" description="Build, run and plot ttestImpactvars2t" depends="buildttestImpactvars2t,graphttestImpactvars2t,runttestImpactvars2t,plotttestImpactvars2t"/>
+<target name="ttestfr01a" description="Build, run and plot ttestfr01a" depends="buildttestfr01a,graphttestfr01a,runttestfr01a,plotttestfr01a"/>
+<target name="ttestfr01b" description="Build, run and plot ttestfr01b" depends="buildttestfr01b,graphttestfr01b,runttestfr01b,plotttestfr01b"/>
+<target name="ttestfr02a" description="Build, run and plot ttestfr02a" depends="buildttestfr02a,graphttestfr02a,runttestfr02a,plotttestfr02a"/>
+<target name="ttestfr02b" description="Build, run and plot ttestfr02b" depends="buildttestfr02b,graphttestfr02b,runttestfr02b,plotttestfr02b"/>
+
+
+
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttest01v3gm ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttest01v3gm" description="Build ttest01v3gm" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttest01v3gm"/>
+	<buildTest test.name="ttest01v3gm" specs.file="${specs.dir}/test01/test01v3gm.txt"/>
+</target>
+<target name="graphttest01v3gm" description="Graph ttest01v3gm" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttest01v3gm"/>
+</target>
+<target name="runttest01v3gm" description="Run ttest01v3gm">
+    <failIfBuildNotFound test.name="ttest01v3gm"/>
+	<runTestRepeats test.name="ttest01v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttest01v3gm" description="Plot ttest01v3gm" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttest01v3gm"/>
+	<plotResult test.name="ttest01v3gm" every="200" key1="top" key2="left" label="ttest01v3gm:n=0.1,k=3,e=0.3:test01v3gm.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttest01v3gmt ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttest01v3gmt" description="Build ttest01v3gmt" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttest01v3gmt"/>
+	<buildTest test.name="ttest01v3gmt" specs.file="${specs.dir}/test01/test01v3gm.txt"/>
+</target>
+<target name="graphttest01v3gmt" description="Graph ttest01v3gmt" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttest01v3gmt"/>
+</target>
+<target name="runttest01v3gmt" description="Run ttest01v3gmt">
+    <failIfBuildNotFound test.name="ttest01v3gmt"/>
+	<runTestRepeats test.name="ttest01v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -t 0.2 -b 0.01 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttest01v3gmt" description="Plot ttest01v3gmt" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttest01v3gmt"/>
+	<plotResult test.name="ttest01v3gmt" every="200" key1="top" key2="left" label="ttest01v3gmt:n=0.1,k=3,e=0.3,t=0.2:test01v3gm.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttest05v3gm ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttest05v3gm" description="Build ttest05v3gm" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttest05v3gm"/>
+	<buildTest test.name="ttest05v3gm" specs.file="${specs.dir}/test05/test05v3gm.txt"/>
+</target>
+<target name="graphttest05v3gm" description="Graph ttest05v3gm" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttest05v3gm"/>
+</target>
+<target name="runttest05v3gm" description="Run ttest05v3gm">
+    <failIfBuildNotFound test.name="ttest05v3gm"/>
+	<runTestRepeats test.name="ttest05v3gm" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttest05v3gm" description="Plot ttest05v3gm" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttest05v3gm"/>
+	<plotResult test.name="ttest05v3gm" every="300" key1="top" key2="right" label="ttest05v3gm:n=0.1,k=3,e=0.3:test05v3gm.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttest05v3gmt ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttest05v3gmt" description="Build ttest05v3gmt" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttest05v3gmt"/>
+	<buildTest test.name="ttest05v3gmt" specs.file="${specs.dir}/test05/test05v3gm.txt"/>
+</target>
+<target name="graphttest05v3gmt" description="Graph ttest05v3gmt" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttest05v3gmt"/>
+</target>
+<target name="runttest05v3gmt" description="Run ttest05v3gmt">
+    <failIfBuildNotFound test.name="ttest05v3gmt"/>
+	<runTestRepeats test.name="ttest05v3gmt" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -t 0.2 -b 0.01 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttest05v3gmt" description="Plot ttest05v3gmt" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttest05v3gmt"/>
+	<plotResult test.name="ttest05v3gmt" every="300" key1="center" key2="right" label="ttest05v3gmt:n=0.1,k=3,e=0.1,t=0.2:test05v3gm.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestImpactvars2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestImpactvars2" description="Build ttestImpactvars2" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestImpactvars2"/>
+	<buildTest test.name="ttestImpactvars2" specs.file="${specs.dir}/testImpactvars/testImpactvars2.txt"/>
+</target>
+<target name="graphttestImpactvars2" description="Graph ttestImpactvars2" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestImpactvars2"/>
+</target>
+<target name="runttestImpactvars2" description="Run ttestImpactvars2">
+    <failIfBuildNotFound test.name="ttestImpactvars2"/>
+	<runTestRepeats test.name="ttestImpactvars2" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestImpactvars2" description="Plot ttestImpactvars2" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestImpactvars2"/>
+	<plotResult test.name="ttestImpactvars2" every="500" label="ttestImpactvars2:n=0.1,k=3,e=0.3:testImpactvars2.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestImpactvars2t ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestImpactvars2t" description="Build ttestImpactvars2t" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestImpactvars2t"/>
+	<buildTest test.name="ttestImpactvars2t" specs.file="${specs.dir}/testImpactvars/testImpactvars2.txt"/>
+</target>
+<target name="graphttestImpactvars2t" description="Graph ttestImpactvars2t" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestImpactvars2t"/>
+</target>
+<target name="runttestImpactvars2t" description="Run ttestImpactvars2t">
+    <failIfBuildNotFound test.name="ttestImpactvars2t"/>
+	<runTestRepeats test.name="ttestImpactvars2t" run.mode="concurrent" run.select="confidence"    run.params="-n 0.1 -i 5000 -k 3 -e 0.3 -t 0.2 -b 0.01 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestImpactvars2t" description="Plot ttestImpactvars2t" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestImpactvars2t"/>
+	<plotResult test.name="ttestImpactvars2t" every="500" label="ttestImpactvars2t:n=0.1,k=3,e=0.3,t=0.2:testImpactvars2.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestfr01a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestfr01a" description="Build ttestfr01a" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestfr01a"/>
+	<buildTest test.name="ttestfr01a" specs.file="${specs.dir}/testFailureRecovery/testfr01a.txt"/>
+</target>
+<target name="graphttestfr01a" description="Graph ttestfr01a" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestfr01a"/>
+</target>
+<target name="runttestfr01a" description="Run ttestfr01a">
+    <failIfBuildNotFound test.name="ttestfr01a"/>
+	<runTestRepeats test.name="ttestfr01a" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestfr01a" description="Plot ttestfr01a" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestfr01a"/>
+	<plotResult test.name="ttestfr01a" every="200" key1="center" key2="right" label="ttestfr01a:n=0.0,failure_recovery:testfr01a.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestfr01b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestfr01b" description="Build ttestfr01b" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestfr01b"/>
+	<buildTest test.name="ttestfr01b" specs.file="${specs.dir}/testFailureRecovery/testfr01b.txt"/>
+</target>
+<target name="graphttestfr01b" description="Graph ttestfr01b" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestfr01b"/>
+</target>
+<target name="runttestfr01b" description="Run ttestfr01b">
+    <failIfBuildNotFound test.name="ttestfr01b"/>
+	<runTestRepeats test.name="ttestfr01b" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestfr01b" description="Plot ttestfr01b" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestfr01b"/>
+	<plotResult test.name="ttestfr01b" every="200" key1="center" key2="right" label="ttestfr01b:n=0.0,m=1:testfr01b.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestfr02a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestfr02a" description="Build ttestfr02a" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestfr02a"/>
+	<buildTest test.name="ttestfr02a" specs.file="${specs.dir}/testFailureRecovery/testfr02a.txt"/>
+</target>
+<target name="graphttestfr02a" description="Graph ttestfr02a" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestfr02a"/>
+</target>
+<target name="runttestfr02a" description="Run ttestfr02a">
+    <failIfBuildNotFound test.name="ttestfr02a"/>
+	<runTestRepeats test.name="ttestfr02a" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -p failure_recovery -k 3 -e 0.3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestfr02a" description="Plot ttestfr02a" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestfr02a"/>
+	<plotResult test.name="ttestfr02a" every="500" key1="center" key2="right" label="ttestfr02a:n=0.0,failure_recovery:testfr02a.txt"/>
+</target>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ttestfr02b ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildttestfr02b" description="Build ttestfr02b" if="available.buildDependencies" depends="buildDependencies">
+	<cleanTest test.name="ttestfr02b"/>
+	<buildTest test.name="ttestfr02b" specs.file="${specs.dir}/testFailureRecovery/testfr02b.txt"/>
+</target>
+<target name="graphttestfr02b" description="Graph ttestfr02b" if="available.graphDependencies" depends="graphDependencies">
+	<graphInput test.name="ttestfr02b"/>
+</target>
+<target name="runttestfr02b" description="Run ttestfr02b">
+    <failIfBuildNotFound test.name="ttestfr02b"/>
+	<runTestRepeats test.name="ttestfr02b" run.mode="concurrent" run.select="confidence" run.params="-n 0.0 -i 5000 -k 3 -v 10 -w 10 -a 0.9"/>
+</target>
+<target name="plotttestfr02b" description="Plot ttestfr02b" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="ttestfr02b"/>
+	<plotResult test.name="ttestfr02b" every="500" key1="center" key2="right" label="ttestfr02b:n=0.0,failure_recovery:testfr02b.txt"/>
+</target>
+
 
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
@@ -1361,7 +1470,7 @@
 <target name="runthanoid5s5r8" description="Run thanoid5s5r8">
     <failIfBuildNotFound test.name="thanoid5s5r8"/>
 	<runTest test.name="thanoid5s5r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000 -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/thanoi.init -p 5 -l 20 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s5r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 5 -l 20 -v 10 -w 10 -a 0.5"/>
 </target>
 <target name="plotthanoid5s5r8" description="Plot thanoid5s5r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s5r8"/>
@@ -1382,7 +1491,7 @@
 <target name="runthanoid5s3r8" description="Run thanoid5s3r8">
     <failIfBuildNotFound test.name="thanoid5s3r8"/>
 	<runTest        test.name="thanoid5s3r8" run.class="Player" run.mode="init" run.select="x"                    run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/thanoi.init -p 3 -l 20 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s3r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 3 -l 20 -v 10 -w 10 -a 0.5"/>
 </target>
 <target name="plotthanoid5s3r8" description="Plot thanoid5s3r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s3r8"/>
@@ -1403,7 +1512,7 @@
 <target name="runthanoid5s1r8" description="Run thanoid5s1r8">
     <failIfBuildNotFound test.name="thanoid5s1r8"/>
 	<runTest        test.name="thanoid5s1r8" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 5000 -j 5 -y ../init-x-1/thanoi.init -p 1 -l 20  -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoid5s1r8" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 10000 -j 5 -y ../init-x-1/thanoi.init -p 1 -l 20 -v 10 -w 10 -a 0.5"/>
 </target>
 <target name="plotthanoid5s1r8" description="Plot thanoid5s1r8" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoid5s1r8"/>
@@ -1424,7 +1533,7 @@
 <target name="runthanoi5" description="Run thanoi5">
     <failIfBuildNotFound test.name="thanoi5"/>
 	<runTest        test.name="thanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -v 10 -w 10 -a 0.5"/>
 </target>
 <target name="plotthanoi5" description="Plot thanoi5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoi5"/>
@@ -1445,7 +1554,7 @@
 <target name="runthanoi5t" description="Run thanoi5t">
     <failIfBuildNotFound test.name="thanoi5t"/>
 	<runTest        test.name="thanoi5t" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 25000 -j 5 -y ../init-x-1/thanoi.init -p -1 -t 0.2 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoi5t" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -t 0.2 -b 0.01 -v 10 -w 10 -a 0.5"/>
 </target>
 <target name="plotthanoi5t" description="Plot thanoi5t" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoi5t"/>
