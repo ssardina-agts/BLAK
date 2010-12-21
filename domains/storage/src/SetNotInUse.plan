@@ -22,7 +22,7 @@ public plan SetNotInUse extends Plan {
     }    
     
     context() {
-        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_NOTINUSE);
+        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_NOTINUSE,pid);
     }
     
     

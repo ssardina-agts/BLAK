@@ -17,7 +17,7 @@ public event Solve extends BDIGoalEvent {
         BatteryManager ag = ((BatteryManager)getAgent());
         ag.writeLog("Posted Solve(module="+module+" state=["+stateString()+"])");
     }
-
+	
     public String[] state() {
         return state;
     }
@@ -33,10 +33,19 @@ public event Solve extends BDIGoalEvent {
         BatteryManager ag = ((BatteryManager)getAgent());
         request = r;
         module = m;
-        state = new String[2+s.length];
         int i = 0;
-        state[i++] = Integer.toString(r);
-        state[i++] = Integer.toString(m);
+		if (false && ag.planStat) // use plan state
+		{
+			state = new String[1+s.length];
+	        state[i++] = Integer.toString(m);
+		}
+		else
+		{
+			state = new String[2+s.length];
+      		state[i++] = Integer.toString(r);
+    	    state[i++] = Integer.toString(m);
+		}
+
         for (int j=0; j<s.length; j++) {
             state[i++] = s[j];
         }

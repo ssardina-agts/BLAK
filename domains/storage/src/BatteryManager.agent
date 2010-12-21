@@ -78,14 +78,21 @@ public agent BatteryManager extends Agent implements Logger {
     private PrintWriter writerOut;
     private PrintWriter writerRes;
     private String targetDir;
-    
+
+	//--- plan stuff --- add
+	public int goalLeft = 0;
+	public String [] worldState = new String[4];
+	public static final int GOALLEFT = 3; 
+	public int moduleInUse = -1; 
+	public boolean planStat;
+
     BatteryManager(int episodes, int modules, int tolerance, 
             int experiment, int cycle,
             PlanSelectMode pselect, UpdateMode uselect, RunMode rselect, 
             int buildThreshold, double failThreshold, int wExperience,
             int stableK, double stableE, int stableW, int stateW, double alpha, 
             String targetDir, String filename, 
-            long seed, String loadInit, String saveInit) {
+            long seed, String loadInit, String saveInit,boolean planStat) {
             
         super("BatteryManager");
         this.nEpisodes = episodes;
@@ -108,6 +115,8 @@ public agent BatteryManager extends Agent implements Logger {
         this.lastRequest = 0;
         this.lastResponse = 0;
         
+
+		this.planStat = planStat;
         //--- Logger related
         this.targetDir = ".";
         try{
@@ -123,6 +132,12 @@ public agent BatteryManager extends Agent implements Logger {
         
         //--- Initialise the system
         episode = 1;
+
+		//--- initialize the world
+		for(int i = 0; i < worldState.length; i++)
+		{
+			worldState[i] = "0";
+		}
     }
 
     public int nModules() {
@@ -184,6 +199,11 @@ public agent BatteryManager extends Agent implements Logger {
     }
 
     public String[] batteryState() {
+		if (planStat) {
+            worldState[GOALLEFT] = Integer.toString(goalLeft);
+			return worldState;
+        }
+
         // Return a concat of module health and config
         String[] s = new String[nModules*2];
         String sstr = "";
@@ -216,8 +236,10 @@ public agent BatteryManager extends Agent implements Logger {
         postEvent(sts.start());
     }
     
-    public boolean meetsConstraints(int request, int module, int proposedConfig) {
-    
+    public boolean meetsConstraints(int request, int module, int proposedConfig,int plan) {
+
+		worldState[plan] = "1";// plan is relevant
+    	moduleInUse = module;
         int mstate=0;
         int mconfig=0;
         try{
@@ -238,6 +260,8 @@ public agent BatteryManager extends Agent implements Logger {
             return false;
         }
 
+		worldState[plan] = "2";// return false caused by wrong config fot the current module 
+	
         /* Check that the proposed config will not choke the solution */
         int configSoFar = 0;  /* total rate so far */
         for (int i = nModules; i > module; i--) {
@@ -254,6 +278,7 @@ public agent BatteryManager extends Agent implements Logger {
             writeLog("BatteryManager: Module "+module+" constraint failed. Proposed config will cause output to fall short of global request.");
             return false;
         }
+		worldState[plan] = "3";// return false casued by wrong config for perivous modules.
         return true;
     }
     
@@ -378,7 +403,11 @@ public agent BatteryManager extends Agent implements Logger {
         classVal.addElement("+");
         classVal.addElement("-");
 
-        /* Request is a discrete number in the range [-n:+n],
+		FastVector pval = new FastVector();
+        for (int i = 0; i < 4; i++) {
+            pval.addElement(Integer.toString(i));
+        }
+		/* Request is a discrete number in the range [-n:+n],
          * where n is the number of battery modules.
          */
         FastVector request = new FastVector();
@@ -406,19 +435,30 @@ public agent BatteryManager extends Agent implements Logger {
 
         /* Now assign all attributes */
         FastVector atts = new FastVector();
-        atts.addElement(new Attribute("request",request));
-        atts.addElement(new Attribute("module",modules));
-        for (int i = 1; i <= nModules; i++) {
-            atts.addElement(new Attribute("health"+i/*,charge*/));
-        }
-        //atts.addElement(new Attribute("health"));
-        for (int i = 1; i <= nModules; i++) {
-            atts.addElement(new Attribute("config"+i,config));
-        }
-        //atts.addElement(new Attribute("config"));
-            
-        atts.addElement(new Attribute("outcome",classVal));
-    
+
+		if (!planStat)
+		{
+			atts.addElement(new Attribute("request",request));
+   		    atts.addElement(new Attribute("module",modules));
+        	for (int i = 1; i <= nModules; i++) {
+        	    atts.addElement(new Attribute("health"+i/*,charge*/));
+        	}
+        	for (int i = 1; i <= nModules; i++) {
+        	    atts.addElement(new Attribute("config"+i,config));
+        	}
+
+		}
+		else
+		{
+			atts.addElement(new Attribute("request",request));
+            atts.addElement(new Attribute("depth"));
+			atts.addElement(new Attribute("pCharge",pval));
+			atts.addElement(new Attribute("pDisCharge",pval));
+			atts.addElement(new Attribute("pNotInUse",pval));
+			atts.addElement(new Attribute("goalLeft") );      
+
+		}    
+		atts.addElement(new Attribute("outcome",classVal));	
 
         planNodes = new PlanNode[5];
         planNodes[0] = new PlanNode("SetCharge", atts, uselect, pselect, rselect, stableE, stableK, stableW, stateW, false, buildThreshold, wExperience, logger);
@@ -493,6 +533,7 @@ public agent BatteryManager extends Agent implements Logger {
         int buildThreshold = 2;
         int wExperience = 0;
         double failThreshold = 0.0;
+				boolean planStat = false;
         String help = "";
         help += " -a: Applies to confidence based learning only: Alpha parameter (default: "+alpha+")\n";
         help += " -b: Success threshold below which applicable plans should be rejected (default: "+failThreshold+")\n";
@@ -503,6 +544,7 @@ public agent BatteryManager extends Agent implements Logger {
         help += " -g: Random generator seed value (default: "+seed+")\n";
         help += " -h: Help message\n";
         help += " -i: Number of episodes to run (default: "+episodes+")\n";
+				help += " -j: Use the plan state (default:0 no use plan state other number means use plan state)\n";
         help += " -k: Stability k value (default: "+stableK+")\n";
         help += " -l: Number of samples to collect between decision tree builds (default: "+buildThreshold+")\n";
         help += " -m: Window of experiences to use for decision tree training (default: "+wExperience+")\n";
@@ -564,6 +606,10 @@ public agent BatteryManager extends Agent implements Logger {
                     System.exit(0);
                 case 'i':
                     episodes = Integer.parseInt(args[index]);
+                    index++;
+                    break;
+								case 'j':
+                    planStat = true;
                     index++;
                     break;
                 case 'k':
@@ -635,7 +681,7 @@ public agent BatteryManager extends Agent implements Logger {
             pselect, uselect, rselect, buildThreshold, failThreshold, wExperience,
             stableK, stableE, stableW, stateW, alpha, 
             targetDir, filename, 
-            seed, loadInit, saveInit);
+            seed, loadInit, saveInit,planStat);
         p.go();
     }
 

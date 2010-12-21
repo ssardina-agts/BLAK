@@ -142,6 +142,19 @@ public plan MetaPlan extends Plan {
             //return true;
         }
 
+        if (pc.chosen.getPlanName().equals("SetNotInUse"))
+        {
+            ag.goalLeft -= ag.CONFIG_NOTINUSE;
+        }
+        else if (pc.chosen.getPlanName().equals("SetCharge"))
+        {
+            ag.goalLeft -= ag.CONFIG_CHARGE;
+        }
+        else if (pc.chosen.getPlanName().equals("SetDisCharge"))
+        {
+            ag.goalLeft -= ag.CONFIG_DISCHARGE;
+        }
+
         PlanIdInfo info = (PlanIdInfo) pc.chosen.getInfo();
         if(shouldRecordFailure) {
             /* Handling reposted goal, so force all parent nodes in the active trace 

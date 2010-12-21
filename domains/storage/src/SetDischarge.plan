@@ -22,7 +22,7 @@ public plan SetDischarge extends Plan {
     }    
     
     context() {
-        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_DISCHARGE);
+        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_DISCHARGE,pid);
     }
     
     

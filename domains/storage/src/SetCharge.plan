@@ -22,7 +22,7 @@ public plan SetCharge extends Plan {
     }    
     
     context() {
-        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_CHARGE);
+        ag.meetsConstraints(ev.request,ev.module,ag.CONFIG_CHARGE,pid);
     }
     
     

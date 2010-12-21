@@ -54,6 +54,7 @@ public plan StartSolver extends Plan {
         int minLimit = ag.nModules() - nMin;
         int maxLimit = ag.nModules() - nMax;
         int request = ag.generator().nextInt(minLimit+maxLimit+1)-minLimit;
+        ag.goalLeft = request;
 
         /* Solve it */
         @subtask(sd.solve(request,ag.nModules(),ag.batteryState()));

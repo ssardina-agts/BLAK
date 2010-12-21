@@ -1246,6 +1246,30 @@
 </target>
 
 
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- ABSTRACT STATE RELATED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="storage1a"    description="Build, run and plot storage1a"  depends="buildstorage1a, runstorage1a, plotstorage1a"/>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!-- storage1a ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<target name="buildstorage1a" description="Build storage1a" if="available.buildDependencies" depends="buildDependencies">
+	<delete dir="${results.dir}/storage1a/build"/>
+	<mkdir dir="${results.dir}/storage1a/build"/>
+	<compileJACK in.dir="${storage.dir}" make.dir="${results.dir}/storage1a"/>
+	<makeJAR test.name="storage1a" make.dir="${results.dir}/storage1a"/>
+	<jar destfile="${results.dir}/storage1a/build/storage1a.jar" basedir="${results.dir}/storage1a/build" includes="*.class gui/*.class"/>
+</target>
+<target name="runstorage1a" description="Run storage1a">
+    <failIfBuildNotFound test.name="storage1a"/>
+	<runTest test.name="storage1a" run.class="BatteryManager" run.mode="concurrent" run.select="confidence"    run.params="-g 123456 -n 5 -t 0 -a 0.5 -v 5 -w 5 -i 35000 -f capacity_drop -c 1000 -k 1 -e 0.5 -l 200 -b 0.4 -m 0 -j"/>
+</target>
+<target name="plotstorage1a" description="Plot storage1a" if="available.plotDependencies" depends="plotDependencies">
+    <failIfResultsNotFound test.name="storage1a"/>
+	<plotResult test.name="storage1a" every="2500" window="200" label="storage1a:modules=5:-b0.4:capacity_drop:1000:-m0"/>
+</target>
+
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!-- THESIS RELATED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
