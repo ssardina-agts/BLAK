@@ -450,7 +450,6 @@ public agent BatteryManager extends Agent implements Logger {
 		}
 		else
 		{
-			atts.addElement(new Attribute("request",request));
             atts.addElement(new Attribute("depth"));
 			atts.addElement(new Attribute("pCharge",pval));
 			atts.addElement(new Attribute("pDisCharge",pval));

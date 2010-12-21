@@ -34,7 +34,7 @@ public event Solve extends BDIGoalEvent {
         request = r;
         module = m;
         int i = 0;
-		if (false && ag.planStat) // use plan state
+		if (ag.planStat) // use plan state
 		{
 			state = new String[1+s.length];
 	        state[i++] = Integer.toString(m);
