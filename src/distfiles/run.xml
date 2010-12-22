@@ -1557,11 +1557,11 @@
 <target name="runthanoi5" description="Run thanoi5">
     <failIfBuildNotFound test.name="thanoi5"/>
 	<runTest        test.name="thanoi5" run.class="Player" run.mode="init"  run.select="x"                  run.params="   -g 123456 -r 8 -i 5000  -j 5 -z thanoi.init"/>
-	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 45000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 100 -v 5 -w 5 -a 0.5"/>
+	<runTestRepeats test.name="thanoi5" run.class="Player" run.mode="concurrent" run.select="confidence"    run.params="-x -g 123456 -r 8 -i 65000 -j 5 -y ../init-x-1/thanoi.init -p -1 -l 200 -v 5 -w 5 -a 0.5"/>
 </target>
 <target name="plotthanoi5" description="Plot thanoi5" if="available.plotDependencies" depends="plotDependencies">
     <failIfResultsNotFound test.name="thanoi5"/>
-	<plotResult test.name="thanoi5" every="2000" window="200" label="thanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
+	<plotResult test.name="thanoi5" every="2500" window="200" label="thanoi:discs=5:solutions@level=all:goals=10+8+8+7+6+6+3+3=51:recursion=8"/>
 </target>
 
 <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
