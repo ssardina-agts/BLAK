@@ -1,0 +1,5 @@
+Use the ./Makefile to build the submission PDF.
+
+** Note that on goanna this means using the GNU make util 'gmake'.
+
+Anything unclear, just ask me: dhirendra.singh@rmit.edu.au.

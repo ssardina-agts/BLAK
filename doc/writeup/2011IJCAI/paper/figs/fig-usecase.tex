@@ -1,0 +1,35 @@
+%!TEX root = ../ijcai11storage.tex
+\begin{tikzpicture}
+
+\begin{axis}[
+width=0.7\columnwidth,height=4cm,scale only axis,
+axis line style={-}, xtick style={-}, ytick style={-},
+xlabel=Time,
+ylabel=Consumption,
+every axis y label/.style={at={(-0.1,0.5)},rotate=90,anchor=center}, 
+every axis x label/.style={at={(0.5,-0.1)},anchor=center}, 
+%grid=both, grid style={style=densely dotted},
+xtick={2,8},
+xticklabels={$t_1$,$t_2$},
+ytick={0,6},
+yticklabels={$0$,$p_h$},
+legend style={at={(0.05,0.95)},anchor=north west}
+] 
+
+% Draw the Demand-Supply curve
+\addplot[-,mark=triangle*,mark size=2] expression[domain=0:10,samples=11] {x-2};
+\addlegendentry{Building Demand} 
+
+% Draw the Battery curve
+\addplot[-,mark=o,mark size=1.5] expression[forget plot,domain=0:2,samples=3] {2-x}; 
+\addplot[-,mark=o,mark size=1.5] expression[forget plot,domain=2:8,samples=7] {0}; 
+\addplot[-,mark=o,mark size=1.5] expression[domain=8:10,samples=3] {8-x}; 
+\addlegendentry{Battery Charge} 
+
+% Draw the Grid supply curve
+\addplot[-,mark=|,mark size=3] expression[forget plot,domain=0:2,samples=3] {0}; 
+\addplot[-,mark=|,mark size=4] expression[forget plot,domain=2:8,samples=7] {x-2}; 
+\addplot[-,mark=|,mark size=3] expression[domain=8:10,samples=3] {6}; 
+\addlegendentry{Grid Supply} 
+\end{axis} 
+\end{tikzpicture} 

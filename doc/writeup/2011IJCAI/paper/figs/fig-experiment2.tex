@@ -1,0 +1,19 @@
+%!TEX root = ../ijcai11storage.tex
+\begin{tikzpicture}
+
+\begin{axis}[
+width=0.53\columnwidth,height=4cm,scale only axis,
+axis line style={-}, xtick style={-}, ytick style={-},
+%xlabel=Episodes,
+%ylabel=Success,
+every axis y label/.style={-,at={(-0.12,0.5)},rotate=90,anchor=center}, 
+%every axis x label/.style={at={(0.5,-0.15)},anchor=center},
+grid=both,grid style={-,style=densely dotted},
+legend style={at={(0.5,0.25)},anchor=north west}
+] 
+
+\addplot[-] file {./data/storage2b.CF.tikzdata};
+%\addlegendentry{Data} 
+
+\end{axis} 
+\end{tikzpicture} 

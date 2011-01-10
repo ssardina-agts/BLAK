@@ -1,0 +1,69 @@
+%!TEX root = ../ijcai11storage.tex
+
+% Abstract submissions for AAMAS 2011 are limited to 400 words maximum
+We propose enhancements to a framework that integrates
+learning capabilities to improve plan selection in the successful and popular
+Belief-Desire-Intentions agent programming paradigm.
+%
+In learning which plan to select, a 
+crucial issue in the online setting is how much to trust what
+has been learnt so far (and therefore exploit it) versus how much to
+explore to further improve the learning.
+%
+In this paper we construct a confidence measure based on a previously 
+used notion of stability in the outcomes observed for a particular plan, 
+combined with a consideration of the extent to which new worlds are being 
+witnessed by the plan.
+%
+This new measure dynamically adjusts based on agent performance, allowing in principle, infinitely many learning phases. Additionally, it scales up irrespective of the complexity of the goal-plan hierarchy implicit in the agent's plan library.
+%
+We demonstrate the utility of our approach with results obtained in a
+practical energy storage domain.
+
+%%% 3. Lin's Take
+%In this work we propose an important modification to a framework for
+%agent-oriented programming that integrates plan selection
+%learning capabilities to the successful and popular
+%Belief-Desire-Intentions programming paradigm.
+%In learning which plan to select, a 
+%crucial issue in the online learning setting is how much to trust what
+%has been learnt so far (and therefore exploit it) versus how much to
+%explore further and increase the information on which the learning is
+%based. 
+%Previous work has employed a confidence measure that is based on an
+%estimate of how much of the space of options has been explored. 
+%%A problem with this approach however is that the confidence measure does
+%%not adjust to a possibly changing situation/environment. 
+%In this paper we take a notion of stability in the outcomes observed
+%for a particular plan, which was previously used for filtering
+%training data, and adapt it to form the basis of a new and more robust
+%confidence measure. We add to this a consideration of to what extent
+%we are still seeing new world situations.  Unlike earlier approaches
+%this new confidence measure adjusts dynamically and thus allows, in
+%principle, infinitely many learning and re-learning phases as things
+%change. In addition it scales up without problem, regardless of the
+%complexity of the goal-plan hierarchy.
+%We demonstrate the utility of our approach with results obtained in a
+%practical energy storage domain. 
+
+
+
+%%% 2. Sebastian's Take
+%We propose a framework for agent-oriented programming that integrates learning capabilities to the successful and popular Belief-Desire-Intentions programming paradigm for dealing with the crucial task of intelligent plan selection.
+%%
+%In contrast with previous proposals, the learning framework developed here is able to scale up irrespective of the complexity of the goal-plan hierarchy implicit in the agent's plan library and to adapt to changes in the dynamics of the environment.
+%%
+%Technically, we propose a new and simple way of determining the ``confidence'' in the ongoing learning process of the agent that adjusts dynamically based on agent performance, thus allowing, in principle, infinitely many learning phases. when used in the exploration heuristic. 
+%
+%We demonstrate the utility of this agent-oriented learning framework with results obtained in a practical energy storage domain.
+
+
+%%% 1. Dhirendra's Take
+% The popular  (BDI)  has been applied to a range of real-world applications. Recent work has proposed the principled integration of a learning capability to the BDI architecture in order to extend applicability to domains where adaptability is important. In particular, the question being addressed is that of {\em plan choice}, or learning which plans work best in which situations. In this paper we report new progress in this direction.
+% %
+% 
+% Firstly, we contribute to the important issue of determining confidence in the ongoing learning of the agent. We propose a new measure that is truly scalable irrespective of the size of the BDI goal-plan hierarchy. Additionally, this measure dynamically adjusts based on agent performance, allowing in principle, infinitely many learning phases when used in the exploration heuristic. 
+% %
+% 
+% The task is to program a controller for a modular battery system while ensuring adaptability to certain future performance-impacting situations such as changes in battery chemistry and module malfunctions. This learning scenario is typical of many real-world applications, but highlights a shift from the usual setting: here the task is not to learn the initial solution set, but to program the initial set and then use learning to adapt to changes to this set over time. A key consideration then is the programming of the initial {\em filter} that must allow for the ideal solution set as well as any future sets that are to be learnt. This is achieved in our BDI agent by programming each plan's {\em context condition} (the runtime condition that decides when the plan is applicable) in such a way as to capture all foreseeable solution sets. Learning is then used to refine these conditions over time in response to different environmental changes.
+% 

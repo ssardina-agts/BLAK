@@ -1,0 +1,40 @@
+%!TEX root = ../ijcai11storage.tex
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion and Discussion}\label{sec:discussion}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The main contribution of this paper is a plan-selection learning mechanism for BDI agent-oriented programming languages and architectures that is able to \emph{adapt} when the dynamics of the environment in which the agent is situated changes over time.
+%%
+Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas of plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending,singh10:learning} from previous approaches, with a sense of the rate at which new worlds are being witnessed. This new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
+%%
+In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically; indeed, it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. 
+%
+Importantly, however, the new measure subsumes previous approaches as it still preserves the traditional monotonic convergence expected in environments with fixed dynamics.
+%
+Furthermore, the new mechanism does not require any account of the number of possible choices below a plan in the hierarchy, as is the case with the previous coverage-based approaches~\cite{singh10:extending,singh10:learning}, and hence scales up for any general goal-plan structure irrespective of its complexity. 
+%%
+We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing: module performance within a battery system deteriorates over time or even completely fails on occasion on the one hand, while being periodically improved through system maintenance and upgrades on the other.  
+
+Apart from the already discussed approaches in \cite{airiau09:enhancing,singh10:extending,singh10:learning} on which this work is based, the issue of combining learning with deliberation in BDI agent systems has not been widely addressed in the literature. 
+%
+Hern\'andez et al. \cite{hernandez04:learning} reported preliminary results on learning the context condition for a single plan using a decision tree in a simple paint-world example, although they do not consider the issue of learning in plan hierarchies. In terms of approaches that integrate \emph{offline} learning with deliberation in BDI systems, the work in \cite{lokuge07:improving} gives a detailed account using a real-world ship berthing logistics application. The authors take operational shipping data to train a neural network offline that is then integrated into the BDI deliberation cycle to improve plan selection. They show that the trained system is able to outperform the human operators in terms of scheduling the docking of ships to loading berths. Similar approaches integrating offline learning with BDI deliberation at runtime have previously also been used in robotic soccer~\cite{riedmiller01:karlsruhe,brusey02:learning}.
+
+The work of \cite{simari06:relationship} has highlighted the relationship between BDI and Markov Decision Processes on which the reinforcement learning literature is founded. 
+%
+Recently, Broekens et al. \cite{broekens10:reinforcement} reported progress on integrating reinforcement learning to improve plan selection in GOAL, a declarative agent programming language in the BDI flavour. They use an abstract state representation using only the stack of applicable rules and a sum cost heuristic that captures the number of pending goals. The intent is to keep the representation domain independent, with the focus on improving the plan selection functionality in the framework itself. In that way, their approach complements ours, and may be integrated as ``meta-level'' learning to influence the plan selection calculation given by the weighting function $\Omega$ (see Section~\ref{sec:confidence}). We note that such work is still preliminary and it is difficult to ascertain the generality of their approach in other domains. Nevertheless, their early results are encouraging in that the agent always achieves the goal state in less number of tries with learning enabled than without.
+%
+Our work also relates to the existing work in hierarchical reinforcement learning~\cite{barto03:recent}, where task hierarchies similar to those of BDI programs are used. Of particular interest is the early work by Dietterich~\cite{dietterich00:hierarchical} that supports learning at all levels in the task hierarchy (as we do in our learning framework) in contrast to waiting for learning to converge at the bottom levels first.
+
+There are several limitations and assumptions in the learning framework we have used.
+%%
+One issue, of course, has to do with maintaining the training set of past execution experiences per plan, indexed by world states. Simply storing such data may become infeasible after the agent has been operating for a long period of time. Importantly, the larger the training set, the more effort is required to induce the corresponding decision tree. For the latter problem, one option is to filter the training data at hand based on some heuristic, and only use a subset of the complete experience set to induce the decision tree. For instance, we experimented with filtering the training data based on the recency of the world states experienced. In our example energy domain we were able to reduce the size of the data set used in training by almost $75\%$ by removing ``old'' experiences with no noticeable change in agent performance. The generality of such data-filtering heuristics, however, is unclear and requires further investigation to make any claims. Using \emph{incremental} approaches for inducing decision trees~\cite{Swere06:Fast,Utgoff97Decision} will certaintly address both problems, but may impact classification accuracy.
+
+
+Perhaps a more severe limitation of the learning framework proposed is that it cannot account for interactions between a plan's subgoals. For instance, consider a travel-agent system that has two subgoals to book a flight and hotel accommodation on a fixed budget. Indeed, the way a flight is booked will impact the funds remaining for the next hotel booking goal, and  some flight options may leave the agent unable to book any hotel at all. Since our agents have no information of the higher ``agenda'' at the subgoal level, there is no way for such dependencies to be learnt. One way of addressing this limitation may be to consider extended notions of execution traces that take into account \emph{all} subgoals that led to the final outcome, but this requires further work.
+
+
+We have reported important improvements to a framework for learning plan selection in BDI agent systems. While there is still work to do to resolve issues around long-term learning and interactions between subgoals, we believe that the framework has matured to the point of integration into practical systems. We have demonstrated this in the design of a battery controller based on a real-world scenario.
+
+
+
+

@@ -1,0 +1,38 @@
+%!TEX root = ../ijcai11storage.tex
+\begin{tikzpicture} [level distance=8.0em]
+\tikzstyle{planbox}=[draw,text width=6.0em,rectangle split,rectangle split parts=3]
+\tikzstyle{goalbox}=[draw,rounded corners=1.25em,minimum height=3em,minimum width=3em]
+
+	
+\tikzstyle{level 1}=[sibling distance=8.0em] 
+\tikzstyle{level 2}=[level distance=7.0em] 
+
+\node[goalbox,solid] {$G($r,k,s$)$}
+	child {node[planbox] {$\pSetCharge$ \\
+			\nodepart{second} $k>0$ \\ $\cSatisfies_{ch}(r,k,s)$
+			\nodepart{third} $\aSet(k,+c)$
+		}
+		child {node[goalbox] {$G($r,k-1,s'$)$}}
+	}
+	child {node[planbox] {$\pSetDischarge$ \\ 
+			\nodepart{second} $k>0$ \\ $\cSatisfies_{dc}(r,k,s)$
+			\nodepart{third} $\aSet(k,-c)$
+		}
+		child {node[goalbox] {$G($r,k-1,s'$)$}}
+	}
+	child {node[planbox] {$\pSetNotUsed$ \\
+			\nodepart{second} $k>0$ \\ $\cSatisfies_0(r,k,s)$
+			\nodepart{third} $\aSet(k,0)$
+		}
+		child {node[goalbox] {$G($r,k-1,s'$)$}}
+	}
+	child {node[planbox] {$\pExecute$ 
+			\nodepart{second} $k=0$
+			\nodepart{third} $\aOperate()$ \\$\aEvaluate()$
+		}
+	}
+;
+
+\end{tikzpicture}
+
+
