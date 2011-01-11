@@ -1,21 +1,29 @@
 %!TEX root = ../ijcai11storage.tex
 \begin{figure*}[t]
  \begin{center}
+ \subfigure[Goal-plan hierarchy for a $k$-modules battery system.]{
+ \label{fig:gptree}
+ \resizebox{0.9\columnwidth}{!}{
+ \input{figs/fig-gptree}
+ }
+ }
+ %\qquad
  \subfigure[Capacity deterioration.]{
  	\label{fig:experiment1}
 	\input{figs/fig-experiment1}
  }
- \qquad
- \subfigure[Partial failure with restoration.]{
+ \hspace{-3mm}
+ \subfigure[Partial failure.]{
  	\label{fig:experiment2}
  	\input{figs/fig-experiment2}
  }
- \qquad
- \subfigure[Complete failure with restoration.]{
+ \hspace{-3mm}
+ \subfigure[Complete failure.]{
  	\label{fig:experiment3}
 	 \input{figs/fig-experiment3}
  }
- \caption{Controller performance in the energy application. Each plot shows success ($y$-axis) over the number of episodes ($x$-axis).}
+ \vskip -0.25cm
+ \caption{The implemented BDI controller and its performance i.e. success ($y$-axis) over the number of episodes ($x$-axis).}
  \end{center}
  \label{fig:energystorage}
  \end{figure*}
