@@ -1,0 +1,53 @@
+%!TEX root = ../ijcai11storage.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preliminaries}\label{sec:preliminaries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{BDI Agent Systems}
+
+%We begin by reviewing the basic agent programming framework that will be used throughout the paper~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, which is a seamless integration of standard Belief-Desire-Intention (BDI) agent-oriented programming~\cite{Rao96:AgentSpeak,WooldridgeBook} with decision tree learning~\cite{Mitchell97:ML}. 
+
+Generally speaking, BDI agent programming languages are built around an explicit representation of propositional attitudes (e.g., beliefs, desires, intentions, etc.). A BDI architecture addresses how these components are represented, updated, and processed to determine the agent's actions.
+%%
+There are a plethora of agent programming languages and development platforms in the BDI tradition, including
+%such as \PRS\ \cite{Georgeff89-PRS},
+\JACK~\cite{BusettaRHL:AL99-JACK}, 
+\JADEX~\cite{Pokahr:EXP03-JADEX}, and
+%\TAPL~\cite{Hindriks99:Agent} and
+%\DAPL~\cite{Dastani:JAAMAS08-2APL}, 
+\JASON~\cite{jasonbook}
+%, and SRI's \SPARK~\cite{MorelyM:AAMAS04-SPARK}, 
+among others. 
+%%
+Specifically, a BDI intelligent agent systematically chooses and executes \emph{plans} (i.e., operational procedures) to achieve or realize its goals, called \emph{events}.
+%%
+Such plans are extracted from the agent's \emph{plan library}, which encodes the ``know-how'' information of the domain the agent operates in.
+%%
+For instance, the plan library of an unmanned air vehicle (UAV) agent controller may include several plans to address the event-goal of landing the aircraft. Each plan is associated with a \emph{context condition} stating under which belief conditions the plan is a sensible strategy for addressing the goal in question. Whereas some plans for landing the aircraft may only be suitable under normal weather conditions, other plans may only be used under emergency operations.
+%%%
+Besides the actual execution of domain actions (e.g., lifting the flaps), a plan may require the resolution of (intermediate) sub-goal events (e.g., obtaining landing permission from the air control tower). As a result, the execution of a BDI system can be seen as a \textit{context sensitive subgoal expansion}, allowing agents to ``act as they go'' by making \emph{plan choices} at each level of abstraction with respect to the current situation. The use of plans' context (pre)conditions to make choices as late as possible, together with the built-in goal-failure mechanisms, ensures that the system is responsive to changes in the environment. 
+
+By grouping together plans responding to the same event type, the agent's plan library can be seen as a set of goal-plan tree templates (e.g., Figure~\ref{fig:confidence}) \cite{ShawBordini:AAMAS08}: a goal-event node (e.g., goal $G_1$) has children representing the alternative \emph{relevant} plans for achieving it (e.g., $P_a,P_b$ and $P_c$); and a plan node (e.g., $P_f$), in turn, has children nodes representing the subgoals (including primitive actions) of the plan (e.g., $G_4$ and $G_5$). These structures, can be seen as AND/OR trees: for a plan to succeed all the subgoals and actions of the plan must be successful (AND); for a subgoal to succeed one of the plans to achieve it must succeed (OR). Leaf plans are meant to directly interact with the environment and so, in a given world state, they can either succeed or fail when executed; this is marked accordingly in the figure for some particular world (of course such plans may behave differently in other states).
+
+
+Figure \ref{fig:confidence} shows the possible outcomes when plan $P$ is selected in a given world $w$. In order for the first subgoal $G_1$ to succeed, plan $P_a$ must be selected followed by $P_i$ that succeeds in the world (as indicated by the $\surd$ symbol). The {\em active execution trace}~\footnote{An active execution trace~\cite{singh10:learning} describes decision sequences that terminate in the execution of a leaf plan.} for this selection then is described as $\lambda_1=G[P:w] \cdot G_1[P_a:w] \cdot G_3[P_i:w]$ (highlighted in Figure~\ref{fig:confidence} as the line-shaded path terminating in $P_i$) where the notation $G[P:w]$ indicates that goal $G$ was resolved by the selection of plan $P$ given world state $w$. Subsequently subgoal $G_2$ is posted whose successful resolution is described by the intermediate trace $\lambda_2=G[P:w] \cdot G_2[P_f:w'] \cdot G_4[P_k:w']$ followed by the final trace $\lambda_3=G[P:w] \cdot G_2[P_f:w'] \cdot G_5[P_m:w'']$. Note that the world $w'$ in $\lambda_2$ is the resulting world state from the successful execution of leaf plan $P_i$ in the preceding trace $\lambda_1$. Similarly, $w''$ is the resulting world state from the execution of $P_k$ in $\lambda_2$. There is only one way for plan $P$ to succeed in the initial world $w$ as described by the traces $\lambda_1 \ldots \lambda_3$. All other execution traces lead to failures (as depicted by the $\times$ symbol).
+
+\begin{figure}[t]
+\begin{center}
+\resizebox{0.9\columnwidth}{!}{
+\input{figs/fig-confidence}
+}
+\end{center}
+\vskip -0.5cm
+\caption{An example goal-plan hierarchy.}
+\label{fig:confidence}
+\end{figure}
+
+
+As can be seen, adequate plan selection is critically important in BDI systems. Whereas standard BDI platforms leverage domain expertise by means of \emph{fixed} logical context conditions of plans, in this work, we are interested in exploring how a situated agent may \emph{learn} or \emph{improve} its plan selection mechanism based on experience, in order to better realise its goals.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Machine Learning Concepts}
+Introduces decision trees and the use of $\epsilon$ as a confidence measure in standard reinforcement learning and what we mean by ``changing dynamics''.
+
+\newpage

@@ -21,22 +21,23 @@ Consider, for instance, a smart office building equipped with a large battery sy
 %%	
 Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable, and dynamically modifies its confidence allowing for new exploration and revised learning.
 
-In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
-%%
-The new metric is built from two ingredients.
-%%
-First, it uses the notion of plan stability from~\cite{airiau09:enhancing,singh10:learning} to quickly estimate how much the different options for achieving a goal have been explored.
-%%
-Second, it considers how much the agent is experiencing states that have been seen before vs how much it is seeing new situations, by using a sliding window that checks what percentage of situations in the window have been seen previously. If a substantial number of new situations are being experienced, then the agent should be less confident in what it has previously learnt. 
+\newpage
+%In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
+%%%
+%The new metric is built from two ingredients.
+%%%
+%First, it uses the notion of plan stability from~\cite{airiau09:enhancing,singh10:learning} to quickly estimate how much the different options for achieving a goal have been explored.
+%%%
+%Second, it considers how much the agent is experiencing states that have been seen before vs how much it is seeing new situations, by using a sliding window that checks what percentage of situations in the window have been seen previously. If a substantial number of new situations are being experienced, then the agent should be less confident in what it has previously learnt. 
 
-The rest of the paper is organised as follows.
-%%
-In the following section, we provide an overview of the basic BDI learning framework on which this work is based, as developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}. 
-%%
-We then explain in detail our new proposal for a dynamic measure of confidence that may be used by the BDI agent at plan-selection time to continually adjust to a changing world. 
-%%
-Following that, we describe an energy storage domain taken from a real application where the environment dynamics changes over time requiring adaptive learning. We then specify some experiments evaluating the battery controller agent in different situations, and demonstrate that our learning approach for BDI systems does in fact allow the agent to adjust in a variety of ways to an environment where battery behaviour changes. 
-%%
-We conclude the paper by discussing related work and some limitations requiring future work.
-
-
+%The rest of the paper is organised as follows.
+%%%
+%In the following section, we provide an overview of the basic BDI learning framework on which this work is based, as developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}. 
+%%%
+%We then explain in detail our new proposal for a dynamic measure of confidence that may be used by the BDI agent at plan-selection time to continually adjust to a changing world. 
+%%%
+%Following that, we describe an energy storage domain taken from a real application where the environment dynamics changes over time requiring adaptive learning. We then specify some experiments evaluating the battery controller agent in different situations, and demonstrate that our learning approach for BDI systems does in fact allow the agent to adjust in a variety of ways to an environment where battery behaviour changes. 
+%%%
+%We conclude the paper by discussing related work and some limitations requiring future work.
+%
+%
