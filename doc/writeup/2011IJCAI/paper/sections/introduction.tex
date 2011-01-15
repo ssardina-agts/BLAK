@@ -29,11 +29,24 @@ As recognised by~\cite{singh10:learning}, the coverage-based confidence approach
 
 
 
-Consider, for instance, a smart office building equipped with a large battery system that can be charged when there is excess power, and used (i.e., discharged) when there is excess demand, in order to achieve an overall desired building consumption rate for a given period. A battery installation is built from independent modules with different chemistries. Initially, the battery controller can be programmed (or can learn) to operate optimally. However, over time, the modules in a battery tend to operate less well or some may even cease to function altogether. In addition, modules may be replaced with some frequency.  
+Consider, for instance, a smart office building equipped with a large battery system that can be charged when there is excess power, and used (i.e., discharged) when there is excess demand, in order to achieve an overall desired building consumption rate for a given period. A battery installation is built from independent modules with different chemistries. Initially, the embedded battery controller can be programmed (or can learn) to operate optimally. However, over time, the modules in a battery tend to operate less well or some may even cease to function altogether. In addition, modules may be replaced with some frequency.  
 %%	
-Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable, and dynamically modifies its confidence allowing for new exploration and revised learning.
+Thus, what is needed is a controller agent that after having explored the space well and developed a high confidence in what it has learned, is able to observe when this learned knowledge becomes unstable, and dynamically modifies its confidence allowing for new exploration and revised learning
+in an ongoing way.
 
-\newpage
+The rest of the paper is as follows.
+%
+In the next section, we introduce BDI agent systems as well as any machine learning concepts necessary to understand this work. 
+%
+We then describe the BDI learning framework, initially developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, and including our new confidence measure (Section~\ref{sec:confidence}) for learning in environments with changing dynamics. 
+%
+We then describe a modular battery controller agent, taken from a real application that requires ongoing learning, and demonstrate that it learns to adjust in a variety of ways to an environment where battery behaviour changes. 
+%
+We conclude with a discussion of related work and some limitations requiring future work.
+
+
+
+%\newpage
 %In this work, we develop a new confidence measure, compatible with the BDI learning framework, which allows the agent to adjust its confidence as the environment changes.
 %%%
 %The new metric is built from two ingredients.
