@@ -24,7 +24,7 @@ operational knowledge of the domain they are situated in.
 To that end, in this paper, by building on the recent work of~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, we develop mechanisms for which BDI-type agents can \emph{adaptively learn} the appropriate selection of plans in a situation, as they go. 
 %%
 One of the key issues in any learning system is that of exploitation vs. exploration, that is, how much to believe and exploit the current (learnt) knowledge, versus how much to try things in order to gain new knowledge. Important in this balance is an understanding of how much learning has already been done, or how much has already been explored. In~\cite{singh10:extending,singh10:learning}, a ``coverage-based" measure of confidence was used to capture how much the agent should trust its current understanding (of good plan selection), and therefore exploit rather than explore. Intuitively, such confidence was based on the degree to which the space of possible execution options for the plan has been explored (i.e., covered) so far. The greater the extent to which this space has been explored, the greater the confidence, and consequently the more likely the agent is to exploit.  
-
+%
 As recognised by~\cite{singh10:learning}, the coverage-based confidence approach does not support learning in a changing environment. This is because the confidence increases \emph{monotonically} and, as a result, there is no ability for the agent to become less confident in its choices, even if its currently learned behaviour becomes less successful due to changes in the environment.
 
 
@@ -36,13 +36,13 @@ in an ongoing way.
 
 The rest of the paper is as follows.
 %
-In the next section, we introduce BDI agent systems as well as any machine learning concepts necessary to understand this work. 
+First, we introduce BDI agent systems as well as machine learning concepts necessary to understand this work. 
 %
 We then describe the BDI learning framework, initially developed by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, and including our new confidence measure (Section~\ref{sec:confidence}) for learning in environments with changing dynamics. 
 %
-We then describe a modular battery controller agent, taken from a real application that requires ongoing learning, and demonstrate that it learns to adjust in a variety of ways to an environment where battery behaviour changes. 
+Next, we describe a battery controller agent, based on a real application that requires ongoing learning, and show how it adjusts in a variety of ways to an environment where battery behaviour changes. 
 %
-We conclude with a discussion of related work and some limitations requiring future work.
+We conclude with related works and limitations requiring future work.
 
 
 
