@@ -1,24 +1,41 @@
 %!TEX root = ../ijcai11storage.tex
 
-% Abstract submissions for AAMAS 2011 are limited to 400 words maximum
-We propose enhancements to a framework that integrates
-learning capabilities to improve plan selection in the successful and popular
-Belief-Desire-Intentions agent programming paradigm.
+%The Belief-Desire-Intentions (BDI) agent programming paradigm is a
+%successful and popular approach to developing complex systems that
+%will behave robustly in situations where the environment is
+%interacting with the agent system. 
+In this paper we present a
+framework for integrating learning into the popular and robust BDI
+%agent programming paradigm. We summarise
+previous work which has integrated decision trees into the context
+condition used for plan selection, and then develop a confidence
+measure which allows the agent to adjust its reliance on the
+decision tree dynamically, facilitating both initial learning and
+re-learning. We evaluate this with an example of an embedded controller
+for energy management.
+
+%% Abstract submissions for AAMAS 2011 are limited to 400 words maximum
+%We propose enhancements to a framework that integrates
+%learning capabilities to improve plan selection in the successful and popular
+%Belief-Desire-Intentions agent programming paradigm.
 %
-In learning which plan to select, a 
-crucial issue in the online setting is how much to trust what
-has been learnt so far (and therefore exploit it) versus how much to
-explore to further improve the learning.
+%In learning which plan to select, a 
+%crucial issue in the online setting is how much to trust what
+%has been learnt so far (and therefore exploit it) versus how much to
+%explore to further improve the learning.
 %
-In this paper we construct a confidence measure based on a previously 
-used notion of stability in the outcomes observed for a particular plan, 
-combined with a consideration of the extent to which new worlds are being 
-witnessed by the plan.
+%In this paper we construct a confidence measure based on a previously 
+%used notion of stability in the outcomes observed for a particular plan, 
+%combined with a consideration of the extent to which new worlds are being 
+%witnessed by the plan.
 %
-This new measure dynamically adjusts based on agent performance, allowing in principle, infinitely many learning phases. Additionally, it scales up irrespective of the complexity of the goal-plan hierarchy implicit in the agent's plan library.
+%This new measure dynamically adjusts based on agent performance,
+%allowing in principle, infinitely many learning phases. Additionally,
+%it scales up irrespective of the complexity of the goal-plan hierarchy
+%implicit in the agent's plan library. 
 %
-We demonstrate the utility of our approach with results obtained in a
-practical energy storage domain.
+%We demonstrate the utility of our approach with results obtained in a
+%practical energy storage domain.
 
 %%% 3. Lin's Take
 %In this work we propose an important modification to a framework for
@@ -65,5 +82,19 @@ practical energy storage domain.
 % Firstly, we contribute to the important issue of determining confidence in the ongoing learning of the agent. We propose a new measure that is truly scalable irrespective of the size of the BDI goal-plan hierarchy. Additionally, this measure dynamically adjusts based on agent performance, allowing in principle, infinitely many learning phases when used in the exploration heuristic. 
 % %
 % 
-% The task is to program a controller for a modular battery system while ensuring adaptability to certain future performance-impacting situations such as changes in battery chemistry and module malfunctions. This learning scenario is typical of many real-world applications, but highlights a shift from the usual setting: here the task is not to learn the initial solution set, but to program the initial set and then use learning to adapt to changes to this set over time. A key consideration then is the programming of the initial {\em filter} that must allow for the ideal solution set as well as any future sets that are to be learnt. This is achieved in our BDI agent by programming each plan's {\em context condition} (the runtime condition that decides when the plan is applicable) in such a way as to capture all foreseeable solution sets. Learning is then used to refine these conditions over time in response to different environmental changes.
+% The task is to program a controller for a modular battery system
+% while ensuring adaptability to certain future performance-impacting
+% situations such as changes in battery chemistry and module
+% malfunctions. This learning scenario is typical of many real-world
+% applications, but highlights a shift from the usual setting: here
+% the task is not to learn the initial solution set, but to program
+% the initial set and then use learning to adapt to changes to this
+% set over time. A key consideration then is the programming of the
+% initial {\em filter} that must allow for the ideal solution set as
+% well as any future sets that are to be learnt. This is achieved in
+% our BDI agent by programming each plan's {\em context condition}
+% (the runtime condition that decides when the plan is applicable) in
+% such a way as to capture all foreseeable solution sets. Learning is
+% then used to refine these conditions over time in response to
+% different environmental changes. 
 % 
