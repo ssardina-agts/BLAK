@@ -18,21 +18,21 @@
 \input{figs/fig-experiments}
 
 %Energy storage enables increasing levels of renewable energy in our electricity system, and the rapidly maturing supply chains for several battery technologies encourages electricity utilities, generators, and customers to consider using large battery systems. 
-Large battery installations enable increasing levels of renewable energy in our electricity system. 
+Large battery systems enable increasing levels of renewable energy in our electricity system. 
 %
-Such systems usually comprise of multiple modules that can be controlled independently~\cite{norris02:grid}. 
+Such installations usually comprise of multiple modules that can be controlled independently~\cite{norris02:grid}. 
 %Often it is necessary to operate the modules in different states, such as if it is undesirable to change the direction of power flow too frequently, or due to battery technology requirements such as zinc-bromine flow batteries needing complete discharges at regular intervals. 
-Often it is necessary to operate the modules in different states, for instance due to battery technology requirements such as zinc-bromine flow batteries needing complete discharges at regular intervals. 
-Since battery performance is susceptible to changes over time (e.g. modules may lose actual capacity) an \emph{adaptable} control mechanism is desirable that accounts for such drift.
+%Often it is necessary to operate the modules in different states, for instance due to battery technology requirements such as zinc-bromine flow batteries needing complete discharges at regular intervals. 
+Since battery performance is susceptible to changes over time (e.g. modules may lose actual capacity) an \emph{adaptable} control mechanism is desirable that accounts for such changes.
 %
-Here, we describe the implementation of an {\em embedded BDI controller for a modular battery system}, that regulates overall energy consumption of a smart office building comprising of loads (e.g., appliances) and generators (e.g. solar panels), by suitably ordering the battery installation (i.e. each module in the battery: the overall rate being the sum over the modules' rates) to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates.
+Here, we describe an {\em embedded BDI controller for a modular battery system}, that regulates overall energy consumption of a smart office building comprising of loads (e.g., appliances) and generators (e.g. solar panels), by suitably ordering the battery to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates (the overall rate being the sum over the modules' rates).
 
 Figure~\ref{fig:gptree} shows our implemented controller for an overall system capacity of $c \times k$, where $c$ is the capacity of each module (albeit with different chemical properties and constraints) and $k$ is the total number of modules in the system. Top-level goal-event $G(r,k,s)$ requests a battery charge/discharge (normalized) rate of $r \in [-1.0:+1.0]$, where $-1.0$ ($1.0$) indicates maximum discharge (charge) rate, $s$ stands for the current state of the battery system as per sensor readings, and $k$ is (initially) the number of modules in the system. 
 %%
 The BDI controller works by recursively configuring each module for the period in question using the plans $\pSetCharge$ (charging at rate $+c$), $\pSetDischarge$ (discharging at rate $-c$), and $\pSetNotUsed$ (disconnected i.e. rate $0$), and finally, after all modules have been configured, physically operating the battery for one period using the $\pExecute$ plan. 
 %%
 
-Observe that the first three plans already contain initially known domain constraints for applicability using condition $\cSatisfies_X(\cdot,\cdot,\cdot)$. For instance, plan $\pSetCharge$ may not be considered if the module is already charged, or $\pSetDischarge$ may be ruled out because discharging the module implies that regardless of how the remaining modules are configured, the response is bound to fall short of the request. When none of the first three plans apply for a given module, then BDI failure recovery may be employed to backtrack up and select a different configuration path until all constraints are satisfied or all options exhausted. 
+Observe that the first three plans already contain known domain constraints for applicability using condition $\cSatisfies_X(\cdot,\cdot,\cdot)$. For instance, plan $\pSetCharge$ may not apply if the module is already charged; $\pSetDischarge$ may be ruled out because discharging the module means that no matter how the remaining modules are configured, the response is bound to fall short of the request. When none of the first three plans apply for a given module, then BDI failure recovery may be employed to backtrack up and select a different configuration path until all constraints are satisfied or all options exhausted. 
 
 As such, the $\pExecute$ plan is run only with configurations that are functionally correct. This involves first operating the whole battery system for the period ($\aOperate$) and then evaluating the result via a sensor ($\aEvaluate$). If the evaluation \emph{succeeds}, then the desired overall rate $r$ has been met and the whole execution is deemed successful. Otherwise, the evaluation step \emph{fails} and so does the whole execution of the program, since no BDI failure recovery can be used after the battery system has been physically operated. 
 
