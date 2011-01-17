@@ -7,16 +7,16 @@
 The Belief-Desire-Intentions (BDI) agent programming paradigm
 \cite{WooldridgeBook,BusettaRHL:AL99-JACK,Pokahr:EXP03-JADEX,jasonbook} is a
 successful and popular approach to developing complex systems that
-will behave robustly in situations where the environment is
+behave robustly in situations where the environment is
 interacting with the agent system.
 However they do not incorporate learning, and thus, once deployed,
 have no ability to adjust to changes in the dynamics of an environment
 that cause previously successful approaches to fail and vice versa.
 %%
 In this work we maintain the structure and advantages of a BDI agent
-program, but integrate learning, adapting and adjusting machine
+program, but integrate adapting and adjusting machine
 learning techniques that are generally used to learn behaviour in a
-static environment (often done off-line with a training set), to be
+fixed environment (often done off-line with a training set), to be
 suitable for online continuous learning in an environment where what
 works may well change over time.
 %%
@@ -26,17 +26,17 @@ learn adjustments in the case of changes in the behaviour of the
 environment. 
 %%
 One of the key issues in any learning system is that of exploitation
-vs. exploration, that is, how much to believe and exploit the current
+vs. exploration, that is, how much to trust and exploit the current
 (learnt) knowledge, versus how much to try things in order to gain new
 knowledge. Important in this balance is an understanding of how much
 learning has already been done, or how much has already been
 explored. In~\cite{singh10:extending,singh10:learning}, a
 ``coverage-based" measure of confidence was used to capture how much
-the agent should trust its current understanding (of good plan
+the BDI agent should trust its current understanding (of good plan
 selection), and therefore exploit rather than explore. Intuitively,
 such confidence was based on the degree to which the space of possible
 execution options for the plan has been explored (i.e., covered) so
-far. The greater the extent to which this space has been explored, the
+far. The more this space has been explored, the
 greater the confidence, and consequently the more likely the agent is
 to exploit.   
 %
@@ -48,20 +48,20 @@ agent to become less confident in its choices, even if its currently
 learned behaviour becomes less successful due to changes in the
 environment. 
 
-Consider, for instance, a smart office building equipped with a large
+Consider, for instance, a smart building equipped with a large
 battery system that can be charged when there is excess power, and
-used (i.e., discharged) when there is excess demand, in order to
+used (discharged) when there is excess demand, in order to
 achieve an overall desired building consumption rate for a given
 period. A battery installation is built from independent modules with
 different chemistries. Initially, the embedded battery controller can
 be programmed (or can learn) to operate optimally. However, over time,
-the modules in a battery tend to operate less well or some may even
+modules tend to operate less well and may even
 cease to function altogether. In addition, modules may be replaced
 with some frequency.   
 %%	
-What is needed is an embedded controller agent that after having explored
+Thus, what is needed is an embedded controller agent that, after having explored
 the space well and developed a high confidence in what it has learned,
-is able to observe when this learned knowledge becomes unstable, and
+is able to observe when learned knowledge becomes unstable, and
 dynamically modify its confidence allowing for new exploration and
 revised learning in an ongoing way. To achieve this we develop a
 confidence measure based on an assessment of how well informed our
