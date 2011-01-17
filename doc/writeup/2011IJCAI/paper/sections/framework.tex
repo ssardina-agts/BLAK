@@ -77,7 +77,7 @@ So, for our example, for plan $P$ we store degree $\ds(\lambda')$ whereas for pl
 %%
 Intuitively, by doing this, we record against each plan in the (failed) trace, an estimate of how informed the current (active) choices made for the plan were.  
 %%
-Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how the stability measure is recorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records degree $d$ for plan $P$ in world state $w$.
+Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how the stability measure is recorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records (i.e. saves to memory) degree $d$ for plan $P$ in world state $w$.
 
 \begin{algorithm}[h]
 \KwData{$\lambda=G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, with $n \geq 1$.}

@@ -14,28 +14,30 @@ have no ability to adjust to changes in the dynamics of an environment
 that cause previously successful approaches to fail and vice versa.
 %%
 In this work we maintain the structure and advantages of a BDI agent
-program, but integrate adapting and adjusting machine
-learning techniques that are generally used to learn behaviour (often off-line with a training set) in a
-fixed environment, to be
-suitable for online continuous learning in an environment where what
+program, but integrate adaptive machine
+learning techniques, that are generally used to learn behaviour in a
+fixed environment (often off-line with a training set),
+for use in online continuous learning in an environment where what
 works may well change over time.
 %%
-Our aim is to use the operational knowledge that is encoded in the
-agent program, but learn refinements to that knowledge, as well as adjustments in the case of changes in the behaviour of the
-environment. 
+In that way, our contribution is to agent programming---{\em to make BDI programs more adaptive by seamlessly integrating learning techniques}---rather that to machine learning research.
 %%
-A key issue in any learning system is that of exploitation
-vs. exploration, that is, how much to trust and exploit the current
+The aim is to use the operational knowledge encoded in the
+agent program, but learn refinements to it, as well as adjustments in the case that the environment behaviour changes. 
+
+
+A key issue when learning is that of exploitation
+vs. exploration: how much to trust and exploit the current
 (learnt) knowledge, versus how much to try things in order to gain new
 knowledge. Important in this balance is an understanding of how much
-learning has already been done, or how much has already been
+knowledge has already been
 explored. In~\cite{singh10:extending,singh10:learning}, a
 ``coverage-based" measure of confidence was used to capture how much
 the BDI agent should trust its current understanding (of good plan
 selection), and therefore exploit rather than explore. Intuitively,
 this confidence was based on the degree to which the space of possible
-execution options for the plan has been explored (covered) so
-far. The more this space has been explored, the
+execution options for the plan has been explored (covered).
+The more this space has been explored, the
 greater the confidence, and the more likely the agent is
 to exploit.   
 %
