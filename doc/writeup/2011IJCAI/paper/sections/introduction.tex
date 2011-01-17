@@ -15,17 +15,16 @@ that cause previously successful approaches to fail and vice versa.
 %%
 In this work we maintain the structure and advantages of a BDI agent
 program, but integrate adapting and adjusting machine
-learning techniques that are generally used to learn behaviour in a
-fixed environment (often done off-line with a training set), to be
+learning techniques that are generally used to learn behaviour (often off-line with a training set) in a
+fixed environment, to be
 suitable for online continuous learning in an environment where what
 works may well change over time.
 %%
 Our aim is to use the operational knowledge that is encoded in the
-agent program, but to learn refinements to that knowledge, and also to
-learn adjustments in the case of changes in the behaviour of the
+agent program, but learn refinements to that knowledge, as well as adjustments in the case of changes in the behaviour of the
 environment. 
 %%
-One of the key issues in any learning system is that of exploitation
+A key issue in any learning system is that of exploitation
 vs. exploration, that is, how much to trust and exploit the current
 (learnt) knowledge, versus how much to try things in order to gain new
 knowledge. Important in this balance is an understanding of how much
@@ -34,10 +33,10 @@ explored. In~\cite{singh10:extending,singh10:learning}, a
 ``coverage-based" measure of confidence was used to capture how much
 the BDI agent should trust its current understanding (of good plan
 selection), and therefore exploit rather than explore. Intuitively,
-such confidence was based on the degree to which the space of possible
-execution options for the plan has been explored (i.e., covered) so
+this confidence was based on the degree to which the space of possible
+execution options for the plan has been explored (covered) so
 far. The more this space has been explored, the
-greater the confidence, and consequently the more likely the agent is
+greater the confidence, and the more likely the agent is
 to exploit.   
 %
 As recognised by~\cite{singh10:learning}, the coverage-based
@@ -48,29 +47,29 @@ agent to become less confident in its choices, even if its currently
 learned behaviour becomes less successful due to changes in the
 environment. 
 
-Consider, for instance, a smart building equipped with a large
+Consider a smart building equipped with a large
 battery system that can be charged when there is excess power, and
 used (discharged) when there is excess demand, in order to
-achieve an overall desired building consumption rate for a given
+achieve an overall desired building consumption rate for some
 period. A battery installation is built from independent modules with
 different chemistries. Initially, the embedded battery controller can
-be programmed (or can learn) to operate optimally. However, over time,
-modules tend to operate less well and may even
+be programmed (or can learn) to operate optimally. However, over time
+modules may operate less well or even
 cease to function altogether. In addition, modules may be replaced
 with some frequency.   
 %%	
-Thus, what is needed is an embedded controller agent that, after having explored
-the space well and developed a high confidence in what it has learned,
+Thus, what is needed is a controller that, after having explored
+the space well and developed high confidence in its learning,
 is able to observe when learned knowledge becomes unstable, and
 dynamically modify its confidence allowing for new exploration and
 revised learning in an ongoing way. To achieve this we develop a
 confidence measure based on an assessment of how well informed our
 selections are, combined with an observation of the extent to which we
-are seeing new and different situations.
+are seeing new situations.
 
 The rest of the paper is as follows.
 %
-First, we introduce BDI agent systems as well as machine learning
+First, we introduce BDI systems and machine learning
 concepts necessary to understand this work.  
 %
 We then describe the BDI learning framework, initially developed

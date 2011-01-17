@@ -119,6 +119,20 @@ where $\alpha$ is a weighting factor used to set a preference bias between the t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Using Learning and Confidence to Select Plans}\label{sec:selection}
 
+\newcommand{\aSet}{\mathname{set}}
+\newcommand{\aOperate}{\mathname{operate}}
+\newcommand{\aEvaluate}{\mathname{evaluate}}
+
+\newcommand{\pSet}{\mathname{Set*}}
+\newcommand{\pSetCharge}{\mathname{SetCharge}}
+\newcommand{\pSetDischarge}{\mathname{SetDischarge}}
+\newcommand{\pSetNotUsed}{\mathname{SetNotUsed}}
+\newcommand{\pExecute}{\mathname{Execute}}
+
+\newcommand{\cSatisfies}{\psi}
+
+\input{figs/fig-experiments}
+
 Finally, we show how this confidence measure is to be used within the plan selection mechanism of a BDI agent. Remember that for a given goal-event that needs to be resolved, a BDI agent may have several applicable plans from which one ought to be selected for execution. The BDI learning framework described in Section~\ref{sec:framework} will chose probabilistically among these options in a way proportional to some given weight per plan---the more weight a plan is assigned, the higher the chances of it being chosen. 
 %%
 Following~\cite{singh10:extending,singh10:learning}, we define this selection weight for plan $P$ in world $w$ relative its last $n$ executions as follows: 
