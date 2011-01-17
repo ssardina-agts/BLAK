@@ -32,7 +32,7 @@
 
 @STRING{ JETAI = {Journal of Experimental and Theoretical AI} }
 
-@STRING{ LNCS = {Lecture Notes in Computer Science (LNCS)} }
+@STRING{ LNCS = {LNCS} }
 
 @STRING{ LNAI = {Lecture Notes in Artificial Intelligence (LNAI)} }
 
@@ -52,8 +52,7 @@ Reasoning (KR)} }
 @STRING{ AAAI = {Proceedings of the National Conference on Artificial
 Intelligence (AAAI)} }
 
-@STRING{ AAMAS = {Proceedings of Autonomous Agents and Multi-Agent Systems
-(AAMAS)} }
+@STRING{ AAMAS = {Proc. of AAMAS} }
 
 @STRING{ AGENTS = {Proceedings of the Annual Conference on Autonomous Agents
 (AGENTS)} }
@@ -102,8 +101,7 @@ Languages and Technologies (DALT)} }
 @STRING{ CLIMA = {Proceedings of the International Workshop on Computational
 Logic in Multi-Agent Systems (CLIMA)} }
 
-@STRING{ PROMAS = {Proceedings of the Programming Multiagent Systems Languages,
-Frameworks, Techniques and Tools workshop (PROMAS)} }
+@STRING{ PROMAS = {Proceedings of PROMAS}}
 
 @STRING{ ATAL = {Proceedings of the International Workshop on Agent Theories,
 Architectures, and Languages (ATAL)} }
@@ -208,17 +206,19 @@ year = {1987}
  address = {Piscataway, NJ, USA},
  }
 
-@inproceedings{Rao96:AgentSpeak,
- author = {Anand S. Rao},
- title = {AgentSpeak(L): BDI agents speak out in a logical computable language},
- booktitle = {MAAMAW '96: Proceedings of the 7th European workshop on Modelling autonomous agents in a multi-agent world : agents breaking away},
- year = {1996},
- isbn = {3-540-60852-4},
- pages = {42--55},
- location = {Einhoven, The Netherlands},
- publisher = {Springer-Verlag New York, Inc.},
- address = {Secaucus, NJ, USA},
- }
+
+@INPROCEEDINGS{Rao96:AgentSpeak,
+	author = {Anand S. Rao},
+	title = {AgentSpeak({L}): {BDI} Agents Speak Out in a Logical Computable Language},
+	booktitle = {Proceedings of MAAMAW'96},
+	pages = {42--55},
+	year = {1996},
+	opteditor = {W. Vander Velde and J. W. Perram},
+	volume = {1038},
+	series = LNCS,
+	publisher = SPRINGER
+}
+
 
 @article{Schut04:Theory,
 author = {Martijn Schut, Michael Wooldridge and Simon Parsons},
@@ -325,10 +325,10 @@ year = {2002}
 
 
 @book{Mitchell97:ML,
-author = {Tom Mitchell},
-title = {Machine Learning},
-publisher = {McGraw Hill},
-year = 1997
+author = {$\!\!\!$Tom Mitchell},
+title = {$\!\!\!$Machine Learning},
+publisher = {$\!\!\!$McGraw-Hill},
+year = {$\!\!$1997}
 }
 
 @article{Aha91:Instance-Based,
@@ -491,7 +491,6 @@ publisher = {Morgan Kaufmann, San Francisco}
 	author = {Michael P. Georgeff and Francois Felix Ingrand},
 	title = {Decision making in an embedded reasoning system},
 	booktitle = IJCAI,
-	address = {Detroit, USA},
 	pages = {972--978},
 	year = {1989}
 }
@@ -564,14 +563,18 @@ year = 2004,
 booktitle ={Computational Logic in Multi-Agent Systems},
 pages = {218--233}
 }
+
 @BOOK{ jasonbook,
-	author = {R. Bordini and J. H{\"u}bner and M. Wooldridge},
+	author = {Rafael H. Bordini and Jomi Fred H{\"u}bner and Michael Wooldridge},
 	Title = {Programming Multi-agent Systems in {AgentSpeak} Using {Jason}},
 	publisher = {Wiley},
 	year = {2007},
-	series = {Wiley Series in Agent Technology},
-	isbn = {0470029005}
+	isbn = {0470029005},
+	optnote = {{\"}}
 }
+
+
+
 @INPROCEEDINGS{ SardinaDP06,
 	author = {Sebastian Sardina and Lavindra P. {de Silva} and Lin Padgham},
 	title = {Hierarchical Planning in {BDI} Agent Programming Languages: {A}
@@ -599,13 +602,20 @@ pages = 282
 
 
 
-@BOOK{WooldridgeBook,
-author  =   "Michael Wooldridge",
-title   =   "An Introduction to MultiAgent Systems",
-publisher =   "John Wiley \& Sons (Chichester, England)",
-year    =   2002,
-note    =   "ISBN 0 47149691X, http://www.csc.liv.ac.uk/{$\sim$}mjw/pubs/imas/"
+
+@book{WooldridgeBook,
+    abstract = {{This is the first textbook to be explicitly designed for use as a course text for an undergraduate/graduate course on multi-agent systems. Assuming only a basic understanding of computer science, this text provides an introduction to all the main issues in the theory and practice of intelligent agents and multi-agent systems. <P> * The companion Web Site includes sample exercises, lecture slidest and hyperlinks to software referred to in the book <BR> * Introduces agents, explains what agents are, how they are constructed and how they can be made to co-operate effectively with one another in large-scale systems <BR> * Introduces the main issues surrounding the design of intelligent agents <BR> * Introduces a number of typical applications for agent technology <P> } {Multiagent systems represent a new way of conceptualising and implementing distributed software. An Introduction to MultiAgent Systems is the first modern textbook on this important topic. It provides a comprehensive introduction to intelligent agents and multiagent systems. The book assumes no specialist knowledge. It introduces the idea of agents as software systems that can act autonomously, and leads the reader through a detailed discussion of:   ways that agents can be built     how agents can reach agreements     the languages that agents can use to communicate with one-another     co-operation and co-ordination in agent systems   and     the applications of agent technology.   Designed and written specifically for undergraduates and computing professionals, the book is supported by extensive online teaching resources, including a complete set of lecture slides. Illustrated with many informal examples, and packed with more than 500 references, An Introduction to MultiAgent Systems is a must-read for students and practitioners of agent systems alike.}},
+    author = {Wooldridge, Michael},
+    howpublished = {Paperback},
+    isbn = {978-0470519462},
+    keywords = {mas, multi-agent},
+    publisher = WILEYP,
+    title = {Introduction to Multi-Agent Systems},
+	edition = {Second},
+	year = {2009}
 }
+
+
 @BOOK{Dennett,
 author  =   "Daniel C. Dennett",
 title   =   "The Intentional Stance",
@@ -815,11 +825,8 @@ pages = {18--22},
               Lin Padgham and Ste\'phane Airiau},
   title     = {Learning context conditions for {BDI} plan selection},
   booktitle = AAMAS,
-  editor    = {van der Hoek and Kaminka and Lesp\'erance and Luck and Sen},
   pages     = {325--332},
-  month     = {May},
-  year      = {2010},
-  address   = {Toronto, Canada},
+  year      = {2010}
 }
 
 @article{singh10:extending,
@@ -852,14 +859,14 @@ pages = {18--22},
 @ARTICLE{ Pokahr:EXP03-JADEX,
 	author = {Alexander Pokahr and Lars Braubach and Winfried Lamersdorf},
 	title = {{JADEX}: {I}mplementing a {BDI}-Infrastructure for {JADE} Agents},
-	journal = {{EXP} - in search of innovation (Special Issue on {JADE})},
+	journal = {$\!\!${EXP}: In search of innovation},
 	year = {2003},
 	volume = {3},
 	number = {3},
 	pages = {76--85},
 	optnote = {Telecom Italia Lab},
 	optaddress = {Turin, Italy},
-	month = Sep
+	optmonth = Sep
 }
 
 
@@ -923,6 +930,7 @@ pages = {18--22},
   school={RMIT University}
 }
 
+
 @conference{norris02:grid,
   title       = {Grid-connected Solar Energy Storage Using the Zinc-Bromine 
                 Flow Battery},
@@ -936,16 +944,10 @@ pages = {18--22},
 
 @inproceedings{ShawBordini:AAMAS08,
     abstract = {Agents programmed in BDI-inspired languages have goals to achieve and a library of plans that can be used to achieve them, typically requiring further goals to be adopted. This is most naturally represented by a structure that has been called a Goal-Plan Tree. One of the uses of such structure is in agent deliberation (in particular, deciding whether to commit to achieving a certain goal or not). This paper presents new experimental results combining various types of goal-plan tree reasoning from the literature.},
-    address = {Richland, SC},
     author = {Shaw, Patricia H. and Farwer, Berndt and Bordini, Rafael H.},
     booktitle = AAMAS,
-    isbn = {978-0-9817381-2-X},
-    keywords = {agents, ao\_programming, bdi},
-    location = {Estoril, Portugal},
     pages = {1379--1382},
-    publisher = {International Foundation for Autonomous Agents and Multiagent Systems},
     title = {Theoretical and experimental results on the goal-plan tree problem},
-    url = {http://portal.acm.org/citation.cfm?id=1402821.1402877},
     year = 2008
 }
 
