@@ -17,17 +17,17 @@ Furthermore, unlike in~\cite{singh10:extending,singh10:learning}, it does not re
 %%
 We demonstrated the effectiveness of the proposed BDI learning framework using a simplified energy storage domain whose dynamics is intrinsically changing.
 
-Perhaps the most more severe limitation of our learning framework is that it still cannot account for interactions between a plan's subgoals. If an agent plan involves two sub-goals (e.g., book flight and book hotel), these are learnt independently of each other. This ``local'' learning may then yield sub-optimal behavior. One way of addressing this may be to use extended notions of execution traces that take into account \emph{all} subgoals that led to the final execution outcome.
+Perhaps the most severe limitation of our learning framework is that it cannot account for interactions between a plan's subgoals. If a plan involves two sub-goals (e.g., book flight and book hotel), these are learnt independently of each other and this ``local'' learning may yield sub-optimal behavior. One way of addressing this may be to use extended notions of execution traces that take into account \emph{all} subgoals that led to the final execution outcome.
 
 
 The issue of combining learning within BDI deliberation has not been widely addressed in the literature.
 %%
-\citet{hernandez04:learning} reported preliminary results on learning the context condition for a \emph{single} plan using, and hence they do not consider the issue of learning in plan hierarchies.
+\citet{hernandez04:learning} reported preliminary results on learning the context condition for a \emph{single} plan, and hence do not consider the issue of learning in plan hierarchies.
 %%
-Other work has focused on integrating \emph{offline} (rather than online) learning within deliberation in BDI systems, such as the work of \citet{lokuge07:improving} for ship berthing logistics and that of ~\citet{riedmiller01:karlsruhe} within a robotic soccer domain.
+Other work has focused on integrating offline (rather than online) learning within deliberation in BDI systems, such as the work of \citet{lokuge07:improving} for ship berthing logistics and that of ~\citet{riedmiller01:karlsruhe} within a robotic soccer domain.
 % {riedmiller01:karlsruhe,brusey02:learning} within a robotic soccer domain.
 %%
-The recent approach of \citet{broekens10:reinforcement} on integrating reinforcement learning to improve plan selection in GOAL agent language complements ours, in that it may be integrated as ``meta-level'' learning to influence the plan selection calculation given by the weighting function $\Omega$ (see Section~\ref{sec:confidence}). Indeed, we plan to investigate this integration in our future work.
+The recent approach of \citet{broekens10:reinforcement} on integrating reinforcement learning to improve plan selection in GOAL agent language complements ours, in that it may be integrated as ``meta-level'' learning to influence the plan selection calculation given by the weighting function $\Omega$ (Section~\ref{sec:confidence}). Indeed, we plan to investigate this integration in our future work.
 
 
 
