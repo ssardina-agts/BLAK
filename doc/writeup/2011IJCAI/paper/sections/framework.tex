@@ -31,17 +31,18 @@ The approach of using confidence to adjust plan selection weights is shown to be
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Determining Confidence in Ongoing Learning}\label{sec:confidence}
 
-We now describe our confidence measure for learning in environments with continually changing dynamics and where the agent must invariably ``keep on learning'' as it were. Incidentally, it uses the notion of {\em stability} first introduced in~\cite{airiau09:enhancing}, and defined in ~\cite{singh10:learning} as follows:
-%Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, recall that the confidence metric informs the agent about how much it should trust the outcome estimate provided by its current decision tree.
-
-\begin{quote}
-\emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold.''}
-\end{quote} 
-
 \newcommand{\ds}{\zeta}
 \newcommand{\app}{\mathname{app}}
 \newcommand{\stable}{\mathname{stable}}
 
+
+We now describe our confidence measure for learning in environments with continually changing dynamics and where the agent must invariably ``keep on learning'' as it were. Incidentally, it uses the notion of {\em stability} first introduced in~\cite{airiau09:enhancing}, and defined in ~\cite{singh10:learning} as follows:
+%Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, recall that the confidence metric informs the agent about how much it should trust the outcome estimate provided by its current decision tree.
+%
+%\begin{quote}
+\emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold.''}
+%\end{quote} 
+%
 Our aim is to use this notion to judge how  well-informed the decisions the agent has made within a particular execution trace were. This is particularly meaningful for \emph{failed} execution traces: low stability suggests that we were not well-informed and more exploration is needed before assuming that no solution is possible (for the trace's top goal in question).
 %%
 To capture this, we define the \emph{degree of stability} of a (failed) execution trace $\lambda$, denoted $\ds(\lambda)$ as the ratio of stable plans to total applicable plans in the active execution trace below the top-level goal event in $\lambda$. Formally, when $\lambda= G_1[P_1:w_1] \cdots G_n[P_n:w_n]$ we define 
@@ -57,9 +58,9 @@ To capture this, we define the \emph{degree of stability} of a (failed) executio
 \]
 
 \noindent
-where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable plans (i.e., whose boolean context conditions hold true) in world state $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable at world state $w_i$, as defined in~\cite{singh10:learning}.
+where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable plans (i.e., whose boolean context conditions hold true) in world $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable at world $w_i$, as defined in~\cite{singh10:learning}.
 
-For instance, take the failed execution trace $\lambda = G[P:w] \cdot G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ from before and suppose further that the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w_2) = \{P_d,P_f\}$, and $\Delta_{\app}(G_5,w_5) = \{P_m,P_n,P_o\}$. Further assume that $P_d$ and $P_n$ are the only plans deemed stable (in worlds $w_2$ and $w_5$ respectively). 
+For instance, take the failed execution trace $\lambda = G[P:w] \cdot G_2[P_f:w_2] \cdot G_5[P_n:w_5]$ from before and suppose that the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w_2) = \{P_d,P_f\}$, and $\Delta_{\app}(G_5,w_5) = \{P_m,P_n,P_o\}$. Say also that $P_d$ and $P_n$ are the only plans deemed stable (in worlds $w_2$ and $w_5$ respectively). 
 %%
 Then the degree of stability for the whole trace is $\ds(\lambda)= 2/6$.
 %%
@@ -94,7 +95,11 @@ Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens g
 \end{algorithm}
 
 
-As a plan execution produces new failed experiences, the calculated degree of stability is appended against it each time. When a plan finally succeeds, we take an optimistic view and record $1$ (i.e., full stability) against it. This, together with the fact that all plans do eventually become stable, means that $\ds(\lambda)$ is guaranteed to converge to $1$. 
+As plan execution produces new failed experiences, the calculated degree of stability is appended against it each time. When a plan finally succeeds, we take an optimistic view and record degree $1$ against it. 
+%
+In other words, choices that led to success are considered well-informed, but for failures we want to know just how good the decisions were.
+%
+The fact that all plans do eventually become stable or succeed, means that $\ds(\lambda)$ is guaranteed to converge to $1$ (for fixed dynamics). 
 
 
 To aggregate the different stability recordings for a plan over time, we use the \emph{average degree of stability} over the last $n \geq 1$ executions of plan $P$ in $w$, denoted $\C_s(P,w,n)$. 
