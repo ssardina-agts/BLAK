@@ -79,7 +79,7 @@ So, for plan $P$ we store degree $\ds(\lambda')$ whereas for plan $P_f$ we recor
 %%
 Intuitively, by doing this, we record against each plan in the (failed) trace, an estimate of how informed the current (active) choices made for the plan were.  
 %%
-Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how the stability measure is recorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records (i.e. saves to memory) degree $d$ for plan $P$ in world state $w$.
+Algorithm~\ref{alg:degree} describes how this (hierarchical) recording happens given an active execution trace $\lambda$. Observe how the stability measure is recorded against each plan in the trace: $\SetDegreeStability(P, w, d)$ records (i.e., saves to memory) degree $d$ for plan $P$ in world state $w$.
 
 \begin{algorithm}[h]
 \KwData{$\lambda=G_1[P_1:w_1] \cdot \ldots \cdot G_n[P_n:w_n]$, with $n \geq 1$.}
@@ -152,5 +152,5 @@ Following~\cite{singh10:extending,singh10:learning}, we define this selection we
 where $\P(P,w)$ is the probability of success of plan $P$ in world $w$ as given by $P$'s decision tree. 
 %
 Indeed, this weight definition is basically that of~\cite{singh10:extending,singh10:learning}, except for the use of our new confidence metric $\C$ as defined above. The idea is to combine the likelihood of success of plan $P$ in world $w$ (the term $\P(P,w)$) with a confidence bias (in this case $\C \in [0.0:1.0]$) to determine a final plan selection weight $\Omega$. 
-When the confidence is maximum i.e. $1.0$, then $\Omega = \P(P,w)$, and the final weight equals the likelihood reported by the decision tree; when the confidence is zero, then $\Omega=0.5$, and the decision tree has no bearing on the final weight (a default weight of $0.5$ is used instead).
+When the confidence is maximum (i.e., $1.0$), then $\Omega = \P(P,w)$, and the final weight equals the likelihood reported by the decision tree; when the confidence is zero, then $\Omega=0.5$, and the decision tree has no bearing on the final weight (a default weight of $0.5$ is used instead).
 
