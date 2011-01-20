@@ -42,7 +42,7 @@ We now describe our confidence measure for learning in environments with continu
 %\begin{quote}
 \emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold.''}
 %\end{quote} 
-Here the rate is simply the ratio of successful to total experiences in $w$ and stability is measured against the difference between two consecutive rates.
+Here the rate is simply the ratio of successful to total (recent few) experiences in $w$ and stability is measured against the difference between two consecutive rates.
 %
 Our aim is to use this notion to judge how  well-informed the decisions the agent has made within a particular execution trace were. This is particularly meaningful for \emph{failed} execution traces: low stability suggests that we were not well-informed and more exploration is needed before assuming that no solution is possible (for the trace's top goal in question).
 %%
