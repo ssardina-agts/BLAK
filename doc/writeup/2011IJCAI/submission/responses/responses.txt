@@ -1,0 +1,40 @@
+##### General comments:
+
+We thank the three reviewers for their invaluable feedback.
+
+Reviewers #1 and #2 have both suggested a comparison with Singh et al.'s one-off learning. Indeed we have evaluated this with some rigour. Overall, our approach performs similarly to theirs in a monotonic setting, and may be used as a replacement for their technique as suggested in the paper. Comparison with Singh-like learning in an environment with changing dynamics, however, is not possible as their technique was not designed for this and will require "hand-tuning" of the learning rate for the particular hierarchy, as well as a notification of the change in the environment. Neither are required in our approach. Regardless, we agree with the reviewers that this comparison should be made clear in the paper.
+
+
+##### Review #1:
+
+The value n=5 was used in all experiments (Section 4.1). In general, "n" dictates the moving average and therefore the sensitivity of the confidence measure to changes in performance. Lower n means confidence changes quickly whereas higher n means confidence changes gradually. Currently this is fixed upfront and must be decided by the programmer after some initial trials (in our tests values between 3-8 were reasonable). We agree that it would be valuable to remove this dependence, say using a reduced weighting scheme as suggested, in the future. Meanwhile, we will aim to make this intuition clear in the paper.
+
+We note the reviewer #1's remaining comments around the abstract and text clarifications, and will address these appropriately as suggested.
+
+##### Review #2:
+
+Significance/Evaluation/Comparison:
+
+1. The reviewer raises a valid point regarding exploration. Indeed we have not discussed the exploration strategy explicitly. Our exploration strategy is inherent in the confidence-based probabilistic selection weight Omega (Section 3.3). Intuitively, it works as follows. If HC=High Confidence, LC=Low Confidence, HS=High likelihood of Success (Decision Tree prediction), and LS=Low likelihood of Succees (DT prediction), then the selection favours HC+HS > LC+HS > LC+LS > HC+LS. We agree that it will be very useful to describe this clearly. Thank you for pointing this out.
+
+2. We note the reviewer's comment regarding learning times. We agree that there is work to be done before our results can be presented within a theoretical framework to a machine learning audience. As the reviewer has duly noted, our focus has been on the principled integration of learning with BDI agent programming. Our goal is to see deployed agents that keep-on-learning as it were. Our hope is to also encourage such consideration within the machine learning community.
+
+Technical:
+
+1. The stability degree is recorded for the plan, both for failures (calculated) and successes (assumed 1), as and when then occur temporally. The average degree of stability is calculated over this sequence using the last n values. 
+
+2. Yes the reviewer has understood this correctly. Degree 1 is recorded against all plans (including non-leaf) in the trace as we take an optimistic view of successes. We will clarify this in the text.
+
+3. We see that the wording of this is too strong. Extreme alpha values will indeed make a difference. Overall, for rich problems (such as the battery controller described) where there are sufficiently high number of worlds as well as a sufficiently complex goal-plan hierarchy, the extremes have low impact on the performance. We will clarify this point in the paper.
+
+4. Thanks, we see how the RecordDegreeStability may be confusing. We will reword this as suggested.  
+
+5. Sorry for this mistake and thanks for picking it. The description for NewStates should say "not". 
+
+Clarity:
+
+We note the reviewer's comments on clarity and will aim to improve this in the areas highlighted.
+
+##### Review #3:
+
+We thank the reviewer for their generous and favourable comments and are grateful that they found the paper worthwhile. While this work is initially aimed at the agent community, we indeed hope that the agenda of ongoing learning (re-learning) will also find traction in the machine learning community.
