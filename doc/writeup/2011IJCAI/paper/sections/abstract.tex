@@ -1,18 +1,30 @@
 %!TEX root = ../ijcai11storage.tex
 
+
+We propose a framework that adds learning for improving plan selection in the popular BDI agent programming paradigm.
+%
+In contrast with previous proposals, the approach given here is able to scale up easily with the complexity of the agent's plan library.
+%, and also adapt to changes in environment dynamics.% of the environment.
+%
+Technically, we develop a novel confidence measure which allows the agent to adjust its reliance on the learning dynamically
+% when used in the exploration heuristic
+, facilitating in principle infinitely many learning and relearning phases.
+%
+We show the benefits of the approach in an example controller for energy management.
+
 %The Belief-Desire-Intentions (BDI) agent programming paradigm is a
 %successful and popular approach to developing complex systems that
 %will behave robustly in situations where the environment is
 %interacting with the agent system. 
-In this paper we present a
-framework for integrating learning into the popular and robust BDI
-agent programming paradigm. We summarise
-previous work which has integrated decision trees into the context
-condition used for plan selection, and then develop a confidence
-measure which allows the agent to adjust its reliance on the
-decision tree dynamically, facilitating both initial learning and
-re-learning. We evaluate this with an example of an embedded controller
-for energy management.
+%In this paper we present a
+%framework for integrating learning into the popular and robust BDI
+%agent programming paradigm. We summarise
+%previous work which has integrated decision trees into the context
+%condition used for plan selection, and then develop a confidence
+%measure which allows the agent to adjust its reliance on the
+%decision tree dynamically, facilitating both initial learning and
+%re-learning. We evaluate this with an example of an embedded controller
+%for energy management.
 
 %% Abstract submissions for AAMAS 2011 are limited to 400 words maximum
 %We propose enhancements to a framework that integrates

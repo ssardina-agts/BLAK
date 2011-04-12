@@ -8,8 +8,8 @@ The Belief-Desire-Intentions (BDI) agent programming paradigm
 \cite{WooldridgeBook,BusettaRHL:AL99-JACK,Pokahr:EXP03-JADEX,jasonbook} is a
 successful and popular approach to developing complex systems that
 behave robustly in situations where the environment is
-interacting with the agent system.
-However they do not incorporate learning, and thus, once deployed,
+interacting with the system.
+However BDI agents do not incorporate learning, and once deployed,
 have no ability to adjust to changes in the dynamics of an environment
 that cause previously successful approaches to fail and vice versa.
 %%
@@ -29,9 +29,11 @@ agent program, but learn refinements to it, as well as adjustments in the case t
 A key issue when learning is that of exploitation
 vs. exploration: how much to trust and exploit the current
 (learnt) knowledge, versus how much to try things in order to gain new
-knowledge. Important in this balance is an understanding of how much
-knowledge has already been
-explored. In~\cite{singh10:extending,singh10:learning}, a
+knowledge. 
+%Important in this balance is an understanding of how much
+%knowledge has already been
+%explored. 
+In~\cite{singh10:extending,singh10:learning}, a
 ``coverage-based" measure of confidence was used to capture how much
 the BDI agent should trust its current understanding (of good plan
 selection), and therefore exploit rather than explore. Intuitively,
@@ -74,9 +76,9 @@ The rest of the paper is as follows.
 First, we introduce BDI systems and machine learning
 concepts necessary to understand this work.  
 %
-We then describe the BDI learning framework, initially developed
-by~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, and
-enhance this with our new confidence measure (Section~\ref{sec:confidence})
+We then describe our BDI learning framework, initially developed
+in~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, and
+extend this with our new confidence measure (Section~\ref{sec:confidence})
 for learning in environments with changing dynamics.  
 %
 Next, we describe a battery controller agent, based on a real
