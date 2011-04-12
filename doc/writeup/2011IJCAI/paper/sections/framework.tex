@@ -47,6 +47,7 @@ Here the rate is simply the ratio of successful to total (recent few) experience
 Our aim is to use this notion to judge how  well-informed the decisions the agent has made within a particular execution trace were. This is particularly meaningful for \emph{failed} execution traces: low stability suggests that we were not well-informed and more exploration is needed before assuming that no solution is possible (for the trace's top goal in question).
 %%
 To capture this, we define the \emph{degree of stability} of a (failed) execution trace $\lambda$, denoted $\ds(\lambda)$ as the ratio of stable plans to total applicable plans in the active execution trace below the top-level goal event in $\lambda$. Formally, when $\lambda= G_1[P_1:w_1] \cdots G_n[P_n:w_n]$ we define 
+\vskip -0.5cm
 %%
 \[
 \ds(\lambda) = 
