@@ -13,7 +13,9 @@ Within the framework, three mechanisms become crucial. First is a principled app
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Learning Context Conditions from Experience}\label{sec:context}
 
-In~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, it was proposed to generalize the account for plans' context conditions to decision trees~\cite{Mitchell97:ML} that can be learnt over time. The idea is simple: \emph{the decision tree of an agent plan provides a judgement as to whether the plan is likely to succeed or fail in the given situation.}
+As discussed in our earlier work~\cite{airiau09:enhancing,singh10:extending,singh10:learning}, plans' context conditions are first generalised to decision trees~\cite{Mitchell97:ML}, which can be learnt over time.
+%%
+The idea is simple: \emph{the decision tree of an agent plan provides a judgement as to whether the plan is likely to succeed or fail in the given situation.}
 %%
 By suitably \emph{learning} the structure of and adequately \emph{using} such decision trees, the agent is able to improve its performance over time, lessening the burden on the domain modeller to encode ``perfect'' plan preconditions. Note that the classical boolean context conditions provided by the designer could (and generally will) still be used as initial necessary but possibly insufficient requirements for each plan that will be further \emph{refined} in the course of trying plans in various world states.
 
@@ -30,7 +32,9 @@ Here, should the negative outcome be recorded for training our decision tree at 
 
 The approach of using confidence to adjust plan selection weights is shown to be more generally applicable to learning in BDI hierarchies~\cite{singh10:extending,singh10:learning}, and is the one we use in this study. However, the traditional assumption that learning is a one-off process is no longer applicable for embedded learning agents that operate over long time frames. These must in fact often un-learn and re-learn as necessary, due to ongoing changes in the environment dynamics. The measure of confidence---that effectively defines the exploration strategy---is therefore no longer a monotonically increasing function, and must dynamically adjust accordingly if previously learnt solutions no longer work. Our new confidence measure for such environments with changing dynamics is presented next. 
 %%
-Importantly, such measure subsumes the functionality of the former methods (it may be used as a direct replacement for them), since it behaves monotonically in environments where the dynamics are fixed. 
+Importantly, such measure subsumes the functionality of the former methods, in that it has equivalent convergence properties when used in environments with fixed dynamics. 
+%%
+% Importantly, such measure subsumes the functionality of the former methods (it may be used as a direct replacement for them), since it behaves monotonically in environments where the dynamics are fixed. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Determining Confidence in Ongoing Learning}\label{sec:confidence}
