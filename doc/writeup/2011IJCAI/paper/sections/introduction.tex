@@ -18,7 +18,7 @@ program, but integrate adaptive machine
 learning techniques that are generally used to learn behaviour in a
 fixed environment (often off-line with a training set),
 for use in online continuous learning in an environment where what
-works may well change over time.
+works, may well change over time.
 %%
 In that way, our contribution is to agent programming---\emph{to make BDI programs more adaptive by seamlessly integrating learning techniques}---rather that to machine learning research.
 %%
@@ -30,7 +30,7 @@ knowledge.
 %Important in this balance is an understanding of how much
 %knowledge has already been
 %explored. 
-In~\cite{singh10:extending,singh10:learning}, a
+In our earlier work~\cite{singh10:extending,singh10:learning}, a
 ``coverage-based" measure of confidence was used to capture how much
 the BDI agent should trust its current understanding (of good plan
 selection), and therefore exploit rather than explore. Intuitively,
@@ -40,7 +40,7 @@ The more this space has been explored, the
 greater the confidence, and the more likely the agent is
 to exploit.   
 %
-As recognised by~\cite{singh10:learning}, the coverage-based
+As recognised in this work, the coverage-based
 confidence approach does not support learning in a changing
 environment. This is because the confidence increases
 \emph{monotonically} and, as a result, there is no ability for the

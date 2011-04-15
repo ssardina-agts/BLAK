@@ -27,7 +27,7 @@ For instance, the plan library of an unmanned air vehicle (UAV) agent controller
 %%%
 Besides the actual execution of domain actions (e.g., lifting the flaps), a plan may require the resolution of (intermediate) sub-goal events (e.g., obtaining landing permission from the air control tower). As such, the execution of a BDI system can be seen as a \textit{context sensitive subgoal expansion}, allowing agents to ``act as they go'' by making \emph{plan choices} at each level of abstraction with respect to the current situation. The use of plans' context (pre)conditions to make choices as late as possible, together with the built-in goal-failure mechanisms, ensures that the system is responsive to changes in the environment. 
 
-By grouping together plans responding to the same event type, the agent's plan library may be viewed as a set of goal-plan tree templates (e.g., Figure~\ref{fig:confidence}): a goal-event node (e.g., goal $G_1$) has children representing the alternative \emph{relevant} plans for achieving it (e.g., $P_A,P_B$ and $P_C$); and a plan node (e.g., $P_F$), in turn, has children nodes representing the subgoals (including primitive actions) of the plan (e.g., $G_4$ and $G_5$). These structures, can be seen as AND/OR trees: for a plan to succeed all the subgoals and actions of the plan must be successful (AND); for a subgoal to succeed one of the plans to achieve it must succeed (OR). Leaf plans interact directly with the environment and so, in a given world state, they can either succeed or fail when executed; this is marked accordingly in the figure for some particular world (of course such plans may behave differently in other states).
+By grouping together plans responding to the same event type, the agent's plan library may be viewed as a set of goal-plan tree templates (e.g., Figure~\ref{fig:confidence}): a goal-event node (e.g., goal $G_1$) has children representing the alternative \emph{relevant} plans for achieving it (e.g., $P_A,P_B$ and $P_C$); and a plan node (e.g., $P_F$), in turn, has children nodes representing the subgoals (including primitive actions) of the plan (e.g., $G_4$ and $G_5$). These structures, can be seen as AND/OR trees: for a plan to succeed all the subgoals and actions of the plan must be successful (AND); for a subgoal to succeed one of the plans to achieve it must succeed (OR). Leaf plans interact directly with the environment and so, in a given world state, they can either succeed or fail when executed; this is marked accordingly in the figure for some particular world (of course such plans may behave differently in other world states).
 
 
 Figure \ref{fig:confidence} shows the possible outcomes when plan $P$ is selected in a given world $w$. In order for the first subgoal $G_1$ to succeed, plan $P_A$ must be selected followed by $P_I$ (successes marked as $\surd$). The {\em active execution trace}%
@@ -50,7 +50,10 @@ Similarly, $w''$ is the resulting world from the execution of $P_K$ in $\lambda_
 \end{figure}
 
 
-Evidently, adequate plan selection is crucial in BDI systems. Whereas standard BDI platforms leverage domain expertise by means of \emph{fixed} logical context conditions of plans, in this work we are interested in ways of improving or \emph{learning} plan selection for a situated agent, based on experience.
+As can be seen, appropriate plan selection is crucial in BDI systems. Whereas standard BDI platforms leverage domain expertise by means of \emph{fixed} logical context conditions of plans, here we are interested in ways of improving or \emph{learning} plan selection for a situated agent, based on experience.
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Machine Learning Concepts}
