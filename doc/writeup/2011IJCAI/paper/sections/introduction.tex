@@ -9,25 +9,22 @@ The Belief-Desire-Intentions (BDI) agent programming paradigm
 successful and popular approach to developing complex systems that
 behave robustly in situations where the environment is
 interacting with the system.
-However BDI agents do not incorporate learning, and once deployed,
+However, BDI agents do not incorporate learning, and once deployed,
 have no ability to adjust to changes in the dynamics of an environment
 that cause previously successful approaches to fail and vice versa.
 %%
 In this work we maintain the structure and advantages of a BDI agent
 program, but integrate adaptive machine
-learning techniques, that are generally used to learn behaviour in a
+learning techniques that are generally used to learn behaviour in a
 fixed environment (often off-line with a training set),
 for use in online continuous learning in an environment where what
 works may well change over time.
 %%
 In that way, our contribution is to agent programming---\emph{to make BDI programs more adaptive by seamlessly integrating learning techniques}---rather that to machine learning research.
 %%
-The aim is to use the operational knowledge encoded in the
-agent program, but learn refinements to it, as well as adjustments in the case that the environment behaviour changes. 
+The aim is to use the operational knowledge encoded in the agent program, but learn dynamic refinements to it so as to cope with changes in the dynamics of the environment. 
 
-
-A key issue when learning is that of exploitation
-vs. exploration: how much to trust and exploit the current
+A key issue when learning is that of exploitation \emph{vs.} exploration: how much to trust and exploit the current
 (learnt) knowledge, versus how much to try things in order to gain new
 knowledge. 
 %Important in this balance is an understanding of how much

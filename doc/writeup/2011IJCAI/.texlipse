@@ -1,5 +1,5 @@
 #TeXlipse project settings
-#Wed Apr 13 10:15:29 EST 2011
+#Fri Apr 15 13:20:41 EST 2011
 builderNum=2
 outputDir=paper/
 makeIndSty=
@@ -8,6 +8,6 @@ outputFormat=pdf
 tempDir=tmp/
 mainTexFile=ijcai11storage.tex
 outputFile=ijcai11storage.pdf
-langSpell=
+langSpell=en
 markDer=true
-srcDir=paper
+srcDir=paper/

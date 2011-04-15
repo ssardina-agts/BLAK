@@ -12,40 +12,40 @@
 \tikzstyle{planbox3}=[planbox,fill=black!20]
 
 	
-\tikzstyle{level 1}=[sibling distance=2.7cm] 
-\tikzstyle{level 2}=[sibling distance=0.9cm] 
-\tikzstyle{level 3}=[sibling distance=2.7cm]
-\tikzstyle{level 4}=[sibling distance=0.9cm]
+\tikzstyle{level 2}=[sibling distance=4cm] 
+\tikzstyle{level 3}=[sibling distance=1cm] 
+\tikzstyle{level 4}=[sibling distance=2.7cm]
+\tikzstyle{level 5}=[sibling distance=0.9cm]
 
-\node[planbox3,solid] {$P$}
+\node[goalbox2] {$G$}
+child { node[planbox3,solid] {$P$}
 		child {node[goalbox2] {$G_{1}$}
-			child {node[planbox2] {$P_{a}$}
+			child {node[planbox2] {$P_{A}$}
 				child {node[goalbox2] {$G_{3}$}
-					child {node[planbox,fail] {$P_{g}$}}
-					child {node[planbox,fail] {$P_{h}$}}
-					child {node[planbox2,succ] {$P_{i}$}}
+					child {node[planbox,fail] {$P_{G}$}}
+					child {node[planbox,fail] {$P_{H}$}}
+					child {node[planbox2,succ] {$P_{I}$}}
 				}
 			}
-			child {node[planbox,fail] {$P_{b}$}}
-			child {node[planbox,fail] {$P_{c}$}}
+			child {node[planbox,fail] {$P_{B}$}}
+			child {node[planbox,fail] {$P_{C}$}}
 		}
 		child {node[goalbox3] {$G_{2}$}
-			child {node[planbox,fail] {$P_{d}$}}
-			child {node[planbox,fail] {$P_{e}$}}
-			child {node[planbox3] {$P_f$}
+			child {node[planbox,fail] {$P_{D}$}}
+			child {node[planbox,fail] {$P_{E}$}}
+			child {node[planbox3] {$P_F$}
 				child {node[goalbox2] {$G_{4}$}
-					child {node[planbox,fail] {$P_{j}$}}
-					child {node[planbox2,succ] {$P_{k}$}}
-					child {node[planbox,fail] {$P_{l}$}}
+					child {node[planbox,fail] {$P_{J}$}}
+					child {node[planbox2,succ] {$P_{K}$}}
+					child {node[planbox,fail] {$P_{L}$}}
 				}
 				child {node[goalbox3] {$G_{5}$}
-					child {node[planbox3,succ] {$P_{m}$}}
-					child {node[planbox,fail] {$P_{n}$}}
-					child {node[planbox,fail] {$P_{o}$}}
+					child {node[planbox3,succ] {$P_{M}$}}
+					child {node[planbox,fail] {$P_{N}$}}
+					child {node[planbox,fail] {$P_{O}$}}
 				}
 			}
 		}
-		
-;
+};
 
 \end{tikzpicture}
