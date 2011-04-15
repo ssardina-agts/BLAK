@@ -34,7 +34,7 @@ The second approach is to record always, but instead adjust a plan's selection p
 
 The approach of using confidence to adjust plan selection weights is shown to be more generally applicable to learning in BDI hierarchies~\cite{singh10:extending,singh10:learning}, and is the one we use in this study. However, the traditional assumption that learning is a one-off process is no longer applicable for embedded learning agents that operate over long time frames. These must in fact often un-learn and re-learn as necessary, due to ongoing changes in the environment dynamics. The measure of confidence---that effectively defines the exploration strategy---is therefore no longer a monotonically increasing function, and must dynamically adjust accordingly if previously learnt solutions no longer work. Our new confidence measure for such environments with changing dynamics is presented next. 
 %%
-Importantly, such measure subsumes the functionality of the former methods, in that it has equivalent convergence properties when used in environments with fixed dynamics. 
+Importantly, this measure subsumes the functionality of the former methods, in that it has equivalent convergence properties when used in environments with fixed dynamics. 
 %%
 % Importantly, such measure subsumes the functionality of the former methods (it may be used as a direct replacement for them), since it behaves monotonically in environments where the dynamics are fixed. 
 
@@ -120,7 +120,7 @@ To aggregate the different stability recordings for a plan over time, we use the
 %%
 This provides us with a measure of confidence in the decision tree for plan $P$ in state $w$. Intuitively, $\C_s(P,w,n)$ tells us how ``informed" the decisions taken when performing $P$ in $w$ were over the $n$ most recent executions.
 %%
-Notice that if the environment dynamics are constant, this measure monotonically increases from $0$, as plans below $P$ start to become stable (or succeed); it reaches $1$ when all tried plans below $P$ in the last $n$ executions are considered stable. This is what one might expect in the typical learning setting. 
+Notice that if the environment dynamics are constant, this measure gradually increases from $0$, as plans below $P$ start to become stable (or succeed); it reaches $1$ when all tried plans below $P$ in the last $n$ executions are considered stable. This is what one might expect in the typical learning setting. 
 %%
 However, if the dynamics of the environment were to change and (working) plans start to fail or become unstable, then the measure of confidence adjusts accordingly.
 
@@ -128,7 +128,7 @@ However, if the dynamics of the environment were to change and (working) plans s
 \newcommand{\neww}{\mathname{NewStates}}
 Normally, generalising using decision trees is useful, if one has ``enough'' data. For us, this amounts to trying a plan in a given world in meaningful ways (captured by $\C_s(P,w,n)$), as well as in different worlds. 
 %%
-To measure the latter, we monitor \emph{the rate at which new worlds are being witnessed by a  plan $P$}. During early exploration, most worlds that a plan is selected for will be unique, thus yielding a high rate (corresponding to low confidence). Over time, the plan would get selected in all worlds in which it is reachable and the rate of new worlds would approach zero (corresponding to full confidence). Given this, we define our second confidence metric $\C_d(P,n) = 1 - \frac{|\neww(P,n)|}{n}$, where $\neww(P,n)$ is the set of worlds in the last $n$ executions of $P$ that have not been witnessed before that. $\C_d$ normally converges to $1.0$ after all worlds where the plan might be considered are eventually witnessed, although it may not do this monotonically.
+To measure the latter, we monitor \emph{the rate at which new worlds are being witnessed by a  plan $P$}. During early exploration, most worlds that a plan is selected for will be unique, thus yielding a high rate (corresponding to low confidence). Over time, the plan would get selected in all worlds in which it is reachable and the rate of new worlds would approach zero (corresponding to full confidence). Given this, we define our second confidence metric $\C_d(P,n) = 1 - \frac{|\neww(P,n)|}{n}$, where $\neww(P,n)$ is the set of worlds in the last $n$ executions of $P$ that have not been witnessed before. $\C_d$ normally converges to $1.0$ after all worlds where the plan might be considered are eventually witnessed.%, although it may not do this monotonically.
 
 We now define our final (aggregated) confidence measure $\C(P,w,n)$ using the stability-based metric $\C_s(P,w,n)$ that reflects how well-informed the last $n$ executions of plan $P$ in world $w$ were, and the domain metric $\C_d(P,n)$ that captures how well-known the worlds in the last $n$ executions of plan $P$ were compared with what we had experienced before:
 %%
@@ -178,4 +178,4 @@ where $\P(P,w)$ stands for the probability of success of plan $P$ in world $w$ a
 This weight definition is similar to what we have used before~\cite{singh10:extending,singh10:learning}, except for the new confidence metric $\C$ defined above. The idea is to combine the likelihood of success of plan $P$ in world $w$---term $\P(P,w)$---with a confidence bias (here $\C(\cdot,\cdot,\cdot) \in [0,1]$) to determine a final plan selection weight $\Omega$. 
 When the confidence is maximum (i.e., $1.0$), then $\Omega = \P(P,w)$, and the final weight equals the likelihood reported by the decision tree; when the confidence is zero, then $\Omega=0.5$, and the decision tree has no bearing on the final weight (a default weight of $0.5$ is used instead).
 %
-Intuitively, $\Omega$ describes the exploration strategy: when confidence is low, the probability of choosing the believed high success option is still low, leading to a strong chance of exploring alternatives.
+Intuitively, $\Omega$ describes the exploration strategy: when confidence is low, the probability of choosing the believed high success option is also low, leading to a strong chance of exploring alternatives.

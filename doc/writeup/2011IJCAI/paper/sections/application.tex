@@ -8,19 +8,19 @@
 %Energy storage enables increasing levels of renewable energy in our electricity system, and the rapidly maturing supply chains for several battery technologies encourages electricity utilities, generators, and customers to consider using large battery systems. 
 Large battery systems enable increasing levels of renewable energy in our electricity system. 
 %
-Such installations usually comprise of multiple modules that can be controlled independently~\cite{norris02:grid}. 
+Such installations usually consist of multiple modules that can be controlled independently~\cite{norris02:grid}. 
 %Often it is necessary to operate the modules in different states, such as if it is undesirable to change the direction of power flow too frequently, or due to battery technology requirements such as zinc-bromine flow batteries needing complete discharges at regular intervals. 
 %Often it is necessary to operate the modules in different states, for instance due to battery technology requirements such as zinc-bromine flow batteries needing complete discharges at regular intervals. 
 Since battery performance is susceptible to changes over time (e.g., modules may lose actual capacity) an \emph{adaptable} control mechanism is desirable that accounts for such changes.
 %
-Here, we describe an {\em embedded BDI controller for a modular battery system}, that regulates overall energy consumption of a smart office building comprising of loads (e.g., appliances) and generators (e.g., solar panels), by suitably ordering the battery to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates (the overall rate being the sum over the modules' rates).
+Here, we describe an {\em embedded BDI controller for a modular battery system}, that regulates overall energy consumption of a smart office building comprise of loads (e.g., appliances) and generators (e.g., solar panels), by suitably ordering the battery to charge (i.e., act as a load) or discharge (i.e., act as a generator) at determined rates (the overall rate being the sum over the modules' rates).
 
 Figure~\ref{fig:gptree} shows our implemented controller for an overall system capacity of $c$ (module capacity) $\times$ $k_{\mmax}$ (number of modules). Goal-event $G(r,k,s)$ requests a battery state (normalized) rate of $r \in [-1,1]$ (where $-1$ ($1$) indicates maximum discharge (charge) rate) by adjusting modules $[1,k]$ under current battery state $s$---initially, $k$ is set to $k_{\mmax}$. 
 %%
 The controller works by recursively configuring each module using plans $\pSetCharge$ (charge at rate $+c$), $\pSetDischarge$ (discharge at rate $-c$), and $\pSetNotUsed$ (disconnect, i.e., rate $0$), and after all modules have been configured, physically operating the battery for one period using the $\pExecute$ plan. 
 %%
 
-Observe that the first three plans contain known domain constraints for applicability using condition $\cSatisfies_X$. For instance, plan $\pSetCharge$ may not apply if the module is already charged; $\pSetDischarge$ may be ruled out if discharging the module means that no matter how the remaining modules are configured, the response will fall short of the request. When none of the plans apply, then BDI failure recovery is employed to backtrack up and select a different configuration path until all constraints are satisfied or all options exhausted. 
+Observe that the first three plans contain known domain constraints for applicability using condition $\cSatisfies_X$. For instance, plan $\pSetCharge$ may not apply if the module is already charged; $\pSetDischarge$ may be ruled out if discharging the module means that no matter how the remaining modules are configured, the response will fall short of the request. When none of the plans apply, then BDI failure recovery is employed to backtrack and select a different configuration path until all constraints are satisfied or all options exhausted. 
 
 Plan $\pExecute$ is therefore run only with functionally correct configurations. It first operates the whole battery for the period ($\aOperate$) and then evaluates the result via a sensor ($\aEvaluate$). If the evaluation \emph{succeeds}, then the desired rate $r$ has been met and the whole execution is deemed successful. Otherwise, the evaluation step \emph{fails} and so does the whole execution of the program, since no BDI failure recovery can be used after the battery system has been physically operated. 
 %
@@ -38,7 +38,7 @@ Each module had a charge state in the range $0$ (fully discharged) to $3$ (fully
 %
 Charging adds $+c$ while discharging adds $-c$ to a module's charge state, otherwise the state is unchanged for the period (i.e., there is no charge loss). Thus, the net battery response is in the (normalized) range $[-1,1]$ in discrete intervals of $\pm c$. The state space for the problem is given by the modules ($5$), the requests ($11$), the charge states ($4^5$), and the assigned configurations ($3^5$), that is, $5 \times 11 \times 4^5 \times 3^5 \approx 13.7$ million. The agent does not learn over the full space, however, since the filtering of nonsensical configurations by the plans' context conditions $\cSatisfies_X(\cdot,\cdot,\cdot)$ reduces it substantially (to $\approx1.5$ million).
 %
-Each episode corresponds to one $G(r,5,s)$ goal-event request: achieve overall battery response of $r$ given current module charge states $s$.  For simplicity of analysis, we generate only satisfiable requests
+Each episode corresponds to one $G(r,5,s)$ goal-event request: achieve overall battery response of $r$ given current module charge states $s$.  For simplicity of analysis, we generate only satisfiable requests.
 % i.e. a solution always exists. The outcome of each episode is either no response (no configuration was executed), or execution of the $\pExecute$ plan for operating (and evaluating) the battery. 
 The threshold for stability calculation is set to $0.5$. We use an averaging window of $n=5$ for both the stability-based metric $\C_s$ and domain metric $\C_d$, and a (balanced) weighting of $\alpha=0.5$ for the final confidence measure $\C$.\footnote{Lower stability threshold gives greater accuracy (more samples) and vice versa. 
 %$\alpha$ is generally not critical to performance.

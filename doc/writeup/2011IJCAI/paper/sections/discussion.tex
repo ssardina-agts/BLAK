@@ -9,7 +9,7 @@ Specifically, the proposed \emph{dynamic confidence measure} provides a simple w
 %% 
 % Specifically, we proposed a \emph{dynamic confidence measure} that combines ideas of plan stability~\cite{airiau09:enhancing} and plan coverage-based confidence~\cite{singh10:extending,singh10:learning} from previous approaches, with a sense of the rate at which new worlds are being witnessed. This new confidence measure provides a simple way for the agent to judge how much it should trust its current understanding (of how well available plans can solve goal-events). 
 %%
-In contrast with previous proposals, the confidence in a plan may \emph{not} increase monotonically, and it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. 
+In contrast to previous proposals, the confidence in a plan may \emph{not} always steadily, and it will drop whenever the learned behavior becomes less successful in the environment, thus allowing for new plan exploration to recover goal achievability. 
 %
 The new learning mechanism subsumes previous approaches in that it still preserves the traditional monotonic convergence in environments with fixed dynamics.
 %
