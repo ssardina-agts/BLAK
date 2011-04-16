@@ -28,11 +28,11 @@ The typical {\em offline} use of decision trees assumes availability of the comp
 %%
 Referring to Figure~\ref{fig:confidence}, consider the case in  where plan selection results in the failed execution trace $\lambda_3' = G[P:w] \cdot G_2[P_F:w'] \cdot G_5[P_N:w'']$, after traces $\lambda_1$ and $\lambda_2$ have been successfully carried out. 
 %%
-Here, should the negative outcome be recorded for training our decision tree at non-leaf nodes $P_F$ and $P$? The concern is that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_N$ for $G_5$) was made further down in the hierarchy. To resolve this issue, a {\em stability} filter is used in \cite{airiau09:enhancing} to record failures only for those plans whose outcomes are considered to be stable, or ``well-informed.'' 
+Here, should the negative outcome be recorded for training our decision tree at non-leaf nodes $P_F$ and $P$? The concern is that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_N$ for $G_5$) was made further down in the hierarchy. To resolve this issue, we used a {\em stability} filter in \cite{airiau09:enhancing} to record failures only for those plans whose outcomes are considered to be stable, or ``well-informed.'' 
 %%
-The second approach is to record always, but instead adjust a plan's selection probability based on some measure of {\em confidence} in its decision tree. In~\cite{singh10:extending,singh10:learning}, the reliability of a plan's decision tree is considered to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored currently: the more choices that have been explored, the greater the confidence in the resulting decision tree. 
+The second approach is to record always, but instead adjust a plan's selection probability based on some measure of {\em confidence} in its decision tree. In~\cite{singh10:extending,singh10:learning}, we considered the reliability of a plan's decision tree to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored currently: the more choices that have been explored, the greater the confidence in the resulting decision tree. 
 
-The approach of using confidence to adjust plan selection weights is shown to be more generally applicable to learning in BDI hierarchies~\cite{singh10:extending,singh10:learning}, and is the one we use in this study. However, the traditional assumption that learning is a one-off process is no longer applicable for embedded learning agents that operate over long time frames. These must in fact often un-learn and re-learn as necessary, due to ongoing changes in the environment dynamics. The measure of confidence---that effectively defines the exploration strategy---is therefore no longer a monotonically increasing function, and must dynamically adjust accordingly if previously learnt solutions no longer work. Our new confidence measure for such environments with changing dynamics is presented next. 
+The approach of using confidence to adjust plan selection weights is more generally applicable to learning in BDI hierarchies, as we showed in~\cite{singh10:extending,singh10:learning}, and is the one we use in this study. However, the traditional assumption that learning is a one-off process is no longer applicable for embedded learning agents that operate over long time frames. These must in fact often un-learn and re-learn as necessary, due to ongoing changes in the environment dynamics. The measure of confidence---that effectively defines the exploration strategy---is therefore no longer a monotonically increasing function, and must dynamically adjust accordingly if previously learnt solutions no longer work. Our new confidence measure for such environments with changing dynamics is presented next. 
 %%
 Importantly, this measure subsumes the functionality of the former methods, in that it has equivalent convergence properties when used in environments with fixed dynamics. 
 %%
@@ -46,13 +46,13 @@ Importantly, this measure subsumes the functionality of the former methods, in t
 \newcommand{\stable}{\mathname{stable}}
 
 
-We now describe our confidence measure for learning in environments with continually changing dynamics and where the agent must invariably ``keep on learning.'' It uses the notion of {\em stability} introduced in~\cite{airiau09:enhancing}, and defined in ~\cite{singh10:learning} as follows:
+We now describe our confidence measure for learning in environments with continually changing dynamics and where the agent must invariably ``keep on learning.'' It uses the notion of {\em stability} that we introduced in~\cite{airiau09:enhancing}, and defined in ~\cite{singh10:learning} as follows:
 %Conceptually, the value of the confidence measure relates to the degree of trust that the agent has in its current understanding of the world (from a learning perspective). Technically, recall that the confidence metric informs the agent about how much it should trust the outcome estimate provided by its current decision tree.
 %
 %\begin{quote}
 \emph{``A failed plan $P$ is considered to be stable for a particular world state $w$ if the rate of success of $P$ in $w$ is changing below a certain threshold.''}
 %\end{quote} 
-Here the rate is simply the ratio of successful to total (recent few) experiences in $w$ and stability is measured against the difference between two consecutive rates.
+Here the success rate is the percentage of successful executions in the last few experiences in $w$. Stability is then calculated by looking at the difference in consecutive rates.
 %
 Our aim is to use this notion to judge how  well-informed the decisions the agent has made within a particular execution trace were. This is particularly meaningful for \emph{failed} execution traces: low stability suggests that we were not well-informed and more exploration is needed before assuming that no solution is possible (for the trace's top goal in question).
 %%
