@@ -26,9 +26,11 @@ Since the decision tree inductive bias is a preference for smaller trees, one ex
 
 The typical {\em offline} use of decision trees assumes availability of the complete training set. In our case, however, learning and acting are interleaved in an {\em online} manner: the agent uses its current learning to make plan choices, gaining new knowledge that impacts subsequent choices. This raises the issue of deciding how ``good'' the intermediate generalisations are. We have previously addressed this issue in two different ways. The first~\cite{airiau09:enhancing} is to be selective in recording experiences based on how sensible the related decisions were. 
 %%
-Referring to Figure~\ref{fig:confidence}, consider the case in  where plan selection results in the failed execution trace $\lambda_3' = G[P:w] \cdot G_2[P_F:w'] \cdot G_5[P_N:w'']$, after traces $\lambda_1$ and $\lambda_2$ have been successfully carried out. 
+Referring to Figure~\ref{fig:confidence}, consider the case where plan selection results in the failed execution trace $\lambda_3' = G[P:w] \cdot G_2[P_F:w'] \cdot G_5[P_N:w'']$, after traces $\lambda_1$ and $\lambda_2$ have been successfully carried out. 
 %%
-Here, should the negative outcome be recorded for training our decision tree at non-leaf nodes $P_F$ and $P$? The concern is that these non-leaf plans failed not because they were a bad choice for world $w$ but because a bad choice ($P_N$ for $G_5$) was made further down in the hierarchy. To resolve this issue, we used a {\em stability} filter in \cite{airiau09:enhancing} to record failures only for those plans whose outcomes are considered to be stable, or ``well-informed.'' 
+%Here, should the negative outcome be recorded for training our decision tree at non-leaf nodes $P_F$ and $P$? The concern is that these non-leaf plans failed 
+In this case, if a negative outcome is recorded for $P_F$ and $P$, this is misleading. These non-leaf plans failed
+not because they were a bad choice for worlds $w'$ and $w$ respectively but because a bad choice ($P_N$ for $G_5$ in $w''$) was made further down in the hierarchy. To resolve this issue, we used a {\em stability} filter in \cite{airiau09:enhancing} to record failures only for those plans whose outcomes are considered to be stable, or ``well-informed.'' 
 %%
 The second approach is to record always, but instead adjust a plan's selection probability based on some measure of {\em confidence} in its decision tree. In~\cite{singh10:extending,singh10:learning}, we considered the reliability of a plan's decision tree to be proportional to the number of sub-plan choices (or paths below the plan in the goal-plan hierarchy) that have been explored currently: the more choices that have been explored, the greater the confidence in the resulting decision tree. 
 
@@ -70,13 +72,13 @@ To capture this, we define the \emph{degree of stability} of a (failed) executio
 \]
 
 \noindent
-where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable plans (i.e., whose boolean context conditions hold true) in world $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable at world $w_i$, as defined in~\cite{singh10:learning}.
+where  $\Delta_{\app}(G_i,w_i)$ denotes the set of all applicable plans (i.e., whose boolean context conditions hold true) in world $w_i$ for goal event $G_i$, and $\stable(P,w_i)$ holds true if plan $P$ is deemed stable in world $w_i$, as defined in~\cite{singh10:learning}.
 
 For instance, take the failed execution trace $\lambda_3' = G[P:w] \cdot G_2[P_F:w'] \cdot G_5[P_N:w'']$ from before and suppose that the applicable plans are $\Delta_{\app}(G,w) = \{P\}$, $\Delta_{\app}(G_2,w') = \{P_D,P_F\}$, and $\Delta_{\app}(G_5,w'') = \{P_M,P_N,P_O\}$. Say also that $P_D$ and $P_N$ are the only plans deemed stable (in worlds $w'$ and $w''$, respectively). 
 %%
 Then the degree of stability for the whole trace is $\ds(\lambda_3')= 2/6$.
 %%
-Similarly, for the two subtraces $\lambda_a= G_2[P_F:w_2] \cdot G_5[P_N:w_5]$ and $\lambda_b =G_5[P_N:w_5]$ of $\lambda_3'$, we get $\ds(\lambda_a) = 2/5$ and $\ds(\lambda_b) = 1/3$.
+Similarly, for the two subtraces $\lambda_a= G_2[P_F:w'] \cdot G_5[P_N:w'']$ and $\lambda_b =G_5[P_N:w'']$ of $\lambda_3'$, we get $\ds(\lambda_a) = 2/5$ and $\ds(\lambda_b) = 1/3$.
 
 
 
