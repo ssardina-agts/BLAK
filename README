@@ -34,7 +34,7 @@ http://ant.apache.org/.
 Download ANT and follow the package installation instructions. Make sure that the installation is in your PATH. Verify by typing
 >ant -version
 
-2.2.3 Weka Data Mining Software Version 3.6.0 or later. 
+2.2.3 Weka Data Mining Software Version 3.6.0 or later. NOTE that 3.7.x will not work due to API changes.
 http://www.cs.waikato.ac.nz/ml/weka.
 Download the latest stable version of WEKA for generic platforms. Unzip the zip file and copy weka.jar to location ./lib/weka.jar in this package.
 
