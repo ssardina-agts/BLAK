@@ -1,0 +1,96 @@
+%!TEX root = ../dsingh-ijcai11-poster.tex
+\begin{tikzpicture}
+
+\definecolor{green1}{rgb}{0.86,0.86,0.34}
+\definecolor{red1}{rgb}{0.86,0.34,0.34}
+\definecolor{blue5}{rgb}{0.6,0.34,0.86}
+\definecolor{blue4}{rgb}{0.16,0.16,0.79}
+\definecolor{blue3}{rgb}{0.34,0.86,0.86}
+\definecolor{blue2}{rgb}{0.34,0.6,0.86}
+\definecolor{blue1}{rgb}{0.34,0.34,0.86}
+
+\tikzstyle{centityd}=[draw=black]
+\tikzstyle{centityf}=[fill=blue1!30]
+\tikzstyle{centity}=[centityd,centityf]
+\tikzstyle{entity}=[centity,thick,text centered,anchor=center]
+
+
+
+%%% Beliefs
+\node (database) at (-2,10)  (B)
+	[draw=black,top color=blue2!70, bottom color=blue2,cylinder,shape border rotate=90,minimum width=5em,shape aspect=.3]
+	{{Beliefs}};
+
+
+%%% Pending Events
+\node at (7,15) (eventQueue) {{Pending Events}};
+\begin{pgfonlayer}{foreground}
+\foreach \x in {5,6,...,9}
+\draw [draw=blue4,top color=blue3!70, bottom color=blue3](\x,13) circle (.7em);
+\end{pgfonlayer}
+\draw (7,13) node (Q) 
+	[draw=black,top color=blue4!70, bottom color=blue4,text width=5em, minimum height=2em] {};
+
+%%% Plan Library
+\node at (14,6)(P) 
+	[draw=black,top color=blue1!70, bottom color=blue1,
+	rounded corners, double copy
+	shadow={fill=blue1},text centered, 
+	minimum height=6em] 
+	{	\begin{tabular}{c} 
+         {Plan} \\[1ex]
+         {library}
+         \end{tabular}	};
+\node[anchor=west] at (13,1) {static};
+
+%%% Intention Stacks
+\foreach \x in {4,3,2,1}
+\draw (-4,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+	minimum height=\x em]{};
+\foreach \x in {3,2,1}
+\draw (-2,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+	minimum height=\x em]{};
+\foreach \x in {5,4,3,2,1}
+\draw (0,0) node (I) [anchor=south,draw=black,top color=blue5!70, bottom color=blue5,text width=0.5em,
+	minimum height=\x em]{};
+\node at (-1,-1) (Intentions) {{Intention Stacks}};
+
+%%% BDI Engine
+\foreach \x in {0,18,...,360}
+\fill [rotate around={\x:(4.5,5.5)}, draw=red1!85, top color=red1!70,bottom color=red1] 
+	(4.2,7.0) -- (4.8,7.0) -- (4.6,7.4) -- (4.4,7.4);
+\fill [fill=red1!85] (4.5,5.5) circle (1.51);
+
+\foreach \x in {0,18,...,360}
+\fill [rotate around={\x:(8.0,7.0)}, draw=red1!85, top color=red1!70,bottom color=red1] 
+	(7.7,8.5) -- (8.3,8.5) -- (8.1,8.9) -- (7.9,8.9);
+\fill [fill=red1!85] (8.0,7.0) circle (1.51);
+
+\node[anchor=east] at (10,3)  {dynamic};
+
+%%% Events
+\node at (0,19) [starburst,draw=green1,top color=green1!70, bottom color=green1] (in) {{\bf events}};
+
+%%% Labels and Arrows
+\begin{pgfonlayer}{foreground}
+\node[anchor=center] at (7,6)  (deli) 
+	{\begin{tabular}{c}
+     	{BDI engine}
+     \end{tabular}};
+\node at (7,-4) (actions) {{\bf actions}};
+\draw[thick,->] (deli) -- (actions) ; 
+\draw[thick,<->] (deli) -- (I) ; 
+\draw[thick,<->] (deli) -- (B) ; 
+\draw[thick,<-] (deli) -- (P) ;
+\draw[thick,<->] (deli) -- (Q) ; 
+\draw[thick,<->] (in) -- (eventQueue) ; 
+\draw[thick,<->] (in) -- (B) ; 
+\end{pgfonlayer}
+
+%%% Encapuslating box
+\begin{pgfonlayer}{background}
+\node[draw,dashed,rectangle,minimum height=15em,minimum width=18em] at (6,7){};
+\end{pgfonlayer}
+
+
+\end{tikzpicture}

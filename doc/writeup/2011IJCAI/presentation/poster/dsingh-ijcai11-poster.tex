@@ -1,0 +1,276 @@
+\documentclass[a0,portrait,final]{a0poster}
+% You might find the 'draft' option to a0 poster useful if you have
+% lots of graphics, because they can take some time to process and
+% display. (\documentclass[a0,draft]{a0poster})
+
+% Switch off page numbers on a poster, obviously, and section numbers too.
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+
+% The textpos package is necessary to position textblocks at arbitary 
+% places on the page.
+\usepackage[absolute]{textpos}
+
+% Graphics to include graphics. Times is nice on posters, but you
+% might want to switch it off and go for CMR fonts.
+\usepackage{graphics,wrapfig,times}
+
+% These colours are tried and tested for titles and headers. Don't
+% over use color!
+\usepackage{color}
+\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+\definecolor{darkred}{rgb}{0.8,0.0,0.1}
+
+% see documentation for a0poster class for the size options here
+%\let\Textsize\normalsize
+%\def\Head#1{\noindent\hbox to \hsize{\hfil{\LARGE\color{darkblue} #1}}\bigskip}
+%\def\LHead#1{\noindent{\LARGE\color{darkblue} #1}\smallskip}
+%\def\Subhead#1{\noindent{\large\color{darkblue} #1}}
+%\def\Title#1{\noindent{\VeryHuge\color{darkred} #1}}
+
+% Set up the grid
+%
+% Note that [40mm,40mm] is the margin round the edge of the page --
+% it is _not_ the grid size. That is always defined as 
+% PAGE_WIDTH/HGRID and PAGE_HEIGHT/VGRID. In this case we use
+% 15 x 25. This gives us a wide central column for text (7 grid
+% spacings) and two narrow columns (3 each) at each side for 
+% pictures, separated by 1 grid spacing.
+%
+% Note however that texblocks can be positioned fractionally as well,
+% so really any convenient grid size can be used.
+%
+\TPGrid[25mm,25mm]{15}{25}  % 3 - 1 - 7 - 1 - 3 Columns
+
+% Mess with these as you like
+\parindent=0pt
+\parskip=1.0\baselineskip
+%\renewcommand{\baselinestretch}{0.95}
+
+
+%\usepackage{amsmath,amsthm, amssymb, latexsym}
+\usepackage{fix-cm}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{calc} 
+\usepackage[amssymb,thinspace]{SIunits}
+
+% PGF includes
+\usepackage{pgf,pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{shadows,calc,plotmarks}
+\usetikzlibrary{shapes,arrows,patterns}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+%\usetikzlibrary{,decorations,backgrounds,matrix,automata,trees,shapes,}
+
+%%%%%
+\newcommand{\posterheading}[1]{
+	\begin{center}
+	  \begin{tikzpicture}
+		\definecolor{darkblue}{rgb}{0.1,0.5,0.1}
+		\node [draw=none,rounded corners=0.5ex, 
+			minimum height=5ex, minimum width=0.95\columnwidth, 
+			top color= darkblue!60, bottom color= darkblue!90]
+			%top color= black!40, bottom color=black!70]
+			{
+				\color{white}{\huge #1}
+			};
+	  \end{tikzpicture}
+	\end{center}
+}
+
+\newcommand{\postertitle}[3]{
+	\begin{center}
+	  \begin{tikzpicture}
+		\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+		\node [draw=none,rounded corners=3ex, 
+			minimum height=40ex, minimum width=\columnwidth]
+			{
+				\begin{tabular}{c}
+				\color{black}{\bf \veryHuge #1}\\ \\
+				\color{darkblue}{\Huge #2}\\ \\
+				\color{darkblue}{\LARGE {#3}}\\
+				\end{tabular}
+			};
+	  \end{tikzpicture}
+	\end{center}
+}
+
+\newcommand{\alert}[1]{{\color{darkred}{#1}}}
+\renewcommand{\normalsize}{\Large}
+%%%%%
+
+%-------------------------------------------------------------------------
+%-------------------------------------------------------------------------
+\begin{document}
+
+
+%-------------------------------------------------------------------------
+% Header
+%-------------------------------------------------------------------------
+\begin{textblock}{15}(0,-1)
+\postertitle
+{\begin{tabular}{c}
+Integrating Learning into a BDI Agent for Environments\\ with Changing Dynamics
+\end{tabular}}
+{Dhirendra~Singh$^1$~~~
+Sebastian~Sardina$^1$~~~
+Lin~Padgham$^1$~~~
+Geoff~James$^2$}
+{\begin{tabular}{c}
+	$^1$RMIT University, Melbourne, Australia\\
+	$^2$CSIRO Energy Technology, Sydney, Australia
+\end{tabular}}
+\end{textblock}
+
+
+%-------------------------------------------------------------------------
+% Summary
+%-------------------------------------------------------------------------
+\begin{textblock}{4.6}(0.2,3.75)
+\posterheading{Summary}
+This paper extends our earlier work integrating \alert{learning to improve plan selection} in the popular Belief, Desire, Intentions (BDI) agent paradigm.
+
+Here we address the problem that learning in deployed agents must be \alert{continuous} rather than a one-off process.
+
+Our main contribution is a novel confidence measure which allows the agent to \alert{adjust its reliance on the learning dynamically}, facilitating in principle infinitely many (re)learning phases. 
+
+We demonstrate the benefits of the approach in an example battery controller for energy management.
+
+\begin{center}
+	\includegraphics[width=0.9\columnwidth]{figs/valmet-eva-electric-car-concept-11.jpg}
+\end{center}
+
+
+\end{textblock}
+
+%-------------------------------------------------------------------------
+% BDI Architecture
+%-------------------------------------------------------------------------
+\begin{textblock}{4.6}(0.2,13)
+\posterheading{BDI Architecture}
+
+A \alert{plan} is a rule $e: \psi \leftarrow \delta$; program $\delta$ is a strategy for goal $e$ when \alert{context condition $\psi$} holds.
+
+Plans may perform primitive actions or post sub-goals that are handled in a \alert{hierarchical} manner.
+
+\begin{center}
+\input{figs/fig-bdi-arch}
+\end{center}
+
+Traditionally, \alert{BDI agents have no learning ability}, and cannot adjust to changes that cause previously successful approaches to fail.
+
+\end{textblock}
+
+
+%-------------------------------------------------------------------------
+% BDI Learning Framework
+%-------------------------------------------------------------------------
+\begin{textblock}{4.6}(5.2,3.75)
+\posterheading{BDI Learning Framework}
+
+Our learning framework augments plan's context conditions with \alert{decision trees}, allowing \alert{plan applicability} to be learnt from experience.
+
+Using a \alert{probabilistic plan selection} function, the agent balances exploration and exploitation of plans.
+
+\begin{center}
+\begin{tikzpicture}[>=latex]
+\definecolor{brown3}{rgb}{0.86,0.6,0.34}
+	\node [text width=12em, draw=brown3, 
+	top color=brown3!70, bottom color=brown3] at (0,0) (A) {
+		Record outcomes for chosen plans to train decision trees
+	};
+	\node [text width=12em, draw=brown3, 
+	top color=brown3!70, bottom color=brown3] at (0,-6) (B) {
+		Probablistically select plans based on ongoing learning
+		};
+	\draw[brown3,] (-9,0) edge[out=210,in=150,line width=50,]  (-9,-6);
+	\draw[brown3] (9,0) edge[out=330,in=30,line width=50]  (9,-6);
+\end{tikzpicture}
+\end{center}
+\alert{Acting and learning are interleaved} in an \alert{online} manner, i.e.,  current learning influences ongoing choices that impact subsequent learning.
+
+\end{textblock}
+
+%-------------------------------------------------------------------------
+% Confidence in Learning
+%-------------------------------------------------------------------------
+\begin{textblock}{4.6}(5.2,11.75)
+\posterheading{Confidence in Learning}
+
+We \alert{build confidence from observed performance} of a plan by evaluating
+how well-informed were the recent decisions, or \alert{stability-based} measure, and how well we know the worlds we are witnessing, or \alert{world-based} measure.
+
+
+Plan selection weight, that dictates \alert{exploration}, is then calculated using the predicted \alert{likelihood of success} and the dynamic \alert{confidence} measure.
+
+\begin{center}
+\input{figs/fig-gptree2}
+\end{center}
+
+\alert{Example}: Say plan $P_c$ no longer works for resolving goal $G_2$ after execution $15$, and plan $P_e$ does instead.
+As plan $P_c$ starts to fail, the perceived confidence ($y$-axis) drops, \alert{promoting new exploration} and (re)learning.
+
+\begin{center}
+\input{figs/fig-conf2}
+\end{center}
+
+\end{textblock}
+
+%-------------------------------------------------------------------------
+% Modular Battery Controller
+%-------------------------------------------------------------------------
+\begin{textblock}{4.6}(10.2,3.75)
+\posterheading{Modular Battery Controller}
+
+%\begin{wrapfigure}{l}{1.1\columnwidth}
+\begin{center}
+\vskip -1.0em
+	\includegraphics[width=0.9\columnwidth]{figs/smart-home.jpg}
+\end{center}
+%\end{wrapfigure}
+A building with local generation and loads is to restrict power consumption to a set range, using a modular battery system that can be charged or discharged as needed. 
+
+A \alert{programmed solution is not ideal} since battery performance is susceptible to change over time.
+ 
+We design a \alert{learning BDI controller} that works to initial specification but also \alert{adapts} to ongoing changes in the battery system.
+
+\alert{Scenario 1}: Recovery from deterioration in module capacities at $5\kilo$ episodes.
+\begin{center}
+\input{figs/experiment1}
+\end{center}
+\vskip -1.0em
+\alert{Scenario 2}: Recovery from individual module failures during $[0,20\kilo]$, $[20\kilo,40\kilo]$ episodes.
+\begin{center}
+\input{figs/experiment2}
+\end{center}
+\vskip -1.0em
+\alert{Scenario 3}: Recovery from complete system failure during $[0,5\kilo]$ episodes.
+\begin{center}
+\input{figs/experiment3}
+\end{center}
+
+The above experiments plot average success in configuring the battery correctly ($y$-axis) over the number of episodes ($x$-axis) for various changes in the environment dynamics. 
+
+\end{textblock}
+
+
+%-------------------------------------------------------------------------
+% Footer
+%-------------------------------------------------------------------------
+\begin{textblock}{15}(0,24)
+\begin{center}
+\color{darkred}{\LARGE
+D.~Singh, S.~Sardina, L.~Padgham, G.~James, Integrating Learning into a {BDI} Agent for Environments with Changing Dynamics. In {\it Proceedings of International Joint Conference on Artificial Intelligence (IJCAI)}, Barcelona, Spain, 2011.
+}
+\end{center}
+\end{textblock}
+
+
+%-------------------------------------------------------------------------
+%-------------------------------------------------------------------------
+\end{document}

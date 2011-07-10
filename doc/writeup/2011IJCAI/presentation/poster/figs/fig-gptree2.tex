@@ -1,0 +1,31 @@
+%!TEX root = ../dsingh-ijcai11-poster.tex
+\begin{tikzpicture}[level distance=3em]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{trace}=[solid,style=circle,fill=black!20,above left=0.15cm,scale=.7]
+
+\tikzstyle{planbox}=[draw,minimum height=2.5cm,minimum width=2.5cm]
+\tikzstyle{goalbox}=[draw,minimum height=2.5cm,minimum width=2.5cm,rounded corners=0.75cm]
+\tikzstyle{planbox2}=[planbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox2}=[goalbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox3}=[goalbox,fill=blue!30]
+\tikzstyle{planbox3}=[planbox,fill=blue!30]
+\tikzstyle{planbox4}=[planbox,fill=red!30]
+
+\tikzstyle{level 1}=[sibling distance=9em] 
+\tikzstyle{level 2}=[sibling distance=3em] 
+
+\node[planbox3,solid] {$P$}
+				child[solid] {node[goalbox2] {$G_{1}$}
+					child {node[planbox,fail] {$P_{a}$}}
+					child {node[planbox2,succ] {$P_{b}$}}
+				}
+				child[solid] {node[goalbox3] {$G_{2}$}
+					child {node[planbox4,fail] {$P_{c}$}}
+					child {node[planbox,fail] {$P_{d}$}}
+					child {node[planbox3,succ] {$P_{e}$}}
+				}
+
+;
+
+\end{tikzpicture}

@@ -1,0 +1,30 @@
+%!TEX root = ../dsingh-ijcai11-poster.tex
+\begin{tikzpicture}
+\definecolor{darkred}{rgb}{0.8,0.0,0.1}
+\definecolor{darkblue}{rgb}{0.1,0.1,0.5}
+
+\begin{axis}[
+width=0.75\columnwidth,height=8cm,scale only axis,
+axis line style={-}, xtick style={-}, ytick style={-},
+%xlabel=Executions,
+%ylabel=Confidence,
+every axis y label/.style={at={(-0.2,0.5)},rotate=90,anchor=center}, 
+every axis x label/.style={at={(0.5,-0.15)},anchor=center},
+grid=both,grid style={-,style=densely dotted},
+%legend style={at={(0.7,0.25)},anchor=north west},
+legend style={at={(0.5,-0.25)}, anchor=north,legend columns=-1},
+%cycle list name=black white,
+xtick={0,3,...,24},
+] 
+
+\addplot+[darkred,-,line width=2pt] coordinates { 
+	(01,0.000) (03,0.000) (06,0.150) (09,0.485) (10,0.585) 
+	(11,0.685) (13,0.885) (14,0.935) (15,1.000) (16,1.000) 
+};
+\addplot+[darkblue,-,line width=2pt] coordinates { 
+	(16,1.000) (17,0.933) (18,0.900) (19,0.900) (20,0.900) 
+	(21,0.900) (21,0.900) (22,0.970) (23,1.000) (24,1.000) 
+};
+
+\end{axis} 
+\end{tikzpicture} 
