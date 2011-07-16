@@ -1,0 +1,58 @@
+%!TEX root = ../dsingh-pgconf10.tex
+\begin{tikzpicture}[level distance=1.0cm]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{trace}=[solid,style=circle,fill=green!30,above left=0.15cm,scale=.65]
+
+\tikzstyle{planbox}=[draw,minimum height=0.6cm,minimum width=0.65cm]
+\tikzstyle{goalbox}=[draw,minimum height=0.6cm,minimum width=0.65cm,rounded corners=0.2cm]
+\tikzstyle{planbox2}=[planbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox2}=[goalbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox3}=[goalbox,fill=blue!30]
+\tikzstyle{planbox3}=[planbox,fill=blue!30]
+
+	
+\tikzstyle{level 1}=[sibling distance=3.0cm] 
+\tikzstyle{level 2}=[sibling distance=1.0cm] 
+\tikzstyle{level 3}=[sibling distance=3.0cm]
+\tikzstyle{level 4}=[sibling distance=1.0cm]
+
+\node[planbox3,solid] {$P_{1}$}
+		child {node[goalbox2] {$G_{2}$}
+			child {node[planbox2] {$P_{2}$}
+				child {node[goalbox2] {$G_{3}$}
+					child {node[planbox,fail] {}}
+					child {node[planbox2,succ] {$P_{3}$}
+						%node[trace]{$3$}
+					}
+				}
+				%node[trace]{$2$}
+			}
+			child {node[planbox,fail] {}}
+			child {node[planbox,fail] {}}
+		}
+		child {node[goalbox3] {$G_{4}$}
+			child {node[planbox,fail] {}}
+			child {node[planbox3] {$P_4$}
+				child {node[goalbox2] {$G_{5}$}
+					child {node[planbox,fail] {}}
+					child {node[planbox2,succ] {$P_{5}$}
+						%node[trace]{$5$}
+					}
+					child {node[planbox,fail] {}}
+				}
+				child {node[goalbox3] {$G_{6}$}
+					child {node[planbox3,succ] {$P_{6}$}
+						%node[trace]{$6$}
+					}
+					child {node[planbox,fail] {}}
+					child {node[planbox,fail] {}}
+				}
+				%node[trace]{$4$}
+			}
+		}
+		%node[trace]{$1$}
+		
+;
+
+\end{tikzpicture}

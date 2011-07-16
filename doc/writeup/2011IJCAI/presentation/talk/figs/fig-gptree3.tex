@@ -1,0 +1,30 @@
+%!TEX root = ../dsingh-phdtalk.tex
+\begin{tikzpicture}[level distance=1.2cm]
+\tikzstyle{succ}=[label=below:$\surd$]
+\tikzstyle{fail}=[label=below:$\times$]
+\tikzstyle{trace}=[solid,style=circle,fill=black!20,above left=0.15cm,scale=.7]
+
+\tikzstyle{planbox}=[draw,minimum height=0.6cm,minimum width=0.65cm]
+\tikzstyle{goalbox}=[draw,minimum height=0.6cm,minimum width=0.65cm,rounded corners=0.2cm]
+\tikzstyle{planbox2}=[planbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox2}=[goalbox,pattern=north west lines,pattern color=blue!50]
+\tikzstyle{goalbox3}=[goalbox,fill=blue!30]
+\tikzstyle{planbox3}=[planbox,fill=blue!30]
+
+\tikzstyle{level 1}=[sibling distance=2.5cm] 
+\tikzstyle{level 2}=[sibling distance=0.9cm] 
+
+\node[planbox3,solid] {$P$}
+				child[solid] {node[goalbox2] {$G_{1}$}
+					child {node[planbox,fail] {$P_{a}$}}
+					child {node[planbox2,succ] {$P_{b}$}}
+				}
+				child[solid] {node[goalbox3] {$G_{2}$}
+					child {node[planbox3,succ] {$P_{c}$}}
+					child {node[planbox,fail] {$P_{d}$}}
+					child {node[planbox,fail] {$P_{e}$}}
+				}
+
+;
+
+\end{tikzpicture}

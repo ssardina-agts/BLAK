@@ -1,0 +1,14 @@
+%!TEX root = ../dsingh-pgconf10.tex
+\begin{tikzpicture}
+                    
+\tikzstyle{box}=[text width=8em, draw=black!50, top color=blue!10, bottom color=blue!30]
+\tikzstyle{pointer}=[color=red!50,->,>=fast cap,line width=10pt]
+
+\node [box] at (0,0)  (A) {Select plan\\ probabilistically};
+\node [box] at (0,-1.75) (B) {Execute and\\ record outcome};
+\node [box] at (0,-3.5) (C) {Update plan's\\ decision tree};
+\draw [pointer] (A) to [] (B); 
+\draw [pointer] (B) to [] (C); 
+\draw [pointer] (1.6,-3.5) -- (2.4,-3.5) -- (2.4,0) -- (1.6,0); 
+
+\end{tikzpicture}

@@ -1,0 +1,22 @@
+%!TEX root = ../dsingh-ijcai11-talk.tex
+\begin{tikzpicture}
+
+\begin{axis}[
+width=0.7\columnwidth,height=5cm,scale only axis,
+axis line style={-}, xtick style={-}, ytick style={-},
+%xlabel=Episodes,
+%ylabel=Success,
+every axis y label/.style={at={(-0.12,0.5)},rotate=90,anchor=center}, 
+%every axis x label/.style={at={(0.5,-0.15)},anchor=center},
+grid=both,grid style={-,style=densely dotted},
+legend style={at={(0.5,0.25)},anchor=north west},
+scaled x ticks = false,
+xtick={0,5e3,10e3,15e3,20e3,25e3,30e3,35e3,40e3},
+xticklabels={$0$,$5\kilo$,$10\kilo$,$15\kilo$,$20\kilo$,$25\kilo$,$30\kilo$,$35\kilo$,$40\kilo$}
+] 
+
+\addplot[-,red,thick] file {./data/storage1b.CF.tikzdata};
+%\addlegendentry{Data} 
+
+\end{axis} 
+\end{tikzpicture} 

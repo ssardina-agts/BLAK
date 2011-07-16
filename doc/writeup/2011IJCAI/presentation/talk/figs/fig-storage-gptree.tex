@@ -1,0 +1,39 @@
+%!TEX root = ../dsingh-pgconf10.tex
+\begin{tikzpicture} [start chain,level distance=4.0em,node distance=1.0em]
+\tikzstyle{planbox}=[draw,text width=6.0em,minimum height=3.0em]
+\tikzstyle{goalbox}=[draw,rounded corners=1.0em,minimum height=2.5em,minimum width=3.5em,fill=red!30]
+
+\tikzstyle{level 1}=[sibling distance=8.0em] 
+
+\tikzstyle{chainbox}=[{
+draw,
+fill=blue!30,
+on chain,
+minimum height=2.5em,minimum width=5.0em,text width=4.5em,
+}]
+\tikzstyle{chainbox2}=[chainbox,shape=signal,signal to=east]
+
+
+\node[goalbox,solid] at (0,0) {$G($k$)$}
+	child {node[planbox] {Set module k to \alert{Charge}}
+		child {node[goalbox] {$G($k-1$)$}}
+	}
+	child {node[planbox] {Set module k to \alert{Discharge}}
+		child {node[goalbox] {$G($k-1$)$}}
+	}
+	child {node[planbox]  {\alert{Disconnect} module k}
+		child {node[goalbox] {$G($k-1$)$}}
+	}
+	child {node[planbox]  {\alert{Operate} \& evaluate}}
+;
+
+
+\node[chainbox2]  at (-4.5,-4.5) {Charge module 5};
+\node[chainbox2]  {Disconnect\\module 4};
+\node[on chain] (C){$\ldots$};
+\node[chainbox2]   (D) {Charge module 1};
+\node[chainbox]    (E) {Operate\\battery};
+
+\end{tikzpicture}
+
+

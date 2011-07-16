@@ -1,0 +1,212 @@
+%!TEX root = ../thesis.tex
+
+\newcommand{\mathname}[1]{\operatorname{\textit{#1}}}
+\newcommand{\superscript}[1]{\ensuremath{^{\textrm{#1}}}}
+\newcommand{\subscript}[1]{\ensuremath{_{\textrm{#1}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PERSONAL LaTex MACROS 
+% Courtesy Sebastian Sardina, RMIT Melbourne.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Font modes & definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% conditional math environment
+% \gdef\Math#1{\ifmmode #1 \else \mbox{$#1$}\fi}
+\newcommand{\Math}[1]{\ensuremath{#1}}
+
+\newcommand{\modesf}[1]{{\Math{\mathsf{#1}}}}
+\newcommand{\modecal}[1]{{\Math{\mathcal{#1}}}}
+\newcommand{\modeit}[1]{{\Math{\mathit{#1}}}}
+
+
+\newcommand{\textmath}[1]{{\mbox{\textit{#1}}}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Proper names
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\propername}[1]{\mbox{\small\textsf{#1}}}
+\newcommand{\AgentO}{\propername{AGENT-0}}
+\newcommand{\AgentSpeak}{\propername{AgentSpeak(L)}}
+\newcommand{\AgentSpeakF}{\propername{AgentSpeak(F)}}
+\newcommand{\ASHOP}{\propername{A-SHOP}}
+\newcommand{\CANMINUS}{\propername{\CAN$^{\A}$}}
+\newcommand{\CANMINUST}{\propernametiny{Can$^{\cal C}$}}
+\newcommand{\CAN}{\propername{CAN}}
+\newcommand{\CANT}{\propernametiny{Can}}
+\newcommand{\CANPLAN}{\propername{CANPlan}}
+\newcommand{\CANPLANT}{\propernametiny{CanPlan}}
+\newcommand{\CANPLANII}{\propername{CanPlan2}}
+\newcommand{\CANPLANOR}{\propername{Can(Plan)}}
+\newcommand{\CANGOAL}{\propername{CanGoal}}
+\newcommand{\ConGolog}{\propername{ConGolog}}
+\newcommand{\CLAIM}{\propername{CLAIM}}
+\newcommand{\dMARS}{\propername{dMARS}}
+\newcommand{\DAPL}{\propername{2APL}}
+\newcommand{\GOAL}{\propername{GOAL}}
+\newcommand{\GOALBDI}{\propername{GOAL}}
+\newcommand{\Golog}{\propername{Golog}}
+\newcommand{\GORITE}{\propername{GORITE}}
+\newcommand{\IndiGolog}{\propername{IndiGolog}}
+\newcommand{\JACK}{\propername{JACK}}
+\newcommand{\JACKTM}{\propername{Jack\texttrademark}}
+\newcommand{\JADEX}{\propername{JADEX}}
+\newcommand{\JAM}{\propername{JAM}}
+\newcommand{\JASON}{\propername{Jason}}
+\newcommand{\JSHOP}{\propername{JSHOP}}
+\newcommand{\JSHOPII}{\propername{JSHOP2}}
+\newcommand{\PDT}{\propername{PDT}}
+\newcommand{\PLACA}{\propername{PLACA}}
+\newcommand{\Prometheus}{\propername{Prometheus}}
+\newcommand{\PRS}{\propername{PRS}}
+\newcommand{\RAP}{\propername{Rap}}
+\newcommand{\SHOP}{\propername{SHOP}}
+\newcommand{\SHOPII}{\propername{SHOP2}}
+\newcommand{\SPARK}{\propername{SPARK}}
+\newcommand{\TAPL}{\propername{3APL}}
+\newcommand{\weka}{\propername{weka}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calligraphic letters 
+% -- Taken from Giuseppe De Giacomo 2006
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\A}{\modecal{A}} \newcommand{\B}{\modecal{B}}
+\newcommand{\C}{\modecal{C}} \newcommand{\D}{\modecal{D}}
+\newcommand{\E}{\modecal{E}} \newcommand{\F}{\modecal{F}}
+\newcommand{\G}{\modecal{G}} \renewcommand{\H}{\modecal{H}}
+\newcommand{\I}{\modecal{I}} \newcommand{\J}{\modecal{J}}
+\newcommand{\K}{\modecal{K}} \renewcommand{\L}{\modecal{L}}
+\newcommand{\M}{\modecal{M}} \newcommand{\N}{\modecal{N}}
+\renewcommand{\O}{\modecal{O}} \renewcommand{\P}{\modecal{P}}
+\renewcommand{\S}{\modecal{S}} \newcommand{\T}{\modecal{T}}
+\newcommand{\U}{\modecal{U}} \newcommand{\V}{\modecal{V}}
+\newcommand{\W}{\modecal{W}} \newcommand{\X}{\modecal{X}}
+\newcommand{\Y}{\modecal{Y}} \newcommand{\Z}{\modecal{Z}}
+\newcommand{\R}{\modecal{R}} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Margin notes for comments  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\marginparwidth}{0.1in}
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+
+\setlength{\marginparwidth}{0.5in}
+\newcommand{\notem}[1]{\marginpar{\scriptsize  \textbf{#1}}}
+\newcommand{\notems}[1]{\notem{S: #1}}
+\newcommand{\noteml}[1]{\notem{L: #1}}
+\newcommand{\notemd}[1]{\notem{D: #1}}
+
+\newcommand{\ncheck}{\notem{CHECK!}}
+\newcommand{\GGG}{\notem{GGG}}
+\newcommand{\SSS}{\notem{SSS}}
+\newcommand{\LIN}{\notem{LP}}
+\newcommand{\YVES}{\notem{YL}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PhD boxed notes for the committee in Toronto 
+% -- Taken from Ron Petrick 2004
+% -- Modified
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \usepackage{color}
+\newcounter{countphdnote}
+%\newcommand{\phdnote}[1]{\textbf{#1}}
+\newcommand{\phdnote}[1]{
+%\vskip 0.25in
+\noindent
+%\begin{center}
+%\begin{tabular}{c}
+		\fbox{
+%		\fcolorbox{black}{white}{
+%			\begin{minipage}{0.96\textwidth}
+			#1\addtocounter{countphdnote}{1}%
+%			\end{minipage}
+			}
+		\fcolorbox{black}{black}{\textcolor
+		{white}{\textbf{\ Note \thecountphdnote\ }}}
+%\end{tabular}
+%\end{center}
+%\vskip 0.25in
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tighter lists 
+% -- Taken from Lin Padgham 2007
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{bean}
+
+\newenvironment{tightenumerate}{
+                \begin{list}{
+                  {\mbox {
+                      \arabic{bean}.\/}}}{\usecounter{bean}
+                      \setlength{\itemsep}{-1pt}\setlength{\topsep}{0pt}}}{
+                \end{list}}
+
+\newenvironment{tightitemize}{
+                \begin{list}{$\bullet$}{
+                    \setlength{\itemsep}{-1pt}}{\setlength{\topsep}{0pt}}}{
+                \end{list}}
+%\setlength{\itemsep}{0pt}}{\setlength{\topsep}{0pt}}}{
+
+\renewenvironment{tightenumerate}{\begin{enumerate}}{\end{enumerate}}
+\renewenvironment{tightitemize}{\begin{itemize}}{\end{itemize}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% General useful macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Produces citations as follows: Author (Year)
+\newcommand{\citeby}[1]{\citeauthor{#1} (\citeyear{#1})}
+
+% Mark pages (pp. xxx)
+\newcommand{\page}{pp.}
+
+% Marker text
+\newcommand{\marker}[1]{\textbf{******* \today: #1 *******}}
+
+% Good underline --- Ttaken from Hector Levesque 2003
+%	underline with space between text and line
+\newcommand{\under}[1]{\mbox{\underline{\it\smash{#1}\vphantom{\lower.05ex\hbox{
+x}}}}}
+
+% \newcommand{\defterm}[1]{\under{\textit{#1}}}
+\newcommand{\defterm}[1]{\textit{#1}}
+
+% Comments -- just ignore everything: same as \comment{} in comment package
+\newcommand{\commentarea}[1]{}
+
+% Finish a page compactly (remove trailing space)
+\newcommand{\finishpage}{ \newpage{ \pagestyle{empty} } }
+
+% Separation for itemizations
+\newcommand{\separation}[1]{\addtolength{\itemsep}{#1}}
+
+
+% Italic text
+\newcommand{\ii}[1]{\textit{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Thesis macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\subgoal}{sub-goal}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EOF: macros-sebastian.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

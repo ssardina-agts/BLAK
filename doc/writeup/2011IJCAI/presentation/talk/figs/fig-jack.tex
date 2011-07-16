@@ -1,0 +1,72 @@
+%!TEX root = ../dsingh-phdtalk.tex
+
+\begin{tikzpicture} [level distance=10.0em]
+\tikzstyle{txt}=[scale=1.1]
+\tikzstyle{planbox}=[draw,txt,text width=11.5em,rectangle split,rectangle split parts=3,fill=white]
+\tikzstyle{planbox2}=[planbox,fill=blue!20]
+\tikzstyle{goalbox}=[draw,txt,rounded corners=1.25em,minimum height=3em,minimum width=3em]
+\tikzstyle{goalbox2}=[goalbox,fill=blue!20]
+
+%--- Agent
+\draw[rounded corners=3em,fill=white] (-5.75,2.75) rectangle (8.25,-9.25);
+\node[txt] at (6,2) {\propername{Agent}};
+
+%--- Capability
+\draw[densely dashed,rounded corners=2.5em,fill=black!10] (-5.5,0) rectangle (8,-9);
+\node[txt] at (6,-0.75) {\propername{Capability}};
+
+%--- Beliefs
+\node at (-4.5,2) [draw,txt,cylinder,shape border rotate=90,shape aspect=.1,text centered,text width=7em,anchor=north west,fill=blue!20]
+	{$\pWeather=\vRaining$\\$\pMoney=200$};
+
+%--- Goal/Plans
+\node[goalbox2] at (-1,-0.75) (G) {$\gTravel(\pDest=\vWork)$};
+\node[planbox] at (5.5,-4.25) (C) {\begin{tabular}{ l } $\pFly$ \end{tabular}
+			\nodepart{second}
+				\begin{tabular}{ p{3.5em} l } 
+					$handles:$ & $\gTravel$ \\
+					$relevant:$ & $\pDest= \vCity$ \\
+					$context:$ & $\pMoney>500$ \\
+				\end{tabular}
+			\nodepart{third} 
+				\begin{tabular}{ p{4em} l } $body:$ & $\ldots$ \end{tabular}
+};
+\draw ($(G.south)$) -- ($(C.north west)$);
+\node[planbox] at (2.75,-5) (D) {\begin{tabular}{ l } $\pTrain$ \end{tabular}
+			\nodepart{second}
+				\begin{tabular}{ p{3.5em} l } 
+					$handles:$ & $\gTravel$ \\
+					$relevant:$ & $\pDest= \vCity$ \\
+					$context:$ & $\pMoney<500$ \\
+				\end{tabular}
+			\nodepart{third} 
+				\begin{tabular}{ p{4em} l } $body:$ & $\ldots$ \end{tabular}
+};
+\draw ($(G.south)$) -- ($(D.north)+(-2em,0)$);
+\node[planbox2] at (0,-5.75) (A) {\begin{tabular}{ l } $\pTram$ \end{tabular}
+			\nodepart{second}
+				\begin{tabular}{ p{3.5em} l } 
+					$handles:$ & $\gTravel$ \\
+					$relevant:$ & $\pDest=\vWork$ \\
+					$context:$ & $\pWeather=\vRaining$ \\
+				\end{tabular}
+			\nodepart{third} 
+				\begin{tabular}{ p{4em} l } $body:$ & $\ldots$ \end{tabular}
+};
+\draw ($(G.south)$) -- ($(A.north)+(-2em,0)$);
+\node[planbox] at (-2.75,-6.5) (B) {\begin{tabular}{ l } $\pCycle$ \end{tabular}
+			\nodepart{second}
+				\begin{tabular}{ p{3.5em} l } 
+					$handles:$ & $\gTravel$ \\
+					$relevant:$ & $\pDest=\vWork$ \\
+					$context:$ & $\pWeather=\vSunny$ \\
+				\end{tabular}
+			\nodepart{third} 
+				\begin{tabular}{ p{4em} l } $body:$ & $\ldots$ \end{tabular}
+};
+\draw ($(G.south)$) -- ($(B.north)+(-2em,0)$);
+
+
+\end{tikzpicture}
+
+

@@ -1,0 +1,432 @@
+%%% Uncomment for presentation mode
+\documentclass[10pt]{beamer}
+
+%%% Uncomment for article mode
+%\documentclass{article} 
+%\usepackage{beamerarticle} 
+
+
+\mode<presentation>
+{
+  \usetheme[]{Madrid}
+  \useinnertheme{circles}
+  \setbeamercovered{transparent=5}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{frametitle continuation}[from second][\insertcontinuationtext]
+}
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{pgf,pgfplots}
+\usepackage{color}
+\usepackage{latexsym}
+\usepackage[boxed,linesnumbered]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{colortbl}
+\usepackage[amssymb,thinspace]{SIunits}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations,backgrounds,matrix,automata,trees,shapes,shadows,plotmarks,calc,positioning,patterns,chains}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\newcounter{finalframe}
+
+%\AtBeginSection[]
+%{
+%  \setcounter{finalframe}{\value{framenumber}}
+%  \begin{frame}<beamer>{Outline of the Thesis}
+%	\setcounter{framenumber}{\value{finalframe}}
+%    \tableofcontents[currentsection,hideallsubsections]
+%  \end{frame}
+%}
+
+\renewcommand\example[1]{{\color{black!50!green}#1}}
+
+\renewcommand{\baselinestretch}{1.05}
+\parskip 1.33ex
+
+\input{etc/macros}
+%Travelling Domain
+\newcommand{\gTravel}{\propername{Travel}}
+\newcommand{\pCycle}{\propername{Cycle}}
+\newcommand{\pFly}{\propername{Fly}}
+\newcommand{\pTram}{\propername{Tram}}
+\newcommand{\pTrain}{\propername{Train}}
+\newcommand{\pDest}{\propername{dist}}
+\newcommand{\vCity}{\propername{long}}
+\newcommand{\vWork}{\propername{short}}
+\newcommand{\pWeather}{\propername{outlook}}
+\newcommand{\vSunny}{\propername{sun}}
+\newcommand{\vRaining}{\propername{rain}}
+\newcommand{\pMoney}{\propername{money}}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\title[BDI Learning in Changing Environments]{Integrating Learning into a BDI Agent for Environments with Changing Dynamics}
+\author[Singh et al.]{Dhirendra~Singh\inst{1} \and Sebastian~Sardina\inst{1} \and Lin~Padgham\inst{1} \and Geoff~James\inst{2}}
+\institute[RMIT \& CSIRO]{
+\inst{1}RMIT University, Melbourne, Australia \and 
+\inst{2}CSIRO Energy Technology, Sydney, Australia
+}
+\date[IJCAI 2011]{International Joint Conference on Artificial Intelligence\\July 2011, Barcelona, Spain}
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+
+
+\begin{document}
+
+
+
+%----------------------------------------------------------------------------
+\begin{frame}[plain]
+\setcounter{framenumber}{0}
+\titlepage
+\end{frame}
+
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{Introduction}
+
+%----------------------------------------------------------------------------
+\begin{frame}[<+->]{Belief-Desire-Intention (BDI) Agent Architecture}
+\action{}
+\begin{center}
+\resizebox{.75\paperwidth}{!}{
+\input{figs/fig-bdi}
+}
+\vskip 0.25cm
+A \alert{plan} is a {\em programmed} recipe for achieving a goal in some situation.\\\action{We wish to \alert{improve plan selection} in situations, based on {\em actual} experience.}
+\end{center}
+\note{
+
+-If I had to explain my thesis in one slide, then this is it. 
+
+-Ignoring the details, all I want you to take from this slide is: that a BDI agent is programmed with a bag of tricks, or a library of plans, that it has to choose from in any given situation.
+
+-What we would like is for the agent to learn what plans work best in which situations, based on ongoing experience.
+
+-With this in mind, let's have a look at the outline of the talk.
+
+BDI:
+Influence of Rao \& Georgeff, Cohen and Levesque. 
+The problem of plan selection.
+
+BDI advantages:
+1. Is robust and well suited for dynamic environments.
+2. Has inspired several development platforms (PRS, AgentSpeak(L), JACK, JASON, SPARK, 3APL and others).
+3. Has been deployed in practical systems like UAVs.
+
+}
+
+\end{frame}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%\begin{frame}[<+->]{Related Work in BDI Learning}
+%
+%\begin{block}{}\centering Little existing work in combining BDI reasoning with online learning\end{block}
+%
+%\begin{itemize}
+%\item Existing work in BDI learning uses \alert{offline} learning, so {\em no learning takes place after deployment}.
+%\item Learning in \alert{hierarchical task network (HTN) planning} is related but also is inherently offline.
+%\item \alert{Hierarchical reinforcement learning} deals with similar issue to ours but is very different to agent programming.
+%\end{itemize}
+%
+%\end{frame}
+
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{A BDI Learning Framework}
+
+%----------------------------------------------------------------------------
+\begin{frame}{Plan Selection in a BDI Goal-Plan Hierarchy}
+\begin{center}
+\begin{center}\input{figs/fig-gptree}\end{center}
+\vskip 0.3cm
+For plan $P_1$ to succeed, \alert{several correct choices must be made}.
+\end{center}
+\note{
+
+The figure shows an example BDI plan library represented as a tree. Here plans nodes are suffixed with the label $P$ and goals with $G$. The parent of a plan is the goal type it was designed to handle. The children are sub-goals that must succeed in a sequential manner in order for the plan to succeed. Leaf plans interact directly with the environment by performing actions that may succeed (ticks) or fail (crosses) for a given world state. Here the successful resolution of the top-level goal requires 3 sequential actions to be performed.
+
+What are we learning? The actual conditions under which a plan works once deployed. 
+
+Why learn? For complex domains it may not be possible to accurately program all situations under which a plan is useful. Even so, the environment may change after the agent is deployed.
+
+How do we do it? Add a machine learning filter over the programmed applicability conditions of plans, and learn this over time.
+
+We're not learning a new plan or altering some existing plan. We're just learning when to use it.
+}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}{The Learning Framework}
+
+Augment \alert{a decision tree per plan}. \example{State representation includes world features, event parameters, and context variables.}
+\vskip 1em
+
+\begin{columns}
+\begin{column}[l]{0.4\textwidth}
+\begin{overlayarea}{\columnwidth}{5cm} 
+\only<2->{
+\input{figs/fig-loop}
+}
+\end{overlayarea}
+\end{column}
+\begin{column}[l]{0.6\textwidth}
+\begin{overlayarea}{\columnwidth}{5cm} 
+\only<3-7>{
+\begin{enumerate}
+\item<3-7> For every plan whose programmed applicability condition holds, calculate a \alert{selection weight} based on perceived likelihood of success.
+\item<4-7> \alert{Select} a plan probabilistically using selection weights.
+\item<5-7> \alert{Execute} the plan (hierarchy) and record the outcome(s).
+\item<6-7> \alert{Update} the plan's decision tree.
+\item<7> Repeat.
+\end{enumerate}
+}
+\only<8->{
+\begin{columns}
+\begin{column}[l]{0.15\textwidth}
+\begin{tabular}{ c c }
+$w_a$ & $\times$ \\
+\alert{$w_b$} & \alert{$\times$} \\
+$\ldots$ & \\
+$\ldots$ & \\
+\example{$w_b$} & \example{$\surd$} \\
+$\ldots$ & \\
+$\ldots$ & \\
+$w_a$ & $\surd $ \\
+$\ldots$ & \\
+$\ldots$ & \\
+\end{tabular}
+\end{column}
+\begin{column}[l]{0.85\textwidth}
+\begin{itemize}
+\item<9-> Incomplete data
+\item<10-> Inconsistent data
+\item<11-> Non-deterministic actions
+\item<12-> Non-deterministic hierarchies
+\item<13-> Dealing with failure recovery
+\item<14-> Changing environment dynamics
+\end{itemize}
+\end{column}
+\end{columns}
+}
+\end{overlayarea}
+\end{column}
+\end{columns}
+
+\begin{overlayarea}{\columnwidth}{1cm} 
+\only<15->{
+\vskip -1em
+\begin{block}{}\centering{Need a quantitative \alert{measure of confidence} in the current learning.}\end{block}
+}
+\end{overlayarea}
+
+\note{
+Touch on hierarchical learning issue, noisy training data, incomplete training data, non-deterministic domain, parameterised and recursive structures, confidence in learning, and now learning in environments with changing dynamics. Mention that we will expand on the final two.
+}
+
+\end{frame}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{Determining Confidence in Ongoing Learning}
+
+%----------------------------------------------------------------------------
+\begin{frame}{A Dynamic Confidence Measure}
+
+\begin{columns}
+\begin{column}[l]{0.4\textwidth}
+\begin{overlayarea}{\textwidth}{5cm} 
+\resizebox{\textwidth}{!}{
+\input{figs/fig-gptree3}
+}
+\end{overlayarea}
+\end{column}
+\begin{column}[l]{0.6\textwidth}
+\begin{overlayarea}{\textwidth}{5cm} 
+We build confidence from \alert{observed performance} of a plan using:
+\pause
+\begin{itemize}
+\item<+-> \example{how well-informed were the recent decisions}, or \alert{stability-based} measure
+\item<+-> \example{how well we know the worlds we are witnessing}, or \alert{world-based} measure
+\item<+-> an averaging window $n$ and preference bias $\alpha$ \\~\\~\\
+\end{itemize}
+\end{overlayarea}
+\end{column}
+\end{columns}
+\vskip -1cm
+\uncover<5->{Plan selection weight, that dictates \alert{exploration}, is then calculated using the predicted \alert{likelihood of success} together with the \alert{confidence} measure.}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}{Example: Dynamic Confidence Measure}
+\begin{columns}
+\begin{column}[l]{0.4\textwidth}
+\begin{overlayarea}{\textwidth}{5cm} 
+\only<1>{
+\resizebox{\textwidth}{!}{
+\input{figs/fig-gptree3}
+}}
+\only<1>{Solution found at E=10 and \alert{full confidence at E=15}.}
+\only<2->{
+\resizebox{\textwidth}{!}{
+\input{figs/fig-gptree3b}
+}}
+\only<3>{
+After E=15, $P_c$ starts to fail. The \alert{confidence drops}, promoting new exploration and re-learning.}
+\end{overlayarea}
+\end{column}
+\begin{column}[l]{0.6\textwidth}
+\begin{overlayarea}{\textwidth}{5cm} 
+\only<1>{
+\resizebox{\textwidth}{!}{
+\input{figs/fig-conf1}
+}}
+\only<2>{~\\~\\\alert{What if the environment changes} after we have learnt the solution?\\~\\Say after execution $15$, plan $P_c$ no longer works for resolving goal $G_2$, but plan $P_e$ does.
+}
+\only<3>{
+\resizebox{\textwidth}{!}{
+\input{figs/fig-conf2}
+}}
+\end{overlayarea}
+\end{column}
+\end{columns}
+\end{frame}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{Developing BDI Systems that Learn}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\subsection{Modular Battery System Controller}
+
+%----------------------------------------------------------------------------
+\begin{frame}{A Battery Storage Application}
+\begin{columns}
+\begin{column}[l]{0.6\textwidth}
+\input{figs/fig-storage-usecase}
+\end{column}
+\begin{column}[r]{0.3\textwidth}
+\begin{center}\includegraphics[scale=0.4]{figs/fig-storage-building}\end{center}
+\end{column}
+\end{columns}
+Given net building demand, \alert{calculate an appropriate battery response} in order to maintain grid power consumption within range $[0,p_h]$.
+\note{
+Changing dynamics is when you learn something but the environment changes to that the learning is no longer optimal. Consider the example of a smart home..
+}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}{Design: A Battery Storage Application}
+\begin{center}
+\resizebox{0.8\textwidth}{!}{
+\input{figs/fig-storage-gptree}
+}
+\end{center}
+Aim: Learn appropriate plan selection to achieve a desired \alert{battery response rate}, given the current battery state. \example{State space for a battery with five modules is $\approx$13 million.}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}[allowframebreaks]{Experiment: Capacity Deterioration}
+
+\begin{center}
+\resizebox{0.7\textwidth}{!}{
+\input{figs/fig-storage-experiment1}
+}
+
+Recovery from \alert{deterioration in module capacities} at $5\kilo$ episodes.
+\end{center}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}[allowframebreaks]{Experiment: Partial Failure with Restoration}
+\begin{center}
+\resizebox{0.7\textwidth}{!}{
+\input{figs/fig-storage-experiment2}
+}
+
+Recovery from \alert{temporary module failures} during $[0,20\kilo]$, $[20\kilo,40\kilo]$ episodes.
+\end{center}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}[allowframebreaks]{Experiment: Complete Failure with Restoration}
+\begin{center}
+\resizebox{0.7\textwidth}{!}{
+\input{figs/fig-storage-experiment3}
+}
+
+Recovery from \alert{complete system failure} during $[0,5\kilo]$ episodes.
+\end{center}
+\end{frame}
+
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\section{Conclusions and Future Work}
+
+%----------------------------------------------------------------------------
+\begin{frame}{Limitations and Future Work}
+\begin{itemize}
+\item<+-> We cannot account for \alert{inter-dependence between subgoals} of a higher-level plan.\\~\\
+\item<+-> \alert{Maintaining full training data is not practical}. It becomes obsolete when the environment changes. \example{We tried an {\em arbitrary} scheme to filter ``old'' data in the battery agent and reduced the data set by $75\%$ with no loss in performance.}\\~\\
+\item<+-> Onus is on the designer to select appropriate state representation and learning parameters. \example{Some of this could be automatically extracted from the BDI program.}
+\end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------
+\begin{frame}[<+->]{Summary}
+\action{}
+\begin{itemize}
+\item Learning BDI plan selection is desirable when plan applicability cannot be easily programmed or when the \alert{environment changes over time}.\\~\\
+\item We present a \alert{learning framework} for additionally determining a plan's applicability conditions using decision trees. Plans are selected \alert{probabilistically} based on their predicted likelihood of success and our perceived \alert{confidence} in the learning.\\~\\
+\item We evaluate the framework empirically in a storage domain where a battery controller must continually adapt to \alert{changes that cause previous solutions to become ineffective}.
+\end{itemize}
+\end{frame}
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+\setcounter{finalframe}{\value{framenumber}}
+\appendix 
+
+\begin{frame}{References}
+\setcounter{framenumber}{\value{finalframe}}
+  \begin{thebibliography}{10}
+  \beamertemplatearticlebibitems
+  \bibitem{singh10:extending}
+	D.~Singh, S.~Sardina, L.~Padgham.
+	\newblock Extending BDI Plan Selection to Incorporate Learning from Experience.
+	\newblock {\em Journal of Robotics and Autonomous Systems (RAS)}, 2010.
+  \bibitem{singh10:learning}
+	D.~Singh, S.~Sardina, L.~Padgham, and S.~Airiau.
+	\newblock Learning context conditions for BDI plan selection.
+	\newblock {\em Proceedings of Autonomous Agents and Multi-Agent Systems (AAMAS)}, 2010.
+  \bibitem{airiau09:enhancing}
+	S.~Airiau, L.~Padgham, S.~Sardina, and S.~Sen.
+	\newblock Enhancing Adaptation in {BDI} Agents Using Learning Techniques.
+	\newblock {\em Intrnational Journal of Agent Technologies and Systems (IJATS)}, 2009.\\~\\
+  \end{thebibliography}
+
+\begin{block}{}\centering{\alert{Poster today in Rooms 133--134 at 16:40--17:20}}\end{block}
+
+\end{frame}
+
+
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+%%%
+
+\end{document}
