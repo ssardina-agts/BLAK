@@ -100,7 +100,7 @@
 \input{figs/fig-bdi}
 }
 \vskip 0.25cm
-A \alert{plan} is a {\em programmed} recipe for achieving a goal in some situation.\\\action{We wish to \alert{improve plan selection} in situations, based on {\em actual} experience.}
+A \alert{plan} is a programmed recipe for achieving a goal in some situation.\\\action{We wish to \alert{improve plan selection} in situations, based on actual experience.}
 \end{center}
 \note{
 
@@ -146,9 +146,9 @@ BDI advantages:
 
 %----------------------------------------------------------------------------
 \begin{frame}{Plan Selection in a BDI Goal-Plan Hierarchy}
-\begin{center}
 \begin{center}\input{figs/fig-gptree}\end{center}
-\vskip 0.3cm
+
+\begin{center}
 For plan $P_1$ to succeed, \alert{several correct choices must be made}.
 \end{center}
 \note{
@@ -339,9 +339,7 @@ Aim: Learn appropriate plan selection to achieve a desired \alert{battery respon
 \begin{frame}[allowframebreaks]{Experiment: Capacity Deterioration}
 
 \begin{center}
-\resizebox{0.7\textwidth}{!}{
 \input{figs/fig-storage-experiment1}
-}
 
 Recovery from \alert{deterioration in module capacities} at $5\kilo$ episodes.
 \end{center}
@@ -350,9 +348,7 @@ Recovery from \alert{deterioration in module capacities} at $5\kilo$ episodes.
 %----------------------------------------------------------------------------
 \begin{frame}[allowframebreaks]{Experiment: Partial Failure with Restoration}
 \begin{center}
-\resizebox{0.7\textwidth}{!}{
 \input{figs/fig-storage-experiment2}
-}
 
 Recovery from \alert{temporary module failures} during $[0,20\kilo]$, $[20\kilo,40\kilo]$ episodes.
 \end{center}
@@ -361,9 +357,7 @@ Recovery from \alert{temporary module failures} during $[0,20\kilo]$, $[20\kilo,
 %----------------------------------------------------------------------------
 \begin{frame}[allowframebreaks]{Experiment: Complete Failure with Restoration}
 \begin{center}
-\resizebox{0.7\textwidth}{!}{
 \input{figs/fig-storage-experiment3}
-}
 
 Recovery from \alert{complete system failure} during $[0,5\kilo]$ episodes.
 \end{center}
@@ -378,7 +372,7 @@ Recovery from \alert{complete system failure} during $[0,5\kilo]$ episodes.
 \begin{frame}{Limitations and Future Work}
 \begin{itemize}
 \item<+-> We cannot account for \alert{inter-dependence between subgoals} of a higher-level plan.\\~\\
-\item<+-> \alert{Maintaining full training data is not practical}. It becomes obsolete when the environment changes. \example{We tried an {\em arbitrary} scheme to filter ``old'' data in the battery agent and reduced the data set by $75\%$ with no loss in performance.}\\~\\
+\item<+-> \alert{Maintaining full training data is not practical}. It becomes obsolete when the environment changes. \example{We tried an arbitrary scheme to filter ``old'' data in the battery agent and reduced the data set by $75\%$ with no loss in performance.}\\~\\
 \item<+-> Onus is on the designer to select appropriate state representation and learning parameters. \example{Some of this could be automatically extracted from the BDI program.}
 \end{itemize}
 \end{frame}
