@@ -1,13 +1,13 @@
 #TeXlipse project settings
-#Sat Apr 16 07:42:17 EST 2011
+#Tue Jul 26 13:52:04 EST 2011
 builderNum=2
 outputDir=paper/
 makeIndSty=
 bibrefDir=
 outputFormat=pdf
 tempDir=tmp/
-mainTexFile=ijcai11storage.tex
-outputFile=ijcai11storage.pdf
+mainTexFile=dsingh-ijcai11-poster.tex
+outputFile=dsingh-ijcai11-poster.pdf
 langSpell=en
 markDer=true
-srcDir=paper/
+srcDir=presentation/poster
